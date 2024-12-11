@@ -77,7 +77,7 @@ class CreditsCodename extends funkin.options.OptionsScreen {
 		Options.lastUpdated = curTime;
 
 		error = false;
-		var idk = GitHub.getContributors(author, "CodenameEngine", function(e) {
+		var idk = GitHub.getContributors(author, "CodenameEngine", 100, function(e) {
 			error = true;
 			var errMsg:String = 'Error while trying to download contributors list:\n${CoolUtil.removeIP(e.message)}';
 			Logs.traceColored([Logs.logText(errMsg.replace('\n', ' '), RED)], ERROR);
@@ -88,7 +88,7 @@ class CreditsCodename extends funkin.options.OptionsScreen {
 		trace('Contributors list Updated!');
 
 		var errorOnMain:Bool = false;
-		var idk2 = GitHub.getOrganizationMembers(author, function(e) {
+		var idk2 = GitHub.getOrganizationMembers(author, 100, function(e) {
 			errorOnMain = true;
 			var errMsg:String = 'Error while trying to download $author members list:\n${CoolUtil.removeIP(e.message)}';
 			Logs.traceColored([Logs.logText(errMsg.replace('\n', ' '), RED)], ERROR);
