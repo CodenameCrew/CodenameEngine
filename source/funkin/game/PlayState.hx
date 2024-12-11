@@ -1267,13 +1267,11 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-        if (doIconBop) {
-			iconP1.scale.set(lerp(iconP1.scale.x, 1, 0.33), lerp(iconP1.scale.y, 1, 0.33));
-			iconP2.scale.set(lerp(iconP2.scale.x, 1, 0.33), lerp(iconP2.scale.y, 1, 0.33));
+		if (doIconBop)
+			for (icon in [iconP1, iconP2])
+				if (icon.updateBump != null)
+					icon.updateBump();
 
-			iconP1.updateHitbox();
-			iconP2.updateHitbox();
-		}
 		updateIconPositions();
 
 		if (startingSong)
@@ -1823,14 +1821,10 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03 * camZoomingStrength;
 		}
 
-        if (doIconBop)
-		{
-			iconP1.scale.set(1.2, 1.2);
-			iconP2.scale.set(1.2, 1.2);
-
-			iconP1.updateHitbox();
-			iconP2.updateHitbox();
-		}
+		if (doIconBop)
+			for (icon in [iconP1, iconP2])
+				if (icon.bump != null)
+					icon.bump();
 
 		scripts.call("beatHit", [curBeat]);
 	}
