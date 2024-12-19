@@ -1,0 +1,5 @@
+solo
+opponent
+coop
+coop-switched
+botplay

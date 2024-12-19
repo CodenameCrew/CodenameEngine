@@ -9,6 +9,7 @@ import funkin.backend.scripting.events.menu.freeplay.*;
 import funkin.backend.system.Conductor;
 import funkin.game.HealthIcon;
 import funkin.savedata.FunkinSave;
+import haxe.io.Path;
 
 using StringTools;
 
@@ -34,6 +35,11 @@ class FreeplayState extends MusicBeatState
 	 */
 	public var curDiffMetaKeys:Array<String> = [];
 
+	/*
+	 * Array containing all labels for game modes.
+	 */
+	public var gameModeLabels:Array<FreeplayGameMode> = [];
+
 	/**
 	 * Currently selected song
 	 */
@@ -43,9 +49,9 @@ class FreeplayState extends MusicBeatState
 	 */
 	public var curDifficulty:Int = 1;
 	/**
-	 * Currently selected coop/opponent mode
+	 * Currently selected game mode
 	 */
-	public var curCoopMode:Int = 0;
+	public var curGameMode:Int = 0;
 
 	/**
 	 * Text containing the score info (PERSONAL BEST: 0)
@@ -58,9 +64,9 @@ class FreeplayState extends MusicBeatState
 	public var diffText:FlxText;
 
 	/**
-	 * Text containing the current coop/opponent mode ([KEYBINDS] Co-Op mode)
+	 * Text containing the current game mode, for example: ([KEYBINDS] Co-Op mode)
 	 */
-	public var coopText:FlxText;
+	public var gameModeText:FlxText;
 
 	/**
 	 * Currently lerped score. Is updated to go towards `intendedScore`.
@@ -130,6 +136,7 @@ class FreeplayState extends MusicBeatState
 		}
 
 		updateCurSong();
+		gameModeLabels = FreeplayGameMode.get();
 
 		DiscordUtil.call("onMenuLoaded", ["Freeplay"]);
 
@@ -177,14 +184,15 @@ class FreeplayState extends MusicBeatState
 		diffText.font = scoreText.font;
 		add(diffText);
 
-		coopText = new FlxText(diffText.x, diffText.y + diffText.height + 2, 0, "", 24);
-		coopText.font = scoreText.font;
-		add(coopText);
+		gameModeText = new FlxText(diffText.x, diffText.y + diffText.height + 2, 0, "", 24);
+		gameModeText.font = scoreText.font;
+		add(gameModeText);
 
 		add(scoreText);
 
 		changeSelection(0, true);
-		changeCoopMode(0, true);
+		changeDiff(0, true);
+		changeGameMode(0, true);
 
 		interpColor = new FlxInterpolateColor(bg.color);
 	}
@@ -239,17 +247,17 @@ class FreeplayState extends MusicBeatState
 		if (canSelect) {
 			changeSelection((controls.UP_P ? -1 : 0) + (controls.DOWN_P ? 1 : 0) - FlxG.mouse.wheel);
 			changeDiff((controls.LEFT_P ? -1 : 0) + (controls.RIGHT_P ? 1 : 0));
-			changeCoopMode((controls.CHANGE_MODE ? 1 : 0)); // TODO: make this configurable
+			changeGameMode((controls.CHANGE_MODE ? 1 : 0));
 			// putting it before so that its actually smooth
 			updateOptionsAlpha();
 		}
 
 		scoreText.text = TEXT_FREEPLAY_SCORE.format([Math.round(lerpScore)]);
-		scoreBG.scale.set(MathUtil.maxSmart(diffText.width, scoreText.width, coopText.width) + 8, (coopText.visible ? coopText.y + coopText.height : 66));
+		scoreBG.scale.set(MathUtil.maxSmart(diffText.width, scoreText.width, gameModeText.width) + 8, (gameModeText.visible ? gameModeText.y + gameModeText.height : 66));
 		scoreBG.updateHitbox();
 		scoreBG.x = FlxG.width - scoreBG.width;
 
-		scoreText.x = coopText.x = scoreBG.x + 4;
+		scoreText.x = gameModeText.x = scoreBG.x + 4;
 		diffText.x = Std.int(scoreBG.x + ((scoreBG.width - diffText.width) / 2));
 
 		interpColor.fpsLerpTo(curSong.color, 0.0625);
@@ -310,31 +318,13 @@ class FreeplayState extends MusicBeatState
 			select();
 	}
 
-	var __opponentMode:Bool = false;
-	var __coopMode:Bool = false;
-
-	function updateCoopModes() {
-		__opponentMode = false;
-		__coopMode = false;
-		if (curSong.coopAllowed && curSong.opponentModeAllowed) {
-			__opponentMode = curCoopMode % 2 == 1;
-			__coopMode = curCoopMode >= 2;
-		} else if (curSong.coopAllowed) {
-			__coopMode = curCoopMode == 1;
-		} else if (curSong.opponentModeAllowed) {
-			__opponentMode = curCoopMode == 1;
-		}
-	}
-
 	/**
 	 * Selects the current song.
 	 */
 	public function select() {
-		updateCoopModes();
-
 		if (curDifficulties.length == 0) return;
 
-		var event = event("onSelect", EventManager.get(FreeplaySongSelectEvent).recycle(curSong.name, curDifficulties[curDifficulty], curSong.variant, __opponentMode, __coopMode));
+		var event = event("onSelect", EventManager.get(FreeplaySongSelectEvent).recycle(curSong.name, curDifficulties[curDifficulty], curSong.variant, gameModeLabels[curGameMode]));
 
 		if (event.cancelled) return;
 
@@ -393,7 +383,7 @@ class FreeplayState extends MusicBeatState
 			intendedScore = 0;
 			return;
 		}
-		updateCoopModes();
+
 		var changes:Array<HighscoreChange> = [];
 		if (__coopMode) changes.push(CCoopMode);
 		if (__opponentMode) changes.push(COpponentMode);
@@ -402,44 +392,36 @@ class FreeplayState extends MusicBeatState
 	}
 
 	/**
-	 * Array containing all labels for Co-Op / Opponent modes.
-	 */
-	public var coopLabels:Array<String> = [
-		TU.translate("freeplay.solo"),
-		TU.translate("freeplay.opponentMode"),
-		TU.translate("freeplay.coopMode"),
-		TU.translate("freeplay.coopModeSwitched")
-	];
-
-	/**
 	 * Change the current coop mode context.
 	 * @param change How much to change
 	 * @param force Force the change, even if `change` is equal to 0.
 	 */
-	public function changeCoopMode(change:Int = 0, force:Bool = false) {
+	public function changeGameMode(change:Int = 0, force:Bool = false) {
 		if (change == 0 && !force) return;
-		if (!curSong.coopAllowed && !curSong.opponentModeAllowed) return;
 
-		var bothEnabled = curSong.coopAllowed && curSong.opponentModeAllowed;
-		var event = event("onChangeCoopMode", EventManager.get(MenuChangeEvent).recycle(curCoopMode, FlxMath.wrap(curCoopMode + change, 0, bothEnabled ? 3 : 1), change));
-
-		if (event.cancelled) return;
-
-		curCoopMode = event.value;
-
-		updateScore();
-
-		var coopBinds = [CoolUtil.keyToString(Options.P1_CHANGE_MODE[0]), CoolUtil.keyToString(Options.P2_CHANGE_MODE[0])].filter(x -> x != "---");
-		if (coopBinds.length == 2 && coopBinds[1] == coopBinds[0]) coopBinds.pop();
-		else if (coopBinds.length == 0) coopBinds.push("---");
-
-		var key = '[${coopBinds.join(" / ")}] ';
-
-		if (bothEnabled) {
-			coopText.text = key + coopLabels[curCoopMode];
-		} else {
-			coopText.text = key + coopLabels[curCoopMode * (curSong.coopAllowed ? 2 : 1)];
+		var i = 0;
+		var allowed = getAllowedGameModesID();
+		var wrapped = FlxMath.wrap(curGameMode + change, 0, gameModeLabels.length - 1);
+		while (!allowed.contains(gameModeLabels[wrapped].modeID)) {  // Skipping the blacklisted ones  - Nex
+			wrapped = FlxMath.wrap(wrapped + change, 0, gameModeLabels.length - 1);
+			if (i++ > allowed.length) {
+				curGameMode = 0;  // Idk honestly if I should modify the other event's variables  - Nex
+				break;
+			}
 		}
+
+		var e = EventManager.get(MenuChangeEvent).recycle(curGameMode, wrapped, change);
+		event("onChangeCoopMode", e);  // Backwards compat  - Nex
+		if (event("onChangeGameMode", e).cancelled) return;
+
+		// Getting from scratch the allowed game modes just in case they changed when the event got called  - Nex
+		if (gameModeText.visible = getAllowedGameModesID().length > 0) gameModeText.text = "[TAB] " + gameModeLabels[curGameMode = e.value].modeName;
+		updateScore();
+	}
+
+	public inline function getAllowedGameModesID() {
+		var excluded = songs[curSelected].excludedGameModes;
+		return [for (mode in gameModeLabels) if (!excluded.contains(mode.modeID)) mode.modeID];
 	}
 
 	/**
@@ -465,13 +447,12 @@ class FreeplayState extends MusicBeatState
 		}
 
 		changeDiff(0, true);
+		changeGameMode(0, true);
 
 		#if PRELOAD_ALL
 		autoplayElapsed = 0;
 		songInstPlaying = false;
 		#end
-
-		coopText.visible = curSong.coopAllowed || curSong.opponentModeAllowed;
 	}
 
 	function updateOptionsAlpha() {
@@ -486,7 +467,7 @@ class FreeplayState extends MusicBeatState
 
 		iconArray[curSelected].alpha = selectedAlpha;
 
-		for (i=>item in grpSongs.members)
+		for (i => item in grpSongs.members)
 		{
 			item.targetY = i - curSelected;
 
@@ -516,6 +497,118 @@ class FreeplayState extends MusicBeatState
 		if (song == null) curSong = null;
 		else if ((curSong = song.metas.get(curDiffMetaKeys[curDifficulty])) == null)
 			curSong = song;
+	}
+
+	// Backwards compat
+	@:noCompletion public function changeCoopMode(change:Int = 0, force:Bool = false) return changeGameMode(change, force);
+
+	@:noCompletion public var coopText(get, set):FlxText;
+	@:noCompletion private function get_coopText() return gameModeText;
+	@:noCompletion private function set_coopText(val:FlxText) return gameModeText = val;
+
+	@:noCompletion function updateCoopModes() {}
+	@:noCompletion var __opponentMode(get, default):Bool = false;  // God this is so cursed  - Nex
+	@:noCompletion private function get___opponentMode() return getAllowedGameModesID().contains("codename.opponent");
+	@:noCompletion var __coopMode(get, default):Bool = false;
+	@:noCompletion private function get___coopMode() return getAllowedGameModesID().contains("codename.coop");
+
+	@:noCompletion var curCoopMode(get, set):Int;
+	@:noCompletion private function get_curCoopMode() return curGameMode;
+	@:noCompletion private function set_curCoopMode(val:Int) return curGameMode = val;
+
+	@:noCompletion var coopLabels(get, set):Array<String>;
+	@:noCompletion private function get_coopLabels() return [for(mode in gameModeLabels) mode.modeName];
+	@:noCompletion private function set_coopLabels(names:Array<String>) {
+		gameModeLabels = [for(name in names) {
+			if (name.startsWith("[TAB] ")) name = name.substr("[TAB] ".length);
+			new FreeplayGameMode(name, switch(name) {
+				case "Solo": "codename.solo";
+				case "Opponent Mode": "codename.opponent";
+				case "Co-Op Mode": "codename.coop";
+				case "Co-Op Mode (Switched)": "codename.coop-opponent";
+				default: name.toLowerCase().replace(" ", "-");
+			}, switch(name) {
+				case "Solo": ["solo"];
+				case "Opponent Mode": ["opponent"];
+				case "Co-Op Mode": ["coop"];
+				case "Co-Op Mode (Switched)": ["coop-switched", "opponent", "coop"];
+				default: null;
+			});
+		}];
+		return names;
+	}
+}
+
+/**
+ * Class used for the Freeplay menu game modes.
+ *
+ * **NOTE**: `fields` is useable not just for boolean values!!
+ */
+class FreeplayGameMode {
+	public var modeName:String;
+	public var modeID:String;
+	public var scripts(default, set):Array<String>;
+	public var fields(default, set):Dynamic;
+
+	@:noCompletion function set_scripts(val:Array<String>) return scripts = (val == null ? [] : val);
+	@:noCompletion function set_fields(val:Dynamic) return fields = (val == null ? {} : val);
+
+	public function new(modeName:String, modeID:String, ?scripts:Array<String>, ?fields:Dynamic) {
+		this.modeName = modeName;
+		this.modeID = modeID;
+		this.scripts = scripts;
+		this.fields = fields;
+	}
+
+	public function toModifiers():Array<Dynamic> {
+		var fields = this.fields;
+		var modifiers:Array<Dynamic> = [];
+		for (field in {var _ = Reflect.fields(fields); _.sort(Reflect.compare); _;}) {
+			var val:Dynamic = Reflect.field(fields, field);
+			if (val != null && val != false) { // allow true, and floats/ints
+				modifiers.push(field);
+				modifiers.push(val);
+			}
+		}
+		return modifiers;
+	}
+
+	public static inline function generateDefault() return new FreeplayGameMode("Solo Mode", "solo");
+
+	public static inline function getGameModesFromSource(source:AssetSource = BOTH, useTxt:Bool = true):Array<FreeplayGameMode> {
+		var path = 'data/gamemodes';
+		var txt = Paths.txt('gamemodes/list');
+		var list = useTxt && Paths.assetsTree.existsSpecific(txt, "TEXT", source) ? CoolUtil.coolTextFile(txt) : Paths.getFolderContent(path, false, source);
+
+		return [for (file in list) {
+			if (useTxt) file += ".json";
+			else if (Path.extension(file) != "json") continue;
+
+			var meta:FreeplayGameMode = null;
+			try {
+				var data = CoolUtil.parseJson(Paths.file(path + "/" + file)); var id = data.modeID;
+				meta = new FreeplayGameMode(CoolUtil.getDefault(data.displayName, id), id, [Path.withoutExtension(file)].concat(CoolUtil.getDefault(data.scripts, [])), data.fields);
+			} catch(e) Logs.trace('Failed to load game mode metadata for $file ($path): ${Std.string(e)}', ERROR);
+			if (meta != null) meta;
+		}];
+	}
+
+	public static function get(useTxt:Bool = true):Array<FreeplayGameMode> {
+		var list:Array<FreeplayGameMode>;
+
+		switch(Flags.GAME_MODES_LIST_MOD_MODE) {
+			case 'prepend':
+				list = getGameModesFromSource(MODS, useTxt).concat(getGameModesFromSource(SOURCE, useTxt));
+			case 'append':
+				list = getGameModesFromSource(SOURCE, useTxt).concat(getGameModesFromSource(MODS, useTxt));
+			case 'override':
+				list = getGameModesFromSource(BOTH, useTxt);
+			default /*case 'oneOFtwo'*/:
+				if ((list = getGameModesFromSource(MODS, useTxt)).length == 0)
+					list = getGameModesFromSource(SOURCE, useTxt);
+		}
+
+		return list;
 	}
 }
 
@@ -553,7 +646,9 @@ class FreeplaySonglist {
 			case 'append':
 				songList.getSongsFromSource(SOURCE, useTxt);
 				songList.getSongsFromSource(MODS, useTxt);
-			default /*case 'override'*/:
+			case 'override':
+				songList.getSongsFromSource(BOTH, useTxt);
+			default /*case 'oneOFtwo'*/:
 				if (songList.getSongsFromSource(MODS, useTxt))
 					songList.getSongsFromSource(SOURCE, useTxt);
 		}

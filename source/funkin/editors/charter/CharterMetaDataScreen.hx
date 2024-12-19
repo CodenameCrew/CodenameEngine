@@ -1,5 +1,6 @@
 package funkin.editors.charter;
 
+import funkin.game.HealthIcon;
 import flixel.math.FlxPoint;
 import funkin.backend.chart.ChartData.ChartMetaData;
 import funkin.editors.extra.PropertyButton;
@@ -21,8 +22,7 @@ class CharterMetaDataScreen extends UISubstateWindow {
 	public var displayNameTextBox:UITextBox;
 	public var iconTextBox:UITextBox;
 	public var iconSprite:HealthIcon;
-	public var opponentModeCheckbox:UICheckbox;
-	public var coopAllowedCheckbox:UICheckbox;
+	public var excludedGameModesList:UIAutoCompleteButtonList;
 	public var needsVoicesCheckbox:UICheckbox;
 	public var colorWheel:UIColorwheel;
 	public var difficultiesTextBox:UITextBox;
@@ -78,25 +78,29 @@ class CharterMetaDataScreen extends UISubstateWindow {
 		add(displayNameTextBox);
 		addLabelOn(displayNameTextBox, translate("displayName"));
 
+		add(iconSprite = new HealthIcon(metadata.icon));
+		iconSprite.scale.set(0.5, 0.5);
+		iconSprite.updateHitbox();
+
 		iconTextBox = new UITextBox(displayNameTextBox.x + 320 + 26, displayNameTextBox.y, metadata.icon, 150);
-		iconTextBox.onChange = (newIcon:String) -> {updateIcon(newIcon);}
+		iconTextBox.onChange = (newIcon:String) -> iconSprite.setIcon(newIcon);
 		add(iconTextBox);
 		addLabelOn(iconTextBox, translate("icon"));
 
 		updateIcon(metadata.icon);
 
-		opponentModeCheckbox = new UICheckbox(displayNameTextBox.x, iconTextBox.y + 10 + 32 + 26, translate("opponentMode"), metadata.opponentModeAllowed);
-		add(opponentModeCheckbox);
-		addLabelOn(opponentModeCheckbox, translate("modesAllowed"));
-
-		coopAllowedCheckbox = new UICheckbox(opponentModeCheckbox.x + 150 + 26, opponentModeCheckbox.y, translate("coopAllowed"), metadata.coopAllowed);
-		add(coopAllowedCheckbox);
+		add(excludedGameModesList = new UIAutoCompleteButtonList(displayNameTextBox.x, iconTextBox.y + 62, Std.int(displayNameTextBox.bWidth), 100, "", [for (mode in funkin.menus.FreeplayState.FreeplayGameMode.get()) mode.modeID]));
+		excludedGameModesList.frames = Paths.getFrames('editors/ui/inputbox');
+		excludedGameModesList.cameraSpacing = 0;
+		addLabelOn(excludedGameModesList, "Excluded Game Modes (IDs)");
+		for (mode in metadata.excludedGameModes)
+			excludedGameModesList.add(new UIAutoCompleteButtonList.UIAutoCompleteButton(0, 0, excludedGameModesList, excludedGameModesList.suggestItems, mode));
 
 		colorWheel = new UIColorwheel(iconTextBox.x, coopAllowedCheckbox.y, metadata.color);
 		add(colorWheel);
 		addLabelOn(colorWheel, translate("color"));
 
-		difficultiesTextBox = new UITextBox(opponentModeCheckbox.x, opponentModeCheckbox.y + 6 + 32 + 26, metadata.difficulties.join(", "));
+		difficultiesTextBox = new UITextBox(excludedGameModesList.x, excludedGameModesList.y + excludedGameModesList.bHeight + 32, metadata.difficulties.join(", "));
 		add(difficultiesTextBox);
 		addLabelOn(difficultiesTextBox, translate("difficulties"));
 
@@ -110,9 +114,6 @@ class CharterMetaDataScreen extends UISubstateWindow {
 			customPropertiesButtonList.add(new PropertyButton(val, Reflect.field(metadata.customValues, val), customPropertiesButtonList));
 		add(customPropertiesButtonList);
 		addLabelOn(customPropertiesButtonList, translate("customValues"));
-
-		for (checkbox in [opponentModeCheckbox, coopAllowedCheckbox])
-			{checkbox.y += 6; checkbox.x += 4;}
 
 		saveButton = new UIButton(windowSpr.x + windowSpr.bWidth - 20, windowSpr.y + windowSpr.bHeight - 20, TU.translate("editor.saveClose"), function() {
 			saveMeta();
@@ -161,8 +162,7 @@ class CharterMetaDataScreen extends UISubstateWindow {
 		meta.displayName = displayNameTextBox.label.text;
 		meta.icon = iconTextBox.label.text;
 		meta.color = colorWheel.curColor;
-		meta.opponentModeAllowed = opponentModeCheckbox.checked;
-		meta.coopAllowed = coopAllowedCheckbox.checked;
+		meta.excludedGameModes = [for (button in excludedGameModesList.buttons.members) button.textBox.label.text.trim()],
 		meta.difficulties = [for (diff in difficultiesTextBox.label.text.split(",")) diff.trim()];
 		meta.customValues = customVals;
 

@@ -97,6 +97,41 @@ class Chart {
 		data.setFieldDefault("vocalsSuffix", "");
 		data.setFieldDefault("needsVoices", true);
 		data.setFieldDefault("difficulties", []);
+
+		var songNameLower = songName.toLowerCase();
+		var metaPath = Paths.file('songs/${songNameLower}/meta.json');
+		var metaDiffPath = Paths.file('songs/${songNameLower}/meta-${difficulty.toLowerCase()}.json');
+
+		var blacklist:Array<String> = [];
+		var data:ChartMetaData = null;
+		var fromMods:Bool = fromMods;
+		for (path in [metaDiffPath, metaPath]) {
+			if (Assets.exists(path)) {
+				fromMods = Paths.assetsTree.existsSpecific(path, "TEXT", MODS);
+				try {
+					var temp = CoolUtil.parseJson(path);
+
+					// Backwards compatibility (they both can be null so != true)  - Nex
+					var coopExlc = false;
+					if (Reflect.hasField(temp, "coopAllowed") && Reflect.field(temp, "coopAllowed") != true) {
+						blacklist = blacklist.concat(["codename.coop", "codename.coop-opponent"]);
+						Reflect.deleteField(temp, "coopAllowed");
+						coopExlc = true;
+					}
+					if (Reflect.hasField(temp, "opponentModeAllowed") && Reflect.field(temp, "opponentModeAllowed") != true) {
+						if (!coopExlc) blacklist.push("codename.coop-opponent");
+						blacklist.push("codename.opponent");
+						Reflect.deleteField(temp, "opponentModeAllowed");
+					}
+
+					data = temp;
+				} catch(e) {
+					Logs.trace('Failed to load song metadata for ${songName} ($path): ${Std.string(e)}', ERROR);
+				}
+				if (data != null) break;
+			}
+		}
+		data.setFieldDefault("excludedGameModes", blacklist);
 		data.setFieldDefault("variants", []);
 		data.setFieldDefault("metas", []);
 

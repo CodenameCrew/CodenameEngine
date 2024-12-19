@@ -1,5 +1,6 @@
 package funkin.editors.charter;
 
+import funkin.game.HealthIcon;
 import flixel.group.FlxGroup;
 import flixel.text.FlxText.FlxTextFormat;
 import flixel.text.FlxText.FlxTextFormatMarkerPair;
@@ -37,8 +38,7 @@ class SongCreationScreen extends UISubstateWindow {
 	public var displayNameTextBox:UITextBox;
 	public var iconTextBox:UITextBox;
 	public var iconSprite:HealthIcon;
-	public var opponentModeCheckbox:UICheckbox;
-	public var coopAllowedCheckbox:UICheckbox;
+	public var excludedGameModesList:UIAutoCompleteButtonList;
 	public var colorWheel:UIColorwheel;
 	public var difficultiesTextBox:UITextBox;
 
@@ -166,23 +166,18 @@ class SongCreationScreen extends UISubstateWindow {
 
 		updateIcon("face");
 
-		opponentModeCheckbox = new UICheckbox(displayNameTextBox.x, iconTextBox.y + 10 + 32 + 26, translateMeta("opponentMode"), true);
-		menuDataGroup.add(opponentModeCheckbox);
-		addLabelOn(opponentModeCheckbox, translateMeta("modesAllowed"));
+		menuDataGroup.add(excludedGameModesList = new UIAutoCompleteButtonList(displayNameTextBox.x, iconTextBox.y + 62, Std.int(displayNameTextBox.bWidth), 100, "", [for (mode in funkin.menus.FreeplayState.FreeplayGameMode.get()) mode.modeID]));
+		excludedGameModesList.frames = Paths.getFrames('editors/ui/inputbox');
+		excludedGameModesList.cameraSpacing = 0;
+		addLabelOn(excludedGameModesList, "Excluded Game Modes (IDs)");
 
-		coopAllowedCheckbox = new UICheckbox(opponentModeCheckbox.x + 150 + 26, opponentModeCheckbox.y, translateMeta("coopAllowed"), true);
-		menuDataGroup.add(coopAllowedCheckbox);
-
-		colorWheel = new UIColorwheel(iconTextBox.x, coopAllowedCheckbox.y, 0xFFFFFF);
+		colorWheel = new UIColorwheel(iconTextBox.x, excludedGameModesList.y, 0xFFFFFF);
 		menuDataGroup.add(colorWheel);
 		addLabelOn(colorWheel, translateMeta("color"));
 
-		difficultiesTextBox = new UITextBox(opponentModeCheckbox.x, opponentModeCheckbox.y + 6 + 32 + 26, "");
+		difficultiesTextBox = new UITextBox(excludedGameModesList.x, excludedGameModesList.y + excludedGameModesList.bHeight + 32, "");
 		menuDataGroup.add(difficultiesTextBox);
 		addLabelOn(difficultiesTextBox, translateMeta("difficulties"));
-
-		for (checkbox in [opponentModeCheckbox, coopAllowedCheckbox])
-			{checkbox.y += 6; checkbox.x += 4;}
 
 		var menuTitle:UIText;
 		selectFormatGroup.add(menuTitle = new UIText(windowSpr.x + 20, windowSpr.y + 30 + 16, 0, translate("importSource"), 28));
@@ -433,8 +428,7 @@ class SongCreationScreen extends UISubstateWindow {
 				displayName: displayNameTextBox.label.text,
 				icon: iconTextBox.label.text,
 				color: colorWheel.curColor,
-				opponentModeAllowed: opponentModeCheckbox.checked,
-				coopAllowed: coopAllowedCheckbox.checked,
+				excludedGameModes: [for (button in excludedGameModesList.buttons.members) button.textBox.label.text.trim()],
 				difficulties: [for (diff in difficultiesTextBox.label.text.split(",")) if (diff.length > 0) diff.trim()]
 			});
 

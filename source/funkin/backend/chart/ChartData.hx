@@ -32,8 +32,7 @@ typedef ChartMetaData = {
 	public var ?icon:String;
 	public var ?color:FlxColor;
 
-	public var ?coopAllowed:Bool;
-	public var ?opponentModeAllowed:Bool;
+	public var ?excludedGameModes:Array<String>;
 
 	public var ?metas:Map<String, ChartMetaData>;
 	public var ?instSuffix:String;
