@@ -11,13 +11,15 @@ class GitHub {
 	 * Gets all the releases from a specific GitHub repository using the GitHub API.
 	 * @param user The user/organization that owns the repository
 	 * @param repository The repository name
+	 * @param maxReleases Maximum of releases returned by the GitHub API
 	 * @param onError Error Callback
 	 * @return Releases
 	 */
-	public static function getReleases(user:String, repository:String, ?onError:Exception->Void):Array<GitHubRelease> {
+	public static function getReleases(user:String, repository:String, maxReleases:Int = 30, ?onError:Exception->Void):Array<GitHubRelease> {
 		#if GITHUB_API
 		try {
-			var data = Json.parse(HttpUtil.requestText('https://api.github.com/repos/${user}/${repository}/releases'));
+			maxReleases = Std.int(Math.max(0, Math.min(maxReleases, 100))); //Max per page for Github API is 100
+			var data = Json.parse(HttpUtil.requestText('https://api.github.com/repos/${user}/${repository}/releases?per_page=${maxReleases}'));
 			if (!(data is Array))
 				throw __parseGitHubException(data);
 
@@ -34,13 +36,15 @@ class GitHub {
 	 * Gets the contributors list from a specific GitHub repository using the GitHub API.
 	 * @param user The user/organization that owns the repository
 	 * @param repository The repository name
+	 * @param maxContributors Maximum of contributors returned by the GitHub API
 	 * @param onError Error Callback
 	 * @return Contributors List
 	 */
-	public static function getContributors(user:String, repository:String, ?onError:Exception->Void):Array<GitHubContributor> {
+	public static function getContributors(user:String, repository:String, maxContributors:Int = 30, ?onError:Exception->Void):Array<GitHubContributor> {
 		#if GITHUB_API
 		try {
-			var data = Json.parse(HttpUtil.requestText('https://api.github.com/repos/${user}/${repository}/contributors'));
+			maxContributors = Std.int(Math.max(0, Math.min(maxContributors, 100))); //Max per page for Github API is 100
+			var data = Json.parse(HttpUtil.requestText('https://api.github.com/repos/${user}/${repository}/contributors?per_page=${maxContributors}'));
 			if (!(data is Array))
 				throw __parseGitHubException(data);
 
@@ -79,13 +83,15 @@ class GitHub {
 	 * Gets the members list from a specific GitHub organization using the GitHub API.
 	 * NOTE: Members use Contributors' structure!
 	 * @param org The organization to get the members from
+	 * @param maxMembers Maximum of members returned by the GitHub API
 	 * @param onError Error Callback
 	 * @return Members List
 	 */
-	 public static function getOrganizationMembers(org:String, ?onError:Exception->Void):Array<GitHubContributor> {
+	 public static function getOrganizationMembers(org:String, maxMembers:Int = 30, ?onError:Exception->Void):Array<GitHubContributor> {
 		#if GITHUB_API
 		try {
-			var data = Json.parse(HttpUtil.requestText('https://api.github.com/orgs/$org/members'));
+			maxMembers = Std.int(Math.max(0, Math.min(maxMembers, 100))); //Max per page for Github API is 100
+			var data = Json.parse(HttpUtil.requestText('https://api.github.com/orgs/$org/members?per_page=${maxMembers}'));
 			if (Reflect.hasField(data, "documentation_url"))
 				throw __parseGitHubException(data);
 
