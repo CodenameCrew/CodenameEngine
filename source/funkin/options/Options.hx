@@ -83,6 +83,7 @@ class Options
 	public static var P1_BACK:Array<FlxKey> = [BACKSPACE];
 	public static var P1_PAUSE:Array<FlxKey> = [ENTER];
 	public static var P1_RESET:Array<FlxKey> = [R];
+	public static var P1_CHEAT:Array<FlxKey> = [SEVEN];
 	public static var P1_SWITCHMOD:Array<FlxKey> = [TAB];
 
 	/**
@@ -100,6 +101,7 @@ class Options
 	public static var P2_BACK:Array<FlxKey> = [ESCAPE];
 	public static var P2_PAUSE:Array<FlxKey> = [ESCAPE];
 	public static var P2_RESET:Array<FlxKey> = [];
+	public static var P2_CHEAT:Array<FlxKey> = [];
 	public static var P2_SWITCHMOD:Array<FlxKey> = [];
 
 	/**
@@ -117,6 +119,7 @@ class Options
 	public static var SOLO_BACK(get, null):Array<FlxKey>;
 	public static var SOLO_PAUSE(get, null):Array<FlxKey>;
 	public static var SOLO_RESET(get, null):Array<FlxKey>;
+	public static var SOLO_CHEAT(get, null):Array<FlxKey>;
 	public static var SOLO_SWITCHMOD(get, null):Array<FlxKey>;
 
 	public static function load() {

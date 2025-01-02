@@ -686,6 +686,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.BACK, Options.SOLO_BACK);
 				inline bindKeys(Control.PAUSE, Options.SOLO_PAUSE);
 				inline bindKeys(Control.RESET, Options.SOLO_RESET);
+				inline bindKeys(Control.CHEAT, Options.SOLO_CHEAT);
 				inline bindKeys(Control.SWITCHMOD, Options.SOLO_SWITCHMOD);
 			case Duo(true):
 				inline bindKeys(Control.UP, Options.P1_UP);
@@ -700,6 +701,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.BACK, Options.P1_BACK);
 				inline bindKeys(Control.PAUSE, Options.P1_PAUSE);
 				inline bindKeys(Control.RESET, Options.P1_RESET);
+				inline bindKeys(Control.CHEAT, Options.P1_CHEAT);
 				inline bindKeys(Control.SWITCHMOD, Options.P1_SWITCHMOD);
 			case Duo(false):
 				inline bindKeys(Control.UP, Options.P2_UP);
@@ -714,6 +716,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.BACK, Options.P2_BACK);
 				inline bindKeys(Control.PAUSE, Options.P2_PAUSE);
 				inline bindKeys(Control.RESET, Options.P2_RESET);
+				inline bindKeys(Control.CHEAT, Options.P2_CHEAT);
 				inline bindKeys(Control.SWITCHMOD, Options.P2_SWITCHMOD);
 			case None: // nothing
 			case Custom: // nothing

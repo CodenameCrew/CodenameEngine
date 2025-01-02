@@ -26,7 +26,7 @@ class KeybindsOptions extends MusicBeatSubstate {
 				{
 					name: '{noteRight}',
 					control: 'NOTE_RIGHT'
-				},
+				}
 			]
 		},
 		{
@@ -63,16 +63,20 @@ class KeybindsOptions extends MusicBeatSubstate {
 				{
 					name: 'Pause',
 					control: 'PAUSE'
-				},
+				}
 			]
 		},
 		{
 			name: 'Engine',
 			settings: [
 				{
+					name: 'Cheat',
+					control: 'CHEAT'
+				},
+				{
 					name: 'Switch Mod',
 					control: 'SWITCHMOD'
-				},
+				}
 			]
 		}
 	];
