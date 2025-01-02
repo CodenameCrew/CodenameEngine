@@ -9,6 +9,7 @@ import openfl.display.Sprite;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.ui.Keyboard;
+import flixel.util.FlxTimer;
 
 class Framerate extends Sprite {
 	public static var instance:Framerate;
@@ -42,6 +43,11 @@ class Framerate extends Sprite {
 			__bitmap = new BitmapData(1, 1, 0xFF000000);
 		return __bitmap;
 	}
+
+	#if mobile
+	#if android public var presses:Int = 0; #end
+	public var sillyTimer:FlxTimer = new FlxTimer();
+	#end
 
 	public function new() {
 		super();
@@ -101,13 +107,41 @@ class Framerate extends Sprite {
 	public override function __enterFrame(t:Int) {
 		alpha = CoolUtil.fpsLerp(alpha, debugMode > 0 ? 1 : 0, 0.5);
 		debugAlpha = CoolUtil.fpsLerp(debugAlpha, debugMode > 1 ? 1 : 0, 0.5);
+		#if android
+		if(FlxG.android.justReleased.BACK){
+			sillyTimer.cancel();
+			++presses;
+			if(presses >= 3){
+				debugMode = (debugMode + 1) % 3;
+				presses = 0;
+				return;
+			}
+			sillyTimer.start(0.3, (tmr:FlxTimer) -> presses = 0);
+		}
+		#elseif ios
+		for(camera in FlxG.cameras.list) {
+			var pos = FlxG.mouse.getScreenPosition(camera);
+			if (pos.x >= FlxG.game.x + 10 + offset.x &&
+				pos.x <= FlxG.game.x + offset.x + 80 &&
+				pos.y >= FlxG.game.y + 2 + offset.y &&
+				pos.y <= FlxG.game.y + 2 + offset.y + 60)
+			{
+				if(FlxG.mouse.justPressed)
+					sillyTimer.start(0.4, (tmr:FlxTimer) -> debugMode = (debugMode + 1) % 3);
+
+				if(FlxG.mouse.justReleased)
+					sillyTimer.cancel();
+			} else if(sillyTimer.active && !sillyTimer.finished)
+				sillyTimer.cancel();
+		}
+		#end
 
 		if (alpha < 0.05) return;
 		super.__enterFrame(t);
 		bgSprite.alpha = debugAlpha * 0.5;
 
-		x = 10 + offset.x;
-		y = 2 + offset.y;
+		x = #if mobile FlxG.game.x + #end 10 + offset.x;
+		y = #if mobile FlxG.game.y + #end 2 + offset.y;
 
 		var width = Math.max(fpsCounter.width, #if SHOW_BUILD_ON_FPS Math.max(memoryCounter.width, codenameBuildField.width) #else memoryCounter.width #end) + (x*2);
 		var height = #if SHOW_BUILD_ON_FPS codenameBuildField.y + codenameBuildField.height #else memoryCounter.y + memoryCounter.height #end;
@@ -132,4 +166,12 @@ class Framerate extends Sprite {
 			y = c.y + c.height + 4;
 		}
 	}
+
+	#if mobile
+	public inline function setScale(?scale:Float){
+		if(scale == null)
+			scale = Math.min(FlxG.stage.window.width / FlxG.width, FlxG.stage.window.height / FlxG.height);
+		scaleX = scaleY = #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
+	}
+	#end
 }

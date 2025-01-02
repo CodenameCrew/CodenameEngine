@@ -72,6 +72,7 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 		framesOffset = (selected ? 18 : (hovered ? 9 : 0));
 		@:privateAccess {
 			if (selected) {
+				FlxG.stage.window.textInputEnabled = true;
 				__wasFocused = true;
 				caretSpr.alpha = (FlxG.game.ticks % 666) >= 333 ? 1 : 0;
 

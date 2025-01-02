@@ -26,7 +26,7 @@ class DebugOptions extends TreeMenu {
 
 class DebugOptionsScreen extends OptionsScreen {
 	public override function new() {
-		super("Debug Options", "Use this menu to change debug options.");
+		super("Debug Options", "Use this menu to change debug options.", null, 'LEFT_FULL', 'A_B');
 		#if windows
 		add(new TextOption(
 			"Show Console",

@@ -28,7 +28,7 @@ import openfl.display.ShaderInput;
 class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 	private static var __instanceFields = Type.getInstanceFields(FunkinShader);
 
-	public var glslVer:String = "120";
+	public var glslVer:String = #if lime_opengles "100" #else "120" #end;
 	public var fragFileName:String;
 	public var vertFileName:String;
 
@@ -37,9 +37,9 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 	 * Accepts `#pragma header`.
 	 * @param frag Fragment source (pass `null` to use default)
 	 * @param vert Vertex source (pass `null` to use default)
-	 * @param glslVer Version of GLSL to use (defaults to 120)
+	 * @param glslVer Version of GLSL to use (defaults to 120 at OpenGL, 300 es at OpenGL ES)
 	 */
-	public override function new(frag:String, vert:String, glslVer:String = "120") {
+	public override function new(frag:String, vert:String, glslVer:String = #if lime_opengles "100" #else "120" #end) {
 		if (frag == null) frag = ShaderTemplates.defaultFragmentSource;
 		if (vert == null) vert = ShaderTemplates.defaultVertexSource;
 		this.glFragmentSource = frag;
@@ -229,6 +229,9 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 
 			var gl = __context.gl;
 
+			#if (js && html5)
+			prefixBuf.add(precisionHint == FULL ? "precision mediump float;\n" : "precision lowp float;\n");
+			#else
 			prefixBuf.add("#ifdef GL_ES\n");
 			if (precisionHint == FULL) {
 				prefixBuf.add("#ifdef GL_FRAGMENT_PRECISION_HIGH\n");
@@ -240,6 +243,7 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 				prefixBuf.add("precision lowp float;\n");
 			}
 			prefixBuf.add("#endif\n");
+			#end
 
 			var prefix = prefixBuf.toString();
 

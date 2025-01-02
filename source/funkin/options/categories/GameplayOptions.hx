@@ -9,7 +9,7 @@ class GameplayOptions extends OptionsScreen {
 	var offsetSetting:NumOption;
 
 	public override function new() {
-		super("Gameplay", 'Change Gameplay options such as Downscroll, Scroll Speed, Naughtyness...');
+		super("Gameplay", 'Change Gameplay options such as Downscroll, Scroll Speed, Naughtyness...', null, 'LEFT_FULL', 'A_B');
 		add(new Checkbox(
 			"Downscroll",
 			"If checked, notes will go from up to down instead of down to up, as if they're falling.",

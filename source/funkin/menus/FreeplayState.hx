@@ -109,6 +109,9 @@ class FreeplayState extends MusicBeatState
 				curSelected = k;
 			}
 		}
+
+		#if mobile if (funkin.backend.assets.ModsFolder.currentModFolder == null) for (song in songs) song.difficulties = ['EASY', 'NORMAL', 'HARD']; #end // mobile temporary fix
+
 		if (songs[curSelected] != null) {
 			for(k=>diff in songs[curSelected].difficulties) {
 				if (diff == Options.freeplayLastDifficulty) {
@@ -173,6 +176,8 @@ class FreeplayState extends MusicBeatState
 		changeCoopMode(0, true);
 
 		interpColor = new FlxInterpolateColor(bg.color);
+
+		addVirtualPad('LEFT_FULL', 'A_B_X_Y');
 	}
 
 	#if PRELOAD_ALL
@@ -219,7 +224,7 @@ class FreeplayState extends MusicBeatState
 		if (canSelect) {
 			changeSelection((controls.UP_P ? -1 : 0) + (controls.DOWN_P ? 1 : 0) - FlxG.mouse.wheel);
 			changeDiff((controls.LEFT_P ? -1 : 0) + (controls.RIGHT_P ? 1 : 0));
-			changeCoopMode((FlxG.keys.justPressed.TAB ? 1 : 0));
+			changeCoopMode(((#if TOUCH_CONTROLS virtualPad.buttonX.justPressed || #end FlxG.keys.justPressed.TAB) ? 1 : 0));
 			// putting it before so that its actually smooth
 			updateOptionsAlpha();
 		}
@@ -261,7 +266,7 @@ class FreeplayState extends MusicBeatState
 		}
 
 		#if sys
-		if (FlxG.keys.justPressed.EIGHT && Sys.args().contains("-livereload"))
+		if (#if TOUCH_CONTROLS virtualPad.buttonY.justPressed || #end FlxG.keys.justPressed.EIGHT && Sys.args().contains("-livereload"))
 			convertChart();
 		#end
 
@@ -351,7 +356,8 @@ class FreeplayState extends MusicBeatState
 	/**
 	 * Array containing all labels for Co-Op / Opponent modes.
 	 */
-	public var coopLabels:Array<String> = [
+	public var coopLabels:Array<String> = controls.touchC ? ["[X] Solo", "[X] Opponent Mode"] : 
+	[
 		"[TAB] Solo",
 		"[TAB] Opponent Mode",
 		"[TAB] Co-Op Mode",
@@ -368,7 +374,13 @@ class FreeplayState extends MusicBeatState
 		if (!songs[curSelected].coopAllowed && !songs[curSelected].opponentModeAllowed) return;
 
 		var bothEnabled = songs[curSelected].coopAllowed && songs[curSelected].opponentModeAllowed;
-		var event = event("onChangeCoopMode", EventManager.get(MenuChangeEvent).recycle(curCoopMode, FlxMath.wrap(curCoopMode + change, 0, bothEnabled ? 3 : 1), change));
+		var changeThingy:Int = -1;
+		if(controls.touchC)
+			changeThingy = FlxMath.wrap(curCoopMode + change, 0, 1);
+		else
+			changeThingy = FlxMath.wrap(curCoopMode + change, 0, bothEnabled ? 3 : 1);
+
+		var event = event("onChangeCoopMode", EventManager.get(MenuChangeEvent).recycle(curCoopMode, changeThingy, change));
 
 		if (event.cancelled) return;
 

@@ -162,6 +162,9 @@ class KeybindsOptions extends MusicBeatSubstate {
 		}
 		add(alphabets);
 		add(camFollow);
+
+		addVirtualPad('LEFT_FULL', 'A_B');
+		addVirtualPadCamera();
 	}
 
 	public override function destroy() {

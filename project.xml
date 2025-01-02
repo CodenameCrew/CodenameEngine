@@ -38,7 +38,7 @@
 	<window if="mac" allow-high-dpi="true" />
 
 	<!--Mobile-specific-->
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false"/>
+	<window if="mobile" orientation="landscape" fullscreen="true" resizable="false" allow-shaders="true" require-shaders="true" allow-high-dpi="true" />
 
 	<!--Switch-specific-->
 	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
@@ -92,7 +92,7 @@
 	<icon path="art/iconOG.png" size='512' />
 	<icon path="art/iconOG.png" size='768' />
 	<icon path="art/iconOG.png" size='1024' />
-
+	<icon path="art/iconOG.png" if="mobile" />
 
 	<!-- _________________________________ Engine Settings _______________________________ -->
 
@@ -141,7 +141,7 @@
 
 	<!-- Comment this out to disable video cutscene support, in case of compilation errors. !-->
 	<section if="cpp">
-		<define name="VIDEO_CUTSCENES" if="desktop || android" />
+		<define name="VIDEO_CUTSCENES" if="desktop || mobile" />
 	</section>
 
 	<!-- Comment this out to disable commit number on FPS -->
@@ -149,6 +149,8 @@
 
 	<!-- Comment this out to disable dark mode windows -->
 	<define name="DARK_MODE_WINDOW"/>
+
+	<define name="TOUCH_CONTROLS" if="mobile || web" />
 
 	<haxedef name="VIDEO_CUTSCENES" if="VIDEO_CUTSCENES" />
 	<haxedef name="UPDATE_CHECKING" if="UPDATE_CHECKING" />
@@ -180,6 +182,8 @@
 	<haxelib name="hxdiscord_rpc" if="DISCORD_RPC"/>
 	<haxelib name="markdown" />
 
+	<haxelib name="extension-androidtools" if="android" />
+
 	<!-- _________________________________ Additional stuff _______________________________ -->
 
 	<section if="COMPILE_ALL_CLASSES">
@@ -198,4 +202,10 @@
 	<haxedef name="HXCPP_CATCH_SEGV" />
 
 	<haxedef name="hscriptPos" /> <!-- for logging -->
+
+	<!-- _________________________________ Mobile stuff _______________________________ -->
+
+	<!-- Do whatever you want I'm tired uninstall and install everytime -->
+	<certificate path="key.keystore" password="codenameengine" alias="cneport" alias-password="codenameengine" if="android" unless="debug" />
+
 </project>

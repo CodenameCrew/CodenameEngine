@@ -69,8 +69,12 @@ class MemoryUtil {
 		return funkin.backend.utils.native.Windows.getTotalRam();
 		#elseif mac
 		return funkin.backend.utils.native.Mac.getTotalRam();
+		#elseif ios
+		return funkin.backend.utils.native.IOS.getTotalRam();
 		#elseif linux
 		return funkin.backend.utils.native.Linux.getTotalRam();
+		#elseif android
+		return funkin.backend.utils.native.Android.getTotalRam();
 		#else
 		return 0;
 		#end
@@ -124,11 +128,13 @@ class MemoryUtil {
 		var process = new HiddenProcess("wmic", ["memorychip", "get", "SMBIOSMemoryType"]);
 		if (process.exitCode() == 0) memoryOutput = Std.int(Std.parseFloat(process.stdout.readAll().toString().trim().split("\n")[1]));
 		if (memoryOutput != -1) return memoryMap[memoryOutput];
-		#elseif mac
+		#elseif (mac || ios)
 		var process = new HiddenProcess("system_profiler", ["SPMemoryDataType"]);
 		var reg = ~/Type: (.+)/;
 		reg.match(process.stdout.readAll().toString());
 		if (process.exitCode() == 0) return reg.matched(1);
+		#elseif android
+		// MTODO: Do get mem type for android smh?
 		#elseif linux
 		/*var process = new HiddenProcess("sudo", ["dmidecode", "--type", "17"]);
 		if (process.exitCode() != 0) return "Unknown";

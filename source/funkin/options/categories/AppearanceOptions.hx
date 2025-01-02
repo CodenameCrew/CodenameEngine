@@ -2,7 +2,7 @@ package funkin.options.categories;
 
 class AppearanceOptions extends OptionsScreen {
 	public override function new() {
-		super("Appearance", "Change Appearance options such as Flashing menus...");
+		super("Appearance", "Change Appearance options such as Flashing menus...", null, 'LEFT_FULL', 'A_B');
 		add(new NumOption(
 			"Framerate",
 			"Pretty self explanatory, isn't it?",

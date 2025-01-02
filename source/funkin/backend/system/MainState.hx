@@ -8,6 +8,9 @@ import funkin.menus.TitleState;
 import funkin.menus.BetaWarningState;
 import funkin.backend.chart.EventsData;
 import flixel.FlxState;
+#if mobile
+import mobile.funkin.backend.system.CopyState;
+#end
 
 /**
  * Simple state used for loading the game
@@ -17,12 +20,24 @@ class MainState extends FlxState {
 	public static var betaWarningShown:Bool = false;
 	public override function create() {
 		super.create();
+		#if mobile
+		funkin.backend.system.Main.framerateSprite.setScale();
+		#end
 		if (!initiated)
+		{
 			Main.loadGameSettings();
+			#if mobile
+			if (!CopyState.checkExistingFiles())
+			{
+				FlxG.switchState(new CopyState());
+				return;
+			}
+			#end
+		}
 		initiated = true;
 
 		#if sys
-		CoolUtil.deleteFolder('./.temp/'); // delete temp folder
+		CoolUtil.deleteFolder('.temp/'); // delete temp folder
 		#end
 		Options.save();
 

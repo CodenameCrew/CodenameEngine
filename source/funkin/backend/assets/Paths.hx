@@ -182,7 +182,7 @@ class Paths
 		return FlxAtlasFrames.fromAseprite('$key.png', '$key.json');
 
 	inline static public function getAssetsRoot():String
-		return  ModsFolder.currentModFolder != null ? '${ModsFolder.modsPath}${ModsFolder.currentModFolder}' : #if (sys && TEST_BUILD) './${Main.pathBack}assets/' #else './assets' #end;
+		return ModsFolder.currentModFolder != null ? '${ModsFolder.modsPath}${ModsFolder.currentModFolder}' : #if (sys && !mobile && TEST_BUILD) './${Main.pathBack}assets/' #else './assets' #end;
 
 	/**
 	 * Gets frames at specified path.

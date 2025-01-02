@@ -19,7 +19,7 @@ class CreditsCodename extends funkin.options.OptionsScreen {
 
 	public override function new()
 	{
-		super("Codename Engine", "All the contributors of the engine! - Press RESET to update the list (One reset per 2 minutes).");
+		super("Codename Engine", "All the contributors of the engine! - Press RESET to update the list (One reset per 2 minutes).", null, 'UP_DOWN', 'A_B');
 		tryUpdating(true);
 	}
 

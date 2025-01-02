@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="arrows.png">
+<SubTexture name="arrow left0000" x="0" y="0" width="48" height="85" frameX="0" frameY="0" frameWidth="48" frameHeight="85" />
+<SubTexture name="arrow push left0000" x="48" y="0" width="42" height="75" frameX="0" frameY="0" frameWidth="42" frameHeight="75" />
+</TextureAtlas>

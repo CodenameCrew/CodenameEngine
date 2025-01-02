@@ -296,7 +296,7 @@ class CharacterEditor extends UIState {
 				closeCurrentContextMenu();
 				openContextMenu(topMenu[2].childs);
 			}
-			if (FlxG.mouse.pressed) {
+			if (!controls.touchC && FlxG.mouse.pressed) {
 				nextScroll.set(nextScroll.x - FlxG.mouse.deltaScreenX, nextScroll.y - FlxG.mouse.deltaScreenY);
 				currentCursor = HAND;
 			} else

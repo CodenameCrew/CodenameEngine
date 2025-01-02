@@ -126,7 +126,12 @@ class DialogueCutscene extends Cutscene {
 		super.update(elapsed);
 		dialogueScript.call("update", [elapsed]);
 
-		if(controls.ACCEPT) {
+		var justTouched:Bool = false;
+		for (touch in FlxG.touches.list)
+			if (touch.justPressed)
+				justTouched = true;
+
+		if(justTouched || controls.ACCEPT) {
 			if(dialogueBox.dialogueEnded) next();
 			else dialogueBox.text.skip();
 		}

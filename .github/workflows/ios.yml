@@ -1,0 +1,71 @@
+name: iOS Build
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    name: iOS Build
+    permissions: write-all
+    runs-on: macos-13
+    steps:
+      - name: Pulling the new commit
+        uses: actions/checkout@v2
+      - name: Setting up Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.2.5
+      - name: Restore existing build cache for faster compilation
+        uses: actions/cache@v3
+        with:
+          # not caching the bin folder to prevent asset duplication and stuff like that
+          key: cache-build-ios
+          path: |
+            .haxelib/
+            export/release/ios/CodenameEngine/haxe/
+          restore-keys: |
+            cache-build-ios
+      - name: Installing/Updating libraries
+        run: |
+          haxe -cp commandline -D analyzer-optimize --run Main setup -s --lib=./libs.mobile.xml
+      - name: Building the game
+        run: haxelib run lime build ios -nosign
+      - name: Clearing already existing cache
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const caches = await github.rest.actions.getActionsCacheList({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+            for (const cache of caches.data.actions_caches) {
+              if (cache.key == "cache-build-ios") {
+                console.log('Clearing ' + cache.key + '...')
+                await github.rest.actions.deleteActionsCacheById({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  cache_id: cache.id,
+                })
+                console.log("Cache cleared.")
+              }
+            }
+      - name: Making ipa file
+        run: |
+          cd export/*/ios/build/*-iphoneos
+          mkdir Payload
+          mv *.app Payload
+          zip -r CodenameEngine.ipa Payload
+      - name: Uploading artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Codename Engine
+          path: export/release/ios/build/Release-iphoneos/*.ipa
+      - name: Uploading new cache
+        uses: actions/cache@v3
+        with:
+          # caching again since for some reason it doesnt work with the first post cache shit
+          key: cache-build-ios
+          path: |
+            .haxelib/
+            export/release/ios/CodenameEngine/haxe
+          restore-keys: |
+            cache-build-ios
