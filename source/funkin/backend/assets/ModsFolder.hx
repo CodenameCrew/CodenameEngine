@@ -97,8 +97,8 @@ class ModsFolder {
 
 		if (modsList == null || modsList.length <= 0)
 			return mods;
-		
-		for(modFolder in modsList) {
+
+		for (modFolder in modsList) {
 			if (FileSystem.isDirectory('${modsPath}${modFolder}')) {
 				mods.push(modFolder);
 			} else {
