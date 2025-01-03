@@ -76,6 +76,9 @@ class CharacterInfoScreen extends UISubstateWindow {
 		add(iconColorWheel);
 		addLabelOn(iconColorWheel, "Icon Color");
 
+		if (character.iconColor != null)
+			iconColorWheel.colorChanged = true;
+
 		add(title = new UIText(spriteTextBox.x, spriteTextBox.y + 10 + 46 + 84, 0, "Character Data", 28));
 
 		positionXStepper = new UINumericStepper(title.x, title.y + title.height + 36, character.globalOffset.x, 0.001, 2, null, null, 84);
