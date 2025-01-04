@@ -292,6 +292,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		super.destroy();
 		if(startingPos != null)
 			startingPos.put();
+		notes.destroy();
 	}
 
 	/**
