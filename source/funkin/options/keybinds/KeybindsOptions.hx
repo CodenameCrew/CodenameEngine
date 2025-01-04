@@ -67,6 +67,23 @@ class KeybindsOptions extends MusicBeatSubstate {
 			]
 		},
 		{
+			name: 'Volume',
+			settings: [
+				{
+					name: 'Up',
+					control: 'VOLUME_UP'
+				},
+				{
+					name: 'Down',
+					control: 'VOLUME_DOWN'
+				},
+				{
+					name: 'Mute',
+					control: 'VOLUME_MUTE'
+				},
+			]
+		},
+		{
 			name: 'Engine',
 			settings: [
 				{
@@ -162,6 +179,10 @@ class KeybindsOptions extends MusicBeatSubstate {
 		}
 		add(alphabets);
 		add(camFollow);
+
+		FlxG.sound.volumeUpKeys = [];
+		FlxG.sound.volumeDownKeys = [];
+		FlxG.sound.muteKeys = [];
 	}
 
 	public override function destroy() {

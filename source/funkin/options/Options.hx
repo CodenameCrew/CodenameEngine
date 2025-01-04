@@ -84,6 +84,9 @@ class Options
 	public static var P1_PAUSE:Array<FlxKey> = [ENTER];
 	public static var P1_RESET:Array<FlxKey> = [R];
 	public static var P1_SWITCHMOD:Array<FlxKey> = [TAB];
+	public static var P1_VOLUME_UP:Array<FlxKey> = [PLUS];
+	public static var P1_VOLUME_DOWN:Array<FlxKey> = [MINUS];
+	public static var P1_VOLUME_MUTE:Array<FlxKey> = [ZERO];
 
 	/**
 	 * PLAYER 2 CONTROLS (ALT)
@@ -101,6 +104,9 @@ class Options
 	public static var P2_PAUSE:Array<FlxKey> = [ESCAPE];
 	public static var P2_RESET:Array<FlxKey> = [];
 	public static var P2_SWITCHMOD:Array<FlxKey> = [];
+	public static var P2_VOLUME_UP:Array<FlxKey> = [NUMPADPLUS];
+	public static var P2_VOLUME_DOWN:Array<FlxKey> = [NUMPADMINUS];
+	public static var P2_VOLUME_MUTE:Array<FlxKey> = [NUMPADZERO];
 
 	/**
 	 * SOLO GETTERS
@@ -118,6 +124,9 @@ class Options
 	public static var SOLO_PAUSE(get, null):Array<FlxKey>;
 	public static var SOLO_RESET(get, null):Array<FlxKey>;
 	public static var SOLO_SWITCHMOD(get, null):Array<FlxKey>;
+	public static var SOLO_VOLUME_UP(get, null):Array<FlxKey>;
+	public static var SOLO_VOLUME_DOWN(get, null):Array<FlxKey>;
+	public static var SOLO_VOLUME_MUTE(get, null):Array<FlxKey>;
 
 	public static function load() {
 		if (__save == null) __save = new FlxSave();
@@ -146,6 +155,10 @@ class Options
 		PlayerSettings.solo.setKeyboardScheme(Solo);
 		PlayerSettings.player1.setKeyboardScheme(Duo(true));
 		PlayerSettings.player2.setKeyboardScheme(Duo(false));
+
+		FlxG.sound.volumeUpKeys = SOLO_VOLUME_UP;
+		FlxG.sound.volumeDownKeys = SOLO_VOLUME_DOWN;
+		FlxG.sound.muteKeys = SOLO_VOLUME_MUTE;
 	}
 
 	public static function save() {
