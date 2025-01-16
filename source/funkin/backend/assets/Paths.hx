@@ -201,7 +201,7 @@ class Paths
 	}
 
 	inline static public function svg(key:String, ?library:String)
-		return Assets.getText(getPath('images/$key.svg', library));
+		return Assets.getText(image(key, library, false, "svg"));
 
 
 	/**
