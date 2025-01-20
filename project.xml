@@ -150,6 +150,9 @@
 	<!-- Comment this out to disable dark mode windows -->
 	<define name="DARK_MODE_WINDOW"/>
 
+	<!-- Comment this out to disable modcharting features -->
+	<define name="MODCHARTING_FEATURES"/>
+
 	<haxedef name="VIDEO_CUTSCENES" if="VIDEO_CUTSCENES" />
 	<haxedef name="UPDATE_CHECKING" if="UPDATE_CHECKING" />
 	<haxedef name="DISCORD_RPC" if="DISCORD_RPC" />
@@ -181,6 +184,14 @@
 	<haxelib name="markdown" />
 
 	<!-- _________________________________ Additional stuff _______________________________ -->
+
+	<section if="MODCHARTING_FEATURES">
+		<haxedef name="FM_ENGINE" value="CODENAME"/>
+		<haxedef name="FM_ENGINE_VERSION" value="1.0"/>
+
+		<haxelib name="funkin-modchart" />
+		<haxeflag name="--macro" value="modchart.core.macros.Macro.includeFiles()"/>
+	</section>
 
 	<section if="COMPILE_ALL_CLASSES">
 		<haxeflag name="-dce" value="no" />
