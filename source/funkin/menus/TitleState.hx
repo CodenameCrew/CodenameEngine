@@ -248,9 +248,10 @@ class TitleState extends MusicBeatState
 	#if TITLESCREEN_XML
 	public var xml:Access;
 	public var titleLength:Int = 16;
+	var commonNames = ['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'];
 	public var titleLines:Map<Int, IntroText> = [
-		1 => new IntroText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']),
-		3 => new IntroText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er', 'present']),
+		1 => new IntroText(commonNames),
+		3 => new IntroText(commonNames.concat(['present']),
 		4 => new IntroText(),
 		5 => new IntroText(['In association', 'with']),
 		7 => new IntroText(['In association', 'with', 'newgrounds', {
