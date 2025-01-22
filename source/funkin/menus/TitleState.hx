@@ -177,22 +177,17 @@ class TitleState extends MusicBeatState
 		var report = hasCheckedUpdates ? null : funkin.backend.system.updating.UpdateUtil.checkForUpdates();
 		hasCheckedUpdates = true;
 
-		if (report != null && report.newUpdate) {
-			FlxG.switchState(new funkin.backend.system.updating.UpdateAvailableScreen(report));
-		} else {
-			FlxG.switchState(new MainMenuState());
-		}
+		var nextState = (report != null && report.newUpdate) ? new funkin.backend.system.updating.UpdateAvailableScreen(report) : new MainMenuState();
+		FlxG.switchState(nextState);
 		#else
 		FlxG.switchState(new MainMenuState());
 		#end
 	}
 
-	public function createCoolText(textArray:Array<String>)
-	{
-		for (i=>text in textArray)
-		{
-			if (text == "" || text == null) continue;
-			var money:Alphabet = new Alphabet(0, (i * 60) + 200, text, true, false);
+	public function createCoolText(array:Array<String>) {
+		var valid = array.filter((text) -> text != null && text != "");	
+		for (i in 0...valid.length) {
+			var money:Alphabet = new Alphabet(0, (i * 60) + 200, valid[i], true, false);
 			money.screenCenter(X);
 			textGroup.add(money);
 		}
@@ -248,10 +243,9 @@ class TitleState extends MusicBeatState
 	#if TITLESCREEN_XML
 	public var xml:Access;
 	public var titleLength:Int = 16;
-	var commonNames = ['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'];
 	public var titleLines:Map<Int, IntroText> = [
-		1 => new IntroText(commonNames),
-		3 => new IntroText(commonNames.concat(['present']),
+		1 => new IntroText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']), // nvm it doesnt work
+		3 => new IntroText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er', 'present']), 
 		4 => new IntroText(),
 		5 => new IntroText(['In association', 'with']),
 		7 => new IntroText(['In association', 'with', 'newgrounds', {
