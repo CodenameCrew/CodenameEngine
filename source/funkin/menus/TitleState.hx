@@ -218,8 +218,7 @@ class TitleState extends MusicBeatState
 			return;
 		}
 		var introText = titleLines[curBeat];
-		if (introText != null)
-			introText.show();
+		introText?.show();
 		#else
 		switch (curBeat)
 		{
