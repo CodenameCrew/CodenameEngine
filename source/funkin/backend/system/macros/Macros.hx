@@ -21,6 +21,7 @@ class Macros {
 			// OTHER LIBRARIES & STUFF
 			#if THREE_D_SUPPORT "away3d", "flx3d", #end
 			#if VIDEO_CUTSCENES "hxvlc.flixel", "hxvlc.openfl", #end
+			"flxsvg",
 			// BASE HAXE
 			"DateTools", "EReg", "Lambda", "StringBuf", "haxe.crypto", "haxe.display", "haxe.exceptions", "haxe.extern", "scripting"
 		])
