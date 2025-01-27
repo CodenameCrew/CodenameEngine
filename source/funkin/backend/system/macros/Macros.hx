@@ -21,8 +21,9 @@ class Macros {
 			// OTHER LIBRARIES & STUFF
 			#if THREE_D_SUPPORT "away3d", "flx3d", #end
 			#if VIDEO_CUTSCENES "hxvlc.flixel", "hxvlc.openfl", #end
+
 			// BASE HAXE
-			"DateTools", "EReg", "Lambda", "StringBuf", "haxe.crypto", "haxe.display", "haxe.exceptions", "haxe.extern", "scripting"
+			"DateTools", "EReg", "Lambda", "StringBuf", "haxe.crypto", "haxe.display", "haxe.exceptions", "haxe.extern", "scripting",
 		])
 			Compiler.include(inc);
 
@@ -39,6 +40,7 @@ class Macros {
 			}
 		}
 
+		Compiler.include("hx.ws", ["hx.ws.cs", "hx.ws.java", "hx.ws.nodejs"]);
 		Compiler.include("funkin", [#if !UPDATE_CHECKING 'funkin.backend.system.updating' #end]);
 	}
 
