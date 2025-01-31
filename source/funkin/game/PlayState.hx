@@ -265,9 +265,9 @@ class PlayState extends MusicBeatState
 	public var combo:Int = 0;
 
 	/**
-	 * Whenever the misses should show "Combo Breaks" instead of "Misses"
+	 * Whenever the misses counter should count your "Combo Breaks" with it.
 	 */
-	public var comboBreaks:Bool = !Options.ghostTapping;
+	public var comboBreaks:Bool = Options.comboBreaks;
 	/**
 	 * Health bar background.
 	 */
@@ -311,6 +311,10 @@ class PlayState extends MusicBeatState
 	 * The player's amount of misses.
 	 */
 	public var misses:Int = 0;
+	/**
+	 * The player's amount of breaks. (should be counted with the misses, so "breaks + misses")
+	 */
+	public var breaks:Int = 0;
 	/**
 	 * The player's accuracy (shortcut to `accuracyPressedNotes / totalAccuracyAmount`).
 	 */
@@ -1226,7 +1230,7 @@ class PlayState extends MusicBeatState
 
 	function updateRatingStuff() {
 		scoreTxt.text = 'Score:$songScore';
-		missesTxt.text = '${comboBreaks ? "Combo Breaks" : "Misses"}:$misses';
+		missesTxt.text = '${comboBreaks ? "Combo Breaks" : "Misses"}:${comboBreaks ? (breaks + misses) : misses}'; // yes, this is how combo breaks work, if you don't believe me, heres proof, https://github.com/user-attachments/assets/ee1d30d5-6763-46bc-aca2-d6dbf71339d6
 
 		if (curRating == null)
 			curRating = new ComboRating(0, "[N/A]", 0xFF888888);
@@ -1684,6 +1688,10 @@ class PlayState extends MusicBeatState
 					displayCombo(event);
 					if (event.displayRating)
 						displayRating(event.rating, event);
+					if (comboBreaks && (event.rating == 'bad' || event.rating == 'shit')) {
+						breaks += 1;
+						combo = 0;
+					}
 					ratingNum += 1;
 				}
 			}
