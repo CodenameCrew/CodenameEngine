@@ -1368,7 +1368,27 @@ class PlayState extends MusicBeatState
 
 		switch(event.name) {
 			case "HScript Call":
-				scripts.call(event.params[0], event.params[1].split(','));
+				var scriptPacks:Array<ScriptPack> = [scripts, stateScripts];
+				for (strLine in strumLines.members) for (char in strLine.characters) scriptPacks.push(char.scripts);
+				var args:Array<String> = event.params[1].split(',');
+
+				for (pack in scriptPacks) {
+					pack.call(event.params[0], args);
+					//public functions
+					if (pack.publicVariables.exists(event.params[0])) {
+						var func = pack.publicVariables.get(event.params[0]);
+						if (func != null && Reflect.isFunction(func))
+							Reflect.callMethod(null, func, args);
+					}
+				}
+
+				//static functions
+				if (Script.staticVariables.exists(event.params[0])) {
+					var func = Script.staticVariables.get(event.params[0]);
+					if (func != null && Reflect.isFunction(func))
+						Reflect.callMethod(null, func, args);
+				}
+
 			case "Camera Movement":
 				curCameraTarget = event.params[0];
 			case "Add Camera Zoom":
