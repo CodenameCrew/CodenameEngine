@@ -47,6 +47,18 @@ class AppearanceOptions extends OptionsScreen {
 			"Auto Pause",
 			"If checked, switching windows will pause the game.",
 			"autoPause"));
+		add(new Checkbox(
+			"Use inactive volume",
+			"If checked, the games volume will turn down when the window is inactive.",
+			"inactiveVolumeEnabled"));
+		add(new NumOption(
+			"Inactive Volume",
+			"Volume percentage the window will change too when the window is inactive.",
+			0,
+			100,
+			2,
+			"inactiveVolume",
+			null));
 	}
 
 	private function __changeFPS(change:Float) {
