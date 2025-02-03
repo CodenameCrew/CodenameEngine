@@ -1259,10 +1259,11 @@ class PlayState extends MusicBeatState
 		if (controls.PAUSE && startedCountdown && canPause)
 			pauseGame();
 
-		if (canAccessDebugMenus) {
-			if (chartingMode && FlxG.keys.justPressed.SEVEN) {
+		if (FlxG.keys.justPressed.SEVEN) {
 				FlxG.switchState(new funkin.editors.charter.Charter(SONG.meta.name, difficulty, false));
-			}
+		}
+		if (canAccessDebugMenus) {
+			
 			if (FlxG.keys.justPressed.F5) {
 				Logs.trace('Reloading scripts...', WARNING, YELLOW);
 				scripts.reload();
