@@ -89,6 +89,10 @@ class PlayState extends MusicBeatState
 	 * Array of all the players in the stage.
 	 */
 	public var strumLines:FlxTypedGroup<StrumLine> = new FlxTypedGroup<StrumLine>();
+	/**
+	 * Amount of strums per strumline.
+	 */
+	public var strums:Int = 4;
 
 	/**
 	 * Death counter on current week (or song if from freeplay).
@@ -709,7 +713,7 @@ class PlayState extends MusicBeatState
 
 		// HUD INITIALIZATION & CAMERA INITIALIZATION
 		#if REGION
-		var event = EventManager.get(AmountEvent).recycle(4);
+		var event = EventManager.get(AmountEvent).recycle(strums);
 		if (!scripts.event("onPreGenerateStrums", event).cancelled) {
 			generateStrums(event.amount);
 			scripts.event("onPostGenerateStrums", event);
