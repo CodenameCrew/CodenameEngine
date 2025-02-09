@@ -25,6 +25,11 @@ class PauseSubState extends MusicBeatSubstate
 	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Change Controls', 'Change Options', 'Exit to menu', "Exit to charter"];
 	var curSelected:Int = 0;
 
+	var levelInfo:FlxText;
+	var levelDifficulty:FlxText;
+	var deathCounter:FlxText;
+	var multiplayerText:FlxText;
+		    
 	var pauseMusic:FlxSound;
 
 	public var pauseScript:Script;
@@ -56,7 +61,6 @@ class PauseSubState extends MusicBeatSubstate
 
 		menuItems = event.options;
 
-
 		pauseMusic = FlxG.sound.load(Paths.music(event.music), 0, true);
 		pauseMusic.persist = false;
 		pauseMusic.group = FlxG.sound.defaultMusicGroup;
@@ -71,10 +75,10 @@ class PauseSubState extends MusicBeatSubstate
 		bg.scrollFactor.set();
 		add(bg);
 
-		var levelInfo:FlxText = new FlxText(20, 15, 0, PlayState.SONG.meta.displayName, 32);
-		var levelDifficulty:FlxText = new FlxText(20, 15, 0, PlayState.difficulty.toUpperCase(), 32);
-		var deathCounter:FlxText = new FlxText(20, 15, 0, "Blue balled: " + PlayState.deathCounter, 32);
-		var multiplayerText:FlxText = new FlxText(20, 15, 0, PlayState.opponentMode ? 'OPPONENT MODE' : (PlayState.coopMode ? 'CO-OP MODE' : ''), 32);
+		levelInfo = new FlxText(20, 15, 0, PlayState.SONG.meta.displayName, 32);
+		levelDifficulty = new FlxText(20, 15, 0, PlayState.difficulty.toUpperCase(), 32);
+		deathCounter = new FlxText(20, 15, 0, "Blue balled: " + PlayState.deathCounter, 32);
+		multiplayerText = new FlxText(20, 15, 0, PlayState.opponentMode ? 'OPPONENT MODE' : (PlayState.coopMode ? 'CO-OP MODE' : ''), 32);
 
 		for(k=>label in [levelInfo, levelDifficulty, deathCounter, multiplayerText]) {
 			label.scrollFactor.set();
