@@ -320,7 +320,7 @@ class CompactCharacterButton extends UIButton {
 		autoAlpha = false;
 
 		charIcon = new HealthIcon(funkin.game.Character.getIconFromCharName(char));
-		charIcon.scale.set(0.2, 0.2);
+		charIcon.scale.set(charIcon.defaultScale * 0.2, charIcon.defaultScale * 0.2);
 		charIcon.updateHitbox();
 		charIcon.setPosition(10, bHeight/2 - charIcon.height / 2);
 		charIcon.scrollFactor.set(1,1);
@@ -332,11 +332,10 @@ class CompactCharacterButton extends UIButton {
 		textBox.antialiasing = true;
 		textBox.onChange = function(char:String) {
 			char = funkin.game.Character.getIconFromCharName(char);
-			var image = Paths.image("icons/" + char);
-			if(!Assets.exists(image))
-				image = Paths.image("icons/face");
-			charIcon.loadGraphic(image, true, 150, 150);
+			charIcon.setIcon(char);
+			charIcon.scale.set(charIcon.defaultScale * 0.2, charIcon.defaultScale * 0.2);
 			charIcon.updateHitbox();
+			charIcon.setPosition(10, bHeight/2 - charIcon.height / 2);
 		}
 
 		deleteButton = new UIButton(textBox.x + 115 + 16, bHeight/2 - (32/2), "", function () {
