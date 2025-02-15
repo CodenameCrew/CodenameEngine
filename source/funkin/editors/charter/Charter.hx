@@ -67,6 +67,9 @@ class Charter extends UIState {
 	public var strumlineAddButton:CharterStrumlineButton;
 	public var strumlineLockButton:CharterStrumlineButton;
 
+	public var liveChartRecording:FlxSprite;
+	public var isLiveCharting:Bool = false;
+
 	public var hitsound:FlxSound;
 	public var metronome:FlxSound;
 
@@ -239,6 +242,21 @@ class Charter extends UIState {
 						label: "Playtest as opponent here",
 						keybind: [CONTROL, SHIFT, ENTER],
 						onSelect: _chart_playtest_opponent_here
+					},
+					null,
+					{
+						label: "Record live charting",
+						color: 0xFFD21239,
+						icon: 7,
+						keybind: [CONTROL, R],
+						onSelect: _chart_live
+					},
+					{
+						label: "Record live charting here",
+						color: 0xFFD21239,
+						icon: 7,
+						keybind: [CONTROL, SHIFT, R],
+						onSelect: _chart_live_here
 					},
 					null,
 					{
@@ -471,6 +489,14 @@ class Charter extends UIState {
 		autoSaveNotif = new CharterAutoSaveUI(20, strumlineInfoBG.y + strumlineInfoBG.height + 20);
 		uiGroup.add(autoSaveNotif);
 
+		liveChartRecording = new UISprite();
+		liveChartRecording.loadGraphic(Paths.image('editors/charter/recording'), true, 78, 78);
+		liveChartRecording.animation.add("off", [0]);
+		liveChartRecording.animation.add("on", [1]);
+		liveChartRecording.x = (FlxG.width - liveChartRecording.frameWidth - scrollBar.width) - 20;
+		liveChartRecording.y = (strumlineInfoBG.y + strumlineInfoBG.height) + 20;
+		liveChartRecording.scrollFactor.set();
+
 		strumlineAddButton = new CharterStrumlineButton("editors/new", "Create New");
 		strumlineAddButton.onClick = createStrumWithUI;
 		strumlineAddButton.animationOnClick = false;
@@ -503,6 +529,7 @@ class Charter extends UIState {
 		add(notesGroup);
 		add(selectionBox);
 		add(strumlineInfoBG);
+		add(liveChartRecording);
 		add(strumlineLockButton);
 		add(strumlineAddButton);
 		add(strumLines);
@@ -511,6 +538,8 @@ class Charter extends UIState {
 		add(noteTypeText);
 		// add the ui group
 		add(uiGroup);
+
+		liveChartRecording.animation.play('off');
 
 		loadSong();
 
@@ -541,6 +570,18 @@ class Charter extends UIState {
 			Framerate.codenameBuildField.alpha = 1;
 		}
 		super.destroy();
+	}
+
+	public function recordingDisplay(isIt:Bool = true) {
+		switch isIt {
+			case true:
+				charterBG.color = 0xFF0B0B0B;
+				liveChartRecording.animation.play("on");
+	
+			case false:
+				charterBG.color = 0xFF181818;
+				liveChartRecording.animation.play("off");
+		}
 	}
 
 	public function loadSong() {
@@ -1169,6 +1210,47 @@ class Charter extends UIState {
 		updateNoteLogic(elapsed);
 		updateAutoSaving(elapsed);
 
+		// TEST CODE -----------------------------
+
+		if (isLiveCharting)	{
+			if (controls.LEFT) {
+				var leftrec = new CharterNote();
+				leftrec.updatePos(1.0, 0, 0, 0);
+				add(leftrec);
+				notesGroup.add(leftrec);
+			}
+			else if (controls.DOWN) {
+				var downrec = new CharterNote();
+				downrec.updatePos(1.0, 1, 0, 0);
+				add(downrec);
+				notesGroup.add(downrec);
+			}
+			else if (controls.UP) {
+				var uprec = new CharterNote();
+				uprec.updatePos(1.0, 2, 0, 0);
+				add(uprec);
+				notesGroup.add(uprec);
+			}
+			else if (controls.RIGHT) {
+				var rightrec = new CharterNote();
+				rightrec.updatePos(1.0, 3, 0, 0);
+				add(rightrec);
+				notesGroup.add(rightrec);
+			}
+			else if (controls.ACCEPT) {
+				trace("hey dummy I'm pressing accept");
+				FlxG.sound.music.pause();
+				vocals.pause();
+				for (strumLine in strumLines.members)
+					strumLine.vocals.pause();
+	
+				isLiveCharting = false;
+				recordingDisplay(false);
+			}
+		}
+	
+		// TEST CODE -----------------------------
+
 		if (FlxG.sound.music.playing || __firstFrame) {
 			gridBackdrops.conductorSprY = curStepFloat * 40;
 		} else {
@@ -1539,13 +1621,66 @@ class Charter extends UIState {
 	}
 
 	inline function _chart_playtest(_)
-		playtestChart(0, false);
+		if (!isLiveCharting)
+			playtestChart(0, false);
 	inline function _chart_playtest_here(_)
-		playtestChart(Conductor.songPosition, false, true);
+		if (!isLiveCharting)
+			playtestChart(Conductor.songPosition, false, true);
 	inline function _chart_playtest_opponent(_)
-		playtestChart(0, true);
+		if (!isLiveCharting)
+			playtestChart(0, true);
 	inline function _chart_playtest_opponent_here(_)
-		playtestChart(Conductor.songPosition, true, true);
+		if (!isLiveCharting)
+			playtestChart(Conductor.songPosition, true, true);
+
+	inline function _chart_live(_) {
+		if (!isLiveCharting) {
+			trace("make this");
+	
+			isLiveCharting = true;
+			Conductor.songPosition = 0; // fuck you
+	
+			// make SL selection functionality
+			// pause until a SL was selected
+			// start countdown
+			// only after all that can it...
+	
+			recordingDisplay(true);
+	
+			FlxG.sound.music.play();
+			vocals.play();
+	
+			vocals.time = FlxG.sound.music.time = Conductor.songPosition + Conductor.songOffset * 2;
+			for (strumLine in strumLines.members) {
+				strumLine.vocals.play();
+				strumLine.vocals.time = vocals.time;
+			}
+		}
+	}
+	
+	inline function _chart_live_here(_) {
+		if (!isLiveCharting) {
+			trace("and this too");
+	
+			isLiveCharting = true;
+	
+			// make SL selection functionality
+			// pause until a SL was selected
+			// start countdown
+			// only after all that can it...
+	
+			recordingDisplay(true);
+	
+			FlxG.sound.music.play();
+			vocals.play();
+			vocals.time = FlxG.sound.music.time = Conductor.songPosition + Conductor.songOffset * 2;
+			for (strumLine in strumLines.members) {
+				strumLine.vocals.play();
+				strumLine.vocals.time = vocals.time;
+			}
+		}
+	}
+
 	function _chart_enablescripts(t) {
 		t.icon = (Options.charterEnablePlaytestScripts = !Options.charterEnablePlaytestScripts) ? 1 : 0;
 	}
@@ -1642,12 +1777,22 @@ class Charter extends UIState {
 		for (shader in waveformHandler.waveShaders) shader.data.lowDetail.value = [Options.charterLowDetailWaveforms];
 	}
 	
-	inline function _snap_increasesnap(_) changequant(1);
-	inline function _snap_decreasesnap(_) changequant(-1);
-	inline function _snap_resetsnap(_) setquant(16);
+	inline function _snap_increasesnap(_) if (!isLiveCharting) changequant(1);
+	inline function _snap_decreasesnap(_) if (!isLiveCharting) changequant(-1);
+	inline function _snap_resetsnap(_) if (!isLiveCharting) setquant(16);
 
-	inline function changequant(change:Int) {quant = quants[FlxMath.wrap(quants.indexOf(quant) + change, 0, quants.length-1)]; buildSnapsUI();};
-	inline function setquant(newquant:Int) {quant = newquant; buildSnapsUI();}
+	inline function changequant(change:Int) {
+		if (!isLiveCharting) {
+			quant = quants[FlxMath.wrap(quants.indexOf(quant) + change, 0, quants.length-1)];
+			buildSnapsUI();
+		}
+	}
+	inline function setquant(newquant:Int) {
+		if (!isLiveCharting) {
+			quant = newquant;
+			buildSnapsUI();
+		}
+	}
 
 	function buildSnapsUI():Array<UIContextMenuOption> {
 		var snapsTopButton:UITopMenuButton = topMenuSpr == null ? null : cast topMenuSpr.members[snapIndex];
@@ -1681,10 +1826,12 @@ class Charter extends UIState {
 	}
 
 	inline function _note_addsustain(t)
-		changeNoteSustain(1);
+		if (!isLiveCharting)
+			changeNoteSustain(1);
 
 	inline function _note_subtractsustain(t)
-		changeNoteSustain(-1);
+		if (!isLiveCharting)
+			changeNoteSustain(-1);
 
 	function _note_selectall(_) {
 		selection = cast notesGroup.members.copy();
@@ -1844,7 +1991,7 @@ class Charter extends UIState {
 	}
 
 	public inline function hitsoundsEnabled(id:Int)
-		return strumLines.members[id] != null && strumLines.members[id].hitsounds;
+		return isLiveCharting ? false : (strumLines.members[id] != null && strumLines.members[id].hitsounds);
 
 	public inline function __fixSelection(selection:Selection):Selection {
 		var newSelection:Selection = new Selection();
