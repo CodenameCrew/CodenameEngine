@@ -21,7 +21,7 @@ var trainCooldown:Int = 0;
 function create() {
 	// defaultCamZoom = 0.5;
 	phillyTrain.moves = true;  // Def value false in funkinsprite
-	light.color = colors[curColor];
+	light.color = colors[curColor]; lightGlow.color = light.color;
 	trainSound = FlxG.sound.load(Paths.sound("train_passes"));
 }
 
@@ -31,7 +31,7 @@ function beatHit(curBeat:Int) {
 		var newColor = FlxG.random.int(0, colors.length-2);
 		if (newColor >= curColor) newColor++;
 		curColor = newColor;
-		light.color = colors[curColor];
+		light.color = colors[curColor]; lightGlow.color = light.color;
 	}
 
 	if (!trainMoving)
@@ -49,6 +49,8 @@ function update(elapsed:Float) {
 		light.alpha = 1 - (FlxEase.cubeIn((curBeatFloat / 4) % 1) * 0.85);
 	else
 		light.alpha = 0;
+
+	lightGlow.alpha = light.alpha - 0.25;
 
 	if (trainMoving) {
 		updateTrainPos();
@@ -69,7 +71,7 @@ function updateTrainPos():Void
 	if (trainSound.time >= 4700)
 	{
 		startedMoving = true;
-		gf.playAnim('hairBlow');
+		if (gf != null) gf.playAnim('hairBlow');
 	}
 
 	if (startedMoving)
