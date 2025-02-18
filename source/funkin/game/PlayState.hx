@@ -1459,7 +1459,9 @@ class PlayState extends MusicBeatState
 	 */
 	public function endSong():Void
 	{
-		scripts.call("onSongEnd");
+		var event = scripts.event("onSongEnd", new CancellableEvent());
+		if (event.cancelled) return;
+		
 		canPause = false;
 		inst.volume = 0;
 		vocals.volume = 0;
