@@ -1,9 +1,11 @@
 package funkin.editors.charter;
 
+import funkin.backend.system.Conductor;
 import funkin.backend.chart.EventsData;
 
 class CharterEventTypeSelection extends UISubstateWindow {
 	var callback:String->Void;
+	var eventStepTime:Float;
 
 	var buttons:Array<UIButton> = [];
 
@@ -13,9 +15,10 @@ class CharterEventTypeSelection extends UISubstateWindow {
 	var upIndicator:UIText;
 	var downIndicator:UIText;
 
-	public function new(callback:String->Void) {
+	public function new(callback:String->Void, eventStepTime:Float) {
 		super();
 		this.callback = callback;
+		this.eventStepTime = eventStepTime;
 	}
 
 	public override function create() {
@@ -31,6 +34,15 @@ class CharterEventTypeSelection extends UISubstateWindow {
 		buttonsBG = new UIWindow(10, 41, buttonCameras.width, buttonCameras.height, "");
 		buttonsBG.frames = Paths.getFrames('editors/ui/inputbox');
 		add(buttonsBG);
+
+		var disableConductorEvents:Bool = false;
+		var disableOnlyContinuousChanges:Bool = false;
+		for (change in Conductor.bpmChangeMap) {
+			if (change.continuous && eventStepTime >= change.stepTime && eventStepTime < change.endStepTime) {
+				disableOnlyContinuousChanges = eventStepTime == change.stepTime; //allow time sig and instant bpm changes on the same event
+				disableConductorEvents = !disableOnlyContinuousChanges;
+			}
+		}
 
 		for(k=>eventName in EventsData.eventsList) {
 			var button = new UIButton(0, (32 * k), eventName, function() {
@@ -52,6 +64,11 @@ class CharterEventTypeSelection extends UISubstateWindow {
 			icon.x = button.x + 8;
 			icon.y = button.y + Math.abs(button.bHeight - icon.height) / 2;
 			add(icon);
+
+			if (disableConductorEvents && (eventName == "Time Signature Change" || eventName == "Continuous BPM Change" || eventName == "BPM Change") || (disableOnlyContinuousChanges && eventName == "Continuous BPM Change")) {
+				button.selectable = button.shouldPress = false;
+				button.autoAlpha = true;
+			}
 		}
 
 		windowSpr.bHeight = 61 + (32 * (17));
@@ -79,7 +96,7 @@ class CharterEventTypeSelection extends UISubstateWindow {
 		sinner += elapsed;
 
 		for (button in buttons)
-			button.selectable = buttonsBG.hovered;
+			if (button.shouldPress) button.selectable = buttonsBG.hovered;
 
 		buttonCameras.zoom = subCam.zoom;
 
