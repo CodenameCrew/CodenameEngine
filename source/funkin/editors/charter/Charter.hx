@@ -1216,7 +1216,7 @@ class Charter extends UIState {
 			if (controls.LEFT) {
 				var note = new CharterNote();
 				note.updatePos(
-					FlxMath.bound(quantStep((Conductor.songPosition - Conductor.songOffset)/40), 0, __endStep-1),
+					FlxMath.bound(quantStep((gridBackdrops.conductorSprY)/40), 0, __endStep-1),
 					0,
 					0,
 					noteType,
@@ -1229,7 +1229,7 @@ class Charter extends UIState {
 			else if (controls.DOWN) {
 				var note = new CharterNote();
 				note.updatePos(
-					FlxMath.bound(quantStep((Conductor.songPosition - Conductor.songOffset)/40), 0, __endStep-1),
+					FlxMath.bound(quantStep((gridBackdrops.conductorSprY)/40), 0, __endStep-1),
 					1,
 					0,
 					noteType,
@@ -1242,7 +1242,7 @@ class Charter extends UIState {
 			else if (controls.UP) {
 				var note = new CharterNote();
 				note.updatePos(
-					FlxMath.bound(quantStep((Conductor.songPosition - Conductor.songOffset)/40), 0, __endStep-1),
+					FlxMath.bound(quantStep((gridBackdrops.conductorSprY)/40), 0, __endStep-1),
 					2,
 					0,
 					noteType,
@@ -1255,7 +1255,7 @@ class Charter extends UIState {
 			else if (controls.RIGHT) {
 				var note = new CharterNote();
 				note.updatePos(
-					FlxMath.bound(quantStep((Conductor.songPosition - Conductor.songOffset)/40), 0, __endStep-1),
+					FlxMath.bound(quantStep((gridBackdrops.conductorSprY)/40), 0, __endStep-1),
 					3,
 					0,
 					noteType,
