@@ -1281,7 +1281,7 @@ class Charter extends UIState {
 		}
 		charterCamera.scroll.set(
 			((((40*4) * gridBackdrops.strumlinesAmount) - FlxG.width) / 2),
-			gridBackdrops.SprY - (FlxG.height * 0.5)
+			gridBackdrops.conductorSprY - (FlxG.height * 0.5)
 		);
 
 		if (topMenuSpr.members[playbackIndex] != null) {
