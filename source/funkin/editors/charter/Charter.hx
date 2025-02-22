@@ -1214,36 +1214,59 @@ class Charter extends UIState {
 
 		if (isLiveCharting)	{
 			if (controls.LEFT) {
-				var leftrec = new CharterNote();
-				leftrec.updatePos(1.0, 0, 0, 0);
-				add(leftrec);
-				notesGroup.add(leftrec);
+				var note = new CharterNote();
+				note.updatePos(
+					FlxMath.bound(quantStep((Conductor.songPosition - Conductor.songOffset)/40), 0, __endStep-1),
+					0,
+					0,
+					noteType,
+					strumLines.members[0]
+				);
+				notesGroup.add(note);
+				selection = [note];
+				undos.addToUndo(CCreateSelection([note]));
 			}
 			else if (controls.DOWN) {
-				var downrec = new CharterNote();
-				downrec.updatePos(1.0, 1, 0, 0);
-				add(downrec);
-				notesGroup.add(downrec);
+				var note = new CharterNote();
+				note.updatePos(
+					FlxMath.bound(quantStep((Conductor.songPosition - Conductor.songOffset)/40), 0, __endStep-1),
+					1,
+					0,
+					noteType,
+					strumLines.members[0]
+				);
+				notesGroup.add(note);
+				selection = [note];
+				undos.addToUndo(CCreateSelection([note]));
 			}
 			else if (controls.UP) {
-				var uprec = new CharterNote();
-				uprec.updatePos(1.0, 2, 0, 0);
-				add(uprec);
-				notesGroup.add(uprec);
+				var note = new CharterNote();
+				note.updatePos(
+					FlxMath.bound(quantStep((Conductor.songPosition - Conductor.songOffset)/40), 0, __endStep-1),
+					2,
+					0,
+					noteType,
+					strumLines.members[0]
+				);
+				notesGroup.add(note);
+				selection = [note];
+				undos.addToUndo(CCreateSelection([note]));
 			}
 			else if (controls.RIGHT) {
-				var rightrec = new CharterNote();
-				rightrec.updatePos(1.0, 3, 0, 0);
-				add(rightrec);
-				notesGroup.add(rightrec);
+				var note = new CharterNote();
+				note.updatePos(
+					FlxMath.bound(quantStep((Conductor.songPosition - Conductor.songOffset)/40), 0, __endStep-1),
+					3,
+					0,
+					noteType,
+					strumLines.members[0]
+				);
+				notesGroup.add(note);
+				selection = [note];
+				undos.addToUndo(CCreateSelection([note]));
 			}
 			else if (controls.ACCEPT) {
 				trace("hey dummy I'm pressing accept");
-				FlxG.sound.music.pause();
-				vocals.pause();
-				for (strumLine in strumLines.members)
-					strumLine.vocals.pause();
-	
 				isLiveCharting = false;
 				recordingDisplay(false);
 			}
@@ -1258,7 +1281,7 @@ class Charter extends UIState {
 		}
 		charterCamera.scroll.set(
 			((((40*4) * gridBackdrops.strumlinesAmount) - FlxG.width) / 2),
-			gridBackdrops.conductorSprY - (FlxG.height * 0.5)
+			gridBackdrops.SprY - (FlxG.height * 0.5)
 		);
 
 		if (topMenuSpr.members[playbackIndex] != null) {
