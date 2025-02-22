@@ -1731,9 +1731,9 @@ class Charter extends UIState {
 		}
 	}
 
-	function _playback_speed_raise(_) playBackSlider.value += .25;
-	function _playback_speed_reset(_) playBackSlider.value = 1;
-	function _playback_speed_lower(_) playBackSlider.value -= .25;
+	function _playback_speed_raise(_) if (!isLiveCharting) playBackSlider.value += .25;
+	function _playback_speed_reset(_) if (!isLiveCharting) playBackSlider.value = 1;
+	function _playback_speed_lower(_) if (!isLiveCharting) playBackSlider.value -= .25;
 
 	function _playback_metronome(t) {
 		t.icon = (Options.charterMetronomeEnabled = !Options.charterMetronomeEnabled) ? 1 : 0;
