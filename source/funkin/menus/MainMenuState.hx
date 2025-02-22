@@ -8,6 +8,7 @@ import flixel.effects.FlxFlicker;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 import lime.app.Application;
 import funkin.backend.scripting.events.*;
 
@@ -150,17 +151,23 @@ class MainMenuState extends MusicBeatState
 	}
 
 	function selectItem() {
-		selectedSomethin = true;
-		CoolUtil.playMenuSFX(CONFIRM);
+		var primevent = event("onInitialSelection", EventManager.get(AmountEvent).recycle(1));
+		if (!primevent.cancelled) {
+			selectedSomethin = true;
+			
+			CoolUtil.playMenuSFX(CONFIRM);
 
-		if (Options.flashingMenu) FlxFlicker.flicker(magenta, 1.1, 0.15, false);
+			if (Options.flashingMenu) FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 
-		FlxFlicker.flicker(menuItems.members[curSelected], 1, Options.flashingMenu ? 0.06 : 0.15, false, false, function(flick:FlxFlicker)
-		{
+			FlxFlicker.flicker(menuItems.members[curSelected], primevent.amount, Options.flashingMenu ? 0.06 : 0.15, false, false);
+		}
+
+		new FlxTimer().start(primevent.amount, function(timer:FlxTimer) {
 			var daChoice:String = optionShit[curSelected];
 
 			var event = event("onSelectItem", EventManager.get(NameEvent).recycle(daChoice));
 			if (event.cancelled) return;
+			
 			switch (event.name)
 			{
 				case 'story mode': FlxG.switchState(new StoryMenuState());
@@ -169,6 +176,7 @@ class MainMenuState extends MusicBeatState
 				case 'options': FlxG.switchState(new OptionsMenu());
 			}
 		});
+		
 	}
 	function changeItem(huh:Int = 0)
 	{
