@@ -1213,7 +1213,7 @@ class Charter extends UIState {
 		// TEST CODE -----------------------------
 
 		if (isLiveCharting)	{
-			if (controls.LEFT) {
+			if (controls.LEFT_P) {
 				var note = new CharterNote();
 				note.updatePos(
 					FlxMath.bound(quantStep((gridBackdrops.conductorSprY)/40), 0, __endStep-1),
@@ -1226,7 +1226,7 @@ class Charter extends UIState {
 				selection = [note];
 				undos.addToUndo(CCreateSelection([note]));
 			}
-			else if (controls.DOWN) {
+			else if (controls.DOWN_P) {
 				var note = new CharterNote();
 				note.updatePos(
 					FlxMath.bound(quantStep((gridBackdrops.conductorSprY)/40), 0, __endStep-1),
@@ -1239,7 +1239,7 @@ class Charter extends UIState {
 				selection = [note];
 				undos.addToUndo(CCreateSelection([note]));
 			}
-			else if (controls.UP) {
+			else if (controls.UP_P) {
 				var note = new CharterNote();
 				note.updatePos(
 					FlxMath.bound(quantStep((gridBackdrops.conductorSprY)/40), 0, __endStep-1),
@@ -1252,7 +1252,7 @@ class Charter extends UIState {
 				selection = [note];
 				undos.addToUndo(CCreateSelection([note]));
 			}
-			else if (controls.RIGHT) {
+			else if (controls.RIGHT_P) {
 				var note = new CharterNote();
 				note.updatePos(
 					FlxMath.bound(quantStep((gridBackdrops.conductorSprY)/40), 0, __endStep-1),
