@@ -2,7 +2,7 @@ package funkin.game;
 
 import haxe.xml.Access;
 
-class SplashGroup extends FlxTypedGroup<FunkinSprite> {
+class SplashGroup extends FlxTypedGroup<Splash> {
 	/**
 	 * Whenever the splash group has successfully loaded or not.
 	 */
@@ -46,7 +46,7 @@ class SplashGroup extends FlxTypedGroup<FunkinSprite> {
 	}
 
 	function createSplash(imagePath:String) {
-		var splash = new FunkinSprite();
+		var splash = new Splash();
 		splash.antialiasing = true;
 		splash.active = splash.visible = false;
 		splash.loadSprite(Paths.image(imagePath));
@@ -56,7 +56,7 @@ class SplashGroup extends FlxTypedGroup<FunkinSprite> {
 		return splash;
 	}
 
-	function setupAnims(xml:Access, splash:FunkinSprite) {
+	function setupAnims(xml:Access, splash:Splash) {
 		for(strum in xml.nodes.strum) {
 			var id:Null<Int> = Std.parseInt(strum.att.id);
 			if (id != null) {
@@ -85,12 +85,14 @@ class SplashGroup extends FlxTypedGroup<FunkinSprite> {
 		};
 	}
 
-	function pregenerateSplashes(splash:FunkinSprite) {
+	function pregenerateSplashes(splash:Splash) {
 		// make 7 additional splashes
 		for(i in 0...7) {
-			var spr = FunkinSprite.copyFrom(splash);
+			var spr = __copyFrom(splash);
 			spr.animation.finishCallback = function(name:String) {
 				spr.active = spr.visible = false;
+				spr.strum = null;
+				spr.strumID = null;
 			};
 			add(spr);
 		}
@@ -103,10 +105,13 @@ class SplashGroup extends FlxTypedGroup<FunkinSprite> {
 		return animationNames[id][FlxG.random.int(0, animationNames[id].length - 1)];
 	}
 
-	var __splash:FunkinSprite;
+	var __splash:Splash;
 	public function showOnStrum(strum:Strum) {
 		if (!valid) return null;
 		__splash = recycle();
+
+		__splash.strum = strum;
+		__splash.strumID = strum.ID;
 
 		__splash.cameras = strum.lastDrawCameras;
 		__splash.setPosition(strum.x + ((strum.width - __splash.width) / 2), strum.y + ((strum.height - __splash.height) / 2));
@@ -115,5 +120,29 @@ class SplashGroup extends FlxTypedGroup<FunkinSprite> {
 		__splash.scrollFactor.set(strum.scrollFactor.x, strum.scrollFactor.y);
 
 		return __splash;
+	}
+
+	@:dox(hide)
+	inline function __copyFrom(source:Splash):Splash
+	{
+		var spr = new Splash();
+		@:privateAccess {
+			spr.setPosition(source.x, source.y);
+			spr.frames = source.frames;
+			if (source.animateAtlas != null && source.atlasPath != null)
+				spr.loadSprite(source.atlasPath);
+			spr.animation.copyFrom(source.animation);
+			spr.visible = source.visible;
+			spr.alpha = source.alpha;
+			spr.antialiasing = source.antialiasing;
+			spr.scale.set(source.scale.x, source.scale.y);
+			spr.scrollFactor.set(source.scrollFactor.x, source.scrollFactor.y);
+			spr.skew.set(source.skew.x, source.skew.y);
+			spr.transformMatrix = source.transformMatrix;
+			spr.matrixExposed = source.matrixExposed;
+			spr.zoomFactor = source.zoomFactor;
+			spr.animOffsets = source.animOffsets.copy();
+		}
+		return spr;
 	}
 }
