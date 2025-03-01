@@ -25,6 +25,8 @@ class Options
 	public static var autoPause:Bool = true;
 	public static var antialiasing:Bool = true;
 	public static var volume:Float = 1;
+	public static var inactiveVolume:Float = 2;
+	public static var inactiveVolumeEnabled:Bool = true;
 	public static var week6PixelPerfect:Bool = true;
 	public static var gameplayShaders:Bool = true;
 	public static var colorHealthBar:Bool = true;
@@ -149,7 +151,8 @@ class Options
 	}
 
 	public static function save() {
-		volume = FlxG.sound.volume;
+		if (Main.isFocused)
+			volume = FlxG.sound.volume;
 		__flush();
 	}
 }
