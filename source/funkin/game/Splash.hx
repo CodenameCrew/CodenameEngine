@@ -6,7 +6,7 @@ class Splash extends FunkinSprite
 	 * The current splash strum
 	 * WANRNING: It can be null
 	 */
-	public var strum:Strum;
+	public var strum:Null<Strum>;
 
 	/**
 	 * Shortcut to `strum.ID`
