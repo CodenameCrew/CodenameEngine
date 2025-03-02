@@ -1,7 +1,7 @@
 package funkin.game;
 
 
-class SplashHandler extends FlxTypedGroup<FunkinSprite> {
+class SplashHandler extends FlxTypedGroup<Splash> {
 	/**
 	 * Map containing all of the splashes group.
 	 */
