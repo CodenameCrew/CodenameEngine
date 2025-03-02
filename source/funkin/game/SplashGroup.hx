@@ -88,7 +88,7 @@ class SplashGroup extends FlxTypedGroup<Splash> {
 	function pregenerateSplashes(splash:Splash) {
 		// make 7 additional splashes
 		for(i in 0...7) {
-			var spr = __copyFrom(splash);
+			var spr = Splash.copyFrom(splash);
 			spr.animation.finishCallback = function(name:String) {
 				spr.active = spr.visible = false;
 				spr.strum = null;
@@ -120,29 +120,5 @@ class SplashGroup extends FlxTypedGroup<Splash> {
 		__splash.scrollFactor.set(strum.scrollFactor.x, strum.scrollFactor.y);
 
 		return __splash;
-	}
-
-	@:dox(hide)
-	inline function __copyFrom(source:Splash):Splash
-	{
-		var spr = new Splash();
-		@:privateAccess {
-			spr.setPosition(source.x, source.y);
-			spr.frames = source.frames;
-			if (source.animateAtlas != null && source.atlasPath != null)
-				spr.loadSprite(source.atlasPath);
-			spr.animation.copyFrom(source.animation);
-			spr.visible = source.visible;
-			spr.alpha = source.alpha;
-			spr.antialiasing = source.antialiasing;
-			spr.scale.set(source.scale.x, source.scale.y);
-			spr.scrollFactor.set(source.scrollFactor.x, source.scrollFactor.y);
-			spr.skew.set(source.skew.x, source.skew.y);
-			spr.transformMatrix = source.transformMatrix;
-			spr.matrixExposed = source.matrixExposed;
-			spr.zoomFactor = source.zoomFactor;
-			spr.animOffsets = source.animOffsets.copy();
-		}
-		return spr;
 	}
 }
