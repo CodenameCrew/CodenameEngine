@@ -1,10 +1,13 @@
 package funkin.editors.charter;
 
-import funkin.backend.chart.ChartData.ChartEvent;
-import funkin.backend.system.Conductor;
 import flixel.group.FlxGroup;
-import funkin.backend.chart.EventsData;
 import flixel.util.FlxColor;
+import funkin.backend.chart.ChartData.ChartEvent;
+import funkin.backend.chart.EventsData;
+import funkin.backend.scripting.DummyScript;
+import funkin.backend.scripting.Script;
+import funkin.backend.system.Conductor;
+import funkin.editors.charter.CharterEvent.EventNumber;
 
 using StringTools;
 
@@ -55,7 +58,7 @@ class CharterEventScreen extends UISubstateWindow {
 			});
 			eventsList.add(new EventButton(events[events.length-1], CharterEvent.generateEventIcon(events[events.length-1]), events.length-1, this, eventsList));
 			changeTab(events.length-1);
-		}));
+		}, chartEvent.step));
 		for (k=>i in events)
 			eventsList.add(new EventButton(i, CharterEvent.generateEventIcon(i), k, this, eventsList));
 		add(eventsList);
@@ -80,12 +83,12 @@ class CharterEventScreen extends UISubstateWindow {
 				else {
 					chartEvent.events = [for (i in eventsList.buttons.members) i.event];
 					chartEvent.refreshEventIcons();
-					Charter.instance.updateBPMEvents();
 
 					Charter.undos.addToUndo(CEditEvent(chartEvent, oldEvents, [for (event in events) Reflect.copy(event)]));
 				}
 			}
 
+			Charter.instance.updateBPMEvents();
 			close();
 		});
 		saveButton.x -= saveButton.bWidth;
@@ -110,83 +113,111 @@ class CharterEventScreen extends UISubstateWindow {
 
 		// destroy old elements
 		paramsFields = [];
-		for(e in paramsPanel) {
-			e.destroy();
-			paramsPanel.remove(e);
+		while(paramsPanel.members.length > 0) {
+			var e = paramsPanel.members.pop();
+			if(e != null) {
+				e.destroy();
+			}
 		}
 
 		if (id >= 0 && id < events.length) {
 			curEvent = id;
 			var curEvent = events[curEvent];
 			eventName.text = curEvent.name;
-			// add new elements
-			var y:Float = eventName.y + eventName.height + 10;
-			for(k=>param in EventsData.getEventParams(curEvent.name)) {
-				function addLabel() {
-					var label:UIText = new UIText(eventName.x, y, 0, param.name);
-					y += label.height + 4;
-					paramsPanel.add(label);
-				};
 
-				var value:Dynamic = CoolUtil.getDefault(curEvent.params[k], param.defValue);
-				var lastAdded = switch(param.type) {
-					case TString:
-						addLabel();
-						var textBox:UITextBox = new UITextBox(eventName.x, y, cast value);
-						paramsPanel.add(textBox); paramsFields.push(textBox);
-						textBox;
-					case TBool:
-						var checkbox = new UICheckbox(eventName.x, y, param.name, cast value);
-						paramsPanel.add(checkbox); paramsFields.push(checkbox);
-						checkbox;
-					case TInt(min, max, step):
-						addLabel();
-						var numericStepper = new UINumericStepper(eventName.x, y, cast value, step.getDefault(1), 0, min, max);
-						paramsPanel.add(numericStepper); paramsFields.push(numericStepper);
-						numericStepper;
-					case TFloat(min, max, step, precision):
-						addLabel();
-						var numericStepper = new UINumericStepper(eventName.x, y, cast value, step.getDefault(1), precision, min, max);
-						paramsPanel.add(numericStepper); paramsFields.push(numericStepper);
-						numericStepper;
-					case TStrumLine:
-						addLabel();
-						var dropdown = new UIDropDown(eventName.x, y, 320, 32, [for(k=>s in cast(FlxG.state, Charter).strumLines.members) 'Strumline #${k+1} (${s.strumLine.characters[0]})'], cast value);
-						paramsPanel.add(dropdown); paramsFields.push(dropdown);
-						dropdown;
-					case TColorWheel:
-						addLabel();
-						var colorWheel = new UIColorwheel(eventName.x, y, value is String ? FlxColor.fromString(value) : Std.int(value));
-						paramsPanel.add(colorWheel); paramsFields.push(colorWheel);
-						colorWheel;
-					case TDropDown(options):
-						addLabel();
-						var dropdown = new UIDropDown(eventName.x, y, 320, 32, options, Std.int(Math.abs(options.indexOf(cast value))));
-						paramsPanel.add(dropdown); paramsFields.push(dropdown);
-						dropdown;
-					default:
-						paramsFields.push(null);
-						null;
-				}
-				if (lastAdded is UISliceSprite)
-					y += cast(lastAdded, UISliceSprite).bHeight + 4;
-				else if (lastAdded is FlxSprite)
-					y += cast(lastAdded, FlxSprite).height + 6;
-			}
+			generateEventUI(curEvent);
 		} else {
 			eventName.text = "No event";
 			curEvent = -1;
 		}
 	}
 
+	function generateEventUI(event:ChartEvent):Void {
+		var script = CharterEvent.getUIScript(event, "event-ui");
+		if(script != null && !(script is DummyScript)) {
+			script.set("paramsPanel", paramsPanel);
+			script.set("paramsFields", paramsFields);
+			if(script.get("generateUI") != null) {
+				if(script.call("generateUI") == false)
+					return;
+			}
+		}
+
+		// add new elements
+		var y:Float = eventName.y + eventName.height + 10;
+		var params = EventsData.getEventParams(event.name);
+		for(k=>param in params) {
+			function addLabel() {
+				var label:UIText = new UIText(eventName.x, y, 0, param.name);
+				y += label.height + 4;
+				paramsPanel.add(label);
+			};
+
+			var value:Dynamic = CoolUtil.getDefault(event.params[k], param.defValue);
+			var lastAdded = switch(param.type) {
+				case TString:
+					addLabel();
+					var textBox:UITextBox = new UITextBox(eventName.x, y, cast value);
+					paramsPanel.add(textBox); paramsFields.push(textBox);
+					textBox;
+				case TBool:
+					var checkbox = new UICheckbox(eventName.x, y, param.name, cast value);
+					paramsPanel.add(checkbox); paramsFields.push(checkbox);
+					checkbox;
+				case TInt(min, max, step):
+					addLabel();
+					var numericStepper = new UINumericStepper(eventName.x, y, cast value, CoolUtil.getDefault(step, 1), 0, min, max);
+					paramsPanel.add(numericStepper); paramsFields.push(numericStepper);
+					numericStepper;
+				case TFloat(min, max, step, precision):
+					addLabel();
+					var numericStepper = new UINumericStepper(eventName.x, y, cast value, CoolUtil.getDefault(step, 1), precision, min, max);
+					paramsPanel.add(numericStepper); paramsFields.push(numericStepper);
+					numericStepper;
+				case TStrumLine:
+					addLabel();
+					var dropdown = new UIDropDown(eventName.x, y, 320, 32, [
+						for(k=>s in cast(FlxG.state, Charter).strumLines.members)
+							'Strumline #${k+1} (${s.strumLine.characters[0]})'
+					], cast value);
+					paramsPanel.add(dropdown); paramsFields.push(dropdown);
+					dropdown;
+				case TColorWheel:
+					addLabel();
+					var colorWheel = new UIColorwheel(eventName.x, y, CoolUtil.getColorFromDynamic(value));
+					paramsPanel.add(colorWheel); paramsFields.push(colorWheel);
+					colorWheel;
+				case TDropDown(options):
+					addLabel();
+					var dropdown = new UIDropDown(eventName.x, y, 320, 32, options, Std.int(Math.abs(options.indexOf(cast value))));
+					paramsPanel.add(dropdown); paramsFields.push(dropdown);
+					dropdown;
+				default:
+					paramsFields.push(null);
+					null;
+			}
+			if (lastAdded is UISliceSprite)
+				y += cast(lastAdded, UISliceSprite).bHeight + 4;
+			else if (lastAdded is FlxSprite)
+				y += cast(lastAdded, FlxSprite).height + 6;
+		}
+
+		if(script != null && !(script is DummyScript)) {
+			if(script.get("postGenerateUI") != null) {
+				script.set("params", params);
+				script.call("postGenerateUI");
+			}
+		}
+	}
+
 	public function saveCurTab() {
 		if (curEvent < 0) return;
 
+		var dataParams = EventsData.getEventParams(events[curEvent].name);
 		events[curEvent].params = [
-			for(p in paramsFields) {
+			for(i=>p in paramsFields) {
 				if (p is UIDropDown) {
-					var dataParams = EventsData.getEventParams(events[curEvent].name);
-					if (dataParams[paramsFields.indexOf(p)].type == TStrumLine) cast(p, UIDropDown).index;
+					if (dataParams[i].type == TStrumLine) cast(p, UIDropDown).index;
 					else cast(p, UIDropDown).label.text;
 				}
 				else if (p is UINumericStepper) {
