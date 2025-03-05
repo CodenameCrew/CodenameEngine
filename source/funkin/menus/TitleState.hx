@@ -2,6 +2,11 @@ package funkin.menus;
 
 import funkin.backend.MusicBeatGroup;
 import funkin.backend.utils.XMLUtil;
+import funkin.backend.scripting.EventManager;
+import funkin.backend.scripting.events.StartIntroEvent;
+import funkin.backend.scripting.events.NameEvent;
+import funkin.backend.scripting.events.EnterPressedEvent;
+import funkin.backend.scripting.events.CancellableEvent;
 import flixel.util.typeLimit.OneOfTwo;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
@@ -48,7 +53,10 @@ class TitleState extends MusicBeatState
 
 	function startIntro()
 	{
-		if (!initialized)
+		var event = event("onStartIntro", EventManager.get(StartIntroEvent).recycle(true, true, 'menus/titlescreen/titleEnter', 'newgrounds_logo', false));
+		if (event.cancelled) return;
+		
+		if (!initialized && event.playMenuSong)
 			CoolUtil.playMenuSong(true);
 
 		persistentUpdate = true;
@@ -57,14 +65,16 @@ class TitleState extends MusicBeatState
 		add(bg);
 
 		#if TITLESCREEN_XML
-		titleScreenSprites = new MusicBeatGroup();
-		add(titleScreenSprites);
-		loadXML();
+		if (event.titleScreenXML) {
+			titleScreenSprites = new MusicBeatGroup();
+			add(titleScreenSprites);
+			loadXML();
+		}
 		#end
 
 		if (titleText == null) {
 			titleText = new FlxSprite(100, FlxG.height * 0.8);
-			titleText.frames = Paths.getFrames('menus/titlescreen/titleEnter');
+			titleText.frames = Paths.getFrames(event.titleSprite);
 			titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
 			titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
 			titleText.antialiasing = true;
@@ -79,7 +89,7 @@ class TitleState extends MusicBeatState
 		add(blackScreen);
 
 		#if !TITLESCREEN_XML
-		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadAnimatedGraphic(Paths.image('newgrounds_logo'));
+		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadAnimatedGraphic(Paths.image(event.ngSprite));
 		add(ngSpr);
 		ngSpr.visible = false;
 		ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.8));
@@ -88,7 +98,7 @@ class TitleState extends MusicBeatState
 		ngSpr.antialiasing = true;
 		#end
 
-		FlxG.mouse.visible = false;
+		FlxG.mouse.visible = event.showMouse;
 
 		if (initialized)
 			skipIntro();
@@ -97,10 +107,12 @@ class TitleState extends MusicBeatState
 
 		add(textGroup);
 	}
-
+	
 	public function getIntroTextShit():Array<Array<String>>
-	{
-		var fullText:String = Assets.getText(Paths.txt('titlescreen/introText'));
+	{		
+		var event = event("onGetIntroText", EventManager.get(NameEvent).recycle('introText'));
+		
+		var fullText:String = Assets.getText(Paths.txt(Assets.exists(Paths.txt('titlescreen/${event.name}')) ? 'titlescreen/${event.name}' : 'titlescreen/introText'));
 
 		var firstArray:Array<String> = fullText.split('\n');
 		var swagGoodArray:Array<Array<String>> = [];
@@ -109,7 +121,7 @@ class TitleState extends MusicBeatState
 		{
 			swagGoodArray.push(i.split('--'));
 		}
-
+		
 		return swagGoodArray;
 	}
 
@@ -161,15 +173,18 @@ class TitleState extends MusicBeatState
 	}
 
 	public function pressEnter() {
+		var event = event("onEnterPressed", EventManager.get(EnterPressedEvent).recycle(true, 0xFFFFFFFF, true, CONFIRM, 2));
+		if (event.cancelled) return;
+		
 		titleText.animation.play('press');
 
-		FlxG.camera.flash(FlxColor.WHITE, 1);
-		CoolUtil.playMenuSFX(CONFIRM, 0.7);
+		if (event.flash) FlxG.camera.flash(event.flashColor, 1);
+		if (event.playSfx) CoolUtil.playMenuSFX(event.menuSound, 0.7);
 
 		transitioning = true;
 		// FlxG.sound.music.stop();
 
-		new FlxTimer().start(2, (_) -> goToMainMenu());
+		new FlxTimer().start(event.timerLength, (_) -> goToMainMenu());
 	}
 
 	function goToMainMenu() {
@@ -189,10 +204,15 @@ class TitleState extends MusicBeatState
 
 	public function createCoolText(textArray:Array<String>)
 	{
+		var money:Alphabet;
+		
+		var event = event("onCreateText", new CancellableEvent());
+		if (!event.cancelled) return;
+		
 		for (i=>text in textArray)
 		{
 			if (text == "" || text == null) continue;
-			var money:Alphabet = new Alphabet(0, (i * 60) + 200, text, true, false);
+			money = new Alphabet(0, (i * 60) + 200, text, true, false);
 			money.screenCenter(X);
 			textGroup.add(money);
 		}
@@ -200,13 +220,21 @@ class TitleState extends MusicBeatState
 
 	public function addMoreText(text:String)
 	{
-		var coolText:Alphabet = new Alphabet(0, (textGroup.length * 60) + 200, text, true, false);
+		var coolText:Alphabet;
+		
+		var event = event("onMoreText", new CancellableEvent());
+		if (event.cancelled) return;
+		
+		coolText = new Alphabet(0, (textGroup.length * 60) + 200, text, true, false);
 		coolText.screenCenter(X);
 		textGroup.add(coolText);
 	}
 
 	public function deleteCoolText()
 	{
+		var event = event("onDeleteText", new CancellableEvent());
+		if (event.cancelled) return;
+		
 		while (textGroup.members.length > 0) {
 			textGroup.members[0].destroy();
 			textGroup.remove(textGroup.members[0], true);
@@ -326,6 +354,9 @@ class TitleState extends MusicBeatState
 
 	public function skipIntro():Void
 	{
+		var event = event("onIntroSkipped", new CancellableEvent());
+		if (event.cancelled) return;
+		
 		if (!skippedIntro)
 		{
 			#if !TITLESCREEN_XML
