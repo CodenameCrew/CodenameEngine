@@ -18,7 +18,7 @@ class Socket implements IFlxDestroyable {
 
 	public function read():String {
 		try {
-			return this.socket.input.readUntil(('\n').charCodeAt(0)).replace("\\n", "\n");
+			return this.socket.input.readUntil('\n'.code).replace("\\n", "\n");
 		} catch(e) {
 
 		}

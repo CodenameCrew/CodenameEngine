@@ -299,8 +299,10 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	 * Creates a strum and returns the created strum (needs to be added manually).
 	 * @param i Index of the strum
 	 * @param animPrefix (Optional) Animation prefix (`left` = `arrowLEFT`, `left press`, `left confirm`).
+	 * @param spritePath (Optional) The sprite's graphic path if you don't want the default one.
+	 * @param playIntroAnimation (Optional) Whenever the intro animation should be played, by default might be `true` under certain conditions.
 	 */
-	public function createStrum(i:Int, ?animPrefix:String) {
+	public function createStrum(i:Int, ?animPrefix:String, ?spritePath:String, ?playIntroAnimation:Bool) {
 		if (animPrefix == null)
 			animPrefix = strumAnimPrefix[i % strumAnimPrefix.length];
 		var babyArrow:Strum = new Strum(startingPos.x + ((Note.swagWidth * strumScale) * i), startingPos.y);
@@ -310,7 +312,8 @@ class StrumLine extends FlxTypedGroup<Strum> {
 			babyArrow.scrollSpeed = data.scrollSpeed;
 
 		var event = EventManager.get(StrumCreationEvent).recycle(babyArrow, PlayState.instance.strumLines.members.indexOf(this), i, animPrefix);
-		event.__doAnimation = !MusicBeatState.skipTransIn && (PlayState.instance != null ? PlayState.instance.introLength > 0 : true);
+		event.__doAnimation = playIntroAnimation == null ? (!MusicBeatState.skipTransIn && (PlayState.instance != null ? PlayState.instance.introLength > 0 : true)) : playIntroAnimation;
+		if (spritePath != null) event.sprite = spritePath;
 		event = PlayState.instance.scripts.event("onStrumCreation", event);
 
 		if (!event.cancelled) {
