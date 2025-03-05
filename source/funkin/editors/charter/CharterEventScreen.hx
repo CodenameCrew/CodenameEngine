@@ -61,7 +61,7 @@ class CharterEventScreen extends UISubstateWindow {
 			eventsList.add(new EventButton(i, CharterEvent.generateEventIcon(i), k, this, eventsList));
 		add(eventsList);
 
-		scrollBar = new UIScrollBar(windowSpr.x + windowSpr.width - 20, windowSpr.y + windowSpr.bHeight, windowSpr.height, 0, 20, windowSpr.height - windowSpr.bHeight);
+		scrollBar = new UIScrollBar(windowSpr.x + windowSpr.width - 20, windowSpr.y + windowSpr.bHeight, windowSpr.height - windowSpr.bHeight, 0, windowSpr.height, 20, windowSpr.height - windowSpr.bHeight);
 		add(scrollBar);
 
 		paramsPanel = new FlxGroup();
