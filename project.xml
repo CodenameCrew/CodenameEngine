@@ -153,6 +153,10 @@
 		<define name="VIDEO_CUTSCENES" if="desktop || android" />
 	</section>
 
+	<section if="cpp">
+			<define name="ALLOW_LUASTATE" if="desktop || mobile"/>
+		</section>
+
 	<!-- Comment this out to disable commit number on FPS -->
 	<define name="SHOW_BUILD_ON_FPS" />
 
@@ -190,6 +194,7 @@
 	<haxelib name="nape-haxe4" if="NAPE_ENABLED"/>
 
 	<haxelib name="hscript-improved" />
+	<haxelib name="linc_luajit" if="ALLOW_LUASTATE" />
 	<haxelib name="hxdiscord_rpc" if="DISCORD_RPC"/>
 	<haxelib name="markdown" />
 

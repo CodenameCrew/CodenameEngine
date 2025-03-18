@@ -54,7 +54,25 @@ class ScriptPack extends Script {
 	public override function call(func:String, ?parameters:Array<Dynamic>):Dynamic {
 		for(e in scripts)
 			if(e.active)
-				e.call(func, parameters);
+				#if ALLOW_LUASTATE if(!(e is LuaScript)) #end e.call(func, parameters);
+		return null;
+	}
+	
+	public function luaCall(func:String, ?parameters:Array<Dynamic>):Dynamic {
+		#if ALLOW_LUASTATE
+		var lastRet:Dynamic = null;
+		
+		for(e in scripts)
+			if(e.active && (e is LuaScript)) {
+				final oldRet:Dynamic = e.call(func, parameters);
+				if(oldRet != lastRet) {
+					lastRet = oldRet;
+				}
+			}
+		
+		return lastRet;
+		#end
+		
 		return null;
 	}
 

@@ -6,12 +6,22 @@ import funkin.backend.scripting.Script;
 import funkin.backend.scripting.ScriptPack;
 import funkin.backend.scripting.DummyScript;
 import funkin.backend.system.interfaces.IBeatReceiver;
+import funkin.backend.system.interfaces.IStateScript;
 import funkin.backend.system.Conductor;
 import funkin.backend.system.Controls;
 import funkin.options.PlayerSettings;
 import flixel.FlxSubState;
+import mobile.objects.Hitbox;
+import mobile.flixel.FlxVirtualPad;
+import flixel.FlxCamera;
+import flixel.input.actions.FlxActionInput;
+import flixel.util.FlxDestroyUtil;
+import flixel.util.typeLimit.OneOfTwo;
+#if ALLOW_LUASTATE
+import funkin.backend.scripting.utils.LuaUtil;
+#end
 
-class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
+class MusicBeatSubstate extends FlxSubState implements IBeatReceiver implements IStateScript
 {
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
@@ -64,6 +74,8 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 	 * Current injected script attached to the state. To add one, create a file at path "data/states/stateName" (ex: "data/states/PauseMenuSubstate.hx")
 	 */
 	public var stateScripts:ScriptPack;
+	
+	public var scriptVariables:Map<String, Dynamic> = new Map();
 
 	public var scriptsAllowed:Bool = true;
 
@@ -91,6 +103,115 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 	inline function get_controlsP2():Controls
 		return PlayerSettings.player2.controls;
 
+	#if TOUCH_CONTROLS
+	public var hitbox:Hitbox;
+	public var virtualPad:FlxVirtualPad;
+	public var camHitbox:FlxCamera;
+	public var camVPad:FlxCamera;
+
+	var trackedInputsHitbox:Array<FlxActionInput> = [];
+	var trackedInputsVirtualPad:Array<FlxActionInput> = [];
+	#end
+
+	public function addVirtualPad(DPad:OneOfTwo<FlxDPadMode, String>, Action:OneOfTwo<FlxActionMode, String>)
+	{
+		#if TOUCH_CONTROLS
+		if (virtualPad != null)
+			removeVirtualPad();
+
+		virtualPad = new FlxVirtualPad(DPad, Action);
+		add(virtualPad);
+
+		controls.setVirtualPadUI(virtualPad, virtualPad.curDPadMode, virtualPad.curActionMode);
+		trackedInputsVirtualPad = controls.trackedInputsUI;
+		controls.trackedInputsUI = [];
+		#end
+	}
+
+	public function removeVirtualPad()
+	{
+		#if TOUCH_CONTROLS
+		if (trackedInputsVirtualPad.length > 0)
+			controls.removeTouchControlsInput(trackedInputsVirtualPad);
+
+		if (virtualPad != null)
+			remove(virtualPad);
+		#end
+	}
+
+	public function addHitbox(?defaultDrawTarget:Bool = false) {
+		#if TOUCH_CONTROLS
+		if (hitbox != null)
+			removeHitbox();
+
+		hitbox = new Hitbox();
+		controls.setHitBox(hitbox);
+
+		trackedInputsHitbox = controls.trackedInputsNOTES;
+		controls.trackedInputsNOTES = [];
+
+		camHitbox = new FlxCamera();
+		camHitbox.bgColor.alpha = 0;
+		FlxG.cameras.add(camHitbox, defaultDrawTarget);
+
+		hitbox.cameras = [camHitbox];
+		hitbox.visible = false;
+		add(hitbox);
+		#end
+	}
+
+	public function removeHitbox() {
+		#if TOUCH_CONTROLS
+		if(trackedInputsHitbox.length > 0)
+			controls.removeTouchControlsInput(trackedInputsHitbox);
+
+		if(hitbox != null)
+			remove(hitbox);
+		#end
+	}
+
+	public function addVirtualPadCamera(?defaultDrawTarget:Bool = false) {
+		#if TOUCH_CONTROLS
+		if (virtualPad == null) return;
+
+		camVPad = new FlxCamera();
+		camVPad.bgColor.alpha = 0;
+		FlxG.cameras.add(camVPad, defaultDrawTarget);
+		virtualPad.cameras = [camVPad];
+		#end
+	}
+
+	override function destroy() {
+		// Touch Controls Related
+		#if TOUCH_CONTROLS
+		if(trackedInputsHitbox.length > 0)
+			controls.removeTouchControlsInput(trackedInputsHitbox);
+
+		if(trackedInputsVirtualPad.length > 0)
+			controls.removeTouchControlsInput(trackedInputsVirtualPad);
+
+		if(virtualPad != null)
+			virtualPad = FlxDestroyUtil.destroy(virtualPad);
+
+		if(hitbox != null)
+			hitbox = FlxDestroyUtil.destroy(hitbox);
+
+		if(camHitbox != null)
+			camHitbox = FlxDestroyUtil.destroy(camHitbox);
+
+		if(camVPad != null)
+			camVPad = FlxDestroyUtil.destroy(camVPad);
+		#end
+
+		// CNE Related
+		super.destroy();
+		call("destroy");
+		stateScripts.luaCall("onDestroy");
+		
+		scriptVariables.clear();
+		stateScripts = FlxDestroyUtil.destroy(stateScripts);
+
+	}
 
 	public function new(scriptsAllowed:Bool = true, ?scriptName:String) {
 		super();
@@ -112,6 +233,15 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 					script.remappedNames.set(script.fileName, '$i:${script.fileName}');
 					stateScripts.add(script);
 					script.load();
+					stateScripts.set('setVirtualPadMode', function(DPadMode:String, ActionMode:String, ?addCamera = false){
+						#if TOUCH_CONTROLS
+						if(virtualPad == null) return;
+						removeVirtualPad();
+						addVirtualPad(DPadMode, ActionMode);
+						if(addCamera)
+							addVirtualPadCamera();
+						#end
+					});
 				}
 			}
 			else stateScripts.reload();
@@ -122,8 +252,10 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 	{
 		if (persistentUpdate || subState == null) {
 			call("preUpdate", [elapsed]);
+			stateScripts.luaCall("onUpdatePre", [elapsed]);
 			update(elapsed);
 			call("postUpdate", [elapsed]);
+			stateScripts.luaCall("onUpdatePost", [elapsed]);
 		}
 
 		if (_requestSubStateReset)
@@ -139,9 +271,11 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 
 	override function close() {
 		var event = event("onClose", new CancellableEvent());
-		if (!event.cancelled) {
+		var ret:Dynamic = stateScripts.luaCall("onClose");
+		if (!event.cancelled #if ALLOW_LUASTATE && ret != LuaUtil.Function_Stop #end) {
 			super.close();
 			call("onClosePost");
+			stateScripts.luaCall("onClosePost");
 		}
 	}
 
@@ -150,11 +284,13 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 		loadScript();
 		super.create();
 		call("create");
+		stateScripts.luaCall("onCreate");
 	}
 
 	public override function createPost() {
 		super.createPost();
 		call("postCreate");
+		stateScripts.luaCall("onCreatePost");
 	}
 	public function call(name:String, ?args:Array<Dynamic>, ?defaultVal:Dynamic):Dynamic {
 		// calls the function on the assigned script
@@ -169,6 +305,9 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 		return event;
 	}
 
+	public static function getState():MusicBeatSubstate
+		return cast (FlxG.state, MusicBeatSubstate);
+
 	override function update(elapsed:Float)
 	{
 		// TODO: DEBUG MODE!!
@@ -176,6 +315,7 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 			loadScript();
 		}
 		call("update", [elapsed]);
+		stateScripts.luaCall("onUpdate", [elapsed]);
 		super.update(elapsed);
 	}
 
@@ -183,18 +323,21 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 	{
 		for(e in members) if (e is IBeatReceiver) cast(e, IBeatReceiver).stepHit(curStep);
 		call("stepHit", [curStep]);
+		stateScripts.luaCall("onStepHit", [curStep]);
 	}
 
 	@:dox(hide) public function beatHit(curBeat:Int):Void
 	{
 		for(e in members) if (e is IBeatReceiver) cast(e, IBeatReceiver).beatHit(curBeat);
 		call("beatHit", [curBeat]);
+		stateScripts.luaCall("onBeatHit", [curBeat]);
 	}
 
 	@:dox(hide) public function measureHit(curMeasure:Int):Void
 	{
 		for(e in members) if (e is IBeatReceiver) cast(e, IBeatReceiver).measureHit(curMeasure);
 		call("measureHit", [curMeasure]);
+		stateScripts.luaCall("onMeasureHit", [curMeasure]);
 	}
 
 	/**
@@ -216,24 +359,21 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 	 */
 	public override function openSubState(subState:FlxSubState) {
 		var e = event("onOpenSubState", EventManager.get(StateEvent).recycle(subState));
-		if (!e.cancelled)
+		var ret:Dynamic = stateScripts.luaCall("onOpenSubState", [Type.getClassName(Type.getClass(subState))]);
+		if (!e.cancelled #if ALLOW_LUASTATE && ret != LuaUtil.Function_Stop #end)
 			super.openSubState(subState);
 	}
 
 	public override function onResize(w:Int, h:Int) {
 		super.onResize(w, h);
 		event("onResize", EventManager.get(ResizeEvent).recycle(w, h, null, null));
-	}
-
-	public override function destroy() {
-		super.destroy();
-		call("destroy");
-		stateScripts = FlxDestroyUtil.destroy(stateScripts);
+		stateScripts.luaCall("onResize", [w, h]);
 	}
 
 	public override function switchTo(nextState:FlxState) {
 		var e = event("onStateSwitch", EventManager.get(StateEvent).recycle(nextState));
-		if (e.cancelled)
+		var ret:Dynamic = stateScripts.luaCall("onStateSwitch", [Type.getClassName(Type.getClass(nextState))]);
+		if (e.cancelled #if ALLOW_LUASTATE || ret == LuaUtil.Function_Stop #end)
 			return false;
 		return super.switchTo(nextState);
 	}
@@ -241,11 +381,13 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 	public override function onFocus() {
 		super.onFocus();
 		call("onFocus");
+		stateScripts.luaCall("onFocus");
 	}
 
 	public override function onFocusLost() {
 		super.onFocusLost();
 		call("onFocusLost");
+		stateScripts.luaCall("onFocusLost");
 	}
 
 	public var parent:FlxState;

@@ -2,14 +2,15 @@
 <libraries>
 	<!-- OpenFL & Lime (Required for Flixel) -->
 	<lib name="openfl" version="9.2.2" />
-	<lib name="lime"  version="8.1.2" />
+	<lib name="lime" version="8.1.2" />
 
 	<!-- Flixel -->
-	<git name="flixel" url="https://github.com/CodenameCrew/cne-flixel" />
+	<git name="flixel" url="https://github.com/VapireMox/cne-flixel" />
 	<git name="flixel-addons" url="https://github.com/CodenameCrew/cne-flixel-addons" />
 
 	<!-- Other Libraries -->
-	<git name="hscript-improved" url="https://github.com/CodenameCrew/hscript-improved" ref="custom-classes" />
+	<git name="hscript-improved" url="https://github.com/VapireMox/hscript-improved/" ref="custom-classes" />
+	<git name="linc_luajit" url="https://github.com/MobilePorting/linc_luajit" />
 	<git name="flxanimate" url="https://github.com/CodenameCrew/cne-flxanimate" />
 	<git name="hxdiscord_rpc" url="https://github.com/CodenameCrew/cne-hxdiscord_rpc" />
 	<lib name="hxvlc" version="1.9.3" skipDeps="true" />
@@ -19,5 +20,4 @@
 	<!-- <lib name="dox" /> -->
 	<lib name="format" />
 	<lib name="markdown" />
-	<lib name="nape-haxe4" />
 </libraries>

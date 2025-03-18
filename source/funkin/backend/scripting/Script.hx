@@ -5,6 +5,10 @@ import flixel.util.FlxDestroyUtil.IFlxDestroyable;
 import haxe.io.Path;
 import hscript.IHScriptCustomConstructor;
 import flixel.util.FlxStringUtil;
+import flixel.util.FlxColor;
+#if ALLOW_LUASTATE
+import funkin.backend.scripting.utils.LuaUtil;
+#end
 
 @:allow(funkin.backend.scripting.ScriptPack)
 /**
@@ -19,11 +23,6 @@ class Script extends FlxBasic implements IFlxDestroyable {
 
 	public static function getDefaultVariables(?script:Script):Map<String, Dynamic> {
 		return [
-			// Haxe related stuff
-			"Std"			   => Std,
-			"Math"			  => Math,
-			"Reflect"			  => Reflect,
-			"StringTools"	   => StringTools,
 			"Json"			  => haxe.Json,
 
 			// OpenFL & Lime related stuff
@@ -75,6 +74,7 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			"FreeplayState"	 => funkin.menus.FreeplayState,
 			"MainMenuState"	 => funkin.menus.MainMenuState,
 			"PauseSubState"	 => funkin.menus.PauseSubState,
+			"UnusedVideoState" => funkin.extra.UnusedVideoState,
 			"StoryMenuState"	=> funkin.menus.StoryMenuState,
 			"TitleState"		=> funkin.menus.TitleState,
 			"Options"		   => funkin.options.Options,
@@ -89,6 +89,7 @@ class Script extends FlxBasic implements IFlxDestroyable {
 
 			"CoolUtil"		  => funkin.backend.utils.CoolUtil,
 			"IniUtil"		   => funkin.backend.utils.IniUtil,
+			#if ALLOW_CRYPTO "CryptoUtil" => funkin.backend.utils.CryptoUtil, #end
 			"XMLUtil"		   => funkin.backend.utils.XMLUtil,
 			#if sys "ZipUtil"   => funkin.backend.utils.ZipUtil, #end
 			"MarkdownUtil"	  => funkin.backend.utils.MarkdownUtil,
@@ -111,7 +112,7 @@ class Script extends FlxBasic implements IFlxDestroyable {
 	public static var scriptExtensions:Array<String> = [
 		"hx", "hscript", "hsc", "hxs",
 		"pack", // combined file
-		"lua" /** ACTUALLY NOT SUPPORTED, ONLY FOR THE MESSAGE **/
+		"lua" /** 虽然已支持，但仍然存在许多的问题 **/
 	];
 
 	/**
@@ -123,6 +124,8 @@ class Script extends FlxBasic implements IFlxDestroyable {
 	 * Script name (with extension)
 	 */
 	public var fileName:String;
+	
+	public var isLua:Bool = false;
 
 	/**
 	 * Script Extension
@@ -149,14 +152,18 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			return switch(Path.extension(path).toLowerCase()) {
 				case "hx" | "hscript" | "hsc" | "hxs":
 					new HScript(path);
+				case "lua":
+					#if ALLOW_LUASTATE
+					new LuaScript(path);
+					#else
+					Logs.trace("Not Support Lua Script In Current Platform.", ERROR);
+					new DummyScript(path);
+					#end
 				case "pack":
 					var arr = Assets.getText(path).split("________PACKSEP________");
 					fromString(arr[1], arr[0]);
-				case "lua":
-					Logs.trace("Lua is not supported in this engine. Use HScript instead.", ERROR);
-					new DummyScript(path);
 				default:
-					new DummyScript(path);
+				        new DummyScript(path);
 			}
 		}
 		return new DummyScript(path);
@@ -172,8 +179,12 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			case "hx" | "hscript" | "hsc" | "hxs":
 				new HScript(path).loadFromString(code);
 			case "lua":
-				Logs.trace("Lua is not supported in this engine. Use HScript instead.", ERROR);
+				#if ALLOW_LUASTATE
+				new LuaScript(path).loadFromString(code);
+				#else
+				Logs.trace("Not Support Lua Script In Current Platform.", ERROR);
 				new DummyScript(path).loadFromString(code);
+				#end
 			default:
 				new DummyScript(path).loadFromString(code);
 		}
@@ -193,13 +204,15 @@ class Script extends FlxBasic implements IFlxDestroyable {
 		extension = Path.extension(path);
 		this.path = path;
 		onCreate(path);
-		for(k=>e in getDefaultVariables(this)) {
-			set(k, e);
-		}
 		set("disableScript", () -> {
 			active = false;
 		});
-		set("__script__", this);
+		if(!isLua) {
+			for(k=>e in getDefaultVariables(this)) {
+				set(k, e);
+			}
+			set("__script__", this);
+		}
 	}
 
 
@@ -219,6 +232,9 @@ class Script extends FlxBasic implements IFlxDestroyable {
 
 	/**
 	 * HSCRIPT ONLY FOR NOW
+	 * ...
+	 * 不一定，牢马尿会知道怎么做的.
+	 * ...
 	 * Sets the "public" variables map for ScriptPack
 	 */
 	public function setPublicMap(map:Map<String, Dynamic>) {
