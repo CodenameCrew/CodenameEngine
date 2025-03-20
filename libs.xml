@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <libraries>
 	<!-- OpenFL & Lime (Required for Flixel) -->
-	<lib name="openfl" version="9.2.2" />
-	<lib name="lime"  version="8.1.2" />
+	<lib name="openfl" version="9.4.1" />
+	<lib name="lime"  version="8.2.2" />
 
 	<!-- Flixel -->
 	<git name="flixel" url="https://github.com/CodenameCrew/cne-flixel" />
