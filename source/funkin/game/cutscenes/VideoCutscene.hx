@@ -61,6 +61,7 @@ class VideoCutscene extends Cutscene {
 			video.dispose();
 			FlxG.removeChild(video);
 		});
+		video.smoothing = Options.antialiasing;
 		video.onEndReached.add(close);
 		FlxG.addChildBelowMouse(video);
 
