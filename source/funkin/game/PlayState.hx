@@ -233,6 +233,14 @@ class PlayState extends MusicBeatState
 	 */
 	public var camZoomingStrength:Float = 1;
 	/**
+	 * Number of Beats since the last Time Signature Change
+	 */
+	public var beatsSinceChange:Float = 0;
+	/**
+	 * The curBeat position of the last Time Signature Change that occured
+	 */
+	public var lastTimeSigBeat:Float = 0;
+	/**
 	 * Maximum amount of zoom for the camera.
 	 */
 	public var maxCamZoom:Float = 1.35;
@@ -1018,8 +1026,6 @@ class PlayState extends MusicBeatState
 
 		camZoomingInterval = cast songData.meta.beatsPerMeasure.getDefault(4);
 
-		Conductor.changeBPM(songData.meta.bpm, cast songData.meta.beatsPerMeasure.getDefault(4), cast songData.meta.stepsPerBeat.getDefault(4));
-
 		curSong = songData.meta.name.toLowerCase();
 
 		inst = FlxG.sound.load(Paths.inst(SONG.meta.name, difficulty));
@@ -1427,6 +1433,9 @@ class PlayState extends MusicBeatState
 				if (strumLines.members[event.params[0]] != null && strumLines.members[event.params[0]].characters != null)
 					for (char in strumLines.members[event.params[0]].characters)
 						if (char != null) char.playAnim(event.params[1], event.params[2], null);
+			case "Time Signature Change": 
+				lastTimeSigBeat = Conductor.getTimeInBeats(event.time); 
+				// the rest is automatically handled by conductor
 			case "Unknown": // nothing
 		}
 	}
@@ -1838,10 +1847,10 @@ class PlayState extends MusicBeatState
 	override function beatHit(curBeat:Int)
 	{
 		super.beatHit(curBeat);
+		
+		beatsSinceChange = curBeat - lastTimeSigBeat;
 
-		if (camZoomingInterval < 1) camZoomingInterval = 1;
-		if (Options.camZoomOnBeat && camZooming && FlxG.camera.zoom < maxCamZoom && curBeat % camZoomingInterval == 0)
-		{
+		if (Options.camZoomOnBeat && camZooming && FlxG.camera.zoom < maxCamZoom && beatsSinceChange % camZoomingInterval == 0) {
 			FlxG.camera.zoom += 0.015 * camZoomingStrength;
 			camHUD.zoom += 0.03 * camZoomingStrength;
 		}
