@@ -18,6 +18,10 @@ class GameplayOptions extends OptionsScreen {
 			"Ghost Tapping",
 			"If unchecked, trying to hit any strum that have no note that can be hit will cause a miss.",
 			"ghostTapping"));
+		add(new Checkbox(
+			"Combo Breaks",
+			"If checked, hitting bads and shits break your combo, and adds to the miss **counter**, not your actual misses.",
+			"comboBreaks"));
 		add(offsetSetting = new NumOption(
 			"Song Offset",
 			"Changes the offset that songs should start with.",
