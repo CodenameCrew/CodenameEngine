@@ -4,5 +4,5 @@
 	<anim name="singLEFT" anim="Angry Senpai LEFT NOTE" x="3" y="0" fps="24" loop="false"/>
 	<anim name="singDOWN" anim="Angry Senpai DOWN NOTE" x="-1" y="0" fps="24" loop="false"/>
 	<anim name="singUP" anim="Angry Senpai UP NOTE" x="0" y="6" fps="24" loop="false"/>
-	<anim name="singRIGHT" anim="Angry Senpai RIGHT NOTE" x="-1" y="0" fps="24" loop="false"/>
+	<anim name="singRIGHT" anim="Angry Senpai RIGHT NOTE" x="0" y="0" fps="24" loop="false"/>
 </character>

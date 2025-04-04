@@ -5,5 +5,5 @@
 	<anim name="singLEFT" anim="SENPAI LEFT NOTE" x="4" y="0" fps="24" loop="false"/>
 	<anim name="singDOWN" anim="SENPAI DOWN NOTE" x="0" y="0" fps="24" loop="false"/>
 	<anim name="singUP" anim="SENPAI UP NOTE" x="0" y="6" fps="24" loop="false"/>
-	<anim name="singRIGHT" anim="SENPAI RIGHT NOTE" x="0" y="0" fps="24" loop="false"/>
+	<anim name="singRIGHT" anim="SENPAI RIGHT NOTE" x="1" y="0" fps="24" loop="false"/>
 </character>
