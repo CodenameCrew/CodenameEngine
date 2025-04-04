@@ -135,12 +135,12 @@ class ZipUtil {
 		if (prog == null) prog = new ZipProgress();
 
 		try {
-			var curPath:Array<String> = ['$path'];
+			var curPath:Array<String> = [path];
 			var destPath:Array<String> = [];
 			if (prefix != "") {
 				prefix = prefix.replace("\\", "/");
-				while(prefix.charAt(0) == "/") prefix = prefix.substr(1);
-				while(prefix.charAt(prefix.length-1) == "/") prefix = prefix.substr(0, prefix.length-1);
+				while(prefix.charCodeAt(0) == "/".code) prefix = prefix.substr(1);
+				while(prefix.charCodeAt(prefix.length-1) == "/".code) prefix = prefix.substr(0, prefix.length-1);
 				destPath.push(prefix);
 			}
 
@@ -160,7 +160,7 @@ class ZipUtil {
 					} else {
 						// is file, put it in the list
 						var zipPath = '$zipPath/$e';
-						while(zipPath.charAt(0) == "/") zipPath = zipPath.substr(1);
+						while(zipPath.charCodeAt(0) == "/".code) zipPath = zipPath.substr(1);
 						files.push(new StrNameLabel('$path/$e', zipPath));
 					}
 				}

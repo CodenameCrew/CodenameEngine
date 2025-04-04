@@ -673,7 +673,7 @@ class PlayState extends MusicBeatState
 				case 2: "girlfriend";
 			}) : strumLine.position;
 			if (strumLine.characters != null) for(k=>charName in strumLine.characters) {
-				var char = new Character(0, 0, charName, stage.isCharFlipped(charPosName, strumLine.type == 1));
+				var char = new Character(0, 0, charName, stage.isCharFlipped(stage.characterPoses[charName] != null ? charName : charPosName, strumLine.type == 1));
 				stage.applyCharStuff(char, charPosName, k);
 				chars.push(char);
 			}
@@ -1235,8 +1235,11 @@ class PlayState extends MusicBeatState
 			accFormat.format.color = curRating.color;
 			accuracyTxt.text = 'Accuracy:${accuracy < 0 ? "-%" : '${CoolUtil.quantize(accuracy * 100, 100)}%'} - ${curRating.rating}';
 
-			accuracyTxt._formatRanges[0].range.start = accuracyTxt.text.length - curRating.rating.length;
-			accuracyTxt._formatRanges[0].range.end = accuracyTxt.text.length;
+			for (i => frmtRange in accuracyTxt._formatRanges) if (frmtRange.format == accFormat) {
+				accuracyTxt._formatRanges[i].range.start = accuracyTxt.text.length - curRating.rating.length;
+				accuracyTxt._formatRanges[i].range.end = accuracyTxt.text.length;
+				break;
+			}
 		}
 	}
 
@@ -1365,7 +1368,27 @@ class PlayState extends MusicBeatState
 
 		switch(event.name) {
 			case "HScript Call":
-				scripts.call(event.params[0], event.params[1].split(','));
+				var scriptPacks:Array<ScriptPack> = [scripts, stateScripts];
+				for (strLine in strumLines.members) for (char in strLine.characters) scriptPacks.push(char.scripts);
+				var args:Array<String> = event.params[1].split(',');
+
+				for (pack in scriptPacks) {
+					pack.call(event.params[0], args);
+					//public functions
+					if (pack.publicVariables.exists(event.params[0])) {
+						var func = pack.publicVariables.get(event.params[0]);
+						if (func != null && Reflect.isFunction(func))
+							Reflect.callMethod(null, func, args);
+					}
+				}
+
+				//static functions
+				if (Script.staticVariables.exists(event.params[0])) {
+					var func = Script.staticVariables.get(event.params[0]);
+					if (func != null && Reflect.isFunction(func))
+						Reflect.callMethod(null, func, args);
+				}
+
 			case "Camera Movement":
 				curCameraTarget = event.params[0];
 			case "Add Camera Zoom":
