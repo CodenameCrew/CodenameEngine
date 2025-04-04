@@ -673,7 +673,7 @@ class PlayState extends MusicBeatState
 				case 2: "girlfriend";
 			}) : strumLine.position;
 			if (strumLine.characters != null) for(k=>charName in strumLine.characters) {
-				var char = new Character(0, 0, charName, stage.isCharFlipped(charPosName, strumLine.type == 1));
+				var char = new Character(0, 0, charName, stage.isCharFlipped(stage.characterPoses[charName] != null ? charName : charPosName, strumLine.type == 1));
 				stage.applyCharStuff(char, charPosName, k);
 				chars.push(char);
 			}
