@@ -36,12 +36,12 @@ class BetaWarningState extends MusicBeatState {
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
 
-		if (controls.ACCEPT && transitioning) {
+		if (FlxG.keys.pressed.ANY && transitioning) {
 			FlxG.camera.stopFX(); FlxG.camera.visible = false;
 			goToTitle();
 		}
 
-		if (controls.ACCEPT && !transitioning) {
+		if (FlxG.keys.pressed.ANY && !transitioning) {
 			transitioning = true;
 			CoolUtil.playMenuSFX(CONFIRM);
 			FlxG.camera.flash(FlxColor.WHITE, 1, function() {
