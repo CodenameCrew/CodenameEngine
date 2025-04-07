@@ -1123,6 +1123,8 @@ class PlayState extends MusicBeatState
 		scripts.call("onFocusLost");
 		updateDiscordPresence();
 		super.onFocusLost();
+
+		openSubState(new PauseSubState());
 	}
 
 	@:dox(hide)
