@@ -1124,7 +1124,7 @@ class PlayState extends MusicBeatState
 		updateDiscordPresence();
 		super.onFocusLost();
 
-		openSubState(new PauseSubState());
+		pauseGame();
 	}
 
 	@:dox(hide)
