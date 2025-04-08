@@ -194,7 +194,7 @@ class CharacterButton extends UIButton {
 		super(x, y, "", null, 250, 54);
 
 		charIcon = new HealthIcon(Character.getIconFromCharName(char));
-		charIcon.scale.set(0.3, 0.3);
+		charIcon.scale.set(charIcon.defaultScale * 0.3, charIcon.defaultScale * 0.3);
 		charIcon.updateHitbox();
 		charIcon.setPosition(x + 10, bHeight/2 - charIcon.height / 2);
 		charIcon.scrollFactor.set(1,1);
@@ -206,11 +206,10 @@ class CharacterButton extends UIButton {
 		textBox.antialiasing = true;
 		textBox.onChange = function(char:String) {
 			char = Character.getIconFromCharName(char);
-			var image = Paths.image("icons/" + char);
-			if(!Assets.exists(image))
-				image = Paths.image("icons/face");
-			charIcon.loadGraphic(image, true, 150, 150);
+			charIcon.setIcon(char);
+			charIcon.scale.set(charIcon.defaultScale * 0.3, charIcon.defaultScale * 0.3);
 			charIcon.updateHitbox();
+			charIcon.setPosition(x + 10, bHeight/2 - charIcon.height / 2);
 		}
 
 		deleteButton = new UIButton(textBox.x + 115 + 16, bHeight/2 - (32/2), "", function () {
