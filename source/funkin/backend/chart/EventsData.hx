@@ -10,7 +10,7 @@ import funkin.backend.assets.Paths;
 using StringTools;
 
 class EventsData {
-	public static var defaultEventsList:Array<String> = ["HScript Call", "Camera Movement", "Add Camera Zoom", "Camera Modulo Change", "Camera Flash", "BPM Change", "Scroll Speed Change", "Alt Animation Toggle", "Play Animation"];
+	public static var defaultEventsList:Array<String> = ["HScript Call", "Camera Movement", "Add Camera Zoom", "Camera Modulo Change", "Camera Flash", "BPM Change", "Continuous BPM Change", "Time Signature Change", "Scroll Speed Change", "Alt Animation Toggle", "Play Animation"];
 	public static var defaultEventsParams:Map<String, Array<EventParamInfo>> = [
 		"HScript Call" => [
 			{name: "Function Name", type: TString, defValue: "myFunc"},
@@ -31,7 +31,9 @@ class EventsData {
 			{name: "Time (Steps)", type: TFloat(0.25, 9999, 0.25, 2), defValue: 4},
 			{name: "Camera", type: TDropDown(['camGame', 'camHUD']), defValue: "camHUD"}
 		],
-		"BPM Change" => [{name: "Target BPM", type: TFloat(1.00, null, 0.001, 3), defValue: 100}],
+		"BPM Change" => [{name: "Target BPM", type: TFloat(1.00, 9999, 0.001, 3), defValue: 100}],
+		"Continuous BPM Change" => [{name: "Target BPM", type: TFloat(1.00, 9999, 0.001, 3), defValue: 100}, {name: "Time (steps)", type: TFloat(0.25, 9999, 0.25, 2), defValue: 4}],
+		"Time Signature Change" => [{name: "Target Beat Count", type: TFloat(1), defValue: 4}, {name: "Target Step Count", type: TFloat(1), defValue: 4}],
 		"Scroll Speed Change" => [
 			{name: "Tween Speed?", type: TBool, defValue: true},
 			{name: "New Speed", type: TFloat(0.01, 99, 0.01, 2), defValue: 1.},
@@ -48,7 +50,7 @@ class EventsData {
 			}
 		],
 		"Alt Animation Toggle" => [{name: "Enable On Sing Poses", type: TBool, defValue: true}, {name: "Enable On Idle", type: TBool, defValue: true}, {name: "Strumline", type: TStrumLine, defValue: 0}],
-		"Play Animation" => [{name: "Character", type: TStrumLine, defValue: 0}, {name: "Animation", type: TString, defValue: "animation"}, {name: "Is forced?", type: TBool, defValue: true}],
+		"Play Animation" => [{name: "Character", type: TStrumLine, defValue: 0}, {name: "Animation", type: TString, defValue: "animation"}, {name: "Is forced?", type: TBool, defValue: true}]
 	];
 
 	public static var eventsList:Array<String> = defaultEventsList.copy();
@@ -75,11 +77,12 @@ class EventsData {
 		hscriptParser.allowJSON = hscriptParser.allowMetadata = false;
 
 		for (file in Paths.getFolderContent('data/events/', true, BOTH)) {
-			if (Path.extension(file) != "json" && Path.extension(file) != "pack") continue;
-			var eventName:String = Path.withoutExtension(Path.withoutDirectory(file));
+			var ext = Path.extension(file);
+			if (ext != "json" && ext != "pack") continue;
+			var eventName:String = CoolUtil.getFilename(file);
 			var fileTxt:String = Assets.getText(file);
 
-			if (Path.extension(file) == "pack") {
+			if (ext == "pack") {
 				var arr = fileTxt.split("________PACKSEP________");
 				eventName = Path.withoutExtension(arr[0]);
 				fileTxt = arr[2];

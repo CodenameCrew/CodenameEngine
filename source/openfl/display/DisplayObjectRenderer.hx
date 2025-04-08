@@ -19,6 +19,8 @@ import lime.graphics.RenderContext;
 import lime.graphics.RenderContextType;
 #end
 
+import funkin.backend.utils.BitmapUtil;
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -376,7 +378,7 @@ class DisplayObjectRenderer extends EventDispatcher
 				offsetX = rect.x > 0 ? Math.ceil(rect.x) : Math.floor(rect.x);
 				offsetY = rect.y > 0 ? Math.ceil(rect.y) : Math.floor(rect.y);
 
-				if (displayObject.__cacheBitmapData != null)
+				/*if (displayObject.__cacheBitmapData != null)
 				{
 					if (filterWidth > displayObject.__cacheBitmapData.width || filterHeight > displayObject.__cacheBitmapData.height)
 					{
@@ -394,7 +396,11 @@ class DisplayObjectRenderer extends EventDispatcher
 				{
 					bitmapWidth = filterWidth;
 					bitmapHeight = filterHeight;
-				}
+				}*/
+				needRender = needRender || displayObject.__cacheBitmapData == null ||
+					displayObject.__cacheBitmapData.width != filterWidth || displayObject.__cacheBitmapData.height != filterHeight;
+				bitmapWidth = filterWidth;
+				bitmapHeight = filterHeight;
 			}
 
 			if (needRender)
@@ -408,28 +414,20 @@ class DisplayObjectRenderer extends EventDispatcher
 						&& (bitmapWidth != filterWidth || bitmapHeight != filterHeight));
 					var fillColor = displayObject.opaqueBackground != null ? (0xFF << 24) | displayObject.opaqueBackground : 0;
 					var bitmapColor = needsFill ? 0 : fillColor;
-					var allowFramebuffer = (renderer.__type == OPENGL);
 
 					if (displayObject.__cacheBitmapData == null
-						|| bitmapWidth > displayObject.__cacheBitmapData.width
-						|| bitmapHeight > displayObject.__cacheBitmapData.height)
+						|| bitmapWidth != displayObject.__cacheBitmapData.width
+						|| bitmapHeight != displayObject.__cacheBitmapData.height)
 					{
-						displayObject.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, bitmapColor);
+						if (displayObject.__cacheBitmapData == null) displayObject.__cacheBitmapData = BitmapUtil.create(bitmapWidth, bitmapHeight);
+						else BitmapUtil.resize(displayObject.__cacheBitmapData, bitmapWidth, bitmapHeight);
 
 						if (displayObject.__cacheBitmap == null) displayObject.__cacheBitmap = new Bitmap();
 						displayObject.__cacheBitmap.__bitmapData = displayObject.__cacheBitmapData;
 						displayObject.__cacheBitmapRenderer = null;
 					}
-					else
-					{
-						displayObject.__cacheBitmapData.__fillRect(displayObject.__cacheBitmapData.rect, bitmapColor, allowFramebuffer);
-					}
 
-					if (needsFill)
-					{
-						rect.setTo(0, 0, filterWidth, filterHeight);
-						displayObject.__cacheBitmapData.__fillRect(rect, fillColor, allowFramebuffer);
-					}
+					BitmapUtil.clear(displayObject.__cacheBitmapData, bitmapColor);
 				}
 				else
 				{
@@ -598,19 +596,18 @@ class DisplayObjectRenderer extends EventDispatcher
 						var bitmap3 = null;
 
 						// if (needSecondBitmapData) {
-						if (displayObject.__cacheBitmapData2 == null
-							|| bitmapWidth > displayObject.__cacheBitmapData2.width
-							|| bitmapHeight > displayObject.__cacheBitmapData2.height)
+						if (displayObject.__cacheBitmapData2 == null)
 						{
-							displayObject.__cacheBitmapData2 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
+							displayObject.__cacheBitmapData2 = BitmapUtil.create(bitmapWidth, bitmapHeight);
+						}
+						else if (bitmapWidth != displayObject.__cacheBitmapData2.width || bitmapHeight != displayObject.__cacheBitmapData2.height)
+						{
+							BitmapUtil.resize(displayObject.__cacheBitmapData2, bitmapWidth, bitmapHeight);
+							BitmapUtil.clear(displayObject.__cacheBitmapData2);
 						}
 						else
 						{
-							displayObject.__cacheBitmapData2.fillRect(displayObject.__cacheBitmapData2.rect, 0);
-							if (displayObject.__cacheBitmapData2.image != null)
-							{
-								displayObject.__cacheBitmapData2.__textureVersion = displayObject.__cacheBitmapData2.image.version + 1;
-							}
+							BitmapUtil.clear(displayObject.__cacheBitmapData2);
 						}
 						displayObject.__cacheBitmapData2.__setUVRect(context, 0, 0, filterWidth, filterHeight);
 						bitmap2 = displayObject.__cacheBitmapData2;
@@ -620,19 +617,18 @@ class DisplayObjectRenderer extends EventDispatcher
 
 						if (needCopyOfOriginal)
 						{
-							if (displayObject.__cacheBitmapData3 == null
-								|| bitmapWidth > displayObject.__cacheBitmapData3.width
-								|| bitmapHeight > displayObject.__cacheBitmapData3.height)
+							if (displayObject.__cacheBitmapData3 == null)
 							{
-								displayObject.__cacheBitmapData3 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
+								displayObject.__cacheBitmapData3 = BitmapUtil.create(bitmapWidth, bitmapHeight);
+							}
+							else if (bitmapWidth != displayObject.__cacheBitmapData3.width || bitmapHeight != displayObject.__cacheBitmapData3.height)
+							{
+								BitmapUtil.resize(displayObject.__cacheBitmapData3, bitmapWidth, bitmapHeight);
+								BitmapUtil.clear(displayObject.__cacheBitmapData3);
 							}
 							else
 							{
-								displayObject.__cacheBitmapData3.fillRect(displayObject.__cacheBitmapData3.rect, 0);
-								if (displayObject.__cacheBitmapData3.image != null)
-								{
-									displayObject.__cacheBitmapData3.__textureVersion = displayObject.__cacheBitmapData3.image.version + 1;
-								}
+								BitmapUtil.clear(displayObject.__cacheBitmapData3);
 							}
 							displayObject.__cacheBitmapData3.__setUVRect(context, 0, 0, filterWidth, filterHeight);
 							bitmap3 = displayObject.__cacheBitmapData3;
