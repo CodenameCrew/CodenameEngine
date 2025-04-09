@@ -1256,9 +1256,6 @@ class PlayState extends MusicBeatState
 
 		updateRatingStuff();
 
-		if (controls.PAUSE && startedCountdown && canPause)
-			pauseGame();
-
 		if (canAccessDebugMenus) {
 			if (chartingMode && FlxG.keys.justPressed.SEVEN) {
 				FlxG.switchState(new funkin.editors.charter.Charter(SONG.meta.name, difficulty, false));
@@ -1299,6 +1296,9 @@ class PlayState extends MusicBeatState
 
 		while(events.length > 0 && events.last().time <= Conductor.songPosition)
 			executeEvent(events.pop());
+
+		if (controls.PAUSE && startedCountdown && canPause)
+			pauseGame();
 
 		if (generatedMusic && strumLines.members[curCameraTarget] != null)
 		{
