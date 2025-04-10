@@ -182,6 +182,8 @@
 
 	<haxelib name="flixel" />
 	<haxelib name="flixel-addons" />
+	
+	<haxelib name="hxWebSockets" />
 
 	<haxelib name="hxvlc" if="VIDEO_CUTSCENES" />
 	<haxelib name="away3d" if="THREE_D_SUPPORT" />
