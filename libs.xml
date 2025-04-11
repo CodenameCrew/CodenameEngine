@@ -5,18 +5,19 @@
 	<lib name="lime"  version="8.1.2" />
 
 	<!-- Flixel -->
-	<git name="flixel" url="https://github.com/FNF-CNE-Devs/flixel" />
-	<git name="flixel-addons" url="https://github.com/FNF-CNE-Devs/flixel-addons" />
+	<git name="flixel" url="https://github.com/CodenameCrew/cne-flixel" />
+	<git name="flixel-addons" url="https://github.com/CodenameCrew/cne-flixel-addons" />
 
 	<!-- Other Libraries -->
-	<git name="hscript-improved" url="https://github.com/FNF-CNE-Devs/hscript-improved" ref="custom-classes" />
-	<git name="flxanimate" url="https://github.com/FNF-CNE-Devs/flxanimate" />
-	<git name="hxdiscord_rpc" url="https://github.com/FNF-CNE-Devs/hxdiscord_rpc" />
+	<git name="hscript-improved" url="https://github.com/CodenameCrew/hscript-improved" ref="custom-classes" />
+	<git name="flxanimate" url="https://github.com/CodenameCrew/cne-flxanimate" />
+	<git name="hxdiscord_rpc" url="https://github.com/CodenameCrew/cne-hxdiscord_rpc" />
 	<lib name="hxvlc" version="1.9.3" skipDeps="true" />
 
 	<!-- Documentation and other features -->
-	<git name="away3d" url="https://github.com/FNF-CNE-Devs/away3d" />
+	<git name="away3d" url="https://github.com/CodenameCrew/away3d" />
 	<!-- <lib name="dox" /> -->
 	<lib name="format" />
 	<lib name="markdown" />
+	<lib name="nape-haxe4" />
 </libraries>

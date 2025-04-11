@@ -100,30 +100,8 @@ class GameOverSubstate extends MusicBeatSubstate
 		if (__cancelDefault)
 			return;
 
-		if (controls.ACCEPT)
-		{
-			endBullshit();
-		}
-
-		if (controls.BACK)
-		{
-			if (PlayState.chartingMode && Charter.undos.unsaved)
-				game.saveWarn(false);
-			else {
-				PlayState.resetSongInfos();
-				if (Charter.instance != null) Charter.instance.__clearStatics();
-
-				if (FlxG.sound.music != null)
-					FlxG.sound.music.stop();
-				FlxG.sound.music = null;
-
-				if (PlayState.isStoryMode)
-					FlxG.switchState(new StoryMenuState());
-				else
-					FlxG.switchState(new FreeplayState());
-			}
-
-		}
+		if (controls.ACCEPT) endBullshit();
+		if (controls.BACK) exit();
 
 		if (!isEnding && ((!lossSFX.playing) || (character.getAnimName() == "firstDeath" && character.isAnimFinished())) && (FlxG.sound.music == null || !FlxG.sound.music.playing))
 		{
@@ -190,6 +168,26 @@ class GameOverSubstate extends MusicBeatSubstate
 				FlxG.switchState(new PlayState());
 			});
 		});
+	}
+
+	function exit()
+	{
+		var event = new CancellableEvent();
+		gameoverScript.call('onReturnToMenu', [event]);
+
+		if (event.cancelled)
+			return;
+
+		if (PlayState.chartingMode && Charter.undos.unsaved) game.saveWarn(false);
+		else {
+			PlayState.resetSongInfos();
+			if (Charter.instance != null) Charter.instance.__clearStatics();
+
+			if (FlxG.sound.music != null) FlxG.sound.music.stop();
+			FlxG.sound.music = null;
+
+			FlxG.switchState(PlayState.isStoryMode ? new StoryMenuState() : new FreeplayState());
+		}
 	}
 
 	override function destroy()

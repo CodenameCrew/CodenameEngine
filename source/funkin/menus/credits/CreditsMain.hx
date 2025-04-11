@@ -11,7 +11,7 @@ class CreditsMain extends TreeMenu {
 	var items:Array<OptionType> = [];
 
 	public override function create() {
-		bg = new FlxSprite(-80).loadGraphic(Paths.image('menus/menuBGBlue'));
+		bg = new FlxSprite(-80).loadAnimatedGraphic(Paths.image('menus/menuBGBlue'));
 		// bg.scrollFactor.set();
 		bg.scale.set(1.15, 1.15);
 		bg.updateHitbox();

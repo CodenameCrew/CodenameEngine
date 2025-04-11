@@ -53,6 +53,7 @@ class MainState extends FlxState {
 		}
 		#end
 
+		MusicBeatTransition.script = "";
 		Main.refreshAssets();
 		ModsFolder.onModSwitch.dispatch(ModsFolder.currentModFolder);
 		DiscordUtil.init();

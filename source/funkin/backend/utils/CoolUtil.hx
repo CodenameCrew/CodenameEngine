@@ -865,6 +865,124 @@ class CoolUtil
 
 		return result.join(seperator);
 	}
+
+	public inline static function parsePropertyString(fieldPath:String):Array<OneOfTwo<String, Int>> {
+		return FlxTween.parseFieldString(fieldPath);
+	}
+
+	public static function stringifyFieldsPath(fields:Array<OneOfTwo<String, Int>>):String {
+		var str = new StringBuf();
+		var first = true;
+		for (field in fields) {
+			if (Type.typeof(field) == TInt) {
+				str.add('[${field}]');
+			} else {
+				if (!first)
+					str.add('.');
+				str.add(field);
+			}
+			first = false;
+		}
+		return str.toString();
+	}
+
+	public static function parseProperty(target:Dynamic, fields:OneOfTwo<String, Array<OneOfTwo<String, Int>>>):Dynamic {
+		var fields:Array<OneOfTwo<String, Int>> = {
+			if((fields is String)) CoolUtil.parsePropertyString(fields);
+			else fields;
+		}
+
+		var field = CoolUtil.last(fields);
+		for (i in 0...fields.length - 1) {
+			var component = fields[i];
+			if (Type.typeof(component) == TInt) {
+				if ((target is Array)) {
+					var index:Int = cast component;
+					var arr:Array<Dynamic> = cast target;
+					target = arr[index];
+				}
+			} else { // TClass(String)
+				target = Reflect.getProperty(target, component);
+			}
+			if (!Reflect.isObject(target) && !(target is Array))
+				throw 'The object does not have the property "$component" in "${stringifyFieldsPath(fields)}"';
+		}
+		return new PropertyInfo(target, field);
+	}
+
+	public static function cloneProperty(toTarget:Dynamic, fields:OneOfTwo<String, Array<OneOfTwo<String, Int>>>, fromTarget:Dynamic):Dynamic {
+		var fields:Array<OneOfTwo<String, Int>> = {
+			if((fields is String)) CoolUtil.parsePropertyString(fields);
+			else fields;
+		}
+
+		var toProperty = CoolUtil.parseProperty(toTarget, fields);
+		var fromProperty = CoolUtil.parseProperty(fromTarget, fields);
+
+		return toProperty.setValue(fromProperty.getValue());
+	}
+}
+
+class PropertyInfo {
+	public var object:Dynamic;
+	public var field:OneOfTwo<String, Int>;
+	public var typeOfField:Type.ValueType;
+	#if hscript_improved
+	public var isCustom:Bool = false;
+	public var custom:hscript.IHScriptCustomBehaviour;
+	#end
+
+	public function new(object:Dynamic, field:OneOfTwo<String, Int>) {
+		this.object = object;
+		this.field = field;
+		#if hscript_improved
+		if (object is hscript.IHScriptCustomBehaviour)
+		{
+			isCustom = true;
+			custom = cast object;
+		}
+		#end
+
+		typeOfField = Type.typeof(field);
+	}
+
+	public function getValue():Dynamic
+	{
+		if (typeOfField == TInt)
+		{
+			var index:Int = cast field;
+			var arr:Array<Dynamic> = cast object;
+			return arr[index];
+		}
+		else
+		{
+			#if hscript_improved
+			if (isCustom)
+				return custom.hget(field);
+			else
+			#end
+			return Reflect.getProperty(object, field);
+		}
+	}
+
+	public function setValue(value:Dynamic):Void
+	{
+		if (typeOfField == TInt)
+		{
+			var index:Int = cast field;
+			var arr:Array<Dynamic> = cast object;
+			arr[index] = value;
+		}
+		else
+		{
+			#if hscript_improved
+			if (isCustom)
+				custom.hset(field, value);
+			else
+			#end
+			Reflect.setProperty(object, field, value);
+		}
+	}
 }
 
 /**

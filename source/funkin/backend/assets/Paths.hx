@@ -209,10 +209,10 @@ class Paths
 	 * @param SkipAtlasCheck Whenever the atlas check should be skipped.
 	 * @return FlxFramesCollection Frames
 	 */
-	static function loadFrames(path:String, Unique:Bool = false, Key:String = null, SkipAtlasCheck:Bool = false):FlxFramesCollection {
+	static function loadFrames(path:String, Unique:Bool = false, Key:String = null, SkipAtlasCheck:Bool = false, SkipMultiCheck:Bool = false):FlxFramesCollection {
 		var noExt = Path.withoutExtension(path);
 
-		if (Assets.exists('$noExt/1.png')) {
+		if (!SkipMultiCheck && Assets.exists('$noExt/1.png')) {
 			// MULTIPLE SPRITESHEETS!!
 
 			var graphic = FlxG.bitmap.add("flixel/images/logo/default.png", false, '$noExt/mult');
@@ -224,7 +224,7 @@ class Paths
 			var cur = 1;
 			var finalFrames = new MultiFramesCollection(graphic);
 			while(Assets.exists('$noExt/$cur.png')) {
-				var spr = loadFrames('$noExt/$cur.png');
+				var spr = loadFrames('$noExt/$cur.png', false, null, false, true);
 				finalFrames.addFrames(spr);
 				cur++;
 			}

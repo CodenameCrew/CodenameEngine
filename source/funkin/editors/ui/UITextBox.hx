@@ -119,12 +119,21 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 			case END:
 				position = label.text.length;
 			case V:
-				if (modifier == KeyModifier.LEFT_CTRL || modifier == KeyModifier.RIGHT_CTRL) {
-					// paste
-					var data:String = Clipboard.generalClipboard.getData(TEXT_FORMAT);
-					if (data != null)
-						onTextInput(data);
-				}
+				// Hey lj here, fixed copying because before we checked if the modifier was left or right ctrl
+				// but somehow it gave a int outside of the KeyModifier's range :sob:
+				// apparently there is a boolean that just checks for you. yw :D
+
+				// if we are not holding ctrl, ignore
+				if (!modifier.ctrlKey) return;
+				// we pasting
+				var data:String = Clipboard.generalClipboard.getData(TEXT_FORMAT);
+				if (data != null) onTextInput(data);
+			case C:
+				// if we are not holding ctrl, ignore
+				if (!modifier.ctrlKey) return;
+
+				// copying
+				Clipboard.generalClipboard.setData(TEXT_FORMAT, label.text);
 			default:
 				// nothing
 		}

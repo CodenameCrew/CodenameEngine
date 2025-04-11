@@ -10,7 +10,7 @@ using StringTools;
 
 class CreditsCodename extends funkin.options.OptionsScreen {
 	public var error:Bool = false;
-	public var author:String = "FNF-CNE-Devs";
+	public var author:String = "CodenameCrew";
 	public var totalContributions:Int = 0;
 
 	public var mainDevCol:FlxColor = 0xFF9C35D5;

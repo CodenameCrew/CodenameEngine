@@ -4,7 +4,7 @@ import flixel.sound.FlxSound;
 import lime.media.AudioBuffer;
 
 // Thank you yosh :DDD -lunar
-// (https://github.com/FNF-CNE-Devs/YoshiCrafterEngine/blob/main/source/WaveformSprite.hx)
+// (https://github.com/CodenameCrew/YoshiCrafterEngine/blob/main/source/WaveformSprite.hx)
 class AudioAnalyzer {
 	public var buffer:AudioBuffer;
 	var __peakByte:Float = 0;

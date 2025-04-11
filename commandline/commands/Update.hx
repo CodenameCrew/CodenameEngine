@@ -77,17 +77,17 @@ class Update {
 				if (curHaxeVer[i] < requiredHaxeVer[i]) {
 					prettyPrint("!! WARNING !!");
 					Sys.println("Your current Haxe version is outdated.");
-					Sys.println('You\'re using ${haxeVer}, while the required version is 4.2.5.');
+					Sys.println('You\'re using ${haxeVer}, while the minimum required version is 4.2.5.');
 					Sys.println('The engine may not compile with your current version of Haxe.');
-					Sys.println('We recommend upgrading to 4.2.5');
+					Sys.println('We recommend upgrading to 4.2.5 or newer');
 					break;
-				} else if (curHaxeVer[i] > requiredHaxeVer[i]) {
+				}/* else if (curHaxeVer[i] > requiredHaxeVer[i]) {
 					prettyPrint("!! WARNING !!"
 					+ "\nUsing Haxe 4.3.0 and above is currently not recommended due to lack of testing.");
 					Sys.println('');
 					Sys.println('We recommend downgrading back to 4.2.5.');
 					break;
-				}
+				}*/
 			}
 		}
 

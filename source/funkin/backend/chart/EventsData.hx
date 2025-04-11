@@ -31,7 +31,7 @@ class EventsData {
 			{name: "Time (Steps)", type: TFloat(0.25, 9999, 0.25, 2), defValue: 4},
 			{name: "Camera", type: TDropDown(['camGame', 'camHUD']), defValue: "camHUD"}
 		],
-		"BPM Change" => [{name: "Target BPM", type: TFloat(1), defValue: 100}],
+		"BPM Change" => [{name: "Target BPM", type: TFloat(1.00, null, 0.001, 3), defValue: 100}],
 		"Scroll Speed Change" => [
 			{name: "Tween Speed?", type: TBool, defValue: true},
 			{name: "New Speed", type: TFloat(0.01, 99, 0.01, 2), defValue: 1.},

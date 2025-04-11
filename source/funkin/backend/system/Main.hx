@@ -49,6 +49,10 @@ class Main extends Sprite
 
 	public static var game:FunkinGame;
 
+	/**
+	 * The time since the game was focused last time in seconds.
+	 */
+	public static var timeSinceFocus(get, never):Float;
 	public static var time:Int = 0;
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
@@ -152,6 +156,7 @@ class Main extends Sprite
 		Conductor.init();
 		AudioSwitchFix.init();
 		EventManager.init();
+		FlxG.signals.focusGained.add(onFocus);
 		FlxG.signals.preStateSwitch.add(onStateSwitch);
 		FlxG.signals.postStateSwitch.add(onStateSwitchPost);
 
@@ -190,6 +195,10 @@ class Main extends Sprite
 			{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
 	}
 
+	public static function onFocus() {
+		_tickFocused = FlxG.game.ticks;
+	}
+
 	private static function onStateSwitch() {
 		scaleMode.resetSize();
 	}
@@ -208,5 +217,10 @@ class Main extends Sprite
 		}
 
 		MemoryUtil.clearMajor();
+	}
+
+	private static var _tickFocused:Float = 0;
+	public static function get_timeSinceFocus():Float {
+		return (FlxG.game.ticks - _tickFocused) / 1000;
 	}
 }
