@@ -18,6 +18,7 @@ class CharterEventScreen extends UISubstateWindow {
 
 	public var eventName:UIText;
 
+	public var scrollBar:UIScrollBar;
 	public var paramsPanel:FlxGroup;
 	public var paramsFields:Array<FlxBasic> = [];
 
@@ -59,6 +60,9 @@ class CharterEventScreen extends UISubstateWindow {
 		for (k=>i in events)
 			eventsList.add(new EventButton(i, CharterEvent.generateEventIcon(i), k, this, eventsList));
 		add(eventsList);
+
+		scrollBar = new UIScrollBar(windowSpr.x + windowSpr.width - 20, windowSpr.y + windowSpr.bHeight, windowSpr.height - windowSpr.bHeight, 0, windowSpr.height, 20);
+		add(scrollBar);
 
 		paramsPanel = new FlxGroup();
 		add(paramsPanel);
