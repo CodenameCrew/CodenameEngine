@@ -1273,7 +1273,7 @@ class PlayState extends MusicBeatState
 			for (icon in [iconP1, iconP2])
 				if (icon.updateBump != null)
 					icon.updateBump();
-		
+
 		if (updateIconPositions != null)
 			updateIconPositions();
 
