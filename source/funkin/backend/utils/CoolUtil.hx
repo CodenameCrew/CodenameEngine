@@ -80,46 +80,6 @@ class CoolUtil
 		#end
 	}
 
-	@:noUsing public inline static function safeGetAllFiles(originPath:String, reservePath:Bool = false, stayEmptyDirectory = true, showErrorBox:Bool = false):Array<String> {
-		#if sys
-		var files:Array<String> = [];
-		originPath = Path.addTrailingSlash(originPath);
-
-		var errorMessages:Array<String> = [];
-		function traverse(currentPath:String) {
-			try {
-				if (FileSystem.exists(currentPath) && FileSystem.isDirectory(currentPath)) {
-					final sb = FileSystem.readDirectory(currentPath);
-					if(sb.length > 0) for (item in sb) {
-						var fullPath = Path.addTrailingSlash(currentPath) + item;
-						if (FileSystem.isDirectory(fullPath)) {
-							traverse(fullPath);
-						} else {
-							files.push(reservePath ? fullPath : fullPath.substr(originPath.length));
-						}
-					}
-					else if(stayEmptyDirectory) {
-						files.push(reservePath ? currentPath : currentPath.substr(originPath.length));
-					}
-				}
-			} catch(e:haxe.Exception) {
-				errorMessages.push('Reading This Directory "$currentPath" Failed! \n (${e.message}) \n (${Std.string(e.stack)})');
-			}
-		}
-
-		traverse(originPath);
-		if(errorMessages.length > 0) {
-			for(error in errorMessages) {
-				if(showErrorBox) lime.app.Application.current.window.alert(error, "Get All Files Error!");
-				Logs.trace("Get All Files Error: " + error, ERROR);
-			}
-			return [];
-		}
-		return files;
-		#end
-		return [];
-	}
-
 	/**
 	 * Safe saves a file (even adding eventual missing folders) and shows a warning box instead of making the program crash
 	 * @param path Path to save the file at.
