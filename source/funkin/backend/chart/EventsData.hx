@@ -19,11 +19,12 @@ class EventsData {
 		"Camera Movement" => [{name: "Camera Target", type: TStrumLine, defValue: 0}],
 		"Add Camera Zoom" => [
 			{name: "Amount", type: TFloat(-10, 10, 0.01, 2), defValue: 0.05},
+			{name: "Angle", type: TFloat(-180, 180, 0.01, 2), defValue: 0},
 			{name: "Camera", type: TDropDown(['camGame', 'camHUD']), defValue: "camGame"}
 		],
 		"Camera Modulo Change" => [
-			{name: "Modulo Interval (Beats)", type: TInt(1, 9999999, 1), defValue: 4},
-			{name: "Bump Strength", type: TFloat(0.1, 10, 0.01, 2), defValue: 1}
+			{name: "Modulo Interval (beats)", type: TFloat(0.25, 9999999, 0.25, 2), defValue: 4.00},
+			{name: "Bump Strength", type: TFloat(-10, 10, 0.01, 2), defValue: 1}
 		],
 		"Camera Flash" => [
 			{name: "Reversed?", type: TBool, defValue: false},
