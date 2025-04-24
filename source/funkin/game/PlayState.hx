@@ -360,6 +360,10 @@ class PlayState extends MusicBeatState
 	 */
 	public var defaultCamZoom:Float = 1.05;
 	/**
+	 * Camera angle at which the game lerps to.
+	 */
+	public var defaultCamAngle:Float = 0;
+	/**
 	 * Speed at which the game camera zoom lerps to.
 	 */
 	public var camGameZoomLerp:Float = 0.05;
@@ -368,6 +372,10 @@ class PlayState extends MusicBeatState
 	 * Camera zoom at which the hud lerps to.
 	 */
 	public var defaultHudZoom:Float = 1.0;
+	/**
+	 * Camera angle at which the hud lerps to.
+	 */
+	public var defaultHudAngle:Float = 0;
 	/**
 	 * Speed at which the hud camera zoom lerps to.
 	 */
@@ -720,7 +728,9 @@ class PlayState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, LOCKON, 0.04);
 		FlxG.camera.zoom = defaultCamZoom;
+		FlxG.camera.angle = defaultCamAngle;
 		// camHUD.zoom = defaultHudZoom;
+		// camHUD.angle = defaultHudAngle;
 
 		if (smoothTransitionData != null && smoothTransitionData.stage == curStage) {
 			FlxG.camera.scroll.set(smoothTransitionData.camX, smoothTransitionData.camY);
@@ -1327,7 +1337,9 @@ class PlayState extends MusicBeatState
 		if (camZooming)
 		{
 			FlxG.camera.zoom = lerp(FlxG.camera.zoom, defaultCamZoom, camGameZoomLerp);
+			FlxG.camera.angle = lerp(FlxG.camera.angle, defaultCamAngle, camGameAngleLerp);
 			camHUD.zoom = lerp(camHUD.zoom, defaultHudZoom, camHUDZoomLerp);
+			camHUD.angle = lerp(camHUD.angle, defaultHudAngle, camHUDAngleLerp);
 		}
 
 		// RESET = Quick Game Over Screen
@@ -1393,8 +1405,9 @@ class PlayState extends MusicBeatState
 			case "Camera Movement":
 				curCameraTarget = event.params[0];
 			case "Add Camera Zoom":
-				var camera:FlxCamera = event.params[1] == "camHUD" ? camHUD : camGame;
+				var camera:FlxCamera = event.params[2] == "camHUD" ? camHUD : camGame;
 				camera.zoom += event.params[0];
+				camera.angle + event.params[1];
 			case "Camera Modulo Change":
 				camZoomingInterval = event.params[0];
 				camZoomingStrength = event.params[1];
@@ -1825,6 +1838,13 @@ class PlayState extends MusicBeatState
 	override function stepHit(curStep:Int)
 	{
 		super.stepHit(curStep);
+
+		if (Options.camZoomOnBeat && camZooming && FlxG.camera.zoom < maxCamZoom && (curStep / 4) % camZoomingInterval == 0)
+		{
+			FlxG.camera.zoom += 0.015 * camZoomingStrength;
+			camHUD.zoom += 0.03 * camZoomingStrength;
+		}
+		
 		scripts.call("stepHit", [curStep]);
 	}
 
@@ -1841,11 +1861,6 @@ class PlayState extends MusicBeatState
 		super.beatHit(curBeat);
 
 		if (camZoomingInterval < 1) camZoomingInterval = 1;
-		if (Options.camZoomOnBeat && camZooming && FlxG.camera.zoom < maxCamZoom && curBeat % camZoomingInterval == 0)
-		{
-			FlxG.camera.zoom += 0.015 * camZoomingStrength;
-			camHUD.zoom += 0.03 * camZoomingStrength;
-		}
 
 		if (doIconBop)
 			for (icon in [iconP1, iconP2])
