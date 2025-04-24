@@ -89,8 +89,8 @@ class PsychParser {
 					case "Add Camera Zoom":
 						psychEvents.push([
 							event.name,
-							event.params[1] == "camGame" ? event.params[0] : 0, // CAMERA ZOOM
-							event.params[1] == "camHUD" ? event.params[0] : 0, // UI ZOOM
+							event.params[2] == "camGame" ? event.params[0] : 0, // CAMERA ZOOM
+							event.params[2] == "camHUD" ? event.params[0] : 0, // UI ZOOM
 						]);
 					case "Play Animation":
 						psychEvents.push([
