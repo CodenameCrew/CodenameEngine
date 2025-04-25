@@ -1,7 +1,6 @@
 package funkin.options.type;
 
 import flixel.util.FlxColor;
-import funkin.game.HealthIcon;
 
 class NewOption extends TextOption {
 	public var iconSpr:FlxSprite;
