@@ -204,6 +204,30 @@ class Paths
 		return Assets.getText(image(key, library, false, "svg"));
 
 	/**
+	 * Checks if the images needed for using getFrames() exist.
+	 * @param key Path to the image
+	 * @param checkAtlas Whenever to check for the Animation.json file (used in FlxAnimate)
+	 * @param assetsPath Whenever to use the raw path or to pass it through Paths.image()
+	 * @param library (Additional) library to load the frames from.
+	 * @return True if the images exist, false otherwise.
+	**/
+	public static function framesExists(key:String, checkAtlas:Bool = false, checkMulti:Bool = true, assetsPath:Bool = false, ?library:String) {
+		var path = assetsPath ? key : Paths.image(key, library, true);
+		var noExt = Path.withoutExtension(path);
+		if(checkAtlas && Assets.exists('$noExt/Animation.json'))
+			return true;
+		if(checkMulti && Assets.exists('$noExt/1.png'))
+			return true;
+		if(Assets.exists('$noExt.xml'))
+			return true;
+		if(Assets.exists('$noExt.txt'))
+			return true;
+		if(Assets.exists('$noExt.json'))
+			return true;
+		return false;
+	}
+
+	/**
 	 * Loads frames from a specific image path. Supports Sparrow Atlases, Packer Atlases, and multiple spritesheets.
 	 * @param path Path to the image
 	 * @param Unique Whenever the image should be unique in the cache

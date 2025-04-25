@@ -72,24 +72,34 @@ class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements I
 		moves = false;
 	}
 
-	public static function copyFrom(source:FunkinSprite)
+	/**
+	 * Gets the graphics and copies other properties from another sprite (Works both for `FlxSprite` and `FunkinSprite`!).
+	 */
+	public static function copyFrom(source:FlxSprite):FunkinSprite
 	{
 		var spr = new FunkinSprite();
+		var casted:FunkinSprite = null;
+		if (source is FunkinSprite)
+			casted = cast source;
+
 		@:privateAccess {
 			spr.setPosition(source.x, source.y);
 			spr.frames = source.frames;
-			if (source.animateAtlas != null && source.atlasPath != null)
-				spr.loadSprite(source.atlasPath);
+			if (casted != null && casted.animateAtlas != null && casted.atlasPath != null)
+				spr.loadSprite(casted.atlasPath);
 			spr.animation.copyFrom(source.animation);
 			spr.visible = source.visible;
 			spr.alpha = source.alpha;
 			spr.antialiasing = source.antialiasing;
 			spr.scale.set(source.scale.x, source.scale.y);
 			spr.scrollFactor.set(source.scrollFactor.x, source.scrollFactor.y);
-			spr.skew.set(source.skew.x, source.skew.y);
-			spr.transformMatrix = source.transformMatrix;
-			spr.matrixExposed = source.matrixExposed;
-			spr.animOffsets = source.animOffsets.copy();
+
+			if (casted != null) {
+				spr.skew.set(casted.skew.x, casted.skew.y);
+				spr.transformMatrix = casted.transformMatrix;
+				spr.matrixExposed = casted.matrixExposed;
+				spr.animOffsets = casted.animOffsets.copy();
+			}
 		}
 		return spr;
 	}
