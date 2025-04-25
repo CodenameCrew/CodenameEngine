@@ -4,13 +4,14 @@ import flixel.math.FlxPoint;
 import haxe.xml.Access;
 import funkin.game.Character;
 import funkin.editors.extra.PropertyButton;
+import funkin.game.HealthIcon;
 
 class CharacterInfoScreen extends UISubstateWindow {
 	public var character:Character;
 
 	public var spriteTextBox:UITextBox;
 	public var iconTextBox:UITextBox;
-	public var iconSprite:FlxSprite;
+	public var iconSprite:HealthIcon;
 	public var gameOverCharTextBox:UITextBox;
 	public var antialiasingCheckbox:UICheckbox;
 	public var flipXCheckbox:UICheckbox;
@@ -147,22 +148,14 @@ class CharacterInfoScreen extends UISubstateWindow {
 	}
 
 	function updateIcon(icon:String) {
-		if (iconSprite == null) add(iconSprite = new FlxSprite());
+		if (iconSprite == null) add(iconSprite = new HealthIcon());
 
-		if (iconSprite.animation.exists(icon)) return;
-		@:privateAccess iconSprite.animation.clearAnimations();
-
-		var path:String = Paths.image('icons/$icon');
-		if (!Assets.exists(path)) path = Paths.image('icons/face');
-
-		iconSprite.loadGraphic(path, true, 150, 150);
-		iconSprite.animation.add(icon, [0], 0, false);
-		iconSprite.antialiasing = true;
-		iconSprite.animation.play(icon);
-
-		iconSprite.scale.set(0.5, 0.5);
+		iconSprite.setIcon(icon);
+		var size = Std.int(150 * 0.5);
+		iconSprite.setUnstretchedGraphicSize(size, size, true);
 		iconSprite.updateHitbox();
-		iconSprite.setPosition(iconTextBox.x + 150 + 8, (iconTextBox.y + 16) - (iconSprite.height/2));
+		iconSprite.setPosition(iconTextBox.x + iconTextBox.bWidth + 8, iconTextBox.y + (iconTextBox.bHeight / 2) - (iconSprite.height / 2));
+		iconSprite.scrollFactor.set(1, 1);
 	}
 
 	function saveCharacterInfo() {
