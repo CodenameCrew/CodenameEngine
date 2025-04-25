@@ -1,25 +1,19 @@
 package funkin.backend.shaders;
 
+import flixel.graphics.FlxGraphic;
+import flixel.system.FlxAssets.FlxShader;
 import haxe.Exception;
 import hscript.IHScriptCustomBehaviour;
-import flixel.graphics.tile.FlxGraphicsShader;
-import openfl.display3D.Program3D;
-import flixel.system.FlxAssets.FlxShader;
-
+import lime.utils.Float32Array;
+import openfl.display.BitmapData;
+import openfl.display.ShaderInput;
+import openfl.display.ShaderParameter;
+import openfl.display.ShaderParameterType;
 import openfl.display3D._internal.GLProgram;
 import openfl.display3D._internal.GLShader;
 import openfl.utils._internal.Log;
-import openfl.display.BitmapData;
-import openfl.display.ShaderParameter;
-import openfl.display.ShaderParameterType;
-import openfl.display.ShaderInput;
-import lime.utils.Float32Array;
 
 using StringTools;
-
-import openfl.display.ShaderParameter;
-import openfl.display.BitmapData;
-import openfl.display.ShaderInput;
 
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.Program3D)
@@ -195,7 +189,7 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 
 		var useBackCompat:Bool = true;
 		for (regex in ShaderTemplates.vertBackCompatVarList) if (!regex.match(value)) useBackCompat = false;
-		
+
 		value = value.replace("#pragma header", useBackCompat ? ShaderTemplates.vertHeaderBackCompat : ShaderTemplates.vertHeader).replace("#pragma body", useBackCompat ? ShaderTemplates.vertBodyBackCompat : ShaderTemplates.vertBody);
 		if (value != __glVertexSource)
 		{
@@ -495,25 +489,26 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 		} else {
 			var field = Reflect.field(data, name);
 			var cl = Type.getClassName(Type.getClass(field));
+			var isNotNull = val != null;
 			// cant do "field is ShaderInput" for some reason
 			if (cl.startsWith("openfl.display.ShaderParameter")) {
 				if (field.__length <= 1) {
 					// that means we wait for a single number, instead of an array
-					if (field.__isInt && !(val is Int)) {
+					if (field.__isInt && isNotNull && !(val is Int)) {
 						throw new ShaderTypeException(name, Type.getClass(val), 'Int');
 						return null;
 					} else
-					if (field.__isBool && !(val is Bool)) {
+					if (field.__isBool && isNotNull && !(val is Bool)) {
 						throw new ShaderTypeException(name, Type.getClass(val), 'Bool');
 						return null;
 					} else
-					if (field.__isFloat && !(val is Float)) {
+					if (field.__isFloat && isNotNull && !(val is Float)) {
 						throw new ShaderTypeException(name, Type.getClass(val), 'Float');
 						return null;
 					}
-					return field.value = [val];
+					return field.value = isNotNull ? [val] : null;
 				} else {
-					if (!(val is Array)) {
+					if (isNotNull && !(val is Array)) {
 						throw new ShaderTypeException(name, Type.getClass(val), Array);
 						return null;
 					}
@@ -521,11 +516,15 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 				}
 			} else if (cl.startsWith("openfl.display.ShaderInput")) {
 				// shader input!!
-				if (!(val is BitmapData)) {
+				var bitmap:BitmapData;
+				if (!isNotNull) bitmap = null;
+				else if (val is BitmapData) bitmap = val;
+				else if (val is FlxGraphic) bitmap = val.bitmap;
+				else {
 					throw new ShaderTypeException(name, Type.getClass(val), BitmapData);
 					return null;
 				}
-				field.input = cast val;
+				field.input = bitmap;
 			}
 		}
 

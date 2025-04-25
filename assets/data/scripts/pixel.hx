@@ -97,9 +97,6 @@ function postCreate() {
 		defaultCamZoom /= daPixelZoom;
 	}
 
-	iconP1.antialiasing = false;
-	iconP2.antialiasing = false;
-
 	if (enablePixelGameOver) {
 		gameOverSong = "pixel/gameOver";
 		lossSFX = "pixel/gameOverSFX";
