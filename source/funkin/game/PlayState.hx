@@ -610,9 +610,7 @@ class PlayState extends MusicBeatState
 					// ADD YOUR HARDCODED SCRIPTS HERE!
 				default:
 					var normal = 'songs/${SONG.meta.name.toLowerCase()}/scripts';
-					var scriptsFolders:Array<String> = [normal, 'data/charts/', 'songs/'];
-					var diffBased = normal + '-$difficulty';
-					if (Assets.exists(diffBased)) scriptsFolders.insert(1, diffBased);
+					var scriptsFolders:Array<String> = [normal, normal + '-$difficulty', 'data/charts/', 'songs/'];
 
 					for(folder in scriptsFolders) {
 						for(file in Paths.getFolderContent(folder, true, fromMods ? MODS : BOTH)) {
