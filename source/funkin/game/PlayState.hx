@@ -609,14 +609,9 @@ class PlayState extends MusicBeatState
 				// case "":
 					// ADD YOUR HARDCODED SCRIPTS HERE!
 				default:
-					// remove the orginial song/songname/scripts
-					var scriptsFolders:Array<String> = ['data/charts/', 'songs/'];
-
-					// now we check it
-					if (Assets.exists('songs/${SONG.meta.name.toLowerCase()}/scripts-$difficulty'))
-						scriptsFolders.push('songs/${SONG.meta.name.toLowerCase()}/scripts-$difficulty');
-					else
-						scriptsFolders.push('songs/${SONG.meta.name.toLowerCase()}/scripts');
+					var normal = 'songs/${SONG.meta.name.toLowerCase()}/scripts';
+					var diffBased = normal + '-$difficulty';
+					var scriptsFolders:Array<String> = [Assets.exists(diffBased) ? diffBased : normal, 'data/charts/', 'songs/'];
 
 					for(folder in scriptsFolders) {
 						for(file in Paths.getFolderContent(folder, true, fromMods ? MODS : BOTH)) {
