@@ -612,8 +612,8 @@ class PlayState extends MusicBeatState
 					var normal = 'songs/${SONG.meta.name.toLowerCase()}/scripts';
 					var scriptsFolders:Array<String> = [normal, normal + '-$difficulty', 'data/charts/', 'songs/'];
 
-					for(folder in scriptsFolders) {
-						for(file in Paths.getFolderContent(folder, true, fromMods ? MODS : BOTH)) {
+					for (folder in scriptsFolders) {
+						for (file in Paths.getFolderContent(folder, true, fromMods ? MODS : BOTH)) {
 							if (folder == 'data/charts/')
 								Logs.trace('data/charts/ is deprecrated and will be removed in the future. Please move script $file to songs/', WARNING, DARKYELLOW);
 
