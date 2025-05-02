@@ -609,7 +609,7 @@ class CoolUtil
 	 * @param spr Sprite to load the graphic for
 	 * @param path Path to the graphic
 	 */
-	public static function loadAnimatedGraphic(spr:FlxSprite, path:String, fps:Int = 24) {
+	public static function loadAnimatedGraphic(spr:FlxSprite, path:String, fps:Float = 24.0) {
 		spr.frames = Paths.getFrames(path, true);
 
 		if (spr.frames != null && spr.frames.frames != null) {
