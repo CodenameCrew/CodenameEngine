@@ -609,11 +609,11 @@ class CoolUtil
 	 * @param spr Sprite to load the graphic for
 	 * @param path Path to the graphic
 	 */
-	public static function loadAnimatedGraphic(spr:FlxSprite, path:String) {
+	public static function loadAnimatedGraphic(spr:FlxSprite, path:String, fps:Float = 24.0) {
 		spr.frames = Paths.getFrames(path, true);
 
 		if (spr.frames != null && spr.frames.frames != null) {
-			spr.animation.add("idle", [for(i in 0...spr.frames.frames.length) i], 24, true);
+			spr.animation.add("idle", [for(i in 0...spr.frames.frames.length) i], fps, true);
 			spr.animation.play("idle");
 		}
 
