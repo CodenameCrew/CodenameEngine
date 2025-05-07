@@ -129,21 +129,21 @@ class HealthIcon extends FunkinSprite
 	 * @param char Character to set the icon to
 	 * @param allowAnimated Whenever the icon can be animated
 	**/
-	public function setIcon(char:String, allowAnimated:Bool = true):Void {
+	public function setIcon(char:String, allowAnimated:Bool = true, suffix:String = ""):Void {
 		if (curCharacter == char) return;
 
 		var oldIconPath = 'icons/$char';
-		var newIconPath = 'icons/$char/icon';
+		var newIconPath = 'icons/$char/icon-$suffix';
 
 		if (!Assets.exists(Paths.image(oldIconPath)) && !Assets.exists(Paths.image(newIconPath))) {
 			char = 'face';
 			oldIconPath = 'icons/$char';
-			newIconPath = 'icons/$char/icon';
+			newIconPath = 'icons/$char/icon-$suffix';
 		}
 		curCharacter = char;
 
 		var iconPath = Assets.exists(Paths.image(oldIconPath)) ? oldIconPath : newIconPath;
-		var iconXmlPath = Paths.getPath('images/icons/$char/data.xml');
+		var iconXmlPath = Paths.getPath('images/icons/$char/${suffix == "" ? 'data' : 'data-$suffix.xml'}');
 		var iconFoundData = Assets.exists(iconXmlPath);
 
 		try {
