@@ -133,17 +133,17 @@ class HealthIcon extends FunkinSprite
 		if (curCharacter == char) return;
 
 		var oldIconPath = 'icons/$char';
-		var newIconPath = 'icons/$char/icon-$suffix';
+		var newIconPath = 'icons/$char/${suffix == "" ? 'icon' : 'icon-$suffix'}';
 
 		if (!Assets.exists(Paths.image(oldIconPath)) && !Assets.exists(Paths.image(newIconPath))) {
 			char = 'face';
 			oldIconPath = 'icons/$char';
-			newIconPath = 'icons/$char/icon-$suffix';
+			newIconPath = 'icons/$char/${suffix == "" ? 'icon' : 'icon-$suffix'}';
 		}
 		curCharacter = char;
 
 		var iconPath = Assets.exists(Paths.image(oldIconPath)) ? oldIconPath : newIconPath;
-		var iconXmlPath = Paths.getPath('images/icons/$char/${suffix == "" ? 'data' : 'data-$suffix.xml'}');
+		var iconXmlPath = Paths.getPath('images/icons/$char/${suffix == "" ? 'data' : 'data-$suffix'}.xml');
 		var iconFoundData = Assets.exists(iconXmlPath);
 
 		try {
