@@ -1,5 +1,6 @@
 package funkin.options.categories;
 
+import funkin.savedata.FunkinSave;
 
 class MiscOptions extends OptionsScreen {
 	public override function new() {
@@ -26,7 +27,9 @@ class MiscOptions extends OptionsScreen {
 			"Reset Save Data",
 			"Select this option to reset save data. This will remove all of your highscores.",
 			function() {
-				// TODO: SAVE DATA RESETTING
+				FunkinSave.save.erase();
+				FunkinSave.init();
+				FunkinSave.flush();
 		}));
 	}
 }
