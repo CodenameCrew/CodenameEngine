@@ -8,6 +8,7 @@ import funkin.menus.TitleState;
 import funkin.menus.BetaWarningState;
 import funkin.backend.chart.EventsData;
 import flixel.FlxState;
+import funkin.backend.system.net.WebSocketPacket;
 
 /**
  * Simple state used for loading the game
@@ -20,6 +21,9 @@ class MainState extends FlxState {
 		if (!initiated)
 			Main.loadGameSettings();
 		initiated = true;
+
+		// Resetting to default because I doubt any modding the engine will reset it lmao
+		WebSocketPacket.packetTypes = WebSocketPacket.default_packetTypes;
 
 		#if sys
 		CoolUtil.deleteFolder('./.temp/'); // delete temp folder

@@ -23,9 +23,9 @@ class Macros {
 			#if VIDEO_CUTSCENES "hxvlc.flixel", "hxvlc.openfl", #end
 			#if NAPE_ENABLED "nape", "flixel.addons.nape", #end
 			// BASE HAXE
-			"DateTools", "EReg", "Lambda", "StringBuf", "haxe.crypto", "haxe.display", "haxe.exceptions", "haxe.extern", "scripting"
+			"DateTools", "EReg", "Lambda", "StringBuf", "haxe.crypto", "haxe.display", "haxe.exceptions", "haxe.extern", "scripting",
 		])
-			Compiler.include(inc);
+		Compiler.include(inc);
 
 		var isHl = Context.defined("hl");
 
@@ -40,6 +40,7 @@ class Macros {
 			}
 		}
 
+		Compiler.include("hx.ws", ["hx.ws.cs", "hx.ws.java", "hx.ws.nodejs"]);
 		Compiler.include("funkin", [#if !UPDATE_CHECKING 'funkin.backend.system.updating' #end]);
 	}
 

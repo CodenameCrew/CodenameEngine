@@ -13,6 +13,7 @@
 	<git name="flxanimate" url="https://github.com/CodenameCrew/cne-flxanimate" />
 	<git name="hxdiscord_rpc" url="https://github.com/CodenameCrew/cne-hxdiscord_rpc" />
 	<lib name="hxvlc" version="1.9.3" skipDeps="true" />
+	<lib name="hxWebSockets" version="1.4.0" />
 
 	<!-- Documentation and other features -->
 	<git name="away3d" url="https://github.com/CodenameCrew/away3d" />
