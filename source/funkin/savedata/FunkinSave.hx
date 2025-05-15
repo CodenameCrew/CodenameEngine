@@ -24,6 +24,7 @@ class FunkinSave {
 	public static var save:FlxSave;
 
 	public static function init() {
+		highscores.clear();
 		//trace(Application.current.meta.get('save-path'));
 		//trace(Application.current.meta.get('save-name'));
 		save = new FlxSave();
