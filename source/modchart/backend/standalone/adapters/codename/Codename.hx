@@ -1,4 +1,4 @@
-package modchart.standalone.adapters.codename;
+package modchart.backend.standalone.adapters.codename;
 
 import flixel.FlxCamera;
 import flixel.FlxSprite;
@@ -7,7 +7,7 @@ import funkin.game.Note;
 import funkin.game.PlayState;
 import funkin.game.Strum;
 import funkin.options.Options;
-import modchart.standalone.IAdapter;
+import modchart.backend.standalone.IAdapter;
 
 class Codename implements IAdapter {
 	private var beatCrochet:Float = 0;
