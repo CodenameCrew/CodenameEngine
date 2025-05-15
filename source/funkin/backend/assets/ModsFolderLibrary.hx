@@ -26,10 +26,7 @@ class ModsFolderLibrary extends AssetLibrary implements IModsAssetLibrary {
 		this.folderPath = folderPath;
 		this.libName = libName;
 		this.prefix = 'assets/$libName/';
-		if(modName == null)
-			this.modName = libName;
-		else
-			this.modName = modName;
+		this.modName = modName == null ? libName : modName;
 		super();
 	}
 

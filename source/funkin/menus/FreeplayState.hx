@@ -141,6 +141,8 @@ class FreeplayState extends MusicBeatState
 
 			var icon:HealthIcon = new HealthIcon(songs[i].icon);
 			icon.sprTracker = songText;
+			icon.setUnstretchedGraphicSize(150, 150, true);
+			icon.updateHitbox();
 
 			// using a FlxGroup is too much fuss!
 			iconArray.push(icon);
@@ -437,16 +439,10 @@ class FreeplaySonglist {
 
 	public function getSongsFromSource(source:funkin.backend.assets.AssetsLibraryList.AssetSource, useTxt:Bool = true) {
 		var path:String = Paths.txt('freeplaySonglist');
-		var songsFound:Array<String> = [];
-		if (useTxt && Paths.assetsTree.existsSpecific(path, "TEXT", source)) {
-			songsFound = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
-		} else {
-			songsFound = Paths.getFolderDirectories('songs', false, source);
-		}
+		var songsFound:Array<String> = useTxt && Paths.assetsTree.existsSpecific(path, "TEXT", source) ? CoolUtil.coolTextFile(path) : Paths.getFolderDirectories('songs', false, source);
 
 		if (songsFound.length > 0) {
-			for(s in songsFound)
-				songs.push(Chart.loadChartMeta(s, "normal", source == MODS));
+			for (s in songsFound) songs.push(Chart.loadChartMeta(s, "normal", source == MODS));
 			return false;
 		}
 		return true;

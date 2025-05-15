@@ -1,19 +1,21 @@
 package funkin.menus;
 
-import funkin.savedata.FunkinSave;
-import haxe.io.Path;
-import funkin.backend.scripting.events.*;
-import flixel.util.FlxTimer;
 import flixel.math.FlxPoint;
+import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import flixel.util.typeLimit.OneOfTwo;
 import funkin.backend.FunkinText;
-import haxe.xml.Access;
-import flixel.text.FlxText;
+import funkin.backend.scripting.events.*;
+import funkin.backend.week.*;
+import funkin.savedata.FunkinSave;
+import haxe.io.Path;
 
 class StoryMenuState extends MusicBeatState {
-	public var characters:Map<String, MenuCharacter> = [];
+	public var characters:Map<String, WeekData.WeekCharacter> = [];
 	public var weeks:Array<WeekData> = [];
+	public var weekList:StoryWeeklist;
 
 	public var scoreText:FlxText;
 	public var tracklist:FlxText;
@@ -84,22 +86,20 @@ class StoryMenuState extends MusicBeatState {
 		tracklist.color = 0xFFE55777;
 
 		add(weekSprites);
-		for(e in [blackBar, scoreText, weekTitle, weekBG, tracklist]) {
+		for (e in [blackBar, scoreText, weekTitle, weekBG, tracklist]) {
 			e.scrollFactor.set();
 			add(e);
 		}
 
 		characterSprites = new FlxTypedGroup<MenuCharacterSprite>();
-		for(i in 0...3) {
-			characterSprites.add(new MenuCharacterSprite(i));
-		}
+		for (i in 0...3) characterSprites.add(new MenuCharacterSprite(i));
 		add(characterSprites);
 
-		for(i=>week in weeks) {
+		for (i=>week in weeks) {
 			var spr:MenuItem = new MenuItem(0, (i * 120) + 480, 'menus/storymenu/weeks/${week.sprite}');
 			weekSprites.add(spr);
 
-			for(e in week.difficulties) {
+			for (e in week.difficulties) {
 				var le = e.toLowerCase();
 				if (difficultySprites[le] == null) {
 					var diffSprite = new FlxSprite(leftArrow.x + leftArrow.width, leftArrow.y);
@@ -171,11 +171,13 @@ class StoryMenuState extends MusicBeatState {
 			e.targetY = k - curWeek;
 			e.alpha = k == curWeek ? 1.0 : 0.6;
 		}
-		tracklist.text = 'TRACKS\n\n${[for(e in weeks[curWeek].songs) if (!e.hide) e.name.toUpperCase()].join('\n')}';
+		tracklist.text = 'TRACKS\n\n${[for(e in weeks[curWeek].songs) if (!e.hide) e.displayName.getDefault(e.name).toUpperCase()].join('\n')}';
 		weekTitle.text = weeks[curWeek].name.getDefault("");
 
-		for(i in 0...3)
-			characterSprites.members[i].changeCharacter(characters[weeks[curWeek].chars[i]]);
+		for (i in 0...3) {
+			var char = weeks[curWeek].chars[i];  // will use the characters map in any case since a map is for sure easier to edit for mods, we didnt load characters by default anyways  - Nex
+			characterSprites.members[i].changeCharacter(char == null ? null : characters[char.name]);
+		}
 
 		changeDifficulty(0, true);
 
@@ -210,121 +212,25 @@ class StoryMenuState extends MusicBeatState {
 	}
 
 	public function loadXMLs() {
-		// CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
-		var weeks:Array<String> = [];
-		if (getWeeksFromSource(weeks, MODS))
-			getWeeksFromSource(weeks, SOURCE);
-
-		for(k=>weekName in weeks) {
-			var week:Access = null;
-			try {
-				week = new Access(Xml.parse(Assets.getText(Paths.xml('weeks/weeks/$weekName'))).firstElement());
-			} catch(e) {
-				Logs.trace('Cannot parse week "$weekName.xml": ${Std.string(e)}`', ERROR);
-			}
-
-			if (week == null) continue;
-
-			if (!week.has.name) {
-				Logs.trace('Story Menu: Week at index ${k} has no name. Skipping...', WARNING);
-				continue;
-			}
-			var weekObj:WeekData = {
-				name: week.att.name,
-				id: weekName,
-				sprite: week.getAtt('sprite').getDefault(weekName),
-				chars: [null, null, null],
-				songs: [],
-				difficulties: ['easy', 'normal', 'hard']
-			};
-
-			var diffNodes = week.nodes.difficulty;
-			if (diffNodes.length > 0) {
-				var diffs:Array<String> = [];
-				for(e in diffNodes) {
-					if (e.has.name) diffs.push(e.att.name);
-				}
-				if (diffs.length > 0)
-					weekObj.difficulties = diffs;
-			}
-
-			if (week.has.chars) {
-				for(k=>e in week.att.chars.split(",")) {
-					if (e.trim() == "" || e == "none" || e == "null")
-						weekObj.chars[k] = null;
-					else {
-						addCharacter(weekObj.chars[k] = e.trim());
-					}
-				}
-			}
-			for(k2=>song in week.nodes.song) {
-				if (song == null) continue;
-				try {
-					var name = song.innerData.trim();
-					if (name == "") {
-						Logs.trace('Story Menu: Song at index ${k2} in week ${weekObj.name} has no name. Skipping...', WARNING);
-						continue;
-					}
-					weekObj.songs.push({
-						name: name,
-						hide: song.getAtt('hide').getDefault('false') == "true"
-					});
-				} catch(e) {
-					Logs.trace('Story Menu: Song at index ${k2} in week ${weekObj.name} cannot contain any other XML nodes in its name.', WARNING);
-					continue;
-				}
-			}
-			if (weekObj.songs.length <= 0) {
-				Logs.trace('Story Menu: Week ${weekObj.name} has no songs. Skipping...', WARNING);
-				continue;
-			}
-			this.weeks.push(weekObj);
-		}
+		weekList = StoryWeeklist.get(true, false);  // will only load week files AND NOT characters too (we will load them later only if needed)!!  - Nex
+		weeks = weekList.weeks;
+		for (week in weeks) for (char in week.chars) if (char != null)
+			addCharacter(char.name);
 	}
 
-	public function addCharacter(charName:String) {
-		var char:Access = null;
-		try {
-			char = new Access(Xml.parse(Assets.getText(Paths.xml('weeks/characters/$charName'))).firstElement());
-		} catch(e) {
-			Logs.trace('Story Menu: Cannot parse character "$charName.xml": ${Std.string(e)}`', ERROR);
-		}
-		if (char == null) return;
+	public function addCharacter(char:OneOfTwo<String, WeekData.WeekCharacter>) {
+		// better to use unsafe casts for going fast  - Nex
+		var charObj:WeekData.WeekCharacter = null;
+		var charName:String;
 
-		if (characters[charName] != null) return;
-		var charObj:MenuCharacter = {
-			spritePath: Paths.image(char.getAtt('sprite').getDefault('menus/storymenu/characters/${charName}')),
-			scale: Std.parseFloat(char.getAtt('scale')).getDefault(1),
-			xml: char,
-			offset: FlxPoint.get(
-				Std.parseFloat(char.getAtt('x')).getDefault(0),
-				Std.parseFloat(char.getAtt('y')).getDefault(0)
-			)
-		};
-		characters[charName] = charObj;
-	}
-
-	public function getWeeksFromSource(weeks:Array<String>, source:funkin.backend.assets.AssetsLibraryList.AssetSource) {
-		var path:String = Paths.txt('freeplaySonglist');
-		var weeksFound:Array<String> = [];
-		if (Paths.assetsTree.existsSpecific(path, "TEXT", source)) {
-			var trim = "";
-			weeksFound = CoolUtil.coolTextFile(Paths.txt('weeks/weeks'));
-		} else {
-			weeksFound = [for(c in Paths.getFolderContent('data/weeks/weeks/', false, source)) if (Path.extension(c).toLowerCase() == "xml") Path.withoutExtension(c)];
-		}
-
-		if (weeksFound.length > 0) {
-			for(s in weeksFound)
-				weeks.push(s);
-			return false;
-		}
-		return true;
+		charName = char is String ? cast char : (charObj = cast char).name;
+		if (characters[charName] != null) return;  // will load only if it can be saved inside the map  - Nex
+		characters[charName] = charObj == null ? Week.loadWeekCharacter(charName) : charObj;
 	}
 
 	public override function destroy() {
 		super.destroy();
-		for(e in characters)
+		for (e in characters)
 			if (e != null && e.offset != null)
 				e.offset.put();
 	}
@@ -350,28 +256,6 @@ class StoryMenuState extends MusicBeatState {
 	}
 }
 
-typedef WeekData = {
-	var name:String;  // name SHOULD NOT be used for loading week highscores, its just the name on the right side of the week, remember that next time!!  - Nex
-	var id:String;  // id IS instead for saving and loading!!  - Nex
-	var sprite:String;
-	var chars:Array<String>;
-	var songs:Array<WeekSong>;
-	var difficulties:Array<String>;
-}
-
-typedef WeekSong = {
-	var name:String;
-	var hide:Bool;
-}
-
-typedef MenuCharacter = {
-	var spritePath:String;
-	var xml:Access;
-	var scale:Float;
-	var offset:FlxPoint;
-	// var frames:FlxFramesCollection;
-}
-
 class MenuCharacterSprite extends FlxSprite
 {
 	public var character:String;
@@ -385,19 +269,15 @@ class MenuCharacterSprite extends FlxSprite
 		antialiasing = true;
 	}
 
-	public var oldChar:MenuCharacter = null;
+	public var oldChar:WeekData.WeekCharacter = null;
 
-	public function changeCharacter(data:MenuCharacter) {
-		visible = (data != null);
-		if (!visible)
-			return;
+	public function changeCharacter(data:WeekData.WeekCharacter) {
+		if (!(visible = (data != null && data.xml != null))) return;
 
 		if (oldChar != (oldChar = data)) {
 			CoolUtil.loadAnimatedGraphic(this, data.spritePath);
-			for(e in data.xml.nodes.anim) {
-				if (e.getAtt("name") == "idle")
-					animation.remove("idle");
-
+			for (e in data.xml.nodes.anim) {
+				if (e.getAtt("name") == "idle") animation.remove("idle");
 				XMLUtil.addXMLAnimation(this, e);
 			}
 			animation.play("idle");
@@ -410,6 +290,7 @@ class MenuCharacterSprite extends FlxSprite
 		}
 	}
 }
+
 class MenuItem extends FlxSprite
 {
 	public var targetY:Float = 0;
@@ -449,5 +330,35 @@ class MenuItem extends FlxSprite
 
 		if (isFlashing)
 			color = (time % 0.1 > 0.05) ? FlxColor.WHITE : 0xFF33ffff;
+	}
+}
+
+class StoryWeeklist {
+	public var weeks:Array<WeekData> = [];
+
+	public function new() {}
+
+	public function getWeeksFromSource(source:funkin.backend.assets.AssetsLibraryList.AssetSource, useTxt:Bool = true, loadCharactersData:Bool = true) {
+		var path:String = Paths.txt('weeks/weeks');
+		var weeksFound:Array<String> = useTxt && Paths.assetsTree.existsSpecific(path, "TEXT", source) ? CoolUtil.coolTextFile(path) :
+			[for (c in Paths.getFolderContent('data/weeks/weeks/', false, source)) if (Path.extension(c).toLowerCase() == "xml") Path.withoutExtension(c)];
+
+		if (weeksFound.length > 0) {
+			for (w in weeksFound) {
+				var week = Week.loadWeek(w, loadCharactersData);
+				if (week != null) weeks.push(week);
+			}
+			return false;
+		}
+		return true;
+	}
+
+	public static function get(useTxt:Bool = true, loadCharactersData:Bool = true) {
+		var weekList = new StoryWeeklist();
+
+		if (weekList.getWeeksFromSource(MODS, useTxt, loadCharactersData))
+			weekList.getWeeksFromSource(SOURCE, useTxt, loadCharactersData);
+
+		return weekList;
 	}
 }
