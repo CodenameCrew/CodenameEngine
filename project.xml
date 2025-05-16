@@ -203,7 +203,7 @@
 		<haxedef name="FM_ENGINE_VERSION" value="1.0"/>
 
 		<haxelib name="funkin-modchart" />
-		<haxeflag name="--macro" value="modchart.backend.macros.Macro.includeFiles()"/>
+		<haxeflag name="--macro" value="modchart.core.macros.Macro.includeFiles()"/>
 	</section>
 
 	<section if="COMPILE_ALL_CLASSES">
