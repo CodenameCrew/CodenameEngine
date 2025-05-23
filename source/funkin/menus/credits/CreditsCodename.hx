@@ -115,6 +115,7 @@ class CreditsCodename extends funkin.options.OptionsScreen {
 		totalContributions = 0;
 		for(c in Options.contributors) totalContributions += c.contributions;
 		for(c in Options.contributors) {
+			if (c.login.contains("mcagabe")) continue;
 			var opt:GithubIconOption = new GithubIconOption(c, 'Total Contributions: ~${c.contributions}~ / *${totalContributions}* (~${FlxMath.roundDecimal(c.contributions / totalContributions * 100, 2)}%~) - Select to open GitHub account');
 			if(Options.mainDevs.contains(c.id)) {
 				opt.desc += " *- Public member of the main Devs!*";
