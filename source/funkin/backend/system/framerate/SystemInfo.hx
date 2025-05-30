@@ -58,10 +58,7 @@ class SystemInfo extends FramerateCategory {
 
 		try {
 			#if windows
-			var process = new HiddenProcess("wmic", ["cpu", "get", "name"]);
-			if (process.exitCode() != 0) throw 'Could not fetch CPU information';
-
-			cpuName = process.stdout.readAll().toString().trim().split("\n")[1].trim();
+			cpuName = RegistryUtil.get(HKEY_LOCAL_MACHINE, "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", "ProcessorNameString");
 			#elseif mac
 			var process = new HiddenProcess("sysctl -a | grep brand_string"); // Somehow this isnt able to use the args but it still works
 			if (process.exitCode() != 0) throw 'Could not fetch CPU information';

@@ -121,7 +121,7 @@ class MemoryUtil {
 		];
 		var memoryOutput:Int = -1;
 
-		var process = new HiddenProcess("wmic", ["memorychip", "get", "SMBIOSMemoryType"]);
+		var process = new HiddenProcess("powershell", ["-Command", "Get-CimInstance Win32_PhysicalMemory | Select-Object -ExpandProperty SMBIOSMemoryType" ]);
 		if (process.exitCode() == 0) memoryOutput = Std.int(Std.parseFloat(process.stdout.readAll().toString().trim().split("\n")[1]));
 		if (memoryOutput != -1) return memoryMap[memoryOutput];
 		#elseif mac
