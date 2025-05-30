@@ -49,6 +49,21 @@ class SystemInfo extends FramerateCategory {
 			if (osName != "")
 				osInfo = '${osName} ${osVersion}'.trim();
 		}
+		#elseif windows
+		var windowsCurrentVersionPath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion";
+		var buildNumber = Std.parseInt(RegistryUtil.get(HKEY_LOCAL_MACHINE, windowsCurrentVersionPath, "CurrentBuildNumber"));
+		var edition = RegistryUtil.get(HKEY_LOCAL_MACHINE, windowsCurrentVersionPath, "ProductName");
+		var lcuVersion = RegistryUtil.get(HKEY_LOCAL_MACHINE, windowsCurrentVersionPath, "LCUVer"); // Last Cumulative Update Version Aka Build Number But Fancy
+
+		if (buildNumber >= 22000) // Windows 11 Initial Release Build Number
+			edition = edition.replace("Windows 10", "Windows 11");
+
+		osInfo = edition;
+
+		if (lcuVersion != null && lcuVersion != "")
+			osInfo += ' ${lcuVersion}';
+		else if (lime.system.System.platformVersion != null && lime.system.System.platformVersion != "")
+			osInfo += ' ${lime.system.System.platformVersion}';
 		#else
 		if (lime.system.System.platformLabel != null && lime.system.System.platformLabel != "" && lime.system.System.platformVersion != null && lime.system.System.platformVersion != "")
 			osInfo = '${lime.system.System.platformLabel.replace(lime.system.System.platformVersion, "").trim()} ${lime.system.System.platformVersion}';
