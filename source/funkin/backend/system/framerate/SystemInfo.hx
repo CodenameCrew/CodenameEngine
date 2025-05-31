@@ -53,10 +53,14 @@ class SystemInfo extends FramerateCategory {
 		var windowsCurrentVersionPath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion";
 		var buildNumber = Std.parseInt(RegistryUtil.get(HKEY_LOCAL_MACHINE, windowsCurrentVersionPath, "CurrentBuildNumber"));
 		var edition = RegistryUtil.get(HKEY_LOCAL_MACHINE, windowsCurrentVersionPath, "ProductName");
-		var lcuVersion = RegistryUtil.get(HKEY_LOCAL_MACHINE, windowsCurrentVersionPath, "LCUVer"); // Last Cumulative Update Version Aka Build Number But Fancy
 
-		if (buildNumber >= 22000) // Windows 11 Initial Release Build Number
+		var lcuKey = "WinREVersion"; // Last Cumulative Update Key On Older Windows Versions
+		if (buildNumber >= 22000) { // Windows 11 Initial Release Build Number
 			edition = edition.replace("Windows 10", "Windows 11");
+			lcuKey = "LCUVer"; // Last Cumulative Update Key On Windows 11
+		}
+
+		var lcuVersion = RegistryUtil.get(HKEY_LOCAL_MACHINE, windowsCurrentVersionPath, lcuKey);
 
 		osInfo = edition;
 

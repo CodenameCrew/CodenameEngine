@@ -27,12 +27,12 @@ class RegistryUtil {
 		std::wstring valname = std::wstring(string.wchar_str());
 
 		result = RegOpenKeyExW((HKEY)reinterpret_cast<HKEY>(static_cast<uintptr_t>(hive)), subkey.c_str(), 0, KEY_READ, &hKey);
-		if (result != ERROR_SUCCESS) return ::String((String)0);
+		if (result != ERROR_SUCCESS) return null();
 
 		result = RegQueryValueExW(hKey, valname.c_str(), NULL, &dataType, NULL, &dataSize);
 		if (result != ERROR_SUCCESS || dataSize == 0) {
 			RegCloseKey(hKey);
-			return (::String)0;
+			return null();
 		}
 
 		std::vector<wchar_t> buffer(dataSize / sizeof(wchar_t));
@@ -42,10 +42,10 @@ class RegistryUtil {
 		if (result == ERROR_SUCCESS) {
 			return ::String(buffer.data());
 		}
-		return (::String)0;
+		return null();
 	')
 	#end
-	public static function get(hive:RegistryHive, key:String, string:String):String
+	public static function get(hive:RegistryHive, key:String, string:String):Null<String>
 	{
 		return null;
 	}
