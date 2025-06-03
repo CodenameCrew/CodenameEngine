@@ -615,7 +615,7 @@ class PlayState extends MusicBeatState
 					// ADD YOUR HARDCODED SCRIPTS HERE!
 				default:
 					var normal = 'songs/${SONG.meta.name.toLowerCase()}/scripts';
-					var scriptsFolders:Array<String> = [normal, normal + '/$difficulty/', 'data/charts/', 'songs/'];
+					var scriptsFolders:Array<String> = [normal, normal + '/${difficulty.toLowerCase()}/', 'data/charts/', 'songs/'];
 
 					for (folder in scriptsFolders) {
 						for (file in Paths.getFolderContent(folder, true, fromMods ? MODS : BOTH)) {
