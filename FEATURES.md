@@ -79,4 +79,5 @@ _**QOL = Quality of Life**_
 		- Features not found in other editors!
     - Every single state & substate can be modified via HScript (`data/states/StateName.hx`)
 - **Instances launched via `lime test windows` will automatically use assets from source.**
+- Modcharting features powered by [FunkinModchart](https://lib.haxe.org/p/funkin-modchart/).
 </details>
