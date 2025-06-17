@@ -18,7 +18,7 @@ using StringTools;
 class Paths
 {
 	/**
-	 * Preferred sound extension for the game's audio files.
+	 * Preferred sound  for the game's audio files.
 	 * Currently is set to `mp3` for web targets, and `ogg` for other targets.
 	 */
 	inline public static final SOUND_EXT = #if web "mp3" #else "ogg" #end;
@@ -105,7 +105,7 @@ class Paths
 		var scriptPath = isAssetsPath ? key : getPath(key, library);
 		if (!OpenFlAssets.exists(scriptPath)) {
 			var p:String;
-			for(ex in Script.scriptExtensions) {
+			for(ex in Script.scripts) {
 				p = '$scriptPath.$ex';
 				if (OpenFlAssets.exists(p)) {
 					scriptPath = p;
@@ -210,7 +210,7 @@ class Paths
 	**/
 	public static function framesExists(key:String, checkAtlas:Bool = false, checkMulti:Bool = true, assetsPath:Bool = false, ?library:String) {
 		var path = assetsPath ? key : Paths.image(key, library, true);
-		var noExt = Path.withoutExtension(path);
+		var noExt = Path.without(path);
 		if(checkAtlas && Assets.exists('$noExt/Animation.json'))
 			return true;
 		if(checkMulti && Assets.exists('$noExt/1.png'))
@@ -233,7 +233,7 @@ class Paths
 	 * @return FlxFramesCollection Frames
 	 */
 	static function loadFrames(path:String, Unique:Bool = false, Key:String = null, SkipAtlasCheck:Bool = false, SkipMultiCheck:Bool = false):FlxFramesCollection {
-		var noExt = Path.withoutExtension(path);
+		var noExt = Path.without(path);
 
 		if (!SkipMultiCheck && Assets.exists('$noExt/1.png')) {
 			// MULTIPLE SPRITESHEETS!!
@@ -274,15 +274,17 @@ class Paths
 		}
 		return content;
 	}
-	static public function getFolderContent(key:String, addPath:Bool = false, source:AssetsLibraryList.AssetSource = BOTH):Array<String> {
+	static public function getFolderContent(key:String, addPath:Bool = false, source:AssetsLibraryList.AssetSource = BOTH, noExtension:Bool = false):Array<String> {
 		// designed to work both on windows and web
 		if (!key.endsWith("/")) key += "/";
 		var content = assetsTree.getFiles('assets/$key', source);
-		if (addPath) {
-			for(k=>e in content)
-				content[k] = '$key$e';
+		for (k => e in content) {
+			if (noExtension) e = Path.withoutExtension(e);
+
+			content[k] = addPath ? '$key$e' : e;
 		}
 		return content;
+		
 		/*
 		if (!key.endsWith("/")) key = key + "/";
 
