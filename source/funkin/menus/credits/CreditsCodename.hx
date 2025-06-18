@@ -17,6 +17,8 @@ class CreditsCodename extends funkin.options.OptionsScreen {
 	public var minContrCol:FlxColor = 0xFFB4A7DA;
 	public var contribFormats:Array<FlxTextFormatMarkerPair> = [];
 
+	public var _blacklistIds:Array<Int> = [];// yeahhh
+
 	public override function new()
 	{
 		super("Codename Engine", "All the contributors of the engine! - Press RESET to update the list (One reset per 2 minutes).");
@@ -84,6 +86,11 @@ class CreditsCodename extends funkin.options.OptionsScreen {
 			funkin.backend.utils.NativeAPI.showMessageBox("Codename Engine Warning", errMsg, MSG_WARNING);
 		});
 		if(error) return false;
+	
+		// https://api.github.com/users/<USERNAME> 
+		// :3
+		idk = idk.filter(fr -> !_blacklistIds.contains(fr.id));//yeahhh
+
 		Options.contributors = idk;
 		trace('Contributors list Updated!');
 
