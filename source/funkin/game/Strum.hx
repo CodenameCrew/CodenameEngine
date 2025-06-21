@@ -11,6 +11,11 @@ class Strum extends FlxSprite {
 	 */
 	public var animSuffix:String = "";
 
+	/**
+	 * This strum's StrumLine
+	 */
+	public var strumLine:StrumLine;
+
 	public var cpu = false; // Unused
 	public var lastHit:Float = -5000;
 
