@@ -171,6 +171,8 @@ class NativeAPI {
 	public static function showMessageBox(caption:String, message:String, icon:MessageBoxIcon = MSG_WARNING) {
 		#if windows
 		Windows.showMessageBox(caption, message, icon);
+		#elseif linux
+		Sys.command('kdialog --title ${caption} --error ${message}'); // Lime's default file and window opener for Linux target fails to load on most Linux distributions because it uses Zenity, so using KDialog should fix a issue
 		#else
 		lime.app.Application.current.window.alert(message, caption);
 		#end
