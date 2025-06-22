@@ -89,7 +89,7 @@ class Main extends Sprite
 	public static var audioDisconnected:Bool = false;
 
 	public static var changeID:Int = 0;
-	public static var pathBack = #if windows
+	public static var pathBack = #if (windows || linux)
 			"../../../../"
 		#elseif mac
 			"../../../../../../../"
