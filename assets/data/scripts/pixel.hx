@@ -34,12 +34,13 @@ function onNoteCreation(event) {
 	}
 	note.scale.set(daPixelZoom, daPixelZoom);
 	note.updateHitbox();
+	note.antialiasing = false;
 }
 
+// LJ here.... I would fix this code up but uh..... like wtf :sob:
 function onPostNoteCreation(event) {
 	var splashes = event.note;
-	if (pixelSplashes)
-		splashes.splash = "pixel-default";
+	if (pixelSplashes) splashes.splash = "pixel-default";
 }
 
 function onStrumCreation(event) {
@@ -56,6 +57,7 @@ function onStrumCreation(event) {
 
 	strum.scale.set(daPixelZoom, daPixelZoom);
 	strum.updateHitbox();
+	strum.antialiasing = false;
 }
 
 function onCountdown(event) {
