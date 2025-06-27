@@ -32,7 +32,7 @@ function create(event) {
 	if (isThorns) bg.color = 0xFF000000;
 	bg.scale.set(6, 6);
 	bg.updateHitbox();
-	// bg.scale.y = 4;
+	bg.scale.y = 4;
 	add(bg);
 
 	songText = new FlxText(0, 22 * 6, 0, "Pause", 8, false);
