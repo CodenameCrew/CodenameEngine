@@ -189,7 +189,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 		if (cpu && __updateNote_event.__autoCPUHit && !daNote.avoid && !daNote.wasGoodHit && daNote.strumTime < __updateNote_songPos) PlayState.instance.goodNoteHit(this, daNote);
 
-		if (daNote.wasGoodHit && daNote.isSustainNote && daNote.strumTime + (daNote.sustainLength) < __updateNote_songPos) {
+		if (daNote.wasGoodHit && daNote.isSustainNote && daNote.strumTime + daNote.sustainLength < __updateNote_songPos) {
 			deleteNote(daNote);
 			return;
 		}
@@ -215,8 +215,9 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	var __notePerStrum:Array<Note> = [];
 
 	function __inputProcessPressed(note:Note) {
-		if (__pressed[note.strumID] && note.isSustainNote && note.canBeHit && !note.wasGoodHit) {
+		if (__pressed[note.strumID] && note.isSustainNote && note.strumTime < __updateNote_songPos && !note.wasGoodHit) {
 			PlayState.instance.goodNoteHit(this, note);
+			note.updateSustainClip();
 		}
 	}
 	function __inputProcessJustPressed(note:Note) {
