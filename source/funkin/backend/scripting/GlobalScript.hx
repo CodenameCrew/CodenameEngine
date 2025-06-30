@@ -42,16 +42,7 @@ class GlobalScript {
 		});
 		FlxG.signals.postUpdate.add(function() {
 			call("postUpdate", [FlxG.elapsed]);
-			if (FlxG.keys.justPressed.F5) {
-				if (scripts.scripts.length > 0) {
-					Logs.trace('Reloading global script...', WARNING, YELLOW);
-					scripts.reload();
-					Logs.trace('Global script successfully reloaded.', WARNING, GREEN);
-				} else {
-					Logs.trace('Loading global script...', WARNING, YELLOW);
-					onModSwitch(#if MOD_SUPPORT ModsFolder.currentModFolder #else null #end);
-				}
-			}
+
 			if (FlxG.keys.justPressed.F2)
 				NativeAPI.allocConsole();
 		});
@@ -70,12 +61,29 @@ class GlobalScript {
 		FlxG.signals.preStateSwitch.add(function() {
 			call("preStateSwitch", []);
 		});
+
 		FlxG.signals.preUpdate.add(function() {
+			// Found out the issue to why it "updates twice". It's caused by the `updateInput` running AFTER this FlxSignal.
+			// So it never properly sets the state of key presses until after this signal is called.
+
+			// Making a PR on cne-flixel to fix this. Seen here https://github.com/CodenameCrew/cne-flixel/pull/14 | SOMEONE MERGE MY FUCKING PR 😭
+
 			call("preUpdate", [FlxG.elapsed]);
 			call("update", [FlxG.elapsed]);
+			
+			// This won't reload the GlobalScript 5 billion times when the PR is merged.
+			var resetKey = FlxG.keys.justPressed.F5;
+			if ((FlxG.state is MusicBeatState)) resetKey = cast(FlxG.state, MusicBeatState).controls.DEBUG_RELOAD;
+			
+			if (FlxG.keys.pressed.SHIFT && resetKey) {
+				Logs.trace("Reloading Global Scripts...", INFO, YELLOW);
+				MusicBeatState.ALLOW_DEBUG_RELOAD = false;
+				onModSwitch(#if MOD_SUPPORT ModsFolder.currentModFolder #else null #end);
+			}
 		});
 
-		onModSwitch(#if MOD_SUPPORT ModsFolder.currentModFolder #else null #end);
+		// This gets called in MainState anyways, why do we need to call it here? no idea, but lets wait until all the mod scripts are loaded before resetting, right?
+		// onModSwitch(#if MOD_SUPPORT ModsFolder.currentModFolder #else null #end);
 	}
 
 	public static function event<T:CancellableEvent>(name:String, event:T):T {

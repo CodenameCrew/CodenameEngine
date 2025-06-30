@@ -1270,11 +1270,11 @@ class PlayState extends MusicBeatState
 			if (chartingMode && FlxG.keys.justPressed.SEVEN) {
 				FlxG.switchState(new funkin.editors.charter.Charter(SONG.meta.name, difficulty, false));
 			}
-			if (FlxG.keys.justPressed.F5) {
-				Logs.trace('Reloading scripts...', WARNING, YELLOW);
-				scripts.reload();
-				Logs.trace('Song scripts successfully reloaded.', WARNING, GREEN);
-			}
+			// if (FlxG.keys.justPressed.F5) {
+			// 	Logs.trace('Reloading scripts...', WARNING, YELLOW);
+			// 	scripts.reload();
+			// 	Logs.trace('Song scripts successfully reloaded.', WARNING, GREEN);
+			// }
 		}
 
 		if (doIconBop)
