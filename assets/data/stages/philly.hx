@@ -21,7 +21,8 @@ var trainCooldown:Int = 0;
 function create() {
 	// defaultCamZoom = 0.5;
 	phillyTrain.moves = true;  // Def value false in funkinsprite
-	light.color = colors[curColor]; lightGlow.color = light.color;
+	light.color = colors[curColor];
+	lightGlow.color = light.color;
 	trainSound = FlxG.sound.load(Paths.sound("train_passes"));
 }
 
@@ -31,7 +32,8 @@ function beatHit(curBeat:Int) {
 		var newColor = FlxG.random.int(0, colors.length-2);
 		if (newColor >= curColor) newColor++;
 		curColor = newColor;
-		light.color = colors[curColor]; lightGlow.color = light.color;
+		light.color = colors[curColor];
+		lightGlow.color = light.color;
 	}
 
 	if (!trainMoving)
