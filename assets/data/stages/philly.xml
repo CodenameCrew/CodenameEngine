@@ -4,9 +4,9 @@
 	<sprite name="city" x="-10" y="0" sprite="city" scroll="0.3" scale="0.85" updateHitbox="true" zoomfactor="0.3"/>
 	<sprite name="light" x="-10" y="0" sprite="win" scroll="0.3" scale="0.85" updateHitbox="true" zoomfactor="0.3"/>
 	<sprite name="lightGlow" x="-10" y="0" sprite="winGlow" scroll="0.3" scale="0.85" updateHitbox="true" zoomfactor="0.3">
-		<property name="blend" type="float" value="1"/>
+		<property name="blend" type="float" value="1.0"/>
 	</sprite>
-	<sprite name="streetBehind" x="-40" y="50" sprite="behindTrain" zoomfactor="1" />
-	<sprite name="phillyTrain" x="2000" y="360" sprite="train" zoomfactor="1" />
-	<sprite name="street" x="-40" y="50" sprite="street" zoomfactor="1" />
+	<sprite name="streetBehind" x="-40" y="50" sprite="behindTrain" zoomfactor="1.0" />
+	<sprite name="phillyTrain" x="2000" y="360" sprite="train" zoomfactor="1.0" />
+	<sprite name="street" x="-40" y="50" sprite="street" zoomfactor="1.0" />
 </stage>
