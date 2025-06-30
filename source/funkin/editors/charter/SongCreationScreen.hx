@@ -19,7 +19,7 @@ class SongCreationScreen extends UISubstateWindow {
 	public var songNameTextBox:UITextBox;
 	public var bpmStepper:UINumericStepper;
 	public var beatsPerMeasureStepper:UINumericStepper;
-	public var stepsPerBeatStepper :UINumericStepper;
+	public var denominatorStepper :UINumericStepper;
 	public var needsVoicesCheckbox:UICheckbox;
 	public var instExplorer:UIFileExplorer;
 	public var voicesExplorer:UIFileExplorer;
@@ -79,12 +79,12 @@ class SongCreationScreen extends UISubstateWindow {
 
 		songDataGroup.add(new UIText(beatsPerMeasureStepper.x + 30, beatsPerMeasureStepper.y + 3, 0, "/", 22));
 
-		stepsPerBeatStepper = new UINumericStepper(beatsPerMeasureStepper.x + 30 + 24, beatsPerMeasureStepper.y, 4, 1, 0, 1, null, 54);
-		songDataGroup.add(stepsPerBeatStepper);
+		denominatorStepper = new UINumericStepper(beatsPerMeasureStepper.x + 30 + 24, beatsPerMeasureStepper.y, 4, 1, 0, 1, null, 54);
+		songDataGroup.add(denominatorStepper);
 
 		var voicesUIText:UIText = null;
 
-		needsVoicesCheckbox = new UICheckbox(stepsPerBeatStepper.x + 80 + 26, stepsPerBeatStepper.y, "Voices", true);
+		needsVoicesCheckbox = new UICheckbox(denominatorStepper.x + 80 + 26, denominatorStepper.y, "Voices", true);
 		needsVoicesCheckbox.onChecked = function(checked) {
 			if (voicesExplorer == null) return;
 
@@ -243,14 +243,14 @@ class SongCreationScreen extends UISubstateWindow {
 	}
 
 	function saveSongInfo() {
-		for (stepper in [bpmStepper, beatsPerMeasureStepper, stepsPerBeatStepper])
+		for (stepper in [bpmStepper, beatsPerMeasureStepper, denominatorStepper])
 			@:privateAccess stepper.__onChange(stepper.label.text);
 
 		var meta:ChartMetaData = {
 			name: songNameTextBox.label.text,
 			bpm: bpmStepper.value,
 			beatsPerMeasure: Std.int(beatsPerMeasureStepper.value),
-			stepsPerBeat: Std.int(stepsPerBeatStepper.value),
+			stepsPerBeat: Std.int(16 / denominatorStepper.value),
 			needsVoices: needsVoicesCheckbox.checked,
 			displayName: displayNameTextBox.label.text,
 			icon: iconTextBox.label.text,

@@ -53,7 +53,7 @@ class GameplayOptions extends OptionsScreen {
 				__lastBeat = Conductor.curBeat;
 			}
 
-			var beat = Math.floor(Conductor.getStepForTime(FlxG.sound.music.time) / Conductor.stepsPerBeat);
+			var beat = Math.floor(Conductor.getTimeInBeats(FlxG.sound.music.time));
 			if (__lastSongBeat != beat) {
 				__metronome.replay();
 				__lastSongBeat = beat;
