@@ -5,6 +5,7 @@ import away3d.containers.View3D;
 import away3d.library.assets.IAsset;
 import flixel.FlxG;
 import openfl.display.BitmapData;
+import openfl.system.Capabilities;
 #end
 import flixel.FlxSprite;
 
@@ -19,6 +20,7 @@ class FlxView3D extends FlxSprite
 {
 	#if THREE_D_SUPPORT
 	@:noCompletion private var bmp:BitmapData;
+	@:noCompletion private final dpiScale:Float = 72.0 / Capabilities.screenDPI;
 
 	/**
 	 * The Away3D View
@@ -52,6 +54,10 @@ class FlxView3D extends FlxSprite
 		FlxG.stage.addChildAt(view, 0);
 
 		bmp = new BitmapData(Std.int(view.width), Std.int(view.height), true, 0x0);
+		
+		view.width *= dpiScale;
+		view.height *= dpiScale;
+
 		loadGraphic(bmp);
 	}
 
@@ -108,14 +114,14 @@ class FlxView3D extends FlxSprite
 
 	@:noCompletion override function set_width(newWidth:Float):Float
 	{
-		super.set_width(newWidth);
-		return view != null ? view.width = width : width;
+		return super.set_width(newWidth);
+		return view != null ? (view.width = width * dpiScale) / dpiScale : width;
 	}
 
 	@:noCompletion override function set_height(newHeight:Float):Float
 	{
-		super.set_height(newHeight);
-		return view != null ? view.height = height : height;
+		return super.set_height(newHeight);
+		return view != null ? (view.width = height * dpiScale) / dpiScale : height;
 	}
 	#end
 }
