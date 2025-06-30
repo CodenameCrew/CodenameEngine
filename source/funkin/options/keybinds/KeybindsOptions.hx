@@ -79,7 +79,7 @@ class KeybindsOptions extends MusicBeatSubstate {
 			name: 'DEBUG',
 			settings: [
 				{
-					name: 'Reload State',
+					name: 'Reload',
 					control: 'DEBUG_RELOAD'
 				},
 			]
