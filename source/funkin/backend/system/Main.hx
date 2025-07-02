@@ -183,6 +183,7 @@ class Main extends Sprite
 
 	public static function refreshAssets() {
 		WindowUtils.resetTitle();
+		FunkinCache.instance.clearSecondLayer();
 
 		FlxSoundTray.volumeChangeSFX = Paths.sound('menu/volume');
 		FlxSoundTray.volumeUpChangeSFX = null;
