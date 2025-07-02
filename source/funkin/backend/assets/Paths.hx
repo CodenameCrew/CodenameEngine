@@ -282,6 +282,7 @@ class Paths
 			if (noExtension) e = Path.withoutExtension(e);
 
 			content[k] = addPath ? '$key$e' : e;
+		}
 		return content;
 		/*
 		if (!key.endsWith("/")) key = key + "/";
