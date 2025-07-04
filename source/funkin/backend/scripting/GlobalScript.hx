@@ -11,6 +11,9 @@ import funkin.backend.assets.ModsFolder;
 class GlobalScript {
 	public static var scripts:ScriptPack;
 
+	private static var reloading:Bool = false;
+	private static var _lastAllow_Reload:Bool = false;
+
 	public static function init() {
 		#if MOD_SUPPORT
 		ModsFolder.onModSwitch.add(onModSwitch);
@@ -43,6 +46,11 @@ class GlobalScript {
 		FlxG.signals.postUpdate.add(function() {
 			call("postUpdate", [FlxG.elapsed]);
 
+			if (reloading) {
+				reloading = false;
+				MusicBeatState.ALLOW_DEBUG_RELOAD = _lastAllow_Reload;
+			}
+
 			if (FlxG.keys.justPressed.F2)
 				NativeAPI.allocConsole();
 		});
@@ -63,21 +71,24 @@ class GlobalScript {
 		});
 
 		FlxG.signals.preUpdate.add(function() {
-			// Found out the issue to why it "updates twice". It's caused by the `updateInput` running AFTER this FlxSignal.
-			// So it never properly sets the state of key presses until after this signal is called.
-
-			// Making a PR on cne-flixel to fix this. Seen here https://github.com/CodenameCrew/cne-flixel/pull/14 | SOMEONE MERGE MY FUCKING PR 😭
-
 			call("preUpdate", [FlxG.elapsed]);
 			call("update", [FlxG.elapsed]);
 			
-			// This won't reload the GlobalScript 5 billion times when the PR is merged.
+			// we default the key to F5, but really this shouldn't matter, as every state will be at minimum a MusicBeatState.
+			// this is just in the event some stupid person uses `FlxState` for some reason 😭
 			var resetKey = FlxG.keys.justPressed.F5;
 			if ((FlxG.state is MusicBeatState)) resetKey = cast(FlxG.state, MusicBeatState).controls.DEBUG_RELOAD;
 			
+			// If we want, we could just make reseting GlobalScript it's own keybind, but for now this works.
 			if (FlxG.keys.pressed.SHIFT && resetKey) {
+				reloading = true;
 				Logs.trace("Reloading Global Scripts...", INFO, YELLOW);
+				
+				// yeah its a bit messy, sorry. This just prevents actually reloading the actual state.
+				_lastAllow_Reload = MusicBeatState.ALLOW_DEBUG_RELOAD;
 				MusicBeatState.ALLOW_DEBUG_RELOAD = false;
+
+				// Would be better to just re-initalize GlobalScript so there aren't any lose ends.
 				onModSwitch(#if MOD_SUPPORT ModsFolder.currentModFolder #else null #end);
 			}
 		});
@@ -96,6 +107,7 @@ class GlobalScript {
 		if (scripts != null)
 			scripts.call(name, args);
 	}
+
 	public static function onModSwitch(newMod:String) {
 		call("destroy");
 		scripts = FlxDestroyUtil.destroy(scripts);

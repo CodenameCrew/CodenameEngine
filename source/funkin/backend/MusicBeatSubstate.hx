@@ -84,8 +84,6 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 	 */
 	public var controlsP2(get, never):Controls;
 
-	public static var ALLOW_DEBUG_RELOAD:Bool = true;
-
 	inline function get_controls():Controls
 		return PlayerSettings.solo.controls;
 	inline function get_controlsP1():Controls
@@ -129,21 +127,19 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 			call("postUpdate", [elapsed]);
 		}
 
-		if (_requestSubStateReset)
-		{
+		if (_requestSubStateReset) {
 			_requestSubStateReset = false;
 			resetSubState();
 		}
+
 		if (subState != null)
-		{
 			subState.tryUpdate(elapsed);
-		}
 		
-		// Couldn't get this
-		// if (ALLOW_DEBUG_RELOAD && controls.DEBUG_RELOAD) {
-		// 	Logs.trace("Reloading Current SubState...", WARNING, YELLOW);
-		// 	resetSubState();
-		// }
+
+		if (subState == null && (MusicBeatState.ALLOW_DEBUG_RELOAD && controls.DEBUG_RELOAD)) {
+			Logs.trace("Reloading Current SubState...", INFO, YELLOW);
+			parent.openSubState(Type.createInstance(Type.getClass(this), [this.scriptsAllowed, this.scriptName]));
+		}
 	}
 
 	override function close() {
