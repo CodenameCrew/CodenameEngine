@@ -32,7 +32,7 @@ class Stage extends FlxBasic implements IBeatReceiver {
 		for (k=>e in stageSprites) script.set(k, e);
 
 	public function prepareInfos(node:Access)
-		return XMLImportedScriptInfo.prepareInfos(node, PlayState.instance.scripts, (infos) -> xmlImportedScripts.push(infos));
+		return XMLImportedScriptInfo.prepareInfos(node, PlayState.instance != null ? PlayState.instance.scripts : null, (infos) -> xmlImportedScripts.push(infos));
 
 	public function new(stage:String, ?state:FlxState) {
 		super();
