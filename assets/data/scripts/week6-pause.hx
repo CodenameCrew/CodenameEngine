@@ -19,7 +19,8 @@ function create(event) {
 
 	event.music = isThorns ? "pixel/LunchboxScary" : "pixel/Lunchbox";
 
-	pixelScript.call("pixelCam", [pauseCam]);
+	// allowing this pause script even if the pixel script is not loaded  - Nex
+	pixelScript?.call("pixelCam", [pauseCam]);
 
 	FlxG.cameras.add(pauseCam, false);
 	cameras = [pauseCam];
@@ -39,7 +40,7 @@ function create(event) {
 	confText(songText);
 	add(songText);
 
-	for(i=>e in menuItems) {
+	for (i=>e in menuItems) {
 		text = new FlxText(0, (22 * 6) + ((i+2) * 9 * 6), 0, e, 8, false);
 		confText(text);
 	}
@@ -64,23 +65,22 @@ function confText(text) {
 	if (!isThorns) text.borderColor = 0xFF953E3E;
 
 	text.antialiasing = false;
-	add(text);
 	texts.push(text);
+	add(text);
 }
 
-function destroy() {
-	if (FlxG.cameras.list.contains(pauseCam)) FlxG.cameras.remove(pauseCam);
-}
+function destroy() if (FlxG.cameras.list.contains(pauseCam))
+	FlxG.cameras.remove(pauseCam);
 
 var canDoShit = true;
 var time:Float = 0;
 function update(elapsed) {
-	pixelScript.call("postUpdate", [elapsed]);
+	pixelScript?.call("postUpdate", [elapsed]);
 
 	pauseCam.alpha = lerp(pauseCam.alpha, 1, 0.25);
 	time += elapsed;
 
-	var curText = texts[(curSelected+1)];
+	var curText = texts[curSelected + 1];
 	hand.setPosition(curText.x - hand.width - 18 + (Math.sin(time * Math.PI * 2) * 12), curText.y + (text.height - hand.height) - 6);
 	hand.x -= hand.x % 6;
 	hand.y -= hand.y % 6;
@@ -91,17 +91,13 @@ function update(elapsed) {
 }
 
 var scrollSFX = FlxG.sound.load(Paths.sound(isThorns ? 'pixel/type' : 'pixel/pixelText'));
-function changeSelection(change) {  // this overrides the function inside of the normal pause btw, so no event gets called  - Nex
-	if (!canDoShit) return;
-
+function changeSelection(change) if (canDoShit) {  // this overrides the function inside of the normal pause btw, so no event gets called  - Nex
 	curSelected = FlxMath.wrap(curSelected + change, 0, menuItems.length - 1);
 	if (change != 0) scrollSFX.play();
 }
 
 var enterSFX = FlxG.sound.load(Paths.sound(isThorns ? 'pixel/ANGRY' : 'pixel/clickText'));
-function enterOption() {
-	if (!canDoShit) return;
-
+function enterOption() if (canDoShit) {
 	var option = menuItems[curSelected];
 	enterSFX.play();
 

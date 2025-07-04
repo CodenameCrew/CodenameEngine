@@ -18,9 +18,7 @@ static var daPixelZoom = 6;
  * UI
  */
 function onNoteCreation(event) {
-	if (event.note.strumLine == playerStrums && !pixelNotesForBF) return;
-	if (event.note.strumLine == cpuStrums && !pixelNotesForDad) return;
-
+	if ((event.note.strumLine == playerStrums && !pixelNotesForBF) || (event.note.strumLine == cpuStrums && !pixelNotesForDad)) return;
 	event.cancel();
 
 	var note = event.note;
@@ -37,17 +35,11 @@ function onNoteCreation(event) {
 	note.antialiasing = false;
 }
 
-// LJ here.... I would fix this code up but uh..... like wtf :sob:
-function onPostNoteCreation(event) {
-	var splashes = event.note;
-	if (pixelSplashes)
-		splashes.splash = "pixel-default";
-}
+function onPostNoteCreation(event) if (pixelSplashes)
+	event.note.splash = "pixel-default";
 
 function onStrumCreation(event) {
-	if (event.player == 1 && !pixelNotesForBF) return;
-	if (event.player == 0 && !pixelNotesForDad) return;
-
+	if ((event.player == 1 && !pixelNotesForBF) || (event.player == 0 && !pixelNotesForDad)) return;
 	event.cancel();
 
 	var strum = event.strum;
@@ -89,9 +81,9 @@ function onPlayerHit(event:NoteHitEvent) {
  * CAMERA HACKS!!
  */
 function postCreate() {
-	if (enablePauseMenu) {
+	if (enablePauseMenu)
 		PauseSubState.script = 'data/scripts/week6-pause';
-	}
+
 	if (enableCameraHacks) {
 		camGame.pixelPerfectRender = true;
 		camGame.antialiasing = false;
@@ -107,8 +99,8 @@ function postCreate() {
 	}
 }
 
-function onStartCountdown() {
-	/*var newNoteCamera = new HudCamera();
+/*function onStartCountdown() {
+	var newNoteCamera = new HudCamera();
 	newNoteCamera.bgColor = 0; // transparent
 	FlxG.cameras.add(newNoteCamera, false);
 
@@ -122,8 +114,8 @@ function onStartCountdown() {
 			i++;
 		}
 	}
-	makeCameraPixely(newNoteCamera);*/
-}
+	makeCameraPixely(newNoteCamera);
+}*/
 
 /**
  * Use this to make any camera pixelly (you wont be able to zoom with it anymore!)
@@ -148,33 +140,29 @@ function destroy() {
 	FlxG.game.stage.quality = oldStageQuality;
 }
 
-function pixelCam(cam) {
+function pixelCam(cam)
 	makeCameraPixely(cam);
-}
 
 var pixellyCameras = [];
 var pixellyShaders = [];
 
-function postUpdate(elapsed) {
-	for(e in pixellyCameras) {
-		if (Std.isOfType(e, HudCamera))
-			e.downscroll = camHUD.downscroll;
-	}
-	if (enableCameraHacks) {
-		for(p in strumLines)
-			p.notes.forEach(function(n) {
-				if(n.isSustainNote) return; // hacky fix for hold
-				n.y -= n.y % daPixelZoom;
-				n.x -= n.x % daPixelZoom;
-			});
+function postUpdate() {
+	for (e in pixellyCameras) if (Std.isOfType(e, HudCamera))
+		e.downscroll = camHUD.downscroll;
+
+	if (enableCameraHacks) for (p in strumLines) {
+		p.notes.forEach(function(n) {
+			if(n.isSustainNote) return; // hacky fix for hold
+			n.y -= n.y % daPixelZoom;
+			n.x -= n.x % daPixelZoom;
+		});
 	}
 
 	var zoom = 1 / daPixelZoom / Math.min(FlxG.scaleMode.scale.x, FlxG.scaleMode.scale.y);
-	for(e in pixellyCameras) {
+	for (e in pixellyCameras) {
 		if (!e.exists) continue;
 		e.zoom = zoom;
 	}
-	for(e in pixellyShaders) {
+	for (e in pixellyShaders)
 		e.pixelZoom = zoom;
-	}
 }
