@@ -29,6 +29,18 @@
 		<letter char="Y"        anim="Y bold" />
 		<letter char="Z"        anim="Z bold" />
 		<letter char=">"        anim="> Bold" />
+
+		<!-- Bold Numbers !-->
+		<letter char="0"        anim="0 bold" />
+		<letter char="1"        anim="1 bold" />
+		<letter char="2"        anim="2 bold" />
+		<letter char="3"        anim="3 bold" />
+		<letter char="4"        anim="4 bold" />
+		<letter char="5"        anim="5 bold" />
+		<letter char="6"        anim="6 bold" />
+		<letter char="7"        anim="7 bold" />
+		<letter char="8"        anim="8 bold" />
+		<letter char="9"        anim="9 bold" />
 	</bold>
 	<normal spritesheet="menus/alphabet">
 		<!-- Symbols !-->
