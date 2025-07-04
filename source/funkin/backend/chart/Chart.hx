@@ -259,9 +259,8 @@ class Chart {
 
 		CoolUtil.safeSaveFile(chartPath, Json.stringify(filteredChart, null, saveSettings.prettyPrint == true ? "\t" : null));
 
-		// idk how null reacts to it so better be sure
 		if (saveSettings.overrideExistingMeta == true || !FileSystem.exists(metaPath))
-			CoolUtil.safeSaveFile(metaPath, Json.stringify(meta, null, saveSettings.prettyPrint == true ? "\t" : null));
+			CoolUtil.safeSaveFile(metaPath, makeMetaSaveable(meta));
 		#end
 		return filteredChart;
 	}
@@ -280,6 +279,12 @@ class Chart {
 				Reflect.setField(sortedData, f, v);
 		}
 		return sortedData;
+	}
+
+	public static inline function makeMetaSaveable(meta:ChartMetaData, prettyPrint:Bool = true):String {
+		var data:Dynamic = Reflect.copy(meta);
+		if (data.color != null) data.color = new FlxColor(data.color).toWebString();  // dont even ask me  - Nex
+		return Json.stringify(data, null, prettyPrint ? "\t" : null);
 	}
 }
 

@@ -1338,7 +1338,7 @@ class Charter extends UIState {
 		#if sys
 		CoolUtil.safeSaveFile(
 			'${Paths.getAssetsRoot()}/songs/${__song.toLowerCase()}/meta.json',
-			Json.stringify(PlayState.SONG.meta == null ? {} : PlayState.SONG.meta, null, "\t")
+			PlayState.SONG.meta == null ? null : Chart.makeMetaSaveable(PlayState.SONG.meta)
 		);
 		#else
 		_file_meta_saveas(_);
@@ -1346,7 +1346,7 @@ class Charter extends UIState {
 	}
 
 	function _file_meta_saveas(_) {
-		openSubState(new SaveSubstate(Json.stringify(PlayState.SONG.meta == null ? {} : PlayState.SONG.meta, null, "\t"), { // always pretty print meta
+		openSubState(new SaveSubstate(PlayState.SONG.meta == null ? null : Chart.makeMetaSaveable(PlayState.SONG.meta), { // always pretty print meta
 			defaultSaveFile: 'meta.json'
 		}));
 	}
