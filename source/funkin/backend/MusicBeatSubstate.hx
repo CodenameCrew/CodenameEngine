@@ -120,16 +120,12 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 
 	public override function tryUpdate(elapsed:Float):Void
 	{
-
 		if (persistentUpdate || subState == null) {
 			call("preUpdate", [elapsed]);
 			update(elapsed);
 			call("postUpdate", [elapsed]);
 		}
 
-		/* so we can't reload the substate until we figure out how to create the same class instance with the exact parameters we put in, so for rn its impossible sorry :sob: */
-		/* idea though, have a class function that just returns a new instance with the parameters. Downside: every class would be required to override that function */
-		
 		// if (subState == null && (MusicBeatState.ALLOW_DEBUG_RELOAD && controls.DEBUG_RELOAD)) {
 		// 	Logs.trace("Reloading Current SubState...", INFO, YELLOW);
 		// 	var test = Type.createInstance(Type.getClass(this), [this.scriptsAllowed, this.scriptName]);
