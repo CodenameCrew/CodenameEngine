@@ -40,7 +40,8 @@ function onNoteCreation(event) {
 // LJ here.... I would fix this code up but uh..... like wtf :sob:
 function onPostNoteCreation(event) {
 	var splashes = event.note;
-	if (pixelSplashes) splashes.splash = "pixel-default";
+	if (pixelSplashes)
+		splashes.splash = "pixel-default";
 }
 
 function onStrumCreation(event) {
