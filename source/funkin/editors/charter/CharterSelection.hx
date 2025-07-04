@@ -38,7 +38,7 @@ class CharterSelection extends EditorTreeMenu {
 					FlxG.state.openSubState(new ChartCreationScreen(saveChart));
 				}));
 				optionsTree.add(new OptionsScreen(s.name, "Select a difficulty to continue.", list));
-			}, s.parsedColor.getDefault(0xFFFFFFFF))
+			}, s.color.getDefault(0xFFFFFFFF))
 		];
 
 		list.insert(0, new NewOption("New Song", "New Song", function() {
@@ -126,7 +126,7 @@ class CharterSelection extends EditorTreeMenu {
 				FlxG.state.openSubState(new ChartCreationScreen(saveChart));
 			}));
 			optionsTree.insert(1, new OptionsScreen(creation.meta.name, "Select a difficulty to continue.", list));
-		}, creation.meta.parsedColor.getDefault(0xFFFFFFFF));
+		}, creation.meta.color.getDefault(0xFFFFFFFF));
 
 		// Add to List
 		freeplayList.songs.insert(0, creation.meta);
