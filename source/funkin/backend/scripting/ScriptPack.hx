@@ -53,7 +53,7 @@ class ScriptPack extends Script {
 
 	public override function call(func:String, ?parameters:Array<Dynamic>):Dynamic {
 		for(e in scripts)
-			if(e.active)
+			if (e.active)
 				e.call(func, parameters);
 		return null;
 	}

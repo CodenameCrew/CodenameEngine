@@ -44,6 +44,9 @@ enum abstract Action(String) to String from String {
 	var RESET = "reset";
 	var CHEAT = "cheat";
 	var SWITCHMOD = "switchmod";
+
+	// Debugs
+	var DEBUG_RELOAD = "debug-reload";
 }
 
 enum Device
@@ -73,6 +76,9 @@ enum Control
 	PAUSE;
 	CHEAT;
 	SWITCHMOD;
+	
+	// Debugs
+	DEBUG_RELOAD;
 }
 
 enum KeyboardScheme
@@ -122,6 +128,8 @@ class Controls extends FlxActionSet
 	var _reset = new FlxActionDigital(Action.RESET);
 	var _cheat = new FlxActionDigital(Action.CHEAT);
 	var _switchMod = new FlxActionDigital(Action.SWITCHMOD);
+	
+	var debug_reload = new FlxActionDigital(Action.DEBUG_RELOAD);
 
 	#if (haxe >= "4.0.0")
 	var byName:Map<String, FlxActionDigital> = [];
@@ -372,6 +380,14 @@ class Controls extends FlxActionSet
 	inline function set_SWITCHMOD(val)
 		return @:privateAccess _switchMod._checked = val;
 
+	public var DEBUG_RELOAD(get, set):Bool;
+
+	inline function get_DEBUG_RELOAD()
+		return debug_reload.check();
+
+	inline function set_DEBUG_RELOAD(val)
+		return @:privateAccess debug_reload._checked = val;
+
 	public function new(name, scheme = None)
 	{
 		super(name);
@@ -408,6 +424,7 @@ class Controls extends FlxActionSet
 		add(_reset);
 		add(_cheat);
 		add(_switchMod);
+		add(debug_reload);
 
 		for (action in digitalActions)
 			byName[action.name] = action;
@@ -469,6 +486,7 @@ class Controls extends FlxActionSet
 			case RESET: _reset;
 			case CHEAT: _cheat;
 			case SWITCHMOD: _switchMod;
+			case DEBUG_RELOAD: debug_reload;
 		}
 	}
 
@@ -532,6 +550,8 @@ class Controls extends FlxActionSet
 				func(_cheat, JUST_PRESSED);
 			case SWITCHMOD:
 				func(_switchMod, JUST_PRESSED);
+			case DEBUG_RELOAD:
+				func(debug_reload, JUST_PRESSED);
 		}
 	}
 
@@ -687,6 +707,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.PAUSE, Options.SOLO_PAUSE);
 				inline bindKeys(Control.RESET, Options.SOLO_RESET);
 				inline bindKeys(Control.SWITCHMOD, Options.SOLO_SWITCHMOD);
+				inline bindKeys(Control.DEBUG_RELOAD, Options.SOLO_DEBUG_RELOAD);
 			case Duo(true):
 				inline bindKeys(Control.UP, Options.P1_UP);
 				inline bindKeys(Control.DOWN, Options.P1_DOWN);
@@ -701,6 +722,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.PAUSE, Options.P1_PAUSE);
 				inline bindKeys(Control.RESET, Options.P1_RESET);
 				inline bindKeys(Control.SWITCHMOD, Options.P1_SWITCHMOD);
+				inline bindKeys(Control.DEBUG_RELOAD, Options.P1_DEBUG_RELOAD);
 			case Duo(false):
 				inline bindKeys(Control.UP, Options.P2_UP);
 				inline bindKeys(Control.DOWN, Options.P2_DOWN);
@@ -715,6 +737,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.PAUSE, Options.P2_PAUSE);
 				inline bindKeys(Control.RESET, Options.P2_RESET);
 				inline bindKeys(Control.SWITCHMOD, Options.P2_SWITCHMOD);
+				inline bindKeys(Control.DEBUG_RELOAD, Options.P2_DEBUG_RELOAD);
 			case None: // nothing
 			case Custom: // nothing
 		}
