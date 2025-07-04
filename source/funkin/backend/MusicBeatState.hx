@@ -150,21 +150,21 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 			call("postUpdate", [elapsed]);
 		}
 
-		if (_requestSubStateReset)
-		{
+		if (_requestSubStateReset) {
 			_requestSubStateReset = false;
 			resetSubState();
 		}
-		if (subState != null)
-		{
-			subState.tryUpdate(elapsed);
-		}
 		
-		if (subState == null && (ALLOW_DEBUG_RELOAD && controls.DEBUG_RELOAD)) {
+		// so it doesn't reload the state if for some reason the substate exits.
+		// substate reloading is disabled for now.
+		if (/*subState == null && */(ALLOW_DEBUG_RELOAD && controls.DEBUG_RELOAD)) {
 			Logs.trace("Reloading Current State...", INFO, YELLOW);
 			FlxG.resetState();
 		}
-
+		
+		if (subState != null)
+			subState.tryUpdate(elapsed);
+		
 	}
 
 	override function create()
