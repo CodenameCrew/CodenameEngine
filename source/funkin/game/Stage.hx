@@ -98,37 +98,23 @@ class Stage extends FlxBasic implements IBeatReceiver {
 							(node.has.y) ? Std.parseFloat(node.att.y).getDefault(0) : 0
 						);
 
-						(node.name == "solid" ? spr.makeSolid : spr.makeGraphic)(
+						// just to make sure, its better to apply these before it gets inside of xmlUtil (because of mainly updateHitbox i guess), so im removing them before it gets passed  - Nex
+						var toRemove = ["x", "y", "width", "height", "color"];
+						var isSolid = node.name == "solid";
+
+						(isSolid ? spr.makeSolid : spr.makeGraphic)(
 							Std.parseInt(node.att.width),
 							Std.parseInt(node.att.height),
 							(node.has.color) ? CoolUtil.getColorFromDynamic(node.att.color) : -1
 						);
 
-						spr.updateHitbox();
+						if (isSolid) toRemove.push("updateHitbox");  // makesolid already calls updateHitbox  - Nex
+						for (a in toRemove) node.x.remove(a);
+						XMLUtil.loadSpriteFromXML(spr, node, "", NONE, false);
 
-						// maybe make this more efficent? copy pasting from xmlutil doesnt rlly help here
-						if (node.has.scroll) {
-							var scroll:Null<Float> = Std.parseFloat(node.att.scroll);
-							if (scroll.isNotNull()) spr.scrollFactor.set(scroll, scroll);
-						}
-						if (node.has.scrollx) {
-							var scroll:Null<Float> = Std.parseFloat(node.att.scrollx);
-							if (scroll.isNotNull()) spr.scrollFactor.x = scroll;
-						}
-						if (node.has.scrolly) {
-							var scroll:Null<Float> = Std.parseFloat(node.att.scrolly);
-							if (scroll.isNotNull()) spr.scrollFactor.y = scroll;
-						}
-					
 						if (!node.has.zoomfactor && PlayState.instance != null)
 							spr.initialZoom = PlayState.instance.defaultCamZoom;
 
-						if (node.has.zoomfactor)
-							spr.zoomFactor = Std.parseFloat(node.getAtt("zoomfactor")).getDefault(spr.zoomFactor);
-				
-						if (node.has.alpha)
-							spr.alpha = Std.parseFloat(node.getAtt("alpha")).getDefault(spr.alpha);
-					
 						stageSprites.set(node.getAtt("name"), spr);
 						state.add(spr);
 						spr;
