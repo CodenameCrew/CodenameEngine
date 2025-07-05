@@ -11,8 +11,14 @@ class ModSwitchMenu extends MusicBeatSubstate {
 	var alphabets:FlxTypedGroup<Alphabet>;
 	var curSelected:Int = 0;
 
+	var subCam:FlxCamera;
+
 	public override function create() {
 		super.create();
+
+		camera = subCam = new FlxCamera();
+		subCam.bgColor = 0;
+		FlxG.cameras.add(subCam, false);
 
 		var bg = new FlxSprite(0, 0).makeSolid(FlxG.width, FlxG.height, 0xFF000000);
 		bg.updateHitbox();
@@ -62,6 +68,13 @@ class ModSwitchMenu extends MusicBeatSubstate {
 			alphabet.targetY = k - curSelected;
 		}
 		alphabets.members[curSelected].alpha = 1;
+	}
+
+	override function destroy() {
+		super.destroy();
+
+		if (FlxG.cameras.list.contains(subCam))
+			FlxG.cameras.remove(subCam);
 	}
 }
 #end

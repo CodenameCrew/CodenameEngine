@@ -234,7 +234,7 @@ class FreeplayState extends MusicBeatState
 		scoreText.x = coopText.x = scoreBG.x + 4;
 		diffText.x = Std.int(scoreBG.x + ((scoreBG.width - diffText.width) / 2));
 
-		interpColor.fpsLerpTo(songs[curSelected].parsedColor, 0.0625);
+		interpColor.fpsLerpTo(songs[curSelected].color, 0.0625);
 		bg.color = interpColor.color;
 
 		#if PRELOAD_ALL

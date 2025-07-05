@@ -5,7 +5,7 @@
 		title="Friday Night Funkin' - Codename Engine" main="funkin.backend.system.Main"
 		file="CodenameEngine" packageName="com.yoshman29.codenameengine"
 		package="com.yoshman29.codenameengine"
-		version="0.1.0" company="Yoshman29" />
+		version="0.1.0-legacy" company="Yoshman29" />
 
 	<!--
 		CHANGE THE SAVE PATH & NAME FOR YOUR MOD HERE!

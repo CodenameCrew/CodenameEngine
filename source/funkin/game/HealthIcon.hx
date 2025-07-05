@@ -221,8 +221,21 @@ class HealthIcon extends FunkinSprite
 						}
 
 						var animName = 'from-${node.get("from")}-to-${node.get("to")}';
-						if (node.exists("offsetX") || node.exists("offsetY"))
-							addOffset(animName, Std.parseFloat(node.get("offsetX")).getDefault(0), Std.parseFloat(node.get("offsetY")).getDefault(0));
+						
+						var offsetX:Float = 0;
+						var offsetY:Float = 0;
+						if (node.exists("offsetX"))
+							offsetX = Std.parseFloat(node.get("offsetX")).getDefault(0);
+						else if (node.exists("offsetx"))
+							offsetX = Std.parseFloat(node.get("offsetx")).getDefault(0);
+						
+						if (node.exists("offsetY"))
+							offsetY = Std.parseFloat(node.get("offsetY")).getDefault(0);
+						else if (node.exists("offsety"))
+							offsetY = Std.parseFloat(node.get("offsety")).getDefault(0);
+
+						addOffset(animName, offsetX, offsetY);
+
 						addAnim(animName, node.get("anim"), Std.parseInt(node.get("fps")).getDefault(24), false); // don't allow looping for transitions
 						if (animateAtlas == null && animation.exists(animName))
 							animation.getByName(animName).flipX = isPlayer != iconIsPlayer;
@@ -256,7 +269,13 @@ class HealthIcon extends FunkinSprite
 
 						addOffset(animName, offsetX, offsetY);
 
-						addAnim(animName, node.get("anim"), Std.parseInt(node.get("fps")).getDefault(24), node.get("looped").getDefault("true").toLowerCase() == "true");
+						var looped:Bool = false;
+						if (node.exists("looped"))
+							looped = node.get("looped").toLowerCase() == "true";
+						else if (node.exists("loop"))
+							looped = node.get("loop").toLowerCase() == "true";
+
+						addAnim(animName, node.get("anim"), Std.parseInt(node.get("fps")).getDefault(24), looped);
 						if (animateAtlas == null && animation.exists(animName))
 							animation.getByName(animName).flipX = isPlayer != iconIsPlayer;
 					case "step":

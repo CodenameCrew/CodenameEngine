@@ -695,7 +695,8 @@ class Sound extends EventDispatcher
 				// var samples = (__buffer.data.length * 8) / (__buffer.channels * __buffer.bitsPerSample);
 				// return Std.int(samples / __buffer.sampleRate * 1000);
 				var samples = (Int64.make(0, __buffer.data.length) * Int64.ofInt(8)) / Int64.ofInt(__buffer.channels * __buffer.bitsPerSample);
-				var value = samples / Int64.ofInt(__buffer.sampleRate) * Int64.ofInt(1000);
+				var div = Int64.divMod(samples * Int64.ofInt(1000), Int64.ofInt(__buffer.sampleRate));
+				var value = (div.quotient + (div.modulus / __buffer.sampleRate));
 				return Int64.toInt(value);
 			}
 			else if (__buffer.__srcVorbisFile != null)

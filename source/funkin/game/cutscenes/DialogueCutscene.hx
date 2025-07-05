@@ -197,7 +197,7 @@ class DialogueCutscene extends Cutscene {
 		dialogueScript.destroy();
 
 		super.destroy();
-		cutscene = null;
+		if (cutscene == this) cutscene = null;
 		FlxG.cameras.remove(dialogueCamera);
 	}
 }

@@ -87,7 +87,7 @@ class DiscordUtil
 
 		config.logoKey = config.logoKey.getDefault("icon");
 		config.logoText = config.logoText.getDefault(Application.current.meta.get('title'));
-		config.clientID = config.clientID.getDefault("1027994136193810442");
+		config.clientID = config.clientID.getDefault("1383853614589673472");
 		currentID = config.clientID;
 		#end
 	}

@@ -615,7 +615,7 @@ class PlayState extends MusicBeatState
 					// ADD YOUR HARDCODED SCRIPTS HERE!
 				default:
 					var normal = 'songs/${SONG.meta.name.toLowerCase()}/scripts';
-					var scriptsFolders:Array<String> = [normal, normal + '/$difficulty/', 'data/charts/', 'songs/'];
+					var scriptsFolders:Array<String> = [normal, normal + '/${difficulty.toLowerCase()}/', 'data/charts/', 'songs/'];
 
 					for (folder in scriptsFolders) {
 						for (file in Paths.getFolderContent(folder, true, fromMods ? MODS : BOTH)) {
@@ -1266,16 +1266,8 @@ class PlayState extends MusicBeatState
 		if (updateRatingStuff != null)
 			updateRatingStuff();
 
-		if (canAccessDebugMenus) {
-			if (chartingMode && FlxG.keys.justPressed.SEVEN) {
-				FlxG.switchState(new funkin.editors.charter.Charter(SONG.meta.name, difficulty, false));
-			}
-			if (FlxG.keys.justPressed.F5) {
-				Logs.trace('Reloading scripts...', WARNING, YELLOW);
-				scripts.reload();
-				Logs.trace('Song scripts successfully reloaded.', WARNING, GREEN);
-			}
-		}
+		if (canAccessDebugMenus && chartingMode && FlxG.keys.justPressed.SEVEN)
+			FlxG.switchState(new funkin.editors.charter.Charter(SONG.meta.name, difficulty, false));
 
 		if (doIconBop)
 			for (icon in iconArray)

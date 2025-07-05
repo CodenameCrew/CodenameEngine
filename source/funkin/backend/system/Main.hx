@@ -30,6 +30,14 @@ class Main extends Sprite
 	// make this empty once you guys are done with the project.
 	// good luck /gen <3 @crowplexus
 	public static final releaseCycle:String = "Beta";
+	// add a version number in dis shid rn 
+	public static var releaseVersion(get, default):String = null;
+	public static function get_releaseVersion():String {
+		if (releaseVersion != null)
+			return releaseVersion;
+		
+		return lime.app.Application.current.meta.get('version');
+	}
 
 	public static var instance:Main;
 
@@ -81,7 +89,7 @@ class Main extends Sprite
 	public static var audioDisconnected:Bool = false;
 
 	public static var changeID:Int = 0;
-	public static var pathBack = #if windows
+	public static var pathBack = #if (windows || linux)
 			"../../../../"
 		#elseif mac
 			"../../../../../../../"
@@ -175,6 +183,7 @@ class Main extends Sprite
 
 	public static function refreshAssets() {
 		WindowUtils.resetTitle();
+		FunkinCache.instance.clearSecondLayer();
 
 		FlxSoundTray.volumeChangeSFX = Paths.sound('menu/volume');
 		FlxSoundTray.volumeUpChangeSFX = null;
