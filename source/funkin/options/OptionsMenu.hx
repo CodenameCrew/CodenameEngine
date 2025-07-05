@@ -24,6 +24,13 @@ class OptionsMenu extends TreeMenu {
 			desc: 'Change Appearance options such as Flashing menus...',
 			state: AppearanceOptions
 		},
+		#if MODCHARTING_FEATURES
+		{
+			name: 'Modchart Settings >',
+			desc: 'Customize your modcharting experience...',
+			state: ModchartingOptions
+		},
+		#end
 		{
 			name: 'Miscellaneous >',
 			desc: 'Use this menu to reset save data or engine settings.',
