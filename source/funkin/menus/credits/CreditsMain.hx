@@ -1,10 +1,11 @@
 package funkin.menus.credits;
 
-import funkin.options.OptionsScreen;
-import funkin.options.type.*;
-import funkin.options.TreeMenu;
-import haxe.xml.Access;
 import flixel.util.FlxColor;
+import funkin.backend.assets.AssetsLibraryList.AssetSource;
+import funkin.options.OptionsScreen;
+import funkin.options.TreeMenu;
+import funkin.options.type.*;
+import haxe.xml.Access;
 
 class CreditsMain extends TreeMenu {
 	var bg:FlxSprite;
@@ -20,21 +21,17 @@ class CreditsMain extends TreeMenu {
 		bg.antialiasing = true;
 		add(bg);
 
-		var xmlPath = Paths.xml('config/credits');
-		for(source in [funkin.backend.assets.AssetsLibraryList.AssetSource.SOURCE, funkin.backend.assets.AssetsLibraryList.AssetSource.MODS]) {
-			if (Paths.assetsTree.existsSpecific(xmlPath, "TEXT", source)) {
-				var access:Access = null;
-				try {
-					access = new Access(Xml.parse(Paths.assetsTree.getSpecificAsset(xmlPath, "TEXT", source)));
-				} catch(e) {
-					Logs.trace('Error while parsing credits.xml: ${Std.string(e)}', ERROR);
-				}
+		for (i in funkin.backend.assets.ModsFolder.getLoadedMods()) {
+			var xmlPath = Paths.xml('config/credits/LIB_$i');
 
-				if (access != null)
-					for(c in parseCreditsFromXML(access, source))
-						items.push(c);
+			if (Paths.assetsTree.existsSpecific(xmlPath, "TEXT")) {
+				var access:Access = null;
+				try access = new Access(Xml.parse(Paths.assetsTree.getSpecificAsset(xmlPath, "TEXT")))
+				catch(e) Logs.trace('Error while parsing credits.xml: ${Std.string(e)}', ERROR);
+				if (access != null) for (c in parseCreditsFromXML(access)) items.push(c);
 			}
 		}
+
 		items.push(new TextOption("Codename Engine >", "Select this to see all the contributors of the engine!", function() {
 			optionsTree.add(Type.createInstance(CreditsCodename, []));
 		}));
@@ -51,7 +48,7 @@ class CreditsMain extends TreeMenu {
 	/**
 	 * XML STUFF
 	 */
-	public function parseCreditsFromXML(xml:Access, source:Bool):Array<OptionType> {
+	public function parseCreditsFromXML(xml:Access, source:AssetSource = BOTH):Array<OptionType> {
 		var credsMenus:Array<OptionType> = [];
 
 		for(node in xml.elements) {
