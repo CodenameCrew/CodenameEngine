@@ -23,8 +23,10 @@ class MainMenuState extends MusicBeatState
 
 	var optionShit:Array<String> = CoolUtil.coolTextFile(Paths.txt("config/menuItems"));
 
+	var bg:FlxSprite;
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
+	var versionText:FunkinText;
 
 	public var canAccessDebugMenus:Bool = true;
 
@@ -36,7 +38,7 @@ class MainMenuState extends MusicBeatState
 
 		CoolUtil.playMenuSong();
 
-		var bg:FlxSprite = new FlxSprite(-80).loadAnimatedGraphic(Paths.image('menus/menuBG'));
+		bg = new FlxSprite(-80).loadAnimatedGraphic(Paths.image('menus/menuBG'));
 		add(bg);
 
 		camFollow = new FlxObject(0, 0, 1, 1);
@@ -74,15 +76,16 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		var versionShit:FunkinText = new FunkinText(5, FlxG.height - 2, 0, 'Codename Engine v${Application.current.meta.get('version')}\nCommit ${funkin.backend.system.macros.GitCommitMacro.commitNumber} (${funkin.backend.system.macros.GitCommitMacro.commitHash})\n[${controls.getKeyName(SWITCHMOD)}] Open Mods menu\n');
-		versionShit.y -= versionShit.height;
-		versionShit.scrollFactor.set();
-		add(versionShit);
+		versionText = new FunkinText(5, FlxG.height - 2, 0, 'Codename Engine v${Main.releaseVersion}\nCommit ${funkin.backend.system.macros.GitCommitMacro.commitNumber} (${funkin.backend.system.macros.GitCommitMacro.commitHash})\n[${controls.getKeyName(SWITCHMOD)}] Open Mods menu\n');
+		versionText.y -= versionText.height;
+		versionText.scrollFactor.set();
+		add(versionText);
 
 		changeItem();
 	}
 
 	var selectedSomethin:Bool = false;
+	var forceCenterX:Bool = true;
 
 	override function update(elapsed:Float)
 	{
@@ -106,11 +109,12 @@ class MainMenuState extends MusicBeatState
 				*/
 			}
 
-			if (controls.UP_P)
-				changeItem(-1);
+			var upP = controls.UP_P;
+			var downP = controls.DOWN_P;
+			var scroll = FlxG.mouse.wheel;
 
-			if (controls.DOWN_P)
-				changeItem(1);
+			if (upP || downP || scroll != 0)  // like this we wont break mods that expect a 0 change event when calling sometimes  - Nex
+				changeItem((upP ? -1 : 0) + (downP ? 1 : 0) - scroll);
 
 			if (controls.BACK)
 				FlxG.switchState(new TitleState());
@@ -124,13 +128,12 @@ class MainMenuState extends MusicBeatState
 			#end
 
 			if (controls.ACCEPT)
-			{
 				selectItem();
-			}
 		}
 
 		super.update(elapsed);
 
+		if (forceCenterX)
 		menuItems.forEach(function(spr:FlxSprite)
 		{
 			spr.screenCenter(X);
@@ -158,11 +161,11 @@ class MainMenuState extends MusicBeatState
 
 			var event = event("onSelectItem", EventManager.get(NameEvent).recycle(daChoice));
 			if (event.cancelled) return;
-			switch (daChoice)
+			switch (event.name)
 			{
 				case 'story mode': FlxG.switchState(new StoryMenuState());
 				case 'freeplay': FlxG.switchState(new FreeplayState());
-				case 'donate': FlxG.switchState(new CreditsMain());
+				case 'donate', 'credits': FlxG.switchState(new CreditsMain());  // kept donate for not breaking scripts, if you dont want donate to bring you to the credits menu, thats easy softcodable  - Nex
 				case 'options': FlxG.switchState(new OptionsMenu());
 			}
 		});

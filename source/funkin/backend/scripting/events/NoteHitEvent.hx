@@ -2,6 +2,7 @@ package funkin.backend.scripting.events;
 
 import funkin.game.Note;
 import funkin.game.Character;
+import funkin.game.HealthIcon;
 
 final class NoteHitEvent extends CancellableEvent {
 	@:dox(hide) public var animCancelled:Bool = false;
@@ -24,9 +25,19 @@ final class NoteHitEvent extends CancellableEvent {
 	 */
 	public var countScore:Bool = true;
 	/**
-	 * Whenever ratings should be shown or not.
+	 * Whenever ratings (Rating sprite, Digits sprites and Combo sprite) should be shown or not.
+	 *
+	 * NOTE: Whether it's `true` use `displayRating` and `displayCombo` (plus `minDigitDisplay` in the PlayState class) to change what's going to pop up!
 	 */
 	public var showRating:Null<Bool> = null;
+	/**
+	 * Whenever the Rating sprites should be shown or not.
+	 */
+	public var displayRating:Bool;
+	/**
+	 * Whenever the Combo sprite should be shown or not (like old Week 7 patches).
+	 */
+	public var displayCombo:Bool;
 	/**
 	 * Note that has been pressed
 	 */
@@ -100,9 +111,13 @@ final class NoteHitEvent extends CancellableEvent {
 	 */
 	public var ratingAntialiasing:Bool = true;
 	/**
-	 * Whenever the animation should be forced to play.
+	 * Whenever the animation should be forced to play (if it's null it will be forced based on the sprite's data xml, if it has one).
 	 */
-	public var forceAnim:Bool = true;
+	public var forceAnim:Null<Bool> = true;
+	/**
+	 * The attached healthIcon used distinction for icons amongst others
+	 */
+	public var healthIcon:HealthIcon;
 
 	/**
 	 * Prevents the default sing animation from being played.
@@ -122,6 +137,13 @@ final class NoteHitEvent extends CancellableEvent {
 	}
 	@:dox(hide)
 	public function cancelDeletion() {preventDeletion();}
+
+	/**
+	 * Forces the note to be deleted.
+	**/
+	public function forceDeletion() {
+		deleteNote = true;
+	}
 
 	/**
 	 * Prevents the vocals volume from being set to 1 after pressing the note.

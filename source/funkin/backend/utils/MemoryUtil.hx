@@ -92,7 +92,7 @@ class MemoryUtil {
 	public static function getMemType():String {
 		#if windows
 		var memoryMap:Map<Int, String> = [
-			0 => "Unknown",
+			0 => null,
 			1 => "Other",
 			2 => "DRAM",
 			3 => "Synchronous DRAM",
@@ -117,27 +117,39 @@ class MemoryUtil {
 			22 => "DDR2 FB-DIMM",
 			24 => "DDR3",
 			25 => "FBD2",
-			26 => "DDR4"
+			26 => "DDR4",
+			27 => "LPDDR",
+			28 => "LPDDR2",
+			29 => "LPDDR3",
+			30 => "LPDDR4",
+			31 => "Logical Non-volatile device",
+			32 => "HBM",
+			33 => "HBM2",
+			34 => "DDR5",
+			35 => "LPDDR5",
+			36 => "HBM3",
 		];
 		var memoryOutput:Int = -1;
 
-		var process = new HiddenProcess("wmic", ["memorychip", "get", "SMBIOSMemoryType"]);
+		var process = new HiddenProcess("powershell", ["-Command", "Get-CimInstance Win32_PhysicalMemory | Select-Object -ExpandProperty SMBIOSMemoryType" ]);
 		if (process.exitCode() == 0) memoryOutput = Std.int(Std.parseFloat(process.stdout.readAll().toString().trim().split("\n")[1]));
-		if (memoryOutput != -1) return memoryMap[memoryOutput];
+		if (memoryOutput != -1) return memoryMap[memoryOutput] == null ? 'Unknown ($memoryOutput)' : memoryMap[memoryOutput];
 		#elseif mac
 		var process = new HiddenProcess("system_profiler", ["SPMemoryDataType"]);
 		var reg = ~/Type: (.+)/;
 		reg.match(process.stdout.readAll().toString());
 		if (process.exitCode() == 0) return reg.matched(1);
 		#elseif linux
-		var process = new HiddenProcess("sudo", ["dmidecode", "--type", "17"]);
+		/*var process = new HiddenProcess("sudo", ["dmidecode", "--type", "17"]);
 		if (process.exitCode() != 0) return "Unknown";
 		var lines = process.stdout.readAll().toString().split("\n");
 		for (line in lines) {
 			if (line.indexOf("Type:") == 0) {
 				return line.substring("Type:".length).trim();
 			}
-		}
+		}*/
+		// TODO: sort of unsafe? also requires users to use `sudo`
+		// when launching the engine through the CLI, REIMPLEMENT LATER. 
 		#end
 		return "Unknown";
 	}

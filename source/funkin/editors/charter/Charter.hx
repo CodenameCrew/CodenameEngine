@@ -341,6 +341,7 @@ class Charter extends UIState {
 					null,
 					{
 						label: "↑ Speed 25%",
+						keybind: [PERIOD],
 						onSelect: _playback_speed_raise
 					},
 					{
@@ -349,6 +350,7 @@ class Charter extends UIState {
 					},
 					{
 						label: "↓ Speed 25%",
+						keybind: [COMMA],
 						onSelect: _playback_speed_lower
 					},
 					null,
@@ -361,6 +363,22 @@ class Charter extends UIState {
 						label: "Go forward a section",
 						keybind: [D],
 						onSelect: _playback_forward
+					},
+					{
+						label: "Go to start of section",
+						keybind: [SHIFT, S],
+						onSelect: _playback_section_start
+					},
+					null,
+					{
+						label: "Go back a step",
+						keybind: [W],
+						onSelect: _playback_back_step
+					},
+					{
+						label: "Go forward a step",
+						keybind: [S],
+						onSelect: _playback_forward_step
 					},
 					null,
 					{
@@ -591,7 +609,7 @@ class Charter extends UIState {
 		// Just for now until i add event stacking -lunar
 		try {__relinkUndos();}
 		catch (e) {Logs.trace('Failed to relink undos: ${Std.string(e)}', ERROR);}
-		
+
 		__applyPlaytestInfo();
 	}
 
@@ -607,17 +625,24 @@ class Charter extends UIState {
 		updateWaveforms();
 	}
 
+	inline function isSoundLoaded(sound:FlxSound) {
+		@:privateAccess
+		return sound != null && sound._sound != null && sound._sound.length > 0;
+	}
+
 	public function updateWaveforms() {
-		var wavesToGenerate:Array<{name:String, sound:FlxSound}> = [
-			{name: "Inst.ogg", sound: FlxG.sound.music},
-		];
-		if (PlayState.SONG.meta.needsVoices != false) 
+		var wavesToGenerate:Array<{name:String, sound:FlxSound}> = [];
+
+		if(isSoundLoaded(FlxG.sound.music))
+			wavesToGenerate.push({name: "Inst.ogg", sound: FlxG.sound.music});
+
+		if (PlayState.SONG.meta.needsVoices != false && isSoundLoaded(vocals))
 			wavesToGenerate.push({name: "Voices.ogg", sound: vocals});
 
 		for (strumLine in strumLines)
-			if (strumLine.vocals != null && strumLine.strumLine.vocalsSuffix != null && strumLine.strumLine.vocalsSuffix != "")
+			if (strumLine.vocals != null && strumLine.strumLine.vocalsSuffix != null && strumLine.strumLine.vocalsSuffix != "" && isSoundLoaded(strumLine.vocals))
 				wavesToGenerate.push({
-					name: 'Voices${strumLine.strumLine.vocalsSuffix}.ogg', 
+					name: 'Voices${strumLine.strumLine.vocalsSuffix}.ogg',
 					sound: strumLine.vocals
 				});
 
@@ -1133,7 +1158,7 @@ class Charter extends UIState {
 				if (note.strumLineID == strumLineID)
 					selection.remove(note);
 				else i++;
-			}
+			} else i++;
 		}
 	}
 	#end
@@ -1257,8 +1282,11 @@ class Charter extends UIState {
 		for(id=>str in strumLines.members)
 			if (str != null) str.y = strumlineInfoBG.y;
 
+		strumlineAddButton.x = 0;
 		strumlineAddButton.y = strumlineInfoBG.y;
 		strumlineLockButton.y = strumlineInfoBG.y;
+
+		strumlineLockButton.text.visible = strumlineLockButton.button.selectable = strumlineLockButton.button.visible = strumLines.members.length > 0;
 	}
 
 	var zoom(default, set):Float = 0;
@@ -1313,7 +1341,7 @@ class Charter extends UIState {
 		#if sys
 		CoolUtil.safeSaveFile(
 			'${Paths.getAssetsRoot()}/songs/${__song.toLowerCase()}/meta.json',
-			Json.stringify(PlayState.SONG.meta == null ? {} : PlayState.SONG.meta, null, "\t")
+			PlayState.SONG.meta == null ? null : Chart.makeMetaSaveable(PlayState.SONG.meta)
 		);
 		#else
 		_file_meta_saveas(_);
@@ -1321,7 +1349,7 @@ class Charter extends UIState {
 	}
 
 	function _file_meta_saveas(_) {
-		openSubState(new SaveSubstate(Json.stringify(PlayState.SONG.meta == null ? {} : PlayState.SONG.meta, null, "\t"), { // always pretty print meta
+		openSubState(new SaveSubstate(PlayState.SONG.meta == null ? null : Chart.makeMetaSaveable(PlayState.SONG.meta), { // always pretty print meta
 			defaultSaveFile: 'meta.json'
 		}));
 	}
@@ -1331,7 +1359,7 @@ class Charter extends UIState {
 			defaultSaveFile: '${__song.toLowerCase().replace(" ", "-")}${__diff.toLowerCase() == "normal" ? "" : '-${__diff.toLowerCase()}'}.json',
 		}));
 	}
-	
+
 	function _file_saveas_psych(_) {
 		openSubState(new SaveSubstate(Json.stringify(PsychParser.encode(PlayState.SONG), null, Options.editorPrettyPrint ? "\t" : null), {
 			defaultSaveFile: '${__song.toLowerCase().replace(" ", "-")}${__diff.toLowerCase() == "normal" ? "" : '-${__diff.toLowerCase()}'}.json',
@@ -1572,6 +1600,18 @@ class Charter extends UIState {
 		if (FlxG.sound.music.playing) return;
 		Conductor.songPosition += (Conductor.beatsPerMeasure * __crochet);
 	}
+	function _playback_section_start(_) {
+		if(FlxG.sound.music.playing) return;
+		Conductor.songPosition = (Conductor.beatsPerMeasure * (60000 / Conductor.bpm)) * curMeasure;
+	}
+	function _playback_back_step(_) {
+		if (FlxG.sound.music.playing) return;
+		Conductor.songPosition -= Conductor.stepCrochet;
+	}
+	function _playback_forward_step(_) {
+		if (FlxG.sound.music.playing) return;
+		Conductor.songPosition += Conductor.stepCrochet;
+	}
 	function _song_start(_) {
 		if (FlxG.sound.music.playing) return;
 		Conductor.songPosition = 0;
@@ -1604,7 +1644,7 @@ class Charter extends UIState {
 		t.icon = (Options.charterLowDetailWaveforms = !Options.charterLowDetailWaveforms) ? 1 : 0;
 		for (shader in waveformHandler.waveShaders) shader.data.lowDetail.value = [Options.charterLowDetailWaveforms];
 	}
-	
+
 	inline function _snap_increasesnap(_) changequant(1);
 	inline function _snap_decreasesnap(_) changequant(-1);
 	inline function _snap_resetsnap(_) setquant(16);
@@ -1650,7 +1690,7 @@ class Charter extends UIState {
 		changeNoteSustain(-1);
 
 	function _note_selectall(_) {
-		selection = [for (note in notesGroup.members) note];
+		selection = cast notesGroup.members.copy();
 	}
 
 	function _note_selectmeasure(_) {

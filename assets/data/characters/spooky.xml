@@ -1,9 +1,9 @@
 <!DOCTYPE codename-engine-character>
-<character isPlayer="false" flipX="false" x="0" y="200" color="#C5995A">
-	<anim name="danceLeft"  anim="spooky dance idle" fps="12" loop="false" x="0" y="0"      indices="0,2,6"/>
-	<anim name="danceRight" anim="spooky dance idle" fps="12" loop="false" x="0" y="0"      indices="8,10,12,14"/>
-	<anim name="singUP"     anim="spooky UP NOTE"    fps="24" loop="false" x="-20" y="26"/>
-	<anim name="singLEFT"   anim="note sing left"    fps="24" loop="false" x="130" y="-10"/>
-	<anim name="singRIGHT"  anim="spooky sing right" fps="24" loop="false" x="-130" y="-14"/>
-	<anim name="singDOWN"   anim="spooky DOWN note"  fps="24" loop="false" x="-50" y="-130"/>
+<character y="200" sprite="spooky" icon="spooky" color="#C5995A">
+	<anim name="danceLeft" anim="spooky dance idle" x="0" y="0" fps="24" loop="false" indices="0..6"/>
+	<anim name="danceRight" anim="spooky dance idle" x="0" y="0" fps="24" loop="false" indices="8..14"/>
+	<anim name="singUP" anim="spooky UP NOTE" x="-20" y="26" fps="24" loop="false"/>
+	<anim name="singLEFT" anim="note sing left" x="119" y="-11" fps="24" loop="false"/>
+	<anim name="singRIGHT" anim="spooky sing right" x="-150" y="-11" fps="24" loop="false"/>
+	<anim name="singDOWN" anim="spooky DOWN note" x="-77" y="-136" fps="24" loop="false"/>
 </character>

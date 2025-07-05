@@ -69,7 +69,7 @@ class UISprite extends FlxSprite {
 
 	public function drawSuper() {
 		super.draw();
-		__lastDrawCameras = [for(c in cameras) c];
+		__lastDrawCameras = cameras.copy();
 	}
 
 	public function drawMembers() {

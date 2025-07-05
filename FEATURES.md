@@ -17,7 +17,7 @@ _**QOL = Quality of Life**_
     - Usage of [flxanimate](https://github.com/Dot-Stuff/flxanimate) on big sprites, such as Girlfriend to save memory.
     - You can further optimize it on certain stages by enabling `Low Memory Mode` in `Options > Appearance`.
 - New volume change SFX (no more loud flixel beep, customizable)
-- New FPS counter allowing you to see advanced info by pressing F3.
+- New FPS counter allowing you to see advanced info by pressing F3 (infos can be selected and copied too when in advanced).
 - Simple but advanced modding system (press TAB on main menu)
 - **Windows only:**
     - (Windows) FNF is no longer blurry on 125-150% DPI

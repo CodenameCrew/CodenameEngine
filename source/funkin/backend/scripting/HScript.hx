@@ -74,8 +74,10 @@ class HScript extends Script {
 				var code = Assets.getText(p);
 				var expr:Expr = null;
 				try {
-					if (code != null && code.trim() != "")
+					if (code != null && code.trim() != "") {
+						parser.line = 1; // fun fact: this is all you need to reuse a parser without issues. all the other vars get reset on parse.
 						expr = parser.parseString(code, cl.join("/") + "." + hxExt);
+					}
 				} catch(e:Error) {
 					_errorHandler(e);
 				} catch(e) {
@@ -117,6 +119,10 @@ class HScript extends Script {
 			interp.execute(expr);
 			call("new", []);
 		}
+
+		#if GLOBAL_SCRIPT
+		funkin.backend.scripting.GlobalScript.call("onScriptSetup", [this, "hscript"]);
+		#end
 	}
 
 	public override function reload() {

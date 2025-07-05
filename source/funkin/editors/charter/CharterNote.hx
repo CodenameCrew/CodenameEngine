@@ -76,7 +76,7 @@ class CharterNote extends UISprite implements ICharterSelectable {
 	public function updatePos(step:Float, id:Int, susLength:Float = 0, ?type:Int = 0, ?strumLine:CharterStrumline = null) {
 		this.step = step;
 		this.id = id;
-		this.susLength = susLength;
+		this.susLength = Math.max(susLength, 0);
 		this.type = type;
 		if (strumLine != null) this.strumLine = strumLine;
 

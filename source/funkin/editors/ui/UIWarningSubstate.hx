@@ -1,5 +1,7 @@
 package funkin.editors.ui;
 
+import openfl.display.ShaderParameter;
+import openfl.display.ShaderInput;
 import openfl.filters.ShaderFilter;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
@@ -7,7 +9,17 @@ import funkin.backend.shaders.CustomShader;
 
 class UIWarningSubstate extends MusicBeatSubstate {
 	var camShaders:Array<FlxCamera> = [];
-	var blurShader:CustomShader = new CustomShader(Options.intensiveBlur ? "engine/editorBlur" : "engine/editorBlurFast");
+	var blurShader:CustomShader = {
+		var _ = new CustomShader(Options.intensiveBlur ? "engine/editorBlur" : "engine/editorBlurFast");
+		if(!Options.intensiveBlur) {
+			var noiseTexture:ShaderInput<openfl.display.BitmapData> = _.data.noiseTexture;
+			noiseTexture.input = Assets.getBitmapData("assets/shaders/noise256.png");
+			noiseTexture.wrap = REPEAT;
+			var noiseTextureSize:ShaderParameter<Float> = _.data.noiseTextureSize;
+			noiseTextureSize.value = [noiseTexture.input.width, noiseTexture.input.height];
+		}
+		_;
+	};
 
 	var title:String;
 	var message:String;

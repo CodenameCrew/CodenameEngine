@@ -1,8 +1,12 @@
 <!DOCTYPE codename-engine-character>
-<character isPlayer="false" flipX="false" holdTime="6.1" color="#AF66CE">
-	<anim name="idle"      anim="Dad idle dance"      fps="24" loop="false" x="0" y="0"/>
-	<anim name="singUP"    anim="Dad Sing note UP"    fps="24" loop="false" x="-6" y="50"/>
-	<anim name="singLEFT"  anim="dad sing note right"  fps="24" loop="false" x="-10" y="10"/>
-	<anim name="singRIGHT" anim="Dad Sing Note LEFT" fps="24" loop="false" x="0" y="27"/>
-	<anim name="singDOWN"  anim="Dad Sing Note DOWN"  fps="24" loop="false" x="0" y="-30"/>
+<character sprite="dad" icon="dad" color="#AF66CE" holdTime="6.1">
+	<anim name="idle" anim="Dad idle dance" x="0" y="0" fps="24" loop="false" indices="2..12,0,1"/>
+	<anim name="singUP" anim="Dad Sing note UP" x="-10" y="50" fps="24" loop="false"/>
+	<anim name="singLEFT" anim="dad sing note right" x="-10" y="10" fps="24" loop="false"/>
+	<anim name="singRIGHT" anim="Dad Sing Note LEFT" x="-4" y="26" fps="24" loop="false"/>
+	<anim name="singDOWN" anim="Dad Sing Note DOWN" x="2" y="-31" fps="24" loop="false"/>
+	<anim name="idle-loop" anim="Dad idle dance" x="0" y="0" fps="24" loop="true" indices="10..12,12"/>
+	<anim name="singUP-loop" anim="Dad Sing note UP" x="-10" y="50" fps="24" loop="true" indices="56..59"/>
+	<anim name="singLEFT-loop" anim="dad sing note right" x="-10" y="10" fps="24" loop="true" indices="12..15"/>
+	<anim name="singRIGHT-loop" anim="Dad Sing Note LEFT" x="-4" y="26" fps="24" loop="true" indices="15..18"/>
 </character>

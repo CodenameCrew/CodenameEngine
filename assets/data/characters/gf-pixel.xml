@@ -1,5 +1,5 @@
 <!DOCTYPE codename-engine-character>
-<character isPlayer="false" flipX="false" x="180" y="300" antialiasing="false" scale="6" camx="180" camy="300" color="#C70660">
-	<anim name="danceLeft"  anim="GF IDLE" fps="24" loop="false" indices="30,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14" x="0" y="0" />
-	<anim name="danceRight"  anim="GF IDLE" fps="24" loop="false" indices="15,16,17,18,19,20,21,22,23,24,25,26,27,28,29" x="0" y="0" />
+<character x="180" y="300" sprite="gf-pixel" scale="6" antialiasing="false" camx="180" camy="300" icon="gf-pixel" color="#C70660">
+	<anim name="danceLeft" anim="GF IDLE" x="0" y="0" fps="24" loop="false" indices="0..14"/>
+	<anim name="danceRight" anim="GF IDLE" x="0" y="0" fps="24" loop="false" indices="15..30"/>
 </character>

@@ -1,13 +1,13 @@
 <!DOCTYPE codename-engine-character>
-<character isPlayer="true" flipX="true" x="0" y="350" icon="bf" gameOverChar="bf-holding-gf-dead" color="#31B0D1">
-	<anim name="idle"          anim="BF idle dance"      fps="24" loop="false"/>
-	<anim name="singUP"        anim="BF NOTE UP0"        fps="24" loop="false" x="-29" y="10"/>
-	<anim name="singLEFT"      anim="BF NOTE LEFT0"      fps="24" loop="false" x="12"  y="7"/>
-	<anim name="singRIGHT"     anim="BF NOTE RIGHT0"     fps="24" loop="false" x="-41" y="23"/>
-	<anim name="singDOWN"      anim="BF NOTE DOWN0"      fps="24" loop="false" x="-10" y="-10"/>
-	<anim name="singUPmiss"    anim="BF NOTE UP MISS"    fps="24" loop="false" x="-29" y="10"/>
-	<anim name="singLEFTmiss"  anim="BF NOTE LEFT MISS"  fps="24" loop="false" x="12"  y="7"/>
-	<anim name="singRIGHTmiss" anim="BF NOTE RIGHT MISS" fps="24" loop="false" x="-41" y="23"/>
-	<anim name="singDOWNmiss"  anim="BF NOTE DOWN MISS"  fps="24" loop="false" x="-10" y="-10"/>
-	<anim name="bfCatch"       anim="BF catches GF"      fps="24" loop="false" x="6"   y="88"/>
+<character y="350" sprite="bf-holding-gf" flipX="true" isPlayer="true" icon="bf" color="#31B0D1" gameOverChar="bf-holding-gf-dead">
+	<anim name="idle" anim="BF idle dance" x="0" y="0" fps="24" loop="false"/>
+	<anim name="singUP" anim="BF NOTE UP0" x="-42" y="9" fps="24" loop="false"/>
+	<anim name="singLEFT" anim="BF NOTE LEFT0" x="11" y="2" fps="24" loop="false"/>
+	<anim name="singRIGHT" anim="BF NOTE RIGHT0" x="-46" y="21" fps="24" loop="false"/>
+	<anim name="singDOWN" anim="BF NOTE DOWN0" x="-16" y="-14" fps="24" loop="false"/>
+	<anim name="singUPmiss" anim="BF NOTE UP MISS" x="-39" y="8" fps="24" loop="false"/>
+	<anim name="singLEFTmiss" anim="BF NOTE LEFT MISS" x="10" y="3" fps="24" loop="false"/>
+	<anim name="singRIGHTmiss" anim="BF NOTE RIGHT MISS" x="-41" y="37" fps="24" loop="false"/>
+	<anim name="singDOWNmiss" anim="BF NOTE DOWN MISS" x="-15" y="-11" fps="24" loop="false"/>
+	<anim name="bfCatch" anim="BF catches GF" x="6" y="90" fps="24" loop="false"/>
 </character>

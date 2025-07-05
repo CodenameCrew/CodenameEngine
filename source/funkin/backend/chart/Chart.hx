@@ -1,6 +1,5 @@
 package funkin.backend.chart;
 
-import funkin.backend.system.Conductor;
 import funkin.backend.chart.ChartData;
 import flixel.util.FlxColor;
 import haxe.io.Path;
@@ -13,11 +12,67 @@ import sys.FileSystem;
 
 using StringTools;
 
+enum abstract ChartFormat(Int) {
+	var CODENAME = 0;
+	var LEGACY = 1;  // also used by many other engines (old Psych, Kade and more)  - Nex
+	var VSLICE = 2;
+	var PSYCH_NEW = 3;
+
+	@:to public function toString():String {
+		return switch(cast (this, ChartFormat)) {
+			case CODENAME: "CODENAME";
+			case LEGACY: "LEGACY";
+			case VSLICE: "VSLICE";
+			case PSYCH_NEW: "PSYCH_NEW";
+		}
+	}
+
+	public static function fromString(str:String, def:ChartFormat = ChartFormat.LEGACY) {
+		str = str.toLowerCase();
+		str = StringTools.replace(str, " ", "");
+		str = StringTools.replace(str, "_", "");
+		str = StringTools.replace(str, ".", "");
+
+		if(StringTools.startsWith(str, "psychv1") || StringTools.startsWith(str, "psych1"))
+			return PSYCH_NEW;
+
+		return switch(str) {
+			case "codename" | "codenameengine": CODENAME;
+			case "newpsych" | "psychnew": PSYCH_NEW;
+			default: def;
+		}
+	}
+}
+
 class Chart {
 	/**
 	 * Default background colors for songs without bg color
 	 */
 	public inline static var defaultColor:FlxColor = 0xFF9271FD;
+
+	public static function cleanSongData(data:Dynamic):Dynamic {
+		if (Reflect.hasField(data, "song")) {
+			var field:Dynamic = Reflect.field(data, "song");
+			if (field != null && Type.typeof(field) == TObject) // Cant use Reflect.isObject, because it detects strings for some reason
+				return field;
+		}
+		return data;
+	}
+
+	public static function detectChartFormat(data:Dynamic):ChartFormat {
+		var __temp:Dynamic;  // imma reuse this var so the program doesnt have to get values multiple times  - Nex
+
+		if ((__temp = data.codenameChart) == true || __temp == "true")
+			return CODENAME;
+
+		if (Reflect.hasField(data, "version") && Reflect.hasField(data, "scrollSpeed"))
+			return VSLICE;
+
+		if ((__temp = cleanSongData(data).format) != null && __temp is String && StringTools.startsWith(__temp, "psych_v1"))
+			return PSYCH_NEW;
+
+		return LEGACY;
+	}
 
 	public static function loadEventsJson(songName:String) {
 		var path = Paths.file('songs/${songName.toLowerCase()}/events.json');
@@ -32,29 +87,28 @@ class Chart {
 		return data;
 	}
 
-	public static function loadChartMeta(songName:String, difficulty:String = "normal", fromMods:Bool = true) {
-		var metaPath = Paths.file('songs/${songName.toLowerCase()}/meta.json');
-		var metaDiffPath = Paths.file('songs/${songName.toLowerCase()}/meta-${difficulty.toLowerCase()}.json');
+	public static function loadChartMeta(songName:String, difficulty:String = "normal", fromMods:Bool = true):ChartMetaData {
+		var songNameLower = songName.toLowerCase();
+		var metaPath = Paths.file('songs/${songNameLower}/meta.json');
+		var metaDiffPath = Paths.file('songs/${songNameLower}/meta-${difficulty.toLowerCase()}.json');
 
 		var data:ChartMetaData = null;
 		var fromMods:Bool = fromMods;
-		for(path in [metaDiffPath, metaPath]) {
-			if (Assets.exists(path)) {
-				fromMods = Paths.assetsTree.existsSpecific(path, "TEXT", MODS);
-				try {
-					data = Json.parse(Assets.getText(path));
-				} catch(e) {
-					Logs.trace('Failed to load song metadata for ${songName} ($path): ${Std.string(e)}', ERROR);
-				}
-				if (data != null) break;
-			}
+		for (path in [metaDiffPath, metaPath]) if (Assets.exists(path)) {
+			fromMods = Paths.assetsTree.existsSpecific(path, "TEXT", MODS);
+			try {
+				var tempData = Json.parse(Assets.getText(path));
+				tempData.color = CoolUtil.getColorFromDynamic(tempData.color).getDefault(defaultColor);
+				data = tempData;
+			} catch(e) Logs.trace('Failed to load song metadata for ${songName} ($path): ${Std.string(e)}', ERROR);
+			if (data != null) break;
 		}
 
-		if (data == null)
-			data = {
-				name: songName,
-				bpm: 100
-			};
+		if (data == null) data = {
+			name: songName,
+			bpm: 100
+		};
+
 		data.setFieldDefault("name", songName);
 		data.setFieldDefault("beatsPerMeasure", 4);
 		data.setFieldDefault("stepsPerBeat", 4);
@@ -64,10 +118,9 @@ class Chart {
 		data.setFieldDefault("coopAllowed", false);
 		data.setFieldDefault("opponentModeAllowed", false);
 		data.setFieldDefault("displayName", data.name);
-		data.setFieldDefault("parsedColor", data.color.getColorFromDynamic().getDefault(defaultColor));
 
 		if (data.difficulties.length <= 0) {
-			data.difficulties = [for(f in Paths.getFolderContent('songs/${songName.toLowerCase()}/charts/', false, !fromMods)) if (Path.extension(f = f.toUpperCase()) == "JSON") Path.withoutExtension(f)];
+			data.difficulties = [for(f in Paths.getFolderContent('songs/${songNameLower}/charts/', false, !fromMods)) if (Path.extension(f = f.toUpperCase()) == "JSON") Path.withoutExtension(f)];
 			if (data.difficulties.length == 3) {
 				var hasHard = false, hasNormal = false, hasEasy = false;
 				for(d in data.difficulties) {
@@ -109,19 +162,17 @@ class Chart {
 			valid = false;
 		}
 		var data:Dynamic = null;
-		try {
-			if (valid)
-				data = Json.parse(Assets.getText(chartPath));
-		} catch(e) {
-			Logs.trace('Could not parse chart for song ${songName} ($difficulty): ${Std.string(e)}', ERROR, RED);
+		if (valid) {
+			try data = Json.parse(Assets.getText(chartPath))
+			catch(e) Logs.trace('Could not parse chart for song ${songName} ($difficulty): ${Std.string(e)}', ERROR, RED);
 		}
 
-		if (data != null) {
-			/**
-			 * CHART CONVERSION
-			 */
-			#if REGION
-			if (Reflect.hasField(data, "codenameChart") && Reflect.field(data, "codenameChart") == true) {
+		/**
+		 * CHART CONVERSION
+		 */
+		#if REGION
+		if (data != null) switch (detectChartFormat(data)) {
+			case CODENAME:
 				// backward compat on events since its caused problems
 				var eventTypesToString:Map<Int, String> = [
 					-1 => "HScript Call",
@@ -132,28 +183,23 @@ class Chart {
 				];
 
 				if (data.events == null) data.events = [];
-				for (event in cast(data.events, Array<Dynamic>)) {
-					if (Reflect.hasField(event, "type")) {
-						if(event.type != null)
-							event.name = eventTypesToString[event.type];
-						Reflect.deleteField(event, "type");
-					}
+				for (event in cast(data.events, Array<Dynamic>)) if (Reflect.hasField(event, "type")) {
+					if (event.type != null)
+						event.name = eventTypesToString[event.type];
+					Reflect.deleteField(event, "type");
 				}
 
-				// codename chart
 				base = data;
-			} else {
-				// base game chart
-				FNFLegacyParser.parse(data, base);
-			}
-			#end
+			case PSYCH_NEW: PsychParser.parse(data, base);
+			case VSLICE: // TODO
+			case LEGACY: FNFLegacyParser.parse(data, base);
 		}
+		#end
 
-		if (base.meta == null)
-			base.meta = loadChartMeta(songName, difficulty, base.fromMods);
+		var loadedMeta = loadChartMeta(songName, difficulty, base.fromMods);
+		if (base.meta == null) base.meta = loadedMeta;
 		else {
-			var loadedMeta = loadChartMeta(songName, difficulty, base.fromMods);
-			for(field in Reflect.fields(base.meta)) {
+			for (field in Reflect.fields(base.meta)) {
 				var f = Reflect.field(base.meta, field);
 				if (f != null)
 					Reflect.setField(loadedMeta, field, f);
@@ -179,8 +225,7 @@ class Chart {
 				return 0;
 			default:
 				var index = chart.noteTypes.indexOf(noteTypeName);
-				if (index > -1)
-					return index+1;
+				if (index > -1) return index + 1;
 				chart.noteTypes.push(noteTypeName);
 				return chart.noteTypes.length;
 		}
@@ -214,32 +259,32 @@ class Chart {
 
 		CoolUtil.safeSaveFile(chartPath, Json.stringify(filteredChart, null, saveSettings.prettyPrint == true ? "\t" : null));
 
-		// idk how null reacts to it so better be sure
 		if (saveSettings.overrideExistingMeta == true || !FileSystem.exists(metaPath))
-			CoolUtil.safeSaveFile(metaPath, Json.stringify(meta, null, saveSettings.prettyPrint == true ? "\t" : null));
+			CoolUtil.safeSaveFile(metaPath, makeMetaSaveable(meta));
 		#end
 		return filteredChart;
 	}
 
 	public static function filterChartForSaving(chart:ChartData, ?saveMetaInChart:Null<Bool>, ?saveEventsInChart:Null<Bool>):ChartData {
 		var data = Reflect.copy(chart); // make a copy of the chart to leave the OG intact
-		if (saveMetaInChart != true) {
-			data.meta = null;
-		} else {
-			data.meta = Reflect.copy(chart.meta); // also make a copy of the metadata to leave the OG intact.
-			if(data.meta != null && Reflect.hasField(data.meta, "parsedColor")) Reflect.deleteField(data.meta, "parsedColor");
-		}
+		data.meta = saveMetaInChart != true ? null : data.meta = Reflect.copy(chart.meta); // also make a copy of the metadata to leave the OG intact.
 
 		data.events = saveEventsInChart != true ? null : Reflect.copy(chart.events);  // same here once again
 		data.fromMods = null;
 
 		var sortedData:Dynamic = {};
-		for(f in Reflect.fields(data)) {
+		for (f in Reflect.fields(data)) {
 			var v = Reflect.field(data, f);
 			if (v != null)
 				Reflect.setField(sortedData, f, v);
 		}
 		return sortedData;
+	}
+
+	public static inline function makeMetaSaveable(meta:ChartMetaData, prettyPrint:Bool = true):String {
+		var data:Dynamic = Reflect.copy(meta);
+		if (data.color != null) data.color = new FlxColor(data.color).toWebString();  // dont even ask me  - Nex
+		return Json.stringify(data, null, prettyPrint ? "\t" : null);
 	}
 }
 

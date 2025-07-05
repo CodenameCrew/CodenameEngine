@@ -5,6 +5,7 @@ import flixel.text.FlxText.FlxTextFormatMarkerPair;
 import flixel.group.FlxGroup;
 import funkin.backend.chart.ChartData.ChartMetaData;
 import haxe.io.Bytes;
+import funkin.game.HealthIcon;
 
 typedef SongCreationData = {
 	var meta:ChartMetaData;
@@ -25,7 +26,7 @@ class SongCreationScreen extends UISubstateWindow {
 
 	public var displayNameTextBox:UITextBox;
 	public var iconTextBox:UITextBox;
-	public var iconSprite:FlxSprite;
+	public var iconSprite:HealthIcon;
 	public var opponentModeCheckbox:UICheckbox;
 	public var coopAllowedCheckbox:UICheckbox;
 	public var colorWheel:UIColorwheel;
@@ -231,22 +232,14 @@ class SongCreationScreen extends UISubstateWindow {
 	}
 
 	function updateIcon(icon:String) {
-		if (iconSprite == null) menuDataGroup.add(iconSprite = new FlxSprite());
+		if (iconSprite == null) menuDataGroup.add(iconSprite = new HealthIcon());
 
-		if (iconSprite.animation.exists(icon)) return;
-		@:privateAccess iconSprite.animation.clearAnimations();
-
-		var path:String = Paths.image('icons/$icon');
-		if (!Assets.exists(path)) path = Paths.image('icons/face');
-
-		iconSprite.loadGraphic(path, true, 150, 150);
-		iconSprite.animation.add(icon, [0], 0, false);
-		iconSprite.antialiasing = true;
-		iconSprite.animation.play(icon);
-
-		iconSprite.scale.set(0.5, 0.5);
+		iconSprite.setIcon(icon);
+		var size = Std.int(150 * 0.5);
+		iconSprite.setUnstretchedGraphicSize(size, size, true);
 		iconSprite.updateHitbox();
-		iconSprite.setPosition(iconTextBox.x + 150 + 8, (iconTextBox.y + 16) - (iconSprite.height/2));
+		iconSprite.setPosition(iconTextBox.x + iconTextBox.bWidth + 8, iconTextBox.y + (iconTextBox.bHeight / 2) - (iconSprite.height / 2));
+		iconSprite.scrollFactor.set(1, 1);
 	}
 
 	function saveSongInfo() {
@@ -261,8 +254,7 @@ class SongCreationScreen extends UISubstateWindow {
 			needsVoices: needsVoicesCheckbox.checked,
 			displayName: displayNameTextBox.label.text,
 			icon: iconTextBox.label.text,
-			color: colorWheel.curColorString,
-			parsedColor: colorWheel.curColor,
+			color: colorWheel.curColor,
 			opponentModeAllowed: opponentModeCheckbox.checked,
 			coopAllowed: coopAllowedCheckbox.checked,
 			difficulties: [for (diff in difficulitesTextBox.label.text.split(",")) diff.trim()],

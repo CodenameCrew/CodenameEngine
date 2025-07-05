@@ -1,7 +1,0 @@
-<!DOCTYPE codename-mod-credits>
-<!-- TEMPLATE FOR CUSTOM CREDITS!!! -->
-<menu name="Mod Credits" desc="Modify mod credits here">
-	<!-- \/ You can also set the portrait shader as false as you can see below in the github one -->
-	<credit name="Credit Example" desc="Click me to know more about me!" icon="credit icon example" size="130" url="https://youtu.be/fugtxz1znVw"/>
-	<github user="NexIsDumb" customName="Nex is Dumb" desc="The bitch who made these credits menus" size="100" portrait="false"/>
-</menu>

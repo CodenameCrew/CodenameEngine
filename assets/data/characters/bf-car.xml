@@ -1,12 +1,18 @@
 <!DOCTYPE codename-engine-character>
 <character isPlayer="true" flipX="true" x="0" y="350" icon="bf" camx="25" color="#31B0D1">
-	<anim name="idle"          anim="BF idle dance"      fps="24" loop="false" x="-5"  y="0"/>
-	<anim name="singUP"        anim="BF NOTE UP0"        fps="24" loop="false" x="-29" y="27"/>
-	<anim name="singLEFT"      anim="BF NOTE LEFT0"      fps="24" loop="false" x="12"  y="-6"/>
-	<anim name="singRIGHT"     anim="BF NOTE RIGHT0"     fps="24" loop="false" x="-38" y="-7"/>
-	<anim name="singDOWN"      anim="BF NOTE DOWN0"      fps="24" loop="false" x="-10" y="-50"/>
-	<anim name="singUPmiss"    anim="BF NOTE UP MISS"    fps="24" loop="false" x="-29" y="27"/>
-	<anim name="singLEFTmiss"  anim="BF NOTE LEFT MISS"  fps="24" loop="false" x="12"  y="24"/>
-	<anim name="singRIGHTmiss" anim="BF NOTE RIGHT MISS" fps="24" loop="false" x="-30" y="21"/>
-	<anim name="singDOWNmiss"  anim="BF NOTE DOWN MISS"  fps="24" loop="false" x="-11" y="-19"/>
+	<anim name="idle"           anim="BF idle dance"      fps="24" loop="false" x="-5"  y="0"/>
+	<anim name="singUP"         anim="BF NOTE UP0"        fps="24" loop="false" x="-29" y="27"/>
+	<anim name="singLEFT"       anim="BF NOTE LEFT0"      fps="24" loop="false" x="12"  y="-6"/>
+	<anim name="singRIGHT"      anim="BF NOTE RIGHT0"     fps="24" loop="false" x="-38" y="-7"/>
+	<anim name="singDOWN"       anim="BF NOTE DOWN0"      fps="24" loop="false" x="-10" y="-50"/>
+	<anim name="singUPmiss"     anim="BF NOTE UP MISS"    fps="24" loop="false" x="-29" y="27"/>
+	<anim name="singLEFTmiss"   anim="BF NOTE LEFT MISS"  fps="24" loop="false" x="12"  y="24"/>
+	<anim name="singRIGHTmiss"  anim="BF NOTE RIGHT MISS" fps="24" loop="false" x="-30" y="21"/>
+	<anim name="singDOWNmiss"   anim="BF NOTE DOWN MISS"  fps="24" loop="false" x="-11" y="-19"/>
+	<!-- funny loop -->
+	<anim name="idle-loop"      anim="BF idle dance"      fps="24" loop="true" x="-5"  y="0" indices="10..13"/>
+	<anim name="singUP-loop"    anim="BF NOTE UP0"        fps="24" loop="true" x="-29" y="27" indices="11..14"/>
+	<anim name="singLEFT-loop"  anim="BF NOTE LEFT0"      fps="24" loop="true" x="12"  y="-6" indices="12..15"/>
+	<anim name="singRIGHT-loop" anim="BF NOTE RIGHT0"     fps="24" loop="true" x="-38" y="-7" indices="58..61"/>
+	<anim name="singDOWN-loop"  anim="BF NOTE DOWN0"      fps="24" loop="true" x="-10" y="-50" indices="26..29"/>
 </character>

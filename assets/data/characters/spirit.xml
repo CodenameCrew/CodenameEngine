@@ -1,10 +1,8 @@
 <!DOCTYPE codename-engine-character>
-<character isPlayer="false" flipX="false" x="70" y="380" antialiasing="false" scale="6" camx="100" color="#FF3C6E">
-	<anim name="idle" anim="idle spirit_" fps="24" loop="false" x="0" y="0" />
-
-	<!-- Offsets are actually multiplied by scale -->
-	<anim name="singLEFT"   anim="left_"     fps="24" loop="false"   x="3" y="0" />
-	<anim name="singDOWN"   anim="spirit down_"     fps="24" loop="false"   x="65" y="65" />
-	<anim name="singUP"     anim="up_"       fps="24" loop="false"   x="0" y="7" />
-	<anim name="singRIGHT"  anim="right_"    fps="24" loop="false"   x="0" y="0" />
+<character x="70" y="380" sprite="spirit" scale="6" antialiasing="false" camx="100" icon="spirit" color="#FF3C6E">
+	<anim name="idle" anim="idle spirit_" x="0" y="1" fps="24" loop="false"/>
+	<anim name="singLEFT" anim="left_" x="4" y="-1" fps="24" loop="false"/>
+	<anim name="singDOWN" anim="spirit down_" x="66" y="64" fps="24" loop="false"/>
+	<anim name="singUP" anim="up_" x="-1" y="8" fps="24" loop="false"/>
+	<anim name="singRIGHT" anim="right_" x="-2" y="0" fps="24" loop="false"/>
 </character>

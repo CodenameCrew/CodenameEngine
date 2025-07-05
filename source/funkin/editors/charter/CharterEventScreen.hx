@@ -41,6 +41,7 @@ class CharterEventScreen extends UISubstateWindow {
 
 		FlxG.sound.music.pause(); // prevent the song from continuing
 		Charter.instance.vocals.pause();
+		for (strumLine in Charter.instance.strumLines.members) strumLine.vocals.pause();
 
 		events = chartEvent.events.copy();
 

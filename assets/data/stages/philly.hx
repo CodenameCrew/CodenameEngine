@@ -1,3 +1,4 @@
+//
 import funkin.game.PlayState;
 
 // phillyTrain is automatically added by Stage.hx

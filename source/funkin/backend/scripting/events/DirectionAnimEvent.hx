@@ -28,7 +28,7 @@ final class DirectionAnimEvent extends CancellableEvent {
 	**/
 	public var frame:Int;
 	/**
-		Force the animation to replay even if it's already playing.
+		Force the animation to replay even if it's already playing  (if it's null it will be forced based on the sprite's data xml, if it has one).
 	**/
-	public var force:Bool = true;
+	public var force:Null<Bool>;
 }

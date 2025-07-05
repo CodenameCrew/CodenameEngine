@@ -189,7 +189,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 		if (cpu && __updateNote_event.__autoCPUHit && !daNote.avoid && !daNote.wasGoodHit && daNote.strumTime < __updateNote_songPos) PlayState.instance.goodNoteHit(this, daNote);
 
-		if (daNote.wasGoodHit && daNote.isSustainNote && daNote.strumTime + (daNote.sustainLength) < __updateNote_songPos) {
+		if (daNote.wasGoodHit && daNote.isSustainNote && daNote.strumTime + daNote.sustainLength < __updateNote_songPos) {
 			deleteNote(daNote);
 			return;
 		}
@@ -215,8 +215,9 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	var __notePerStrum:Array<Note> = [];
 
 	function __inputProcessPressed(note:Note) {
-		if (__pressed[note.strumID] && note.isSustainNote && note.canBeHit && !note.wasGoodHit) {
+		if (__pressed[note.strumID] && note.isSustainNote && note.strumTime < __updateNote_songPos && !note.wasGoodHit) {
 			PlayState.instance.goodNoteHit(this, note);
+			note.updateSustainClip();
 		}
 	}
 	function __inputProcessJustPressed(note:Note) {
@@ -292,14 +293,17 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		super.destroy();
 		if(startingPos != null)
 			startingPos.put();
+		notes = FlxDestroyUtil.destroy(notes);
 	}
 
 	/**
 	 * Creates a strum and returns the created strum (needs to be added manually).
 	 * @param i Index of the strum
 	 * @param animPrefix (Optional) Animation prefix (`left` = `arrowLEFT`, `left press`, `left confirm`).
+	 * @param spritePath (Optional) The sprite's graphic path if you don't want the default one.
+	 * @param playIntroAnimation (Optional) Whenever the intro animation should be played, by default might be `true` under certain conditions.
 	 */
-	public function createStrum(i:Int, ?animPrefix:String) {
+	public function createStrum(i:Int, ?animPrefix:String, ?spritePath:String, ?playIntroAnimation:Bool) {
 		if (animPrefix == null)
 			animPrefix = strumAnimPrefix[i % strumAnimPrefix.length];
 		var babyArrow:Strum = new Strum(startingPos.x + ((Note.swagWidth * strumScale) * i), startingPos.y);
@@ -309,7 +313,8 @@ class StrumLine extends FlxTypedGroup<Strum> {
 			babyArrow.scrollSpeed = data.scrollSpeed;
 
 		var event = EventManager.get(StrumCreationEvent).recycle(babyArrow, PlayState.instance.strumLines.members.indexOf(this), i, animPrefix);
-		event.__doAnimation = !MusicBeatState.skipTransIn;
+		event.__doAnimation = playIntroAnimation == null ? (!MusicBeatState.skipTransIn && (PlayState.instance != null ? PlayState.instance.introLength > 0 : true)) : playIntroAnimation;
+		if (spritePath != null) event.sprite = spritePath;
 		event = PlayState.instance.scripts.event("onStrumCreation", event);
 
 		if (!event.cancelled) {

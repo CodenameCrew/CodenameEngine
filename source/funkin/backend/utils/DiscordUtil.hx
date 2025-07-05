@@ -87,7 +87,7 @@ class DiscordUtil
 
 		config.logoKey = config.logoKey.getDefault("icon");
 		config.logoText = config.logoText.getDefault(Application.current.meta.get('title'));
-		config.clientID = config.clientID.getDefault("1027994136193810442");
+		config.clientID = config.clientID.getDefault("1383853614589673472");
 		currentID = config.clientID;
 		#end
 	}
@@ -165,6 +165,7 @@ class DiscordUtil
 		#end
 	}
 
+	#if cpp
 	@:noCompletion public static function fixString(str:String)
 	{
 		return new cpp.ConstCharStar(cast(str, String));
@@ -174,6 +175,7 @@ class DiscordUtil
 	{
 		return cast(str, String);
 	}
+	#end
 
 	public static function changePresenceAdvanced(data:DPresence)
 	{
@@ -469,7 +471,7 @@ typedef DPresence =
 	var ?matchSecret:String; /* max 128 bytes */
 	var ?joinSecret:String; /* max 128 bytes */
 	var ?spectateSecret:String; /* max 128 bytes */
-	var ?instance:OneOfTwo<Int, cpp.Int8>;
+	var ?instance:#if cpp OneOfTwo<Int, cpp.Int8> #else Int #end;
 	var ?button1Label:String; /* max 32 bytes */
 	var ?button1Url:String; /* max 512 bytes */
 	var ?button2Label:String; /* max 32 bytes */

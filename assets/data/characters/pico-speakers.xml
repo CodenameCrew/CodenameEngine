@@ -1,16 +1,11 @@
 <!DOCTYPE codename-engine-character>
-<character isPlayer="false" flipX="false" icon="pico" x="115" y="-85" camx="195" camy="360" color="#B7D855">
-	<!-- Left Animations -->
-	<anim name="shoot1" anim="Pico shoot 1" fps="24" loop="false" indices="0,1,2,3" />
-	<anim name="idle1"  anim="Pico shoot 1" fps="24" loop="false" indices="4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24" />
-
-	<anim name="shoot2" anim="Pico shoot 2" fps="24" loop="false" indices="0,1,2,3" />
-	<anim name="idle2"  anim="Pico shoot 2" fps="24" loop="false" indices="4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24" />
-
-	<!-- Right Animations-->
-	<anim name="shoot3" anim="Pico shoot 3" fps="24" loop="false" indices="0,1,2,3" />
-	<anim name="idle3"  anim="Pico shoot 3" fps="24" loop="false" indices="4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24" />
-
-	<anim name="shoot4" anim="Pico shoot 4" fps="24" loop="false" indices="0,1,2,3" />
-	<anim name="idle4"  anim="Pico shoot 4" fps="24" loop="false" indices="4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24" />
+<character x="115" y="-85" sprite="pico-speakers" camx="195" camy="360" icon="pico" color="#B7D855">
+	<anim name="idle1" anim="Pico shoot 1" x="0" y="0" fps="24" loop="false" indices="4..24"/>
+	<anim name="idle2" anim="Pico shoot 2" x="0" y="0" fps="24" loop="false" indices="4..24"/>
+	<anim name="idle3" anim="Pico shoot 3" x="0" y="0" fps="24" loop="false" indices="4..24"/>
+	<anim name="idle4" anim="Pico shoot 4" x="0" y="0" fps="24" loop="false" indices="4..24"/>
+	<anim name="shoot1" anim="Pico shoot 1" x="0" y="0" fps="24" loop="false" indices="0..3"/>
+	<anim name="shoot2" anim="Pico shoot 2" x="0" y="0" fps="24" loop="false" indices="0..3"/>
+	<anim name="shoot3" anim="Pico shoot 3" x="0" y="0" fps="24" loop="false" indices="0..3"/>
+	<anim name="shoot4" anim="Pico shoot 4" x="0" y="0" fps="24" loop="false" indices="0..3"/>
 </character>

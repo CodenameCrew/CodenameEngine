@@ -59,8 +59,6 @@ function create() {
 }
 
 function update(elapsed) {
-	if (FlxG.keys.justPressed.F5)
-		FlxG.resetState();
 	switch(step) {
 		case 0:
 			lipSync(tankman, 0, 16750);

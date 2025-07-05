@@ -34,10 +34,16 @@ class NoteGroup extends FlxTypedGroup<Note> {
 			return FlxSort.byValues(FlxSort.DESCENDING, n1.strumTime, n2.strumTime);
 		});
 	}
+
+	@:dox(hide) public var __forcedSongPos:Null<Float> = null;
+
+	@:dox(hide) private inline function __getSongPos()
+		return __forcedSongPos == null ? Conductor.songPosition : __forcedSongPos;
+
 	public override function update(elapsed:Float) {
 		i = length-1;
 		__loopSprite = null;
-		__time = Conductor.songPosition;
+		__time = __getSongPos();
 		while(i >= 0) {
 			__loopSprite = members[i--];
 			if (__loopSprite == null || !__loopSprite.exists || !__loopSprite.active) {
@@ -58,7 +64,7 @@ class NoteGroup extends FlxTypedGroup<Note> {
 
 		i = length-1;
 		__loopSprite = null;
-		__time = Conductor.songPosition;
+		__time = __getSongPos();
 		while(i >= 0) {
 			__loopSprite = members[i--];
 			if (__loopSprite == null || !__loopSprite.exists || !__loopSprite.visible)
@@ -81,7 +87,7 @@ class NoteGroup extends FlxTypedGroup<Note> {
 	public override function forEach(noteFunc:Note->Void, recursive:Bool = false) {
 		i = length-1;
 		__loopSprite = null;
-		__time = Conductor.songPosition;
+		__time = __getSongPos();
 
 		var oldCur = __currentlyLooping;
 		__currentlyLooping = true;

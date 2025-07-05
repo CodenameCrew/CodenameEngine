@@ -1,10 +1,10 @@
 <!DOCTYPE codename-engine-character>
-<character x="0" icon="tankman" y="180" isGF="false" flipX="true" isPlayer="true" sprite="tankman" color="#FFFFFF">
-	<anim x="0" loop="false" y="0" fps="24" anim="Tankman Idle Dance instance 100" name="idle"/>
-	<anim x="-1" loop="false" y="-7" fps="24" anim="Tankman Right Note instance 1000" name="singRIGHT"/>
-	<anim x="98" loop="false" y="-90" fps="24" anim="Tankman DOWN note instance 1000" name="singDOWN"/>
-	<anim x="24" loop="false" y="56" fps="24" anim="Tankman UP note instance 1000" name="singUP"/>
-	<anim x="100" loop="false" y="-14" fps="24" anim="Tankman Note Left instance 1000" name="singLEFT"/>
-	<anim x="98" loop="false" y="17" fps="24" anim="PRETTY GOOD tankman instance 100" name="good!"/>
-	<anim x="-16" loop="false" y="-9" fps="30" anim="TANKMAN UGH instance 100" name="singUP-alt"/>
+<character y="180" sprite="tankman" flipX="true" isPlayer="true" icon="tankman" color="#FFFFFF" isGF="false">
+	<anim name="idle" anim="Tankman Idle Dance instance 100" x="0" y="0" fps="24" loop="false"/>
+	<anim name="singRIGHT" anim="Tankman Right Note instance 1000" x="-24" y="-13" fps="24" loop="false"/>
+	<anim name="singDOWN" anim="Tankman DOWN note instance 1000" x="75" y="-105" fps="24" loop="false"/>
+	<anim name="singUP" anim="Tankman UP note instance 1000" x="27" y="53" fps="24" loop="false"/>
+	<anim name="singLEFT" anim="Tankman Note Left instance 1000" x="92" y="-28" fps="24" loop="false"/>
+	<anim name="good!" anim="PRETTY GOOD tankman instance 100" x="100" y="17" fps="24" loop="false"/>
+	<anim name="singUP-alt" anim="TANKMAN UGH instance 100" x="-13" y="-9" fps="30" loop="false"/>
 </character>

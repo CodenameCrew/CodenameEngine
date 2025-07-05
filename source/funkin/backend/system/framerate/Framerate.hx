@@ -116,9 +116,16 @@ class Framerate extends Sprite {
 		bgSprite.scaleX = width;
 		bgSprite.scaleY = height;
 
-		var y:Float = height + 4;
+		var selectable = debugMode == 2;
+		{  // idk i tried to make it more lookable:sob:  - Nex
+			memoryCounter.memoryText.selectable = memoryCounter.memoryPeakText.selectable =
+			fpsCounter.fpsNum.selectable = fpsCounter.fpsLabel.selectable =
+			#if SHOW_BUILD_ON_FPS codenameBuildField.selectable = #end selectable;
+		}
 
+		var y:Float = height + 4;
 		for(c in categories) {
+			c.title.selectable = c.text.selectable = selectable;
 			c.alpha = debugAlpha;
 			c.x = FlxMath.lerp(-c.width - offset.x, 0, debugAlpha);
 			c.y = y;

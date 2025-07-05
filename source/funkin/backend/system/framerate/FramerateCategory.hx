@@ -29,6 +29,7 @@ class FramerateCategory extends Sprite {
 			label.x = 0;
 			label.y = 0;
 			label.defaultTextFormat = new TextFormat(Framerate.fontName, label == this.title ? 18 : 12, -1);
+			label.selectable = false;
 			addChild(label);
 		}
 		this.title.text = title;

@@ -19,9 +19,11 @@ class FunkinParentDisabler extends FlxBasic {
 	var __timers:Array<FlxTimer>;
 	var __sounds:Array<FlxSound>;
 	var __replaceUponDestroy:Bool;
-	public function new(replaceUponDestroy:Bool = false) {
+	var __restoreUponDestroy:Bool;
+	public function new(replaceUponDestroy:Bool = false, restoreUponDestroy:Bool = true) {
 		super();
 		__replaceUponDestroy = replaceUponDestroy;
+		__restoreUponDestroy = restoreUponDestroy;
 		@:privateAccess {
 			// tweens
 			__tweens = FlxTween.globalManager._tweens.copy();
@@ -32,8 +34,8 @@ class FunkinParentDisabler extends FlxBasic {
 			FlxTimer.globalManager._timers = [];
 
 			// cameras
-			__cameras = [for(c in FlxG.cameras.list) if (c.active) c];
-			for(c in __cameras) c.active = false;
+			__cameras = [for(c in FlxG.cameras.list) if (!c.paused) c];
+			for(c in __cameras) c.paused = true;
 
 			// sounds
 			__sounds = [for(s in FlxG.sound.list) if (s.playing) s];
@@ -41,9 +43,6 @@ class FunkinParentDisabler extends FlxBasic {
 		}
 	}
 
-	public override function update(elapsed:Float) {
-		@:privateAccess for(c in __cameras) c.updateFlashSpritePosition();
-	}
 	public override function draw() {}
 
 	public function reset() {
@@ -56,6 +55,11 @@ class FunkinParentDisabler extends FlxBasic {
 	public override function destroy() {
 		super.destroy();
 		@:privateAccess {
+			if (!__restoreUponDestroy) {
+				for(t in __tweens) { t.cancel(); t.destroy(); };
+				for(t in __timers) { t.cancel(); t.destroy(); };
+				return;
+			}
 			if (__replaceUponDestroy) {
 				FlxTween.globalManager._tweens = __tweens;
 				FlxTimer.globalManager._timers = __timers;
@@ -63,7 +67,7 @@ class FunkinParentDisabler extends FlxBasic {
 				for(t in __tweens) FlxTween.globalManager._tweens.push(t);
 				for(t in __timers) FlxTimer.globalManager._timers.push(t);
 			}
-			for(c in __cameras) c.active = true;
+			for(c in __cameras) c.paused = false;
 			for(s in __sounds) s.play();
 		}
 	}

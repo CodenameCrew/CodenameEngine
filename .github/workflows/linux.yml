@@ -7,7 +7,7 @@ jobs:
   build:
     name: Linux Build
     permissions: write-all
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Pulling the source
         uses: actions/checkout@v2
@@ -31,19 +31,19 @@ jobs:
           sudo apt-get install libvlc-dev libvlccore-dev
       - name: Installing/Updating libraries
         run: |
-          haxe -cp commandline -D analyzer-optimize --run Main setup
+          haxe -cp commandline -D analyzer-optimize --run Main setup -s
       - name: Building the game
         run: |
           haxelib run lime build linux
-      - name: Tar files
-        run: tar -zcvf CodenameEngine.tar.gz export/release/linux/bin
+      # - name: Tar files
+      #   run: tar -zcvf CodenameEngine.tar.gz -C export/release/linux/bin .
       - name: Uploading artifact (entire build)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Codename Engine
-          path: CodenameEngine.tar.gz
+          path: export/release/linux/bin/
       # - name: Uploading artifact (executable)
-      #   uses: actions/upload-artifact@v2
+      #   uses: actions/upload-artifact@v4
       #   with:
       #     name: Update-Linux
       #     path: export/release/linux/bin/CodenameEngine

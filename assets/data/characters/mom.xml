@@ -1,10 +1,14 @@
 <!DOCTYPE codename-engine-character>
-<character isPlayer="false" flipX="false" color="#D8558E">
-	<anim name="idle"      anim="Mom Idle"      fps="24" loop="false" />
-	<anim name="singUP"    anim="Mom Up Pose"   fps="24" loop="false" x="14" y="71"/>
-	<anim name="singDOWN"  anim="MOM DOWN POSE" fps="24" loop="false" x="20" y="-160"/>
-	<anim name="singLEFT"  anim="Mom Left Pose" fps="24" loop="false" x="250" y="-23"/>
-	<!-- ANIMATION IS CALLED MOM LEFT POSE BUT ITS FOR THE RIGHT -->
-	<!-- CUZ DAVE IS DUMB! -->
-	<anim name="singRIGHT" anim="Mom Pose Left" fps="24" loop="false" x="10" y="-60"/>
+<character sprite="mom" icon="mom" color="#D8558E">
+	<anim name="idle" anim="Mom Idle" x="0" y="0" fps="24" loop="false"/>
+	<anim name="singUP" anim="Mom Up Pose" x="13" y="67" fps="24" loop="false"/>
+	<anim name="singDOWN" anim="MOM DOWN POSE" x="8" y="-173" fps="24" loop="false"/>
+	<anim name="singLEFT" anim="Mom Left Pose" x="282" y="-28" fps="24" loop="false"/>
+	<anim name="singRIGHT" anim="Mom Pose Left" x="-20" y="-60" fps="24" loop="false"/>
+	<anim name="idle-loop" anim="Mom Idle" x="0" y="0" fps="24" loop="true" indices="10..13"/>
+	<anim name="singUP-loop" anim="Mom Up Pose" x="13" y="67" fps="24" loop="true" indices="11..14"/>
+	<anim name="singDOWN-loop" anim="MOM DOWN POSE" x="8" y="-173" fps="24" loop="true" indices="11..14"/>
+	<anim name="singLEFT-loop" anim="Mom Left Pose" x="282" y="-28" fps="24" loop="true" indices="6..9"/>
+	<anim name="singRIGHT-loop" anim="Mom Pose Left" x="-20" y="-60" fps="24" loop="true" indices="6..9"/>
 </character>
+	

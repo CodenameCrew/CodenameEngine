@@ -1,5 +1,6 @@
 package funkin.editors.charter;
 
+import flixel.system.FlxAssets.FlxGraphicAsset;
 import funkin.editors.charter.Charter.ICharterSelectable;
 import flixel.math.FlxPoint;
 import funkin.game.Character;
@@ -47,14 +48,34 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 	private static function generateDefaultIcon(name:String) {
 		var isBase64:Bool = false;
 		var path:String = Paths.image('editors/charter/event-icons/$name');
-		if (!Assets.exists(path)) path = Paths.image('editors/charter/event-icons/Unknown');
-		if (Assets.exists(Paths.pack('events/$name'))) {
-			var packimg = Assets.getText(Paths.pack('events/$name')).split('________PACKSEP________')[3];
-			if (isBase64 = (packimg != null))
-				path = Assets.getText(Paths.pack('events/$name')).split('________PACKSEP________')[3];
+		var defaultPath = Paths.image('editors/charter/event-icons/Unknown');
+		if (!Assets.exists(path)) path = defaultPath;
+
+		var packPath = Paths.pack('events/$name');
+		if (Assets.exists(packPath)) {
+			var packText = Assets.getText(packPath).split('________PACKSEP________');
+			var packImg = packText[3];
+			if(packImg != null && packImg.length > 0) {
+				isBase64 = !packImg.startsWith("assets/");
+				path = packImg;
+			}
 		}
-		var spr = new FlxSprite().loadGraphic(isBase64 ? openfl.display.BitmapData.fromBase64(path.trim(), 'UTF8') : path);
-		return spr;
+		path = path.trim();
+
+		var graphic:FlxGraphicAsset = try {
+			isBase64 ? openfl.display.BitmapData.fromBase64(path, 'UTF8') : path;
+		} catch(e:Dynamic) {
+			Logs.trace('Failed to load event icon: ${e.toString()}', ERROR);
+			isBase64 = false;
+			defaultPath;
+		}
+
+		if(!isBase64) {
+			if (!Assets.exists(graphic))
+				graphic = defaultPath;
+		}
+
+		return new FlxSprite().loadGraphic(graphic);
 	}
 
 	public static function generateEventIcon(event:ChartEvent) {

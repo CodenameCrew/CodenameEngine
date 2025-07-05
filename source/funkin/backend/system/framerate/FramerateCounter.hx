@@ -22,6 +22,7 @@ class FramerateCounter extends Sprite {
 			label.text = "FPS";
 			label.multiline = label.wordWrap = false;
 			label.defaultTextFormat = new TextFormat(Framerate.fontName, label == fpsNum ? 18 : 12, -1);
+			label.selectable = false;
 			addChild(label);
 		}
 	}

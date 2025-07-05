@@ -6,12 +6,7 @@ import funkin.backend.system.Conductor;
 class FNFLegacyParser {
 	public static function parse(data:Dynamic, result:ChartData) {
 		// base fnf chart parsing
-		var data:SwagSong = data;
-		if (Reflect.hasField(data, "song")) {
-			var field:Dynamic = Reflect.field(data, "song");
-			if (!(field is String))
-				data = field;
-		}
+		var data:SwagSong = Chart.cleanSongData(data);
 
 		result.scrollSpeed = data.speed;
 		result.stage = data.stage;
@@ -29,7 +24,7 @@ class FNFLegacyParser {
 			position: "boyfriend",
 			notes: []
 		});
-		var gfName = data.gf != null ? data.gf : (data.gfVersion != null ? data.gfVersion : "gf");
+		var gfName = data.gf != null ? data.gf : (data.gfVersion != null ? data.gfVersion : (data.player3 != null ? data.player3 : "gf"));
 		if (!p2isGF && gfName != "none") {
 			result.strumLines.push({
 				characters: [gfName],
@@ -132,10 +127,10 @@ class FNFLegacyParser {
 					if ((swagSection.mustHitSection && strumLine.type == OPPONENT) ||
 						(!swagSection.mustHitSection && strumLine.type == PLAYER))
 					   sectionNote[1] += 4;
-					swagSection.sectionNotes.push(note); 
+					swagSection.sectionNotes.push(sectionNote);
 				}
 			}
-		
+
 		return {song: base};
 	}
 
@@ -214,6 +209,7 @@ typedef SwagSong =
 
 	var player1:String;
 	var player2:String;
+	var ?player3:String;  // alt for gf but idr if it was just used in psych or what but eh whatever maybe its better here anyways  - Nex
 	var ?gf:String;
 	var ?gfVersion:String;
 	var validScore:Bool;

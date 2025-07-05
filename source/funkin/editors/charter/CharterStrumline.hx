@@ -43,20 +43,7 @@ class CharterStrumline extends UISprite {
 
 		if(strumLine.visible == null) strumLine.visible = true;
 
-		var icons = strumLine.characters != null ? strumLine.characters : [];
-
 		healthIcons = new FlxSpriteGroup(x, y);
-
-		for (i=>icon in icons) {
-			var healthIcon = new HealthIcon(Character.getIconFromCharName(icon));
-			healthIcon.scale.x = healthIcon.scale.y = 0.6 - (icons.length / 20);
-			healthIcon.updateHitbox();
-			healthIcon.x = FlxMath.lerp(0, icons.length * 20, (icons.length-1 != 0 ? i / (icons.length-1) : 0));
-			healthIcon.y = draggable ? 29 : 7;
-			healthIcon.alpha = strumLine.visible ? 1 : 0.4;
-			healthIcons.add(healthIcon);
-		}
-
 		members.push(healthIcons);
 
 		draggingSprite = new UISprite();
@@ -70,8 +57,7 @@ class CharterStrumline extends UISprite {
 		button = new CharterStrumlineOptions(this);
 		members.push(button);
 
-		vocals = strumLine.vocalsSuffix.length > 0 ? FlxG.sound.load(Paths.voices(PlayState.SONG.meta.name, PlayState.difficulty, strumLine.vocalsSuffix)) : new FlxSound();
-		vocals.group = FlxG.sound.defaultMusicGroup;
+		updateInfo();
 
 		selectedWaveform = -1;
 	}
@@ -106,7 +92,9 @@ class CharterStrumline extends UISprite {
 
 		for (i=>icon in icons) {
 			var healthIcon = new HealthIcon(Character.getIconFromCharName(icon));
-			healthIcon.scale.x = healthIcon.scale.y = 0.6 - (icons.length / 20);
+			var newScale = 0.6 - (icons.length / 20);
+			var size = Std.int(150 * newScale);
+			healthIcon.setUnstretchedGraphicSize(size, size, true);
 			healthIcon.updateHitbox();
 			healthIcon.x = FlxMath.lerp(0, icons.length * 20, (icons.length-1 != 0 ? i / (icons.length-1) : 0));
 			healthIcon.y = draggable ? 14 : 7;

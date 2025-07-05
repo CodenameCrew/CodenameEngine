@@ -24,6 +24,7 @@ class MemoryCounter extends Sprite {
 			label.text = "FPS";
 			label.multiline = label.wordWrap = false;
 			label.defaultTextFormat = new TextFormat(Framerate.fontName, 12, -1);
+			label.selectable = false;
 			addChild(label);
 		}
 		memoryPeakText.alpha = 0.5;

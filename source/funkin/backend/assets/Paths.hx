@@ -116,15 +116,26 @@ class Paths
 		return scriptPath;
 	}
 
-	static public function chart(song:String, ?difficulty:String = "normal"):String {
+	static public function chart(song:String, ?difficulty:String = "normal"):String
+	{
 		difficulty = difficulty.toLowerCase();
 		song = song.toLowerCase();
 
 		return getPath('songs/$song/charts/$difficulty.json', null);
 	}
 
-	static public function character(character:String):String {
+	inline static public function character(character:String):String
+	{
 		return getPath('data/characters/$character.xml', null);
+	}
+
+	/**
+	 * Gets the name of a registered font.
+	 * @param font The font's path (if it's already passed as a font name, the same name will be returned)
+	 */
+	inline static public function getFontName(font:String)
+	{
+		return OpenFlAssets.exists(font, FONT) ? OpenFlAssets.getFont(font).fontName : font;
 	}
 
 	inline static public function font(key:String)
@@ -171,7 +182,7 @@ class Paths
 		return FlxAtlasFrames.fromAseprite('$key.png', '$key.json');
 
 	inline static public function getAssetsRoot():String
-		return  ModsFolder.currentModFolder != null ? '${ModsFolder.modsPath}${ModsFolder.currentModFolder}' : './assets';
+		return  ModsFolder.currentModFolder != null ? '${ModsFolder.modsPath}${ModsFolder.currentModFolder}' : #if (sys && TEST_BUILD) './${Main.pathBack}assets/' #else './assets' #end;
 
 	/**
 	 * Gets frames at specified path.
@@ -189,6 +200,29 @@ class Paths
 		return tempFramesCache[key] = loadFrames(assetsPath ? key : Paths.image(key, library, true));
 	}
 
+	/**
+	 * Checks if the images needed for using getFrames() exist.
+	 * @param key Path to the image
+	 * @param checkAtlas Whenever to check for the Animation.json file (used in FlxAnimate)
+	 * @param assetsPath Whenever to use the raw path or to pass it through Paths.image()
+	 * @param library (Additional) library to load the frames from.
+	 * @return True if the images exist, false otherwise.
+	**/
+	public static function framesExists(key:String, checkAtlas:Bool = false, checkMulti:Bool = true, assetsPath:Bool = false, ?library:String) {
+		var path = assetsPath ? key : Paths.image(key, library, true);
+		var noExt = Path.withoutExtension(path);
+		if(checkAtlas && Assets.exists('$noExt/Animation.json'))
+			return true;
+		if(checkMulti && Assets.exists('$noExt/1.png'))
+			return true;
+		if(Assets.exists('$noExt.xml'))
+			return true;
+		if(Assets.exists('$noExt.txt'))
+			return true;
+		if(Assets.exists('$noExt.json'))
+			return true;
+		return false;
+	}
 
 	/**
 	 * Loads frames from a specific image path. Supports Sparrow Atlases, Packer Atlases, and multiple spritesheets.
@@ -198,10 +232,10 @@ class Paths
 	 * @param SkipAtlasCheck Whenever the atlas check should be skipped.
 	 * @return FlxFramesCollection Frames
 	 */
-	static function loadFrames(path:String, Unique:Bool = false, Key:String = null, SkipAtlasCheck:Bool = false):FlxFramesCollection {
+	static function loadFrames(path:String, Unique:Bool = false, Key:String = null, SkipAtlasCheck:Bool = false, SkipMultiCheck:Bool = false):FlxFramesCollection {
 		var noExt = Path.withoutExtension(path);
 
-		if (Assets.exists('$noExt/1.png')) {
+		if (!SkipMultiCheck && Assets.exists('$noExt/1.png')) {
 			// MULTIPLE SPRITESHEETS!!
 
 			var graphic = FlxG.bitmap.add("flixel/images/logo/default.png", false, '$noExt/mult');
@@ -213,7 +247,7 @@ class Paths
 			var cur = 1;
 			var finalFrames = new MultiFramesCollection(graphic);
 			while(Assets.exists('$noExt/$cur.png')) {
-				var spr = loadFrames('$noExt/$cur.png');
+				var spr = loadFrames('$noExt/$cur.png', false, null, false, true);
 				finalFrames.addFrames(spr);
 				cur++;
 			}
@@ -240,13 +274,13 @@ class Paths
 		}
 		return content;
 	}
-	static public function getFolderContent(key:String, addPath:Bool = false, source:AssetsLibraryList.AssetSource = BOTH):Array<String> {
+	static public function getFolderContent(key:String, addPath:Bool = false, source:AssetsLibraryList.AssetSource = BOTH, noExtension:Bool = false):Array<String> {
 		// designed to work both on windows and web
 		if (!key.endsWith("/")) key += "/";
 		var content = assetsTree.getFiles('assets/$key', source);
-		if (addPath) {
-			for(k=>e in content)
-				content[k] = '$key$e';
+		for (k => e in content) {
+			if (noExtension) e = Path.withoutExtension(e);
+			content[k] = addPath ? '$key$e' : e;
 		}
 		return content;
 		/*

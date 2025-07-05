@@ -93,10 +93,15 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 
 	public var scriptsAllowed:Bool = true;
 
+	public static var lastScriptName:String = null;
+	public static var lastStateName:String = null;
+
 	public var scriptName:String = null;
 
 	public static var skipTransOut:Bool = false;
 	public static var skipTransIn:Bool = false;
+
+	public static var ALLOW_DEBUG_RELOAD:Bool = true;
 
 	inline function get_controls():Controls
 		return PlayerSettings.solo.controls;
@@ -108,7 +113,12 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 	public function new(scriptsAllowed:Bool = true, ?scriptName:String) {
 		super();
 		this.scriptsAllowed = #if SOFTCODED_STATES scriptsAllowed #else false #end;
-		this.scriptName = scriptName;
+
+		if(lastStateName != (lastStateName = Type.getClassName(Type.getClass(this)))) {
+			lastScriptName = null;
+		}
+		this.scriptName = scriptName != null ? scriptName : lastScriptName;
+		lastScriptName = this.scriptName;
 	}
 
 	function loadScript() {
@@ -139,16 +149,20 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 			call("postUpdate", [elapsed]);
 		}
 
-		if (_requestSubStateReset)
-		{
+		if (_requestSubStateReset) {
 			_requestSubStateReset = false;
 			resetSubState();
 		}
-		if (subState != null)
-		{
-			subState.tryUpdate(elapsed);
+
+		if (/*subState == null && */(ALLOW_DEBUG_RELOAD && controls.DEBUG_RELOAD)) {
+			Logs.trace("Reloading Current State...", INFO, YELLOW);
+			FlxG.resetState();
 		}
+
+		if (subState != null)
+			subState.tryUpdate(elapsed);
 	}
+
 	override function create()
 	{
 		loadScript();
@@ -181,10 +195,6 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 
 	override function update(elapsed:Float)
 	{
-		// TODO: DEBUG MODE!!
-		if (FlxG.keys.justPressed.F5) {
-			loadScript();
-		}
 		call("update", [elapsed]);
 
 		super.update(elapsed);

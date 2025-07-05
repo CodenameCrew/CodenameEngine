@@ -28,17 +28,17 @@ jobs:
             cache-build-windows
       - name: Installing/Updating libraries
         run: |
-          haxe -cp commandline -D analyzer-optimize --run Main setup
+          haxe -cp commandline -D analyzer-optimize --run Main setup -s
       - name: Building the game
         run: |
           haxelib run lime build windows
       - name: Uploading artifact (entire build)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Codename Engine
           path: export/release/windows/bin
       # - name: Uploading artifact (executable)
-      #   uses: actions/upload-artifact@v2
+      #   uses: actions/upload-artifact@v4
       #   with:
       #     name: Update-Windows
       #     path: export/release/windows/bin/CodenameEngine.exe

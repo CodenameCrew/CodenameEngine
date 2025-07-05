@@ -22,11 +22,13 @@ class EditorPicker extends MusicBeatSubstate {
 			iconID: 2,
 			state: null
 		},
+		#if debug
 		{
 			name: "UI Debug State",
 			iconID: 3,
 			state: UIDebugState
 		},
+		#end
 		{
 			name: "Debug Options",
 			iconID: 4,

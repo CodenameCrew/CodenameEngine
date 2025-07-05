@@ -253,7 +253,7 @@ class CharterBackdropDummy extends UISprite {
 
 	public override function draw() {
 		@:privateAccess
-		__lastDrawCameras = [for(c in cameras) c];
+		__lastDrawCameras = cameras.copy();
 	}
 }
 

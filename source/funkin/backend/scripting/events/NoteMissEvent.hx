@@ -29,9 +29,9 @@ final class NoteMissEvent extends CancellableEvent {
 	public var gfSadAnim:String;
 	public var forceGfAnim:Bool;
 	/**
-	 * Whenever the animation should be forced to play.
+	 * Whenever the animation should be forced to play (if it's null it will be forced based on the sprite's data xml, if it has one).
 	 */
-	public var forceAnim:Bool;
+	public var forceAnim:Null<Bool>;
 	/**
 	 * Suffix of the animation. "miss" for miss notes, "-alt" for alt notes, "" for normal ones.
 	 */

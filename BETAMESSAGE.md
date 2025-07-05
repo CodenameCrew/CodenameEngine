@@ -35,7 +35,7 @@ Shoutout to the people who stuck with us throughout the alpha and supported us! 
 - ### New Features
 	- Opponent & Co-op modes
 	- New volume change SFX (no more loud flixel beep, customizable)
-	- New FPS counter allowing you to see advanced info by pressing F3.
+	- New FPS counter allowing you to see advanced info by pressing F3 (infos can be selected and copied too when in advanced).
 	- (Windows) FNF is no longer blurry on 125-150% DPI
     - FNF auto fixes audio on state change when you plug in/out your headphones.
     - FNF auto applies dark titlebar

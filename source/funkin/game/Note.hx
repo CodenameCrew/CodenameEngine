@@ -75,6 +75,11 @@ class Note extends FlxSprite
 	public var scrollSpeed:Null<Float> = null;
 	public var noteAngle:Null<Float> = null;
 
+	public var copyStrumAngle:Bool = true;
+	public var updateNotesPosX:Bool = true;
+	public var updateNotesPosY:Bool = true;
+	public var updateFlipY:Bool = true;
+
 	public var noteType(get, null):String;
 
 	@:dox(hide) public var __strumCameras:Array<FlxCamera> = null;
@@ -98,6 +103,9 @@ class Note extends FlxSprite
 			return __customNoteTypeExists[path];
 		return __customNoteTypeExists[path] = Assets.exists(path);
 	}
+
+	static var DEFAULT_FIELDS:Array<String> = ["time", "id", "type", "sLen"];
+
 	public function new(strumLine:StrumLine, noteData:ChartNote, sustain:Bool = false, sustainLength:Float = 0, sustainOffset:Float = 0, ?prev:Note)
 	{
 		super();
@@ -115,7 +123,7 @@ class Note extends FlxSprite
 		this.sustainLength = sustainLength;
 		this.strumLine = strumLine;
 		for(field in Reflect.fields(noteData)) {
-			if(!["time", "id", "type", "sLen"].contains(field)) {
+			if(!DEFAULT_FIELDS.contains(field)) {
 				this.extra.set(field, Reflect.field(noteData, field));
 			}
 		}
@@ -146,7 +154,9 @@ class Note extends FlxSprite
 						case 0:
 							animation.addByPrefix('scroll', 'purple0');
 							animation.addByPrefix('hold', 'purple hold piece');
-							animation.addByPrefix('holdend', 'pruple end hold');
+							animation.addByPrefix("holdend", "pruple end hold");
+							if (animation.exists("holdend") != true) // null or false
+								animation.addByPrefix('holdend', 'purple hold end');
 						case 1:
 							animation.addByPrefix('scroll', 'blue0');
 							animation.addByPrefix('hold', 'blue hold piece');
@@ -212,7 +222,7 @@ class Note extends FlxSprite
 
 	override function drawComplex(camera:FlxCamera) {
 		var downscrollCam = (camera is HudCamera ? cast(camera, HudCamera).downscroll : false);
-		flipY = (isSustainNote && flipSustain) && (downscrollCam != (__strum != null && __strum.getScrollSpeed(this) < 0));
+		if (updateFlipY) flipY = (isSustainNote && flipSustain) && (downscrollCam != (__strum != null && __strum.getScrollSpeed(this) < 0));
 		if (downscrollCam) {
 			frameOffset.y += __notePosFrameOffset.y * 2;
 			super.drawComplex(camera);
@@ -268,30 +278,22 @@ class Note extends FlxSprite
 	public function updateSustain(strum:Strum) {
 		var scrollSpeed = strum.getScrollSpeed(this);
 
-		var len = 0.45 * CoolUtil.quantize(scrollSpeed, 100);
-
-		if (nextSustain != null && lastScrollSpeed != scrollSpeed) {
-			// is long sustain
+		if (lastScrollSpeed != scrollSpeed) {
 			lastScrollSpeed = scrollSpeed;
-
-			scale.y = (sustainLength * len) / frameHeight;
-			updateHitbox();
-			scale.y += gapFix / frameHeight;
+			if (nextSustain != null) {
+				scale.y = (sustainLength * 0.45 * scrollSpeed) / frameHeight;
+				updateHitbox();
+				scale.y += gapFix / frameHeight;
+			}
 		}
 
-		if (!wasGoodHit) return;
-		var t = FlxMath.bound((Conductor.songPosition - strumTime) / (height) * len, 0, 1);
-		var swagRect = this.clipRect == null ? new FlxRect() : this.clipRect;
-		swagRect.x = 0;
-		swagRect.y = t * frameHeight;
-		swagRect.width = frameWidth;
-		swagRect.height = frameHeight;
-
-		setClipRect(swagRect);
+		updateSustainClip();
 	}
 
-	public function setClipRect(rect:FlxRect) {
-		this.clipRect = rect;
+	public function updateSustainClip() if (wasGoodHit) {
+		var t = FlxMath.bound((Conductor.songPosition - strumTime) / height * 0.45 * lastScrollSpeed, 0, 1);
+		var rect = clipRect == null ? FlxRect.get() : clipRect;
+		clipRect = rect.set(0, frameHeight * t, frameWidth, frameHeight * (1 - t));
 	}
 
 	@:noCompletion
@@ -307,5 +309,7 @@ class Note extends FlxSprite
 
 	public override function destroy() {
 		super.destroy();
+
+		clipRect = FlxDestroyUtil.put(clipRect);
 	}
 }

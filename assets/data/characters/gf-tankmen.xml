@@ -1,7 +1,7 @@
 <!DOCTYPE codename-engine-character>
-<character icon="gf" isGF="true" flipX="false" isPlayer="false" antialiasing="true" color="#A5004D">
-	<anim x="0" loop="false" y="0" fps="24" anim="GF Dancing at Gunpoint" indices="30,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14" name="danceLeft"/>
-	<anim x="0" loop="true" y="0" fps="24" anim="GF Dancing at Gunpoint" name="dance-cutscene"/>
-	<anim x="-315" loop="true" y="6" fps="24" anim="GF Crying at Gunpoint" indices="0,1,2,3,4,5,6,7,8,9,10,11,12" name="sad"/>
-	<anim x="0" loop="false" y="0" fps="24" anim="GF Dancing at Gunpoint" indices="15,16,17,18,19,20,21,22,23,24,25,26,27,28,29" name="danceRight"/>
+<character sprite="gf-tankmen" icon="gf" color="#A5004D" isGF="true">
+	<anim name="danceLeft" anim="GF Dancing at Gunpoint" x="0" y="0" fps="24" loop="false" indices="0..14"/>
+	<anim name="danceRight" anim="GF Dancing at Gunpoint" x="0" y="0" fps="24" loop="false" indices="15..30"/>
+	<anim name="dance-cutscene" anim="GF Dancing at Gunpoint" x="0" y="0" fps="24" loop="true"/>
+	<anim name="sad" anim="GF Crying at Gunpoint" x="-315" y="6" fps="24" loop="true" indices="0..12"/>
 </character>

@@ -7,9 +7,9 @@ final class PlayAnimEvent extends CancellableEvent {
 	public var animName:String;
 
 	/**
-		Whenever the animation will be forced or not.
+		Whenever the animation will be forced or not (if it's null it will be forced based on the sprite's data xml, if it has one).
 	**/
-	public var force:Bool;
+	public var force:Null<Bool>;
 
 	/**
 		Whenever the animation will play in reverse or not

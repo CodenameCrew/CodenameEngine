@@ -12,8 +12,8 @@ Also, the command `.\cne test` uses the source assets folder instead of the expo
 ## Codename Engine
 
 Codename Engine is a new Friday Night Funkin' Engine aimed at simplifying modding, along with extensiblity and ease of use.<br>
-Make sure to read the wiki and join the Discord server linked there!<br>
-#### It includes many new features, as seen [here](FEATURES.md)<br>
+### Before making issues or need help with something, check our website [HERE](https://codename-engine.com/) (it contains a wiki of how to mod with EXAMPLES, an api, lists of mods made with Codename Engine and more)!!!
+#### The Engine includes many new features, as seen [here](FEATURES.md)<br>
 #### Wanna see the new features added in the most recent update? Click [here](PATCHNOTES.md)<br>
 
 ## How to download
@@ -67,7 +67,7 @@ In the future (when the engine won't be a WIP anymore) we're gonna also publish 
   - Download and play the engine with its mods and modpacks
   - Mod and fork the engine (without using it for illicit purposes)
   - Contribute to the engine (for example through *Pull Requests*, *Issues*, etc)
-  - Create a sub engine with Codename Engine as **TEMPLATE** with **CREDITS** (for example leaving the *credits menu submenu with the GitHub contributors* and putting the *[main devs](https://github.com/FNF-CNE-Devs)* in a *README* specifying that it's a *sub engine from Codename Engine*)
+  - Create a sub engine with Codename Engine as **TEMPLATE** with **CREDITS** (for example leaving the *credits menu submenu with the GitHub contributors* and putting the *[main devs](https://github.com/CodenameCrew)* in a *README* specifying that it's a *sub engine from Codename Engine*)
   - Release excutable mods that use Codename Engine as source (Specifing that uses Codename Engine by for example the same way written above this)
   - Release modpacks
 
@@ -82,7 +82,6 @@ In the future (when the engine won't be a WIP anymore) we're gonna also publish 
 <details>
   <summary><h2>Credits</h2></summary>
 
-- Credits to [Ne_Eo](https://twitter.com/Ne_Eo_Twitch) and the [3D-HaxeFlixel](https://github.com/lunarcleint/3D-HaxeFlixel) repository for Away3D Flixel support
 - Credits to the [FlxAnimate](https://github.com/Dot-Stuff/flxanimate) team for the Animate Atlas support
 - Credits to Smokey555 for the backup Animate Atlas to spritesheet code
 - Credits to MAJigsaw77 for [hxvlc](https://github.com/MAJigsaw77/hxvlc) (video cutscene/mp4 support) and [hxdiscord_rpc](https://github.com/MAJigsaw77/hxdiscord_rpc) (discord rpc integration)

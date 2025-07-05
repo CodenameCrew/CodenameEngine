@@ -1,15 +1,12 @@
 <!DOCTYPE codename-engine-character>
-<character isPlayer="true" flipX="true" x="200" y="570" antialiasing="false" scale="6" gameOverChar="bf-pixel-dead" color="#7BD6F6">
-	<anim name="idle"       anim="BF IDLE" fps="24" loop="false" x="0" y="0" />
-
-	<!-- Offsets are actually multiplied by scale -->
-	<anim name="singLEFT"   anim="BF LEFT NOTE"     fps="24" loop="false"   x="0" y="0" />
-	<anim name="singDOWN"   anim="BF DOWN NOTE"     fps="24" loop="false"   x="0" y="0" />
-	<anim name="singUP"     anim="BF UP NOTE"       fps="24" loop="false"   x="0" y="0" />
-	<anim name="singRIGHT"  anim="BF RIGHT NOTE"    fps="24" loop="false"   x="0" y="0" />
-
-	<anim name="singUPmiss"    anim="BF UP MISS"    fps="24" loop="false" x="0" y="0"/>
-	<anim name="singLEFTmiss"  anim="BF LEFT MISS"  fps="24" loop="false" x="0"  y="0"/>
-	<anim name="singRIGHTmiss" anim="BF RIGHT MISS" fps="24" loop="false" x="0" y="0"/>
-	<anim name="singDOWNmiss"  anim="BF DOWN MISS"  fps="24" loop="false" x="0" y="0"/>
+<character x="200" y="570" sprite="bf-pixel" scale="6" antialiasing="false" flipX="true" isPlayer="true" icon="bf-pixel" color="#7BD6F6" gameOverChar="bf-pixel-dead">
+	<anim name="idle" anim="BF IDLE" x="0" y="0" fps="24" loop="false"/>
+	<anim name="singLEFT" anim="BF LEFT NOTE" x="-1" y="0" fps="24" loop="false"/>
+	<anim name="singDOWN" anim="BF DOWN NOTE" x="0" y="0" fps="24" loop="false"/>
+	<anim name="singUP" anim="BF UP NOTE" x="0" y="0" fps="24" loop="false"/>
+	<anim name="singRIGHT" anim="BF RIGHT NOTE" x="0" y="0" fps="24" loop="false"/>
+	<anim name="singUPmiss" anim="BF UP MISS" x="0" y="0" fps="24" loop="false"/>
+	<anim name="singLEFTmiss" anim="BF LEFT MISS" x="-1" y="0" fps="24" loop="false"/>
+	<anim name="singRIGHTmiss" anim="BF RIGHT MISS" x="0" y="0" fps="24" loop="false"/>
+	<anim name="singDOWNmiss" anim="BF DOWN MISS" x="0" y="0" fps="24" loop="false"/>
 </character>

@@ -1,24 +1,31 @@
 package funkin.menus;
 
-import funkin.editors.charter.Charter;
-import funkin.backend.scripting.events.MenuChangeEvent;
-import funkin.options.OptionsMenu;
-import funkin.backend.scripting.events.PauseCreationEvent;
-import funkin.backend.scripting.events.NameEvent;
-import funkin.backend.scripting.Script;
 import flixel.sound.FlxSound;
-import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import funkin.options.keybinds.KeybindsOptions;
-import funkin.menus.StoryMenuState;
+import funkin.backend.FunkinText;
+import funkin.backend.scripting.Script;
+import funkin.backend.scripting.events.MenuChangeEvent;
+import funkin.backend.scripting.events.NameEvent;
+import funkin.backend.scripting.events.PauseCreationEvent;
+import funkin.backend.system.Conductor;
 import funkin.backend.utils.FunkinParentDisabler;
+import funkin.editors.charter.Charter;
+import funkin.menus.StoryMenuState;
+import funkin.options.OptionsMenu;
+import funkin.options.TreeMenu;
+import funkin.options.keybinds.KeybindsOptions;
 
 class PauseSubState extends MusicBeatSubstate
 {
 	public static var script:String = "";
 
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
+
+	var levelInfo:FunkinText;
+	var levelDifficulty:FunkinText;
+	var deathCounter:FunkinText;
+	var multiplayerText:FunkinText;
 
 	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Change Controls', 'Change Options', 'Exit to menu', "Exit to charter"];
 	var curSelected:Int = 0;
@@ -54,7 +61,6 @@ class PauseSubState extends MusicBeatSubstate
 
 		menuItems = event.options;
 
-
 		pauseMusic = FlxG.sound.load(Paths.music(event.music), 0, true);
 		pauseMusic.persist = false;
 		pauseMusic.group = FlxG.sound.defaultMusicGroup;
@@ -69,15 +75,13 @@ class PauseSubState extends MusicBeatSubstate
 		bg.scrollFactor.set();
 		add(bg);
 
-		var levelInfo:FlxText = new FlxText(20, 15, 0, PlayState.SONG.meta.displayName, 32);
-		var levelDifficulty:FlxText = new FlxText(20, 15, 0, PlayState.difficulty.toUpperCase(), 32);
-		var deathCounter:FlxText = new FlxText(20, 15, 0, "Blue balled: " + PlayState.deathCounter, 32);
-		var multiplayerText:FlxText = new FlxText(20, 15, 0, PlayState.opponentMode ? 'OPPONENT MODE' : (PlayState.coopMode ? 'CO-OP MODE' : ''), 32);
+		levelInfo = new FunkinText(20, 15, 0, PlayState.SONG.meta.displayName, 32, false);
+		levelDifficulty = new FunkinText(20, 15, 0, PlayState.difficulty.toUpperCase(), 32, false);
+		deathCounter = new FunkinText(20, 15, 0, "Blue balled: " + PlayState.deathCounter, 32, false);
+		multiplayerText = new FunkinText(20, 15, 0, PlayState.opponentMode ? 'OPPONENT MODE' : (PlayState.coopMode ? 'CO-OP MODE' : ''), 32, false);
 
 		for(k=>label in [levelInfo, levelDifficulty, deathCounter, multiplayerText]) {
 			label.scrollFactor.set();
-			label.setFormat(Paths.font('vcr.ttf'), 32);
-			label.updateHitbox();
 			label.alpha = 0;
 			label.x = FlxG.width - (label.width + 20);
 			label.y = 15 + (32 * k);
@@ -122,13 +126,12 @@ class PauseSubState extends MusicBeatSubstate
 
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
-		var accepted = controls.ACCEPT;
+		var scroll = FlxG.mouse.wheel;
 
-		if (upP)
-			changeSelection(-1);
-		if (downP)
-			changeSelection(1);
-		if (accepted)
+		if (upP || downP || scroll != 0)  // like this we wont break mods that expect a 0 change event when calling sometimes  - Nex
+			changeSelection((upP ? -1 : 0) + (downP ? 1 : 0) - scroll);
+
+		if (controls.ACCEPT)
 			selectOption();
 	}
 
@@ -152,6 +155,7 @@ class PauseSubState extends MusicBeatSubstate
 				persistentDraw = false;
 				openSubState(new KeybindsOptions());
 			case "Change Options":
+				TreeMenu.lastState = PlayState;
 				FlxG.switchState(new OptionsMenu());
 			case "Exit to charter":
 				FlxG.switchState(new funkin.editors.charter.Charter(PlayState.SONG.meta.name, PlayState.difficulty, false));
@@ -161,6 +165,9 @@ class PauseSubState extends MusicBeatSubstate
 				else {
 					PlayState.resetSongInfos();
 					if (Charter.instance != null) Charter.instance.__clearStatics();
+
+					// prevents certain notes to disappear early when exiting  - Nex
+					game.strumLines.forEachAlive(function(grp) grp.notes.__forcedSongPos = Conductor.songPosition);
 
 					CoolUtil.playMenuSong();
 					FlxG.switchState(PlayState.isStoryMode ? new StoryMenuState() : new FreeplayState());

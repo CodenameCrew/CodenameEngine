@@ -389,9 +389,14 @@ class CoolUtil
 		if (Assets.exists(infoPath)) {
 			var musicInfo = IniUtil.parseAsset(infoPath, [
 				"BPM" => null,
-				"TimeSignature" => "4/4"
+				"TimeSignature" => "4/4",
+				"LoopTime" => "0.0"
 			]);
 
+		
+			if (FlxG.sound.music != null) {
+				FlxG.sound.music.loopTime = Std.parseFloat(musicInfo["LoopTime"]) * 1000;
+			}
 			var timeSignParsed:Array<Null<Float>> = musicInfo["TimeSignature"] == null ? [] : [for(s in musicInfo["TimeSignature"].split("/")) Std.parseFloat(s)];
 			var beatsPerMeasure:Float = 4;
 			var stepsPerBeat:Float = 4;
@@ -582,7 +587,7 @@ class CoolUtil
 			var fmt = new FlxTextFormat();
 
 			fmt.format.color = Reflect.hasField(fmtt, "color") ? FlxColor.fromString(fmtt.color) : text.color;
-			fmt.format.font = Reflect.hasField(fmtt, "font") ? Paths.font(fmtt.font) : text.font;
+			fmt.format.font = Reflect.hasField(fmtt, "font") ? Paths.getFontName(Paths.font(fmtt.font)) : text.font;
 			fmt.format.size = Reflect.hasField(fmtt, "size") ? Std.parseInt(fmtt.size) : text.size;
 			fmt.format.italic = Reflect.hasField(fmtt, "italic") ? fmtt.italic == "true" : text.italic;
 			fmt.format.bold = Reflect.hasField(fmtt, "bold") ? fmtt.bold == "true" : text.bold;
@@ -609,11 +614,11 @@ class CoolUtil
 	 * @param spr Sprite to load the graphic for
 	 * @param path Path to the graphic
 	 */
-	public static function loadAnimatedGraphic(spr:FlxSprite, path:String) {
+	public static function loadAnimatedGraphic(spr:FlxSprite, path:String, fps:Float = 24.0) {
 		spr.frames = Paths.getFrames(path, true);
 
 		if (spr.frames != null && spr.frames.frames != null) {
-			spr.animation.add("idle", [for(i in 0...spr.frames.frames.length) i], 24, true);
+			spr.animation.add("idle", [for(i in 0...spr.frames.frames.length) i], fps, true);
 			spr.animation.play("idle");
 		}
 
@@ -706,7 +711,10 @@ class CoolUtil
 	 */
 	@:noUsing public static inline function openURL(url:String) {
 		#if linux
-		Sys.command('/usr/bin/xdg-open', [url, "&"]);
+		// generally `xdg-open` should work in every distro
+		var cmd = Sys.command("xdg-open", [url]);
+		// run old command JUST IN CASE it fails, which it shouldn't
+		if (cmd != 0) cmd = Sys.command("/usr/bin/xdg-open", [url]);
 		#else
 		FlxG.openURL(url);
 		#end
@@ -776,6 +784,209 @@ class CoolUtil
 	 @:noUsing public static inline function getFilename(file:String) {
 		var file = new haxe.io.Path(file);
 		return file.file;
+	}
+
+	/**
+	 * Converts a string of "1..3,5,7..9,8..5" into an array of numbers like [1,2,3,5,7,8,9,8,7,6,5]
+	 * @param input String to parse
+	 * @return Array of numbers
+	 */
+	public static function parseNumberRange(input:String):Array<Int> {
+		var result:Array<Int> = [];
+		var parts:Array<String> = input.split(",");
+
+		for (part in parts) {
+			part = part.trim();
+			var idx = part.indexOf("..");
+			if (idx != -1) {
+				var start = Std.parseInt(part.substring(0, idx).trim());
+				var end = Std.parseInt(part.substring(idx + 2).trim());
+
+				if(start == null || end == null) {
+					continue;
+				}
+
+				if (start < end) {
+					for (j in start...end + 1) {
+						result.push(j);
+					}
+				} else {
+					for (j in end...start + 1) {
+						result.push(start + end - j);
+					}
+				}
+			} else {
+				var num = Std.parseInt(part);
+				if (num != null) {
+					result.push(num);
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Converts an array of numbers into a string of ranges.
+	 * Example: [1,2,3,5,7,8,9,8,7,6,5] -> "1..3,5,7..9,8..5"
+	 * @param numbers Array of numbers
+	 * @return String representing the ranges
+	 */
+	public static function formatNumberRange(numbers:Array<Int>, seperator:String = ","):String {
+		if (numbers.length == 0) return "";
+
+		var result:Array<String> = [];
+		var i = 0;
+
+		while (i < numbers.length) {
+			var start = numbers[i];
+			var end = start;
+			var direction = 0; // 0: no sequence, 1: increasing, -1: decreasing
+
+			if (i + 1 < numbers.length) { // detect direction of sequence
+				if (numbers[i + 1] == end + 1) {
+					direction = 1;
+				} else if (numbers[i + 1] == end - 1) {
+					direction = -1;
+				}
+			}
+
+			if(direction != 0) {
+				while (i + 1 < numbers.length && (numbers[i + 1] == end + direction)) {
+					end = numbers[i + 1];
+					i++;
+				}
+			}
+
+			if (start == end) { // no direction
+				result.push('${start}');
+			} else if (start + direction == end) { // 1 step increment
+				result.push('${start},${end}');
+			} else { // store as range
+				result.push('${start}..${end}');
+			}
+
+			i++;
+		}
+
+		return result.join(seperator);
+	}
+
+	public inline static function parsePropertyString(fieldPath:String):Array<OneOfTwo<String, Int>> {
+		return FlxTween.parseFieldString(fieldPath);
+	}
+
+	public static function stringifyFieldsPath(fields:Array<OneOfTwo<String, Int>>):String {
+		var str = new StringBuf();
+		var first = true;
+		for (field in fields) {
+			if (Type.typeof(field) == TInt) {
+				str.add('[${field}]');
+			} else {
+				if (!first)
+					str.add('.');
+				str.add(field);
+			}
+			first = false;
+		}
+		return str.toString();
+	}
+
+	public static function parseProperty(target:Dynamic, fields:OneOfTwo<String, Array<OneOfTwo<String, Int>>>):Dynamic {
+		var fields:Array<OneOfTwo<String, Int>> = {
+			if((fields is String)) CoolUtil.parsePropertyString(fields);
+			else fields;
+		}
+
+		var field = CoolUtil.last(fields);
+		for (i in 0...fields.length - 1) {
+			var component = fields[i];
+			if (Type.typeof(component) == TInt) {
+				if ((target is Array)) {
+					var index:Int = cast component;
+					var arr:Array<Dynamic> = cast target;
+					target = arr[index];
+				}
+			} else { // TClass(String)
+				target = Reflect.getProperty(target, component);
+			}
+			if (!Reflect.isObject(target) && !(target is Array))
+				throw 'The object does not have the property "$component" in "${stringifyFieldsPath(fields)}"';
+		}
+		return new PropertyInfo(target, field);
+	}
+
+	public static function cloneProperty(toTarget:Dynamic, fields:OneOfTwo<String, Array<OneOfTwo<String, Int>>>, fromTarget:Dynamic):Dynamic {
+		var fields:Array<OneOfTwo<String, Int>> = {
+			if((fields is String)) CoolUtil.parsePropertyString(fields);
+			else fields;
+		}
+
+		var toProperty = CoolUtil.parseProperty(toTarget, fields);
+		var fromProperty = CoolUtil.parseProperty(fromTarget, fields);
+
+		return toProperty.setValue(fromProperty.getValue());
+	}
+}
+
+class PropertyInfo {
+	public var object:Dynamic;
+	public var field:OneOfTwo<String, Int>;
+	public var typeOfField:Type.ValueType;
+	#if hscript_improved
+	public var isCustom:Bool = false;
+	public var custom:hscript.IHScriptCustomBehaviour;
+	#end
+
+	public function new(object:Dynamic, field:OneOfTwo<String, Int>) {
+		this.object = object;
+		this.field = field;
+		#if hscript_improved
+		if (object is hscript.IHScriptCustomBehaviour)
+		{
+			isCustom = true;
+			custom = cast object;
+		}
+		#end
+
+		typeOfField = Type.typeof(field);
+	}
+
+	public function getValue():Dynamic
+	{
+		if (typeOfField == TInt)
+		{
+			var index:Int = cast field;
+			var arr:Array<Dynamic> = cast object;
+			return arr[index];
+		}
+		else
+		{
+			#if hscript_improved
+			if (isCustom)
+				return custom.hget(field);
+			else
+			#end
+			return Reflect.getProperty(object, field);
+		}
+	}
+
+	public function setValue(value:Dynamic):Void
+	{
+		if (typeOfField == TInt)
+		{
+			var index:Int = cast field;
+			var arr:Array<Dynamic> = cast object;
+			arr[index] = value;
+		}
+		else
+		{
+			#if hscript_improved
+			if (isCustom)
+				custom.hset(field, value);
+			else
+			#end
+			Reflect.setProperty(object, field, value);
+		}
 	}
 }
 

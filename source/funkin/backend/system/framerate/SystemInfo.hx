@@ -49,6 +49,25 @@ class SystemInfo extends FramerateCategory {
 			if (osName != "")
 				osInfo = '${osName} ${osVersion}'.trim();
 		}
+		#elseif windows
+		var windowsCurrentVersionPath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion";
+		var buildNumber = Std.parseInt(RegistryUtil.get(HKEY_LOCAL_MACHINE, windowsCurrentVersionPath, "CurrentBuildNumber"));
+		var edition = RegistryUtil.get(HKEY_LOCAL_MACHINE, windowsCurrentVersionPath, "ProductName");
+
+		var lcuKey = "WinREVersion"; // Last Cumulative Update Key On Older Windows Versions
+		if (buildNumber >= 22000) { // Windows 11 Initial Release Build Number
+			edition = edition.replace("Windows 10", "Windows 11");
+			lcuKey = "LCUVer"; // Last Cumulative Update Key On Windows 11
+		}
+
+		var lcuVersion = RegistryUtil.get(HKEY_LOCAL_MACHINE, windowsCurrentVersionPath, lcuKey);
+
+		osInfo = edition;
+
+		if (lcuVersion != null && lcuVersion != "")
+			osInfo += ' ${lcuVersion}';
+		else if (lime.system.System.platformVersion != null && lime.system.System.platformVersion != "")
+			osInfo += ' ${lime.system.System.platformVersion}';
 		#else
 		if (lime.system.System.platformLabel != null && lime.system.System.platformLabel != "" && lime.system.System.platformVersion != null && lime.system.System.platformVersion != "")
 			osInfo = '${lime.system.System.platformLabel.replace(lime.system.System.platformVersion, "").trim()} ${lime.system.System.platformVersion}';
@@ -58,10 +77,7 @@ class SystemInfo extends FramerateCategory {
 
 		try {
 			#if windows
-			var process = new HiddenProcess("wmic", ["cpu", "get", "name"]);
-			if (process.exitCode() != 0) throw 'Could not fetch CPU information';
-
-			cpuName = process.stdout.readAll().toString().trim().split("\n")[1].trim();
+			cpuName = RegistryUtil.get(HKEY_LOCAL_MACHINE, "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", "ProcessorNameString");
 			#elseif mac
 			var process = new HiddenProcess("sysctl -a | grep brand_string"); // Somehow this isnt able to use the args but it still works
 			if (process.exitCode() != 0) throw 'Could not fetch CPU information';

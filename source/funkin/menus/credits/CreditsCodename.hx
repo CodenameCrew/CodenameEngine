@@ -10,10 +10,12 @@ using StringTools;
 
 class CreditsCodename extends funkin.options.OptionsScreen {
 	public var error:Bool = false;
-	public var author:String = "FNF-CNE-Devs";
+	public var author:String = "CodenameCrew";
+	public var totalContributions:Int = 0;
+
 	public var mainDevCol:FlxColor = 0xFF9C35D5;
 	public var minContrCol:FlxColor = 0xFFB4A7DA;
-	public var totalContributions:Int = 0;
+	public var contribFormats:Array<FlxTextFormatMarkerPair> = [];
 
 	public override function new()
 	{
@@ -58,10 +60,15 @@ class CreditsCodename extends funkin.options.OptionsScreen {
 		if(parent == null || parent.treeParent == null) return;
 		var text:String = parent.treeParent.pathDesc.text;
 		parent.treeParent.pathDesc.text = "";
-		parent.treeParent.pathDesc.applyMarkup(text, [
+		parent.treeParent.pathDesc.applyMarkup(text, contribFormats = [
 			new FlxTextFormatMarkerPair(new FlxTextFormat(mainDevCol), '*'),
 			new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.interpolate(minContrCol, mainDevCol, Options.contributors[curSelected].contributions / totalContributions)), '~')
 		]);
+	}
+
+	override function close() {
+		super.close();
+		for (frmt in contribFormats) parent.treeParent.pathDesc.removeFormat(frmt.format);
 	}
 
 	public function checkUpdate():Bool {

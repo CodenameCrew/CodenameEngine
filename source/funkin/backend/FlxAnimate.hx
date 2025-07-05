@@ -7,18 +7,23 @@ import flixel.math.FlxAngle;
 import flixel.math.FlxRect;
 import flixel.graphics.frames.FlxFrame;
 import flixel.math.FlxPoint;
+import openfl.display.BlendMode;
 
 class FlxAnimate extends flxanimate.FlxAnimate {
 	static var rMatrix = new FlxMatrix();
 
-	override function drawLimb(limb:FlxFrame, _rMatrix:FlxMatrix, ?colorTransform:ColorTransform)
+	override function drawLimb(limb:FlxFrame, _rMatrix:FlxMatrix, ?colorTransform:ColorTransform, ?blendMode:BlendMode)
 	{
 		if (alpha == 0 || colorTransform != null && (colorTransform.alphaMultiplier == 0 || colorTransform.alphaOffset == -255) || limb == null || limb.type == EMPTY)
 			return;
+
+		if (blendMode == null)
+			blendMode = BlendMode.NORMAL;
+
 		for (camera in cameras)
 		{
 			rMatrix.identity();
-			rMatrix.translate(-limb.offset.x, -limb.offset.y);
+			limb.prepareMatrix(rMatrix, FlxFrameAngle.ANGLE_0, _checkFlipX() != camera.flipX, _checkFlipY() != camera.flipY);
 			rMatrix.concat(_rMatrix);
 			if (!camera.visible || !camera.exists || !limbOnScreen(limb, _rMatrix, camera))
 				return;
@@ -28,10 +33,13 @@ class FlxAnimate extends flxanimate.FlxAnimate {
 			if (limb != _pivot) {
 				if (frameOffsetAngle != null && frameOffsetAngle != angle)
 				{
-					var angleOff = (-angle + frameOffsetAngle) * FlxAngle.TO_RAD;
-					rMatrix.rotate(-angleOff);
+					var angleOff = (frameOffsetAngle - angle) * FlxAngle.TO_RAD;
+					var cos = Math.cos(angleOff);
+					var sin = Math.sin(angleOff);
+					// cos doesnt need to be negated
+					rMatrix.rotateWithTrig(cos, -sin);
 					rMatrix.translate(-frameOffset.x, -frameOffset.y);
-					rMatrix.rotate(angleOff);
+					rMatrix.rotateWithTrig(cos, sin);
 				}
 				else
 				{
@@ -66,7 +74,7 @@ class FlxAnimate extends flxanimate.FlxAnimate {
 			}
 
 			rMatrix.translate(_point.x, _point.y);
-			camera.drawPixels(limb, null, rMatrix, colorTransform, blend, antialiasing, shaderEnabled ? shader : null);
+			camera.drawPixels(limb, null, rMatrix, colorTransform, blendMode, antialiasing, shaderEnabled ? shader : null);
 			#if FLX_DEBUG
 			FlxBasic.visibleCount++;
 			#end

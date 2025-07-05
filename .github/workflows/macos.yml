@@ -28,19 +28,19 @@ jobs:
             cache-build-mac
       - name: Installing/Updating libraries
         run: |
-          haxe -cp commandline -D analyzer-optimize --run Main setup
+          haxe -cp commandline -D analyzer-optimize --run Main setup -s
       - name: Building the game
         run: |
           haxelib run lime build mac
       - name: Tar files
-        run: tar -zcvf CodenameEngine.tar.gz export/release/macos/bin
+        run: tar -zcvf CodenameEngine.tar.gz -C export/release/macos/bin .
       - name: Uploading artifact (entire build)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Codename Engine
           path: CodenameEngine.tar.gz
       # - name: Uploading artifact (executable)
-      #   uses: actions/upload-artifact@v2
+      #   uses: actions/upload-artifact@v4
       #   with:
       #     name: Update-Mac
       #     path: export/release/macos/bin/CodenameEngine

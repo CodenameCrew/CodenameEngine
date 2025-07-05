@@ -58,8 +58,8 @@ class CharterStrumlineButton extends UISprite {
 
 		super.update(elapsed);
 
-		UIState.state.updateSpriteRect(button);
-		if(UIState.state.curContextMenu == null && UIState.state.isOverlapping(button, button.__rect)) {
+		if (UIState.state.curContextMenu == null && UIState.state.isOverlapping(button, button.__rect) && button.visible) {
+			UIState.state.updateSpriteRect(button);
 			buttonScale.set(0.95, 0.95);
 			if (FlxG.mouse.justPressed && onClick != null) {
 				onClick();

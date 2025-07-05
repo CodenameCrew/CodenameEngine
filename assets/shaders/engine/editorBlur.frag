@@ -21,17 +21,17 @@ void main() {
 		return;
 
 	vec4 color = getColor(camPos);
-	float fsteps = steps;
-	for(float inside = 1.0; inside < stepsInside+1.0; inside++) {
+	float fsteps = float(steps);
+	for(float inside = 1.0; inside < float(stepsInside)+1.0; inside++) {
 		for(int i = 0; i < steps; i++) {
-			float fi = i;
+			float fi = float(i);
 			color += getColor(camPos + vec2(
-				strength * (inside / stepsInside) * cos(fi / fsteps * (PI * 2.0)),
-				strength * (inside / stepsInside) * sin(fi / fsteps * (PI * 2.0))
+				strength * (inside / float(stepsInside)) * cos(fi / fsteps * (PI * 2.0)),
+				strength * (inside / float(stepsInside)) * sin(fi / fsteps * (PI * 2.0))
 			));
 		}
 	}
 
-	color /= steps * stepsInside;
+	color /= vec4(steps * stepsInside);
 	gl_FragColor = color;
 }

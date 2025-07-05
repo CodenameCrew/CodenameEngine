@@ -1,5 +1,5 @@
+//
 function create() {
-	importScript("data/scripts/pixel");
 	if (PlayState.SONG.meta.name.toLowerCase() == "roses") {
 		bgGirls.animation.remove("danceLeft");
 		bgGirls.animation.remove("danceRight");

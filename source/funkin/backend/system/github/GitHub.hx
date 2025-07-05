@@ -2,8 +2,8 @@ package funkin.backend.system.github;
 
 #if GITHUB_API
 import haxe.Json;
-import haxe.Exception;
 #end
+import haxe.Exception;
 
 // TODO: Document further and perhaps make this a Haxelib.
 class GitHub {

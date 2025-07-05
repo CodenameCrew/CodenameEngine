@@ -1,10 +1,14 @@
 package funkin.backend.utils;
 
 import funkin.backend.FunkinSprite;
+import funkin.game.Character;
 import funkin.backend.system.ErrorCode;
 import funkin.backend.FunkinSprite.XMLAnimType;
 import flixel.util.FlxColor;
 import haxe.xml.Access;
+import funkin.backend.scripting.Script;
+import funkin.backend.scripting.DummyScript;
+import funkin.backend.scripting.ScriptPack;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.backend.system.interfaces.IOffsetCompatible;
 
@@ -66,12 +70,13 @@ class XMLUtil {
 	/**
 	 * Overrides a sprite based on a XML node.
 	 */
-	public static function loadSpriteFromXML(spr:FunkinSprite, node:Access, parentFolder:String = "", defaultAnimType:XMLAnimType = BEAT):FunkinSprite {
+	public static function loadSpriteFromXML(spr:FunkinSprite, node:Access, parentFolder:String = "", defaultAnimType:XMLAnimType = BEAT, loadGraphic:Bool = true):FunkinSprite {
 		if (parentFolder == null) parentFolder = "";
 
 		spr.name = node.getAtt("name");
 		spr.antialiasing = true;
-		spr.loadSprite(Paths.image('$parentFolder${node.getAtt("sprite").getDefault(spr.name)}', null, true));
+		if (loadGraphic)
+			spr.loadSprite(Paths.image('$parentFolder${node.getAtt("sprite").getDefault(spr.name)}', null, true));
 
 		spr.spriteAnimType = defaultAnimType;
 		if (node.has.type) {
@@ -139,6 +144,8 @@ class XMLUtil {
 			var graphicSizey:Null<Int> = Std.parseInt(node.att.graphicSizey);
 			if (graphicSizey.isNotNull()) spr.setGraphicSize(0, graphicSizey);
 		}
+		if (node.has.flipX) spr.flipX = node.att.flipX == "true";
+		if (node.has.flipY) spr.flipY = node.att.flipY == "true";
 		if (node.has.updateHitbox && node.att.updateHitbox == "true") spr.updateHitbox();
 
 		if (node.has.zoomfactor)
@@ -160,20 +167,17 @@ class XMLUtil {
 		if(node.hasNode.anim) {
 			for(anim in node.nodes.anim)
 				addXMLAnimation(spr, anim);
-		} else {
-			if (spr.frames != null && spr.frames.frames != null) {
-				addAnimToSprite(spr, {
-					name: "idle",
-					anim: null,
-					fps: 24,
-					loop: spr.spriteAnimType == LOOP,
-					animType: spr.spriteAnimType,
-					x: 0,
-					y: 0,
-					indices: [for(i in 0...spr.frames.frames.length) i],
-					forced: (node.has.forced && node.att.forced == "true") || (!node.has.forced && spr.spriteAnimType == BEAT)
-				});
-			}
+		} else if (spr.frames != null && spr.frames.frames != null) {
+			addAnimToSprite(spr, {
+				name: "idle",
+				anim: null,
+				fps: 24,
+				loop: spr.spriteAnimType == LOOP,
+				animType: spr.spriteAnimType,
+				x: 0,
+				y: 0,
+				indices: [for(i in 0...spr.frames.frames.length) i]
+			});
 		}
 
 		return spr;
@@ -182,10 +186,10 @@ class XMLUtil {
 	/**
 	 * Creates a new sprite based on a XML node.
 	 */
-	public static inline function createSpriteFromXML(node:Access, parentFolder:String = "", defaultAnimType:XMLAnimType = BEAT, ?cl:Class<FunkinSprite>, ?args:Array<Dynamic>):FunkinSprite {
+	public static inline function createSpriteFromXML(node:Access, parentFolder:String = "", defaultAnimType:XMLAnimType = BEAT, ?cl:Class<FunkinSprite>, ?args:Array<Dynamic>, loadGraphic:Bool = true):FunkinSprite {
 		if(cl == null) cl = FunkinSprite;
 		if(args == null) args = [];
-		return loadSpriteFromXML(Type.createInstance(cl, args), node, parentFolder, defaultAnimType);
+		return loadSpriteFromXML(Type.createInstance(cl, args), node, parentFolder, defaultAnimType, loadGraphic);
 	}
 
 	public static function extractAnimFromXML(anim:Access, animType:XMLAnimType = NONE, loop:Bool = false):AnimData {
@@ -197,8 +201,7 @@ class XMLUtil {
 			animType: animType,
 			x: 0,
 			y: 0,
-			indices: [],
-			forced: false,
+			indices: []
 		};
 
 		if (anim.has.name) animData.name = anim.att.name;
@@ -209,14 +212,7 @@ class XMLUtil {
 		if (anim.has.y) animData.y = Std.parseFloat(anim.att.y).getDefault(animData.y);
 		if (anim.has.loop) animData.loop = anim.att.loop == "true";
 		if (anim.has.forced) animData.forced = anim.att.forced == "true";
-		if (anim.has.indices) {
-			var indicesSplit = anim.att.indices.split(",");
-			for(indice in indicesSplit) {
-				var i = Std.parseInt(indice.trim());
-				if (i != null)
-					animData.indices.push(i);
-			}
-		}
+		if (anim.has.indices) animData.indices = CoolUtil.parseNumberRange(anim.att.indices);
 
 		return animData;
 	}
@@ -243,16 +239,17 @@ class XMLUtil {
 				if(animData.anim == null)
 					return MISSING_PROPERTY;
 
-				if (animData.indices.length > 0)
+				if (animData.indices != null && animData.indices.length > 0)
 					animateAnim.addBySymbolIndices(animData.name, animData.anim, animData.indices, animData.fps, animData.loop);
 				else
 					animateAnim.addBySymbol(animData.name, animData.anim, animData.fps, animData.loop);
 			} else {
-				if (animData.anim == null && animData.indices.length > 0)
-					sprite.animation.add(animData.name, animData.indices, animData.fps, animData.loop);
-				else if (animData.indices.length > 0)
-					sprite.animation.addByIndices(animData.name, animData.anim, animData.indices, "", animData.fps, animData.loop);
-				else
+				if (animData.indices != null && animData.indices.length > 0) {
+					if (animData.anim == null)
+						sprite.animation.add(animData.name, animData.indices, animData.fps, animData.loop);
+					else
+						sprite.animation.addByIndices(animData.name, animData.anim, animData.indices, "", animData.fps, animData.loop);
+				} else
 					sprite.animation.addByPrefix(animData.name, animData.anim, animData.fps, animData.loop);
 			}
 
@@ -261,23 +258,27 @@ class XMLUtil {
 
 			if (sprite is FunkinSprite) {
 				var xmlSpr = cast(sprite, FunkinSprite);
+				var name = animData.name;
 				switch(animData.animType) {
 					case BEAT:
 						xmlSpr.beatAnims.push({
-							name: animData.name,
-							forced: animData.forced.getDefault(false)
+							name: name,
+							forced: animData.forced.getDefault(defaultForcedCheck(name, xmlSpr))
 						});
 					case LOOP:
-						xmlSpr.animation.play(animData.name, animData.forced.getDefault(false));
+						xmlSpr.animation.play(name, animData.forced.getDefault(defaultForcedCheck(name, xmlSpr)));
 					default:
 						// nothing
 				}
-				xmlSpr.animDatas.set(animData.name, animData);
+				xmlSpr.animDatas.set(name, animData);
 			}
 			return OK;
 		}
 		return MISSING_PROPERTY;
 	}
+
+	public static inline function defaultForcedCheck(animName:String, sprite:FunkinSprite):Bool
+		return sprite is Character && (animName.startsWith("idle") || animName.startsWith("danceLeft") || animName.startsWith("danceRight")) ? false : sprite.spriteAnimType == BEAT;
 
 	public static inline function fixXMLText(text:String) {
 		var v:String;
@@ -328,6 +329,51 @@ class XMLUtil {
 
 		return parsedSegments;
 	}
+}
+
+class XMLImportedScriptInfo {
+	public var path:String;
+	public var shortLived:Bool = false;
+	public var loadBefore:Bool = true;
+	public var importStageSprites:Bool = false;  // maybe will change later??  - Nex
+	public var parentScriptPack:ScriptPack = null;
+
+	public function new(path:String, parentScriptPack:ScriptPack) {
+		this.parentScriptPack = parentScriptPack;
+		this.path = path;
+	}
+
+	public function getScript():Script
+		return parentScriptPack == null ? null : parentScriptPack.getByPath(path);
+
+	public static function prepareInfos(node:Access, parentScriptPack:ScriptPack, ?onScriptPreLoad:XMLImportedScriptInfo->Void):XMLImportedScriptInfo {
+		if (!node.has.script || parentScriptPack == null) return null;
+
+		var folder = node.getAtt("folder").getDefault("data/scripts/");
+		if (!folder.endsWith("/")) folder += "/";
+
+		var path = Paths.script(folder + node.getAtt("script"));
+		var daScript = Script.create(path);
+		if (daScript is DummyScript) {
+			Logs.trace('Script Extension at ${path} does not exist.', ERROR);
+			return null;
+		}
+
+		var infos = new XMLImportedScriptInfo(daScript.path, parentScriptPack);
+		infos.shortLived = node.getAtt("isShortLived") == "true" || node.getAtt("shortLived") == "true";
+		infos.importStageSprites = node.getAtt("importStageSprites") == "true";
+		@:privateAccess infos.loadBefore = shouldLoadBefore(node);
+
+		if (onScriptPreLoad != null) onScriptPreLoad(infos);
+		parentScriptPack.add(daScript);
+		daScript.set("scriptInfo", infos);
+		daScript.load();
+
+		return infos;
+	}
+
+	@:dox(hide) public static inline function shouldLoadBefore(node:Access):Bool
+		return node.getAtt("loadBefore") != "false";
 }
 
 typedef AnimData = {

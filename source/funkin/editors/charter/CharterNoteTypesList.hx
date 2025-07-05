@@ -13,6 +13,7 @@ class CharterNoteTypesList extends UISubstateWindow {
 	public override function create() {
 		FlxG.sound.music.pause();
 		Charter.instance.vocals.pause();
+		for (strumLine in Charter.instance.strumLines.members) strumLine.vocals.pause();
 
 		winTitle = 'Note Types List Editor';
 		winWidth = 380; winHeight = 390;

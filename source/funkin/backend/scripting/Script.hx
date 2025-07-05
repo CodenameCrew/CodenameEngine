@@ -284,7 +284,7 @@ class Script extends FlxBasic implements IFlxDestroyable {
 	public function get(variable:String):Dynamic {return null;}
 
 	/**
-	 * Gets the variable `variable` from the script's variables.
+	 * Sets the variable `variable` from the script's variables.
 	 * @param variable Name of the variable.
 	 * @return Variable (or null if it doesn't exists)
 	 */

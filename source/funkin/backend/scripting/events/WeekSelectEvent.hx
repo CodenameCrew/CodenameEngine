@@ -1,6 +1,6 @@
 package funkin.backend.scripting.events;
 
-import funkin.menus.StoryMenuState.WeekData;
+import funkin.backend.week.WeekData;
 
 final class WeekSelectEvent extends CancellableEvent {
 	/**
