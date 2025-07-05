@@ -609,7 +609,7 @@ class Charter extends UIState {
 		// Just for now until i add event stacking -lunar
 		try {__relinkUndos();}
 		catch (e) {Logs.trace('Failed to relink undos: ${Std.string(e)}', ERROR);}
-		
+
 		__applyPlaytestInfo();
 	}
 
@@ -1282,8 +1282,11 @@ class Charter extends UIState {
 		for(id=>str in strumLines.members)
 			if (str != null) str.y = strumlineInfoBG.y;
 
+		strumlineAddButton.x = 0;
 		strumlineAddButton.y = strumlineInfoBG.y;
 		strumlineLockButton.y = strumlineInfoBG.y;
+
+		strumlineLockButton.text.visible = strumlineLockButton.button.selectable = strumlineLockButton.button.visible = (strumLines.members.length != 0) ? true : false;
 	}
 
 	var zoom(default, set):Float = 0;
@@ -1338,7 +1341,7 @@ class Charter extends UIState {
 		#if sys
 		CoolUtil.safeSaveFile(
 			'${Paths.getAssetsRoot()}/songs/${__song.toLowerCase()}/meta.json',
-			Json.stringify(PlayState.SONG.meta == null ? {} : PlayState.SONG.meta, null, "\t")
+			PlayState.SONG.meta == null ? null : Chart.makeMetaSaveable(PlayState.SONG.meta)
 		);
 		#else
 		_file_meta_saveas(_);
@@ -1346,7 +1349,7 @@ class Charter extends UIState {
 	}
 
 	function _file_meta_saveas(_) {
-		openSubState(new SaveSubstate(Json.stringify(PlayState.SONG.meta == null ? {} : PlayState.SONG.meta, null, "\t"), { // always pretty print meta
+		openSubState(new SaveSubstate(PlayState.SONG.meta == null ? null : Chart.makeMetaSaveable(PlayState.SONG.meta), { // always pretty print meta
 			defaultSaveFile: 'meta.json'
 		}));
 	}
@@ -1641,7 +1644,7 @@ class Charter extends UIState {
 		t.icon = (Options.charterLowDetailWaveforms = !Options.charterLowDetailWaveforms) ? 1 : 0;
 		for (shader in waveformHandler.waveShaders) shader.data.lowDetail.value = [Options.charterLowDetailWaveforms];
 	}
-	
+
 	inline function _snap_increasesnap(_) changequant(1);
 	inline function _snap_decreasesnap(_) changequant(-1);
 	inline function _snap_resetsnap(_) setquant(16);

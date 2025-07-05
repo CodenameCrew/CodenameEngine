@@ -91,7 +91,7 @@ class CharterMetaDataScreen extends UISubstateWindow {
 		coopAllowedCheckbox = new UICheckbox(opponentModeCheckbox.x + 150 + 26, opponentModeCheckbox.y, "Co-op Mode", metadata.coopAllowed);
 		add(coopAllowedCheckbox);
 
-		colorWheel = new UIColorwheel(iconTextBox.x, coopAllowedCheckbox.y, metadata.parsedColor);
+		colorWheel = new UIColorwheel(iconTextBox.x, coopAllowedCheckbox.y, metadata.color);
 		add(colorWheel);
 		addLabelOn(colorWheel, "Color");
 
@@ -158,8 +158,7 @@ class CharterMetaDataScreen extends UISubstateWindow {
 			needsVoices: needsVoicesCheckbox.checked,
 			displayName: displayNameTextBox.label.text,
 			icon: iconTextBox.label.text,
-			color: colorWheel.curColorString,
-			parsedColor: colorWheel.curColor,
+			color: colorWheel.curColor,
 			opponentModeAllowed: opponentModeCheckbox.checked,
 			coopAllowed: coopAllowedCheckbox.checked,
 			difficulties: [for (diff in difficulitesTextBox.label.text.split(",")) diff.trim()],

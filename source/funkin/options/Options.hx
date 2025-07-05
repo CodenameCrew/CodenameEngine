@@ -69,12 +69,16 @@ class Options
 	public static var charterAutoSavesSeperateFolder:Bool = false;
 
 	/**
-	 * PLAYER 1 CONTROLS
-	 */
+	* PLAYER 1 CONTROLS
+	*/
+	
+	// Notes
 	public static var P1_NOTE_LEFT:Array<FlxKey> = [A];
 	public static var P1_NOTE_DOWN:Array<FlxKey> = [S];
 	public static var P1_NOTE_UP:Array<FlxKey> = [W];
 	public static var P1_NOTE_RIGHT:Array<FlxKey> = [D];
+
+	// Menus
 	public static var P1_LEFT:Array<FlxKey> = [A];
 	public static var P1_DOWN:Array<FlxKey> = [S];
 	public static var P1_UP:Array<FlxKey> = [W];
@@ -82,16 +86,25 @@ class Options
 	public static var P1_ACCEPT:Array<FlxKey> = [ENTER];
 	public static var P1_BACK:Array<FlxKey> = [BACKSPACE];
 	public static var P1_PAUSE:Array<FlxKey> = [ENTER];
+
+	// Misc
 	public static var P1_RESET:Array<FlxKey> = [R];
 	public static var P1_SWITCHMOD:Array<FlxKey> = [TAB];
+	
+	// Debugs
+	public static var P1_DEBUG_RELOAD:Array<FlxKey> = [F5];
 
 	/**
-	 * PLAYER 2 CONTROLS (ALT)
-	 */
+	* PLAYER 2 CONTROLS (ALT)
+	*/
+
+	// Notes
 	public static var P2_NOTE_LEFT:Array<FlxKey> = [LEFT];
 	public static var P2_NOTE_DOWN:Array<FlxKey> = [DOWN];
 	public static var P2_NOTE_UP:Array<FlxKey> = [UP];
 	public static var P2_NOTE_RIGHT:Array<FlxKey> = [RIGHT];
+
+	// Menus
 	public static var P2_LEFT:Array<FlxKey> = [LEFT];
 	public static var P2_DOWN:Array<FlxKey> = [DOWN];
 	public static var P2_UP:Array<FlxKey> = [UP];
@@ -99,16 +112,25 @@ class Options
 	public static var P2_ACCEPT:Array<FlxKey> = [SPACE];
 	public static var P2_BACK:Array<FlxKey> = [ESCAPE];
 	public static var P2_PAUSE:Array<FlxKey> = [ESCAPE];
+
+	// Misc
 	public static var P2_RESET:Array<FlxKey> = [];
 	public static var P2_SWITCHMOD:Array<FlxKey> = [];
+	
+	// Debugs
+	public static var P2_DEBUG_RELOAD:Array<FlxKey> = [];
 
 	/**
-	 * SOLO GETTERS
-	 */
+	* SOLO GETTERS
+	*/
+	
+	// Notes
 	public static var SOLO_NOTE_LEFT(get, null):Array<FlxKey>;
 	public static var SOLO_NOTE_DOWN(get, null):Array<FlxKey>;
 	public static var SOLO_NOTE_UP(get, null):Array<FlxKey>;
 	public static var SOLO_NOTE_RIGHT(get, null):Array<FlxKey>;
+
+	// Menus
 	public static var SOLO_LEFT(get, null):Array<FlxKey>;
 	public static var SOLO_DOWN(get, null):Array<FlxKey>;
 	public static var SOLO_UP(get, null):Array<FlxKey>;
@@ -116,8 +138,13 @@ class Options
 	public static var SOLO_ACCEPT(get, null):Array<FlxKey>;
 	public static var SOLO_BACK(get, null):Array<FlxKey>;
 	public static var SOLO_PAUSE(get, null):Array<FlxKey>;
+
+	// Misc
 	public static var SOLO_RESET(get, null):Array<FlxKey>;
 	public static var SOLO_SWITCHMOD(get, null):Array<FlxKey>;
+
+	// Debugs
+	public static var SOLO_DEBUG_RELOAD(get, null):Array<FlxKey>;
 
 	public static function load() {
 		if (__save == null) __save = new FlxSave();
