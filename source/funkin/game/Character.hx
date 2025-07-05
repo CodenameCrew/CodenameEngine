@@ -167,13 +167,14 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	}
 
 	/**
-	 * Whenever the character should dance on beat or not. Set to false for `gf`, since the dance animation is automatically handled by PlayState.
+	 * Whenever the character should dance on beat or not.
 	 */
 	public var danceOnBeat:Bool = true;
 	public override function beatHit(curBeat:Int) {
 		scripts.call("beatHit", [curBeat]);
 
-		if (danceOnBeat && (curBeat + beatOffset) % beatInterval == 0 && !__lockAnimThisFrame)
+		if (Conductor.curBeat != curBeat || (skipNegativeBeats && curBeat < 0)) return;
+		if (danceOnBeat && (curBeat + beatOffset - Conductor.lastBeatChange) % (beatInterval * CoolUtil.maxInt(Math.floor(4 / Conductor.stepsPerBeat), 1)) == 0 && !__lockAnimThisFrame)
 			tryDance();
 	}
 

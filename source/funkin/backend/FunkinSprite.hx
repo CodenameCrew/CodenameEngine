@@ -15,6 +15,7 @@ import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.backend.system.interfaces.IBeatReceiver;
+import funkin.backend.system.Conductor;
 
 enum abstract XMLAnimType(Int)
 {
@@ -140,9 +141,9 @@ class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements I
 	private var countedBeat = 0;
 	public function beatHit(curBeat:Int)
 	{
-		if (beatAnims.length > 0 && (curBeat + beatOffset) % beatInterval == 0)
+		if (Conductor.curBeat != curBeat || (skipNegativeBeats && curBeat < 0)) return;
+		if (beatAnims.length > 0 && (curBeat + beatOffset - Conductor.lastBeatChange) % (beatInterval * CoolUtil.maxInt(Math.floor(4 / Conductor.stepsPerBeat), 1)) == 0)
 		{
-			if(skipNegativeBeats && curBeat < 0) return;
 			// TODO: find a solution without countedBeat
 			var anim = beatAnims[FlxMath.wrap(countedBeat++, 0, beatAnims.length - 1)];
 			if (anim.name != null && anim.name != "null" && anim.name != "none")
