@@ -91,6 +91,15 @@ class KeybindsOptions extends MusicBeatSubstate {
 					control: 'SWITCHMOD'
 				},
 			]
+		},
+		{
+			name: 'DEBUG',
+			settings: [
+				{
+					name: 'Reload',
+					control: 'DEBUG_RELOAD'
+				},
+			]
 		}
 	];
 

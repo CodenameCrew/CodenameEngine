@@ -32,7 +32,7 @@ class Stage extends FlxBasic implements IBeatReceiver {
 		for (k=>e in stageSprites) script.set(k, e);
 
 	public function prepareInfos(node:Access)
-		return XMLImportedScriptInfo.prepareInfos(node, PlayState.instance.scripts, (infos) -> xmlImportedScripts.push(infos));
+		return XMLImportedScriptInfo.prepareInfos(node, PlayState.instance != null ? PlayState.instance.scripts : null, (infos) -> xmlImportedScripts.push(infos));
 
 	public function new(stage:String, ?state:FlxState) {
 		super();
@@ -93,16 +93,27 @@ class Stage extends FlxBasic implements IBeatReceiver {
 					case "box" | "solid":
 						if (!node.has.name || !node.has.width || !node.has.height) continue;
 
-						var spr = new FlxSprite(
+						var spr = new FunkinSprite(
 							(node.has.x) ? Std.parseFloat(node.att.x).getDefault(0) : 0,
 							(node.has.y) ? Std.parseFloat(node.att.y).getDefault(0) : 0
 						);
 
-						(node.name == "solid" ? spr.makeSolid : spr.makeGraphic)(
+						// just to make sure, its better to apply these before it gets inside of xmlUtil (because of mainly updateHitbox i guess), so im removing them before it gets passed  - Nex
+						var toRemove = ["x", "y", "width", "height", "color"];
+						var isSolid = node.name == "solid";
+
+						(isSolid ? spr.makeSolid : spr.makeGraphic)(
 							Std.parseInt(node.att.width),
 							Std.parseInt(node.att.height),
 							(node.has.color) ? CoolUtil.getColorFromDynamic(node.att.color) : -1
 						);
+
+						if (isSolid) toRemove.push("updateHitbox");  // makesolid already calls updateHitbox  - Nex
+						for (a in toRemove) node.x.remove(a);
+						XMLUtil.loadSpriteFromXML(spr, node, "", NONE, false);
+
+						if (!node.has.zoomfactor && PlayState.instance != null)
+							spr.initialZoom = PlayState.instance.defaultCamZoom;
 
 						stageSprites.set(node.getAtt("name"), spr);
 						state.add(spr);

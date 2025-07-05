@@ -274,13 +274,13 @@ class Paths
 		}
 		return content;
 	}
-	static public function getFolderContent(key:String, addPath:Bool = false, source:AssetsLibraryList.AssetSource = BOTH):Array<String> {
+	static public function getFolderContent(key:String, addPath:Bool = false, source:AssetsLibraryList.AssetSource = BOTH, noExtension:Bool = false):Array<String> {
 		// designed to work both on windows and web
 		if (!key.endsWith("/")) key += "/";
 		var content = assetsTree.getFiles('assets/$key', source);
-		if (addPath) {
-			for(k=>e in content)
-				content[k] = '$key$e';
+		for (k => e in content) {
+			if (noExtension) e = Path.withoutExtension(e);
+			content[k] = addPath ? '$key$e' : e;
 		}
 		return content;
 		/*

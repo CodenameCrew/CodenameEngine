@@ -1,7 +1,7 @@
 var tankAngle:Float = FlxG.random.int(-90, 45);
 var tankSpeed:Float = FlxG.random.float(5, 7);
 
-function postCreate() if(PlayState.isStoryMode)
+function postCreate() if (PlayState.isStoryMode)
 	GameOverSubstate.script = 'data/scripts/week7-balledLines';
 
 function update(elapsed:Float) {
@@ -12,7 +12,7 @@ function update(elapsed:Float) {
 }
 
 function onPostCountdown(event) {
-	if(!playCutscenes || event.sprite == null) return;
+	if (!playCutscenes || event.sprite == null) return;
 	var lastIndex:Int = members.indexOf(event.sprite);
 	remove(event.sprite);
 	insert(lastIndex + 4, event.sprite);
