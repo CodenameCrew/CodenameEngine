@@ -280,7 +280,6 @@ class Paths
 		var content = assetsTree.getFiles('assets/$key', source);
 		for (k => e in content) {
 			if (noExtension) e = Path.withoutExtension(e);
-
 			content[k] = addPath ? '$key$e' : e;
 		}
 		return content;
