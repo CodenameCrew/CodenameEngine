@@ -200,6 +200,9 @@ class Paths
 		return tempFramesCache[key] = loadFrames(assetsPath ? key : Paths.image(key, library, true));
 	}
 
+	inline static public function svg(key:String, ?library:String)
+		return Assets.getText(image(key, library, false, "svg"));
+
 	/**
 	 * Checks if the images needed for using getFrames() exist.
 	 * @param key Path to the image
