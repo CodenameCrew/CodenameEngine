@@ -90,9 +90,9 @@ class Options
 	// Misc
 	public static var P1_RESET:Array<FlxKey> = [R];
 	public static var P1_SWITCHMOD:Array<FlxKey> = [TAB];
-	public static var P1_VOLUME_UP:Array<FlxKey> = [PLUS];
-	public static var P1_VOLUME_DOWN:Array<FlxKey> = [MINUS];
-	public static var P1_VOLUME_MUTE:Array<FlxKey> = [ZERO];
+	public static var P1_VOLUME_UP:Array<FlxKey> = [];
+	public static var P1_VOLUME_DOWN:Array<FlxKey> = [];
+	public static var P1_VOLUME_MUTE:Array<FlxKey> = [];
 
 	// Debugs
 	public static var P1_DEBUG_RELOAD:Array<FlxKey> = [F5];
