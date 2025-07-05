@@ -71,7 +71,7 @@ class Options
 	/**
 	* PLAYER 1 CONTROLS
 	*/
-	
+
 	// Notes
 	public static var P1_NOTE_LEFT:Array<FlxKey> = [A];
 	public static var P1_NOTE_DOWN:Array<FlxKey> = [S];
