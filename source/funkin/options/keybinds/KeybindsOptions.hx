@@ -205,10 +205,8 @@ class KeybindsOptions extends MusicBeatSubstate {
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
 
-
-		if (isSubState) {
-			bg.alpha = lerp(bg.alpha, 0.1, 0.125);
-		} else {
+		if (isSubState) bg.alpha = lerp(bg.alpha, 0.1, 0.125);
+		else {
 			if (curSelected < 4) {
 				if (coloredBG.alpha == 0)
 					coloredBG.color = noteColors[curSelected];
@@ -224,11 +222,11 @@ class KeybindsOptions extends MusicBeatSubstate {
 			changeSelection((controls.UP_P ? -1 : 0) + (controls.DOWN_P ? 1 : 0));
 
 			if (controls.BACK) {
-				MusicBeatState.skipTransIn = true;
-				if (isSubState)
-					close();
-				else
+				if (isSubState) close();
+				else {
+					MusicBeatState.skipTransIn = true;
 					FlxG.switchState(new OptionsMenu());
+				}
 				Options.applyKeybinds();
 				Options.save();
 				return;

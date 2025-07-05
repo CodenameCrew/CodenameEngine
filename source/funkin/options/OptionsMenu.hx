@@ -53,17 +53,11 @@ class OptionsMenu extends TreeMenu {
 			if (o.substate != null) {
 				persistentUpdate = false;
 				persistentDraw = true;
-				if (o.substate is MusicBeatSubstate) {
-					openSubState(o.substate);
-				} else {
-					openSubState(Type.createInstance(o.substate, []));
-				}
+				if (o.substate is MusicBeatSubstate) openSubState(o.substate);
+				else openSubState(Type.createInstance(o.substate, []));
 			} else {
-				if (o.state is OptionsScreen) {
-					optionsTree.add(o.state);
-				} else {
-					optionsTree.add(Type.createInstance(o.state, []));
-				}
+				if (o.state is OptionsScreen) optionsTree.add(o.state);
+				else optionsTree.add(Type.createInstance(o.state, []));
 			}
 		})]);
 
