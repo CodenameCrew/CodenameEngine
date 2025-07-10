@@ -769,24 +769,9 @@ class FlxSound extends FlxBasic {
 	function onFocusLost() if (_alreadyPaused == null && !(_alreadyPaused = _paused)) pause();
 	#end
 
-	#if (flixel > "5.6.2")
-	@:deprecated("sound.group = myGroup is deprecated, use myGroup.add(sound)") // 5.7.0
-	#end
 	function set_group(value:FlxSoundGroup):FlxSoundGroup {
-		#if (flixel > "5.6.2")
 		if (value != null) value.add(this);
 		else group.remove(this);
-		#else
-		if (group != value) {
-			var oldGroup = group;
-			group = value; // New group must be set before removing sound to prevent infinite recursion
-
-			if (oldGroup != null) oldGroup.remove(this);
-			if (group != null) group.add(this);
-
-			updateTransform();
-		}
-		#end
 		return group;
 	}
 
