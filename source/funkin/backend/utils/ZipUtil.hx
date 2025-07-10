@@ -129,9 +129,7 @@ class ZipUtil {
 		@param path Folder path
 		@param prefix (Additional) allows you to set a prefix in the zip itself.
 	**/
-	public static function writeFolderToZip(zip:ZipWriter, path:String, ?prefix:String, ?prog:ZipProgress, ?whitelist:Array<String>):ZipProgress {
-		if (prefix == null) prefix = "";
-		if (whitelist == null) whitelist = [];
+	public static function writeFolderToZip(zip:ZipWriter, path:String, ?prefix:String = "", ?prog:ZipProgress, ?list:Array<String> = [], ?useWhitelist:Bool = true):ZipProgress {
 		if (prog == null) prog = new ZipProgress();
 
 		try {
@@ -152,7 +150,9 @@ class ZipUtil {
 				var zipPath = destPath.join("/");
 				for(e in FileSystem.readDirectory(path)) {
 					// whoever made this && instead of || pls die.. k thanks!! -LJ
-					if (bannedNames.contains(e.toLowerCase()) || !whitelist.contains(e.toLowerCase())) continue;
+					if (bannedNames.contains(e.toLowerCase())) continue;
+					// now you can switch to using blacklist or whitelisting specific files to zip.
+					if ((useWhitelist && list.length > 0) && list.contains(e.toLowerCase()) continue;
 					if (FileSystem.isDirectory('$path/$e')) {
 						// is directory, so loop into that function again
 						for(p in [curPath, destPath]) p.push(e);
