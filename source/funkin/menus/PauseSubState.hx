@@ -61,7 +61,7 @@ class PauseSubState extends MusicBeatSubstate
 
 		menuItems = event.options;
 
-		pauseMusic = FlxG.sound.load(Paths.music(event.music), 0, true);
+		pauseMusic = FlxG.sound.load(Assets.getMusic(Paths.music(event.music)), 0, true);
 		pauseMusic.persist = false;
 		pauseMusic.group = FlxG.sound.defaultMusicGroup;
 		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));

@@ -160,11 +160,11 @@ class Conductor
 
 	private static function __updateSongPos(elapsed:Float) {
 		if (FlxG.sound.music == null || !FlxG.sound.music.playing) {
-			lastSongPos = FlxG.sound.music != null ? FlxG.sound.music.time - songOffset : -songOffset;
+			lastSongPos = FlxG.sound.music != null ? FlxG.sound.music.getActualTime() - songOffset : -songOffset;
 			return;
 		}
 
-		if (lastSongPos != (lastSongPos = FlxG.sound.music.time - songOffset)) {
+		if (lastSongPos != (lastSongPos = FlxG.sound.music.getActualTime() - songOffset)) {
 			// update conductor
 			songPosition = lastSongPos;
 		} else {

@@ -767,10 +767,12 @@ class CoolUtil
 	 * @param music Music
 	 */
 	public static inline function setMusic(frontEnd:SoundFrontEnd, music:FlxSound) {
-		if (frontEnd.music != null)
-			@:privateAccess frontEnd.destroySound(frontEnd.music);
+		if (frontEnd.music == music) return;
+
+		if (frontEnd.music != null) @:privateAccess frontEnd.destroySound(frontEnd.music);
 		frontEnd.list.remove(music);
-		frontEnd.music = music;
+		frontEnd.defaultMusicGroup.add(frontEnd.music = music);
+		music.persist = true;
 	}
 
 	@:noUsing public static inline function flxeaseFromString(mainEase:String, suffix:String)

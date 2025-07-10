@@ -1,10 +1,15 @@
 package openfl.media;
 
 #if !flash
+import haxe.Int64;
+
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 #if lime
 import lime.media.AudioSource;
+
+#if lime_cffi import lime._internal.backend.native.NativeAudioSource; #end
+#if lime_vorbis import lime.media.openal.AL; #end
 #end
 
 /**
@@ -16,11 +21,19 @@ import lime.media.AudioSource;
 	object to the channel.
 
 	@event soundComplete Dispatched when a sound has finished playing.
+
+	@see [Playing sounds](https://books.openfl.org/openfl-developers-guide/working-with-sound/playing-sounds.html)
+	@see `openfl.media.Sound`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+#if (lime && lime_cffi)
+@:access(lime._internal.backend.native.NativeAudioSource)
+@:access(lime.media.AudioSource)
+#end
+@:access(openfl.media.Sound)
 @:access(openfl.media.SoundMixer)
 @:final @:keep class SoundChannel extends EventDispatcher
 {
@@ -28,7 +41,13 @@ import lime.media.AudioSource;
 		The current amplitude(volume) of the left channel, from 0(silent) to 1
 		(full amplitude).
 	**/
-	public var leftPeak(default, null):Float;
+	public var leftPeak(get, null):Float;
+	
+	/**
+		The current amplitude(volume) of the right channel, from 0(silent) to 1
+		(full amplitude).
+	**/
+	public var rightPeak(get, null):Float;
 
 	/**
 		When the sound is playing, the `position` property indicates in
@@ -46,25 +65,29 @@ import lime.media.AudioSource;
 	public var position(get, set):Float;
 
 	/**
-		The current amplitude(volume) of the right channel, from 0(silent) to 1
-		(full amplitude).
-	**/
-	public var rightPeak(default, null):Float;
-
-	/**
 		The SoundTransform object assigned to the sound channel. A SoundTransform
 		object includes properties for setting volume, panning, left speaker
 		assignment, and right speaker assignment.
 	**/
 	public var soundTransform(get, set):SoundTransform;
 
+	/**
+		self explanatory
+	*/
+	public var loopTime(get, set):Float;
+	public var endTime(get, set):Null<Float>;
 	public var pitch(get, set):Float;
+	public var loops(get, set):Int;
 
+	@:noCompletion private var __sound:Sound;
 	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __soundTransform:SoundTransform;
+	@:noCompletion private var __lastPeakTime:Float;
+	@:noCompletion private var __leftPeak:Float;
+	@:noCompletion private var __rightPeak:Float;
 	#if lime
 	@:noCompletion private var __source:AudioSource;
-	@:noCompletion private var __audioSource(get, set):AudioSource;
+	@:noCompletion private var __audioSource(get, set):AudioSource; // forward??? compatibility??
 	#end
 
 	#if openfljs
@@ -87,28 +110,10 @@ import lime.media.AudioSource;
 	{
 		super(this);
 
-		leftPeak = 1;
-		rightPeak = 1;
+		if (soundTransform != null) __soundTransform = soundTransform;
+		else __soundTransform = new SoundTransform();
 
-		if (soundTransform != null)
-		{
-			__soundTransform = soundTransform;
-		}
-		else
-		{
-			__soundTransform = new SoundTransform();
-		}
-
-		#if lime
-		if (source != null)
-		{
-			__source = source;
-			__source.onComplete.add(source_onComplete);
-			__isValid = true;
-
-			__source.play();
-		}
-		#end
+		__initAudioSource(source);
 
 		SoundMixer.__registerSoundChannel(this);
 	}
@@ -134,6 +139,7 @@ import lime.media.AudioSource;
 
 		#if lime
 		__source.onComplete.remove(source_onComplete);
+		__source.onLoop.remove(source_onLoop);
 		__source.dispose();
 		__source = null;
 		#end
@@ -143,6 +149,105 @@ import lime.media.AudioSource;
 	@:noCompletion private function __updateTransform():Void
 	{
 		this.soundTransform = soundTransform;
+	}
+
+	// hi i made these - raltyro
+	// took me 8 months to figure this out
+	@:noCompletion inline private static var scanSamples = 480;
+
+	#if (lime_cffi && !macro)
+	@:noCompletion private function __checkUpdatePeaks(time:Float):Bool
+	{
+		if (Math.abs(__lastPeakTime - time) < Math.max(1, pitch * 8)) return false;
+		__lastPeakTime = time;
+		return true;
+	}
+
+	#if lime_vorbis
+	@:noCompletion private function __updateVorbisPeaks():Void
+	{
+		if (__source.buffer == null || !__checkUpdatePeaks(position)) return;
+
+		var index = AL.getSourcei(__source.__backend.handle, AL.SAMPLE_OFFSET), bufferDatas = __source.__backend.bufferDatas;
+		var bufferi = NativeAudioSource.STREAM_NUM_BUFFERS - __source.__backend.queuedBuffers, bytes = bufferDatas[bufferi].buffer;
+
+		var channels = __source.buffer.channels, todo = scanSamples, sample;
+		var lfilled = false, rfilled = channels < 2;
+
+		while(todo > 0 && (!lfilled || !rfilled)) {
+			if (index >= NativeAudioSource.STREAM_BUFFER_SIZE) {
+				if ((bytes = bufferDatas[++bufferi].buffer) == null) break;
+				index = 0;
+			}
+
+			if (!lfilled) {
+				if ((sample = bytes.getUInt16(index * channels * 2) / 65535) > .5) sample = -(sample - 1);
+				if (sample > __leftPeak) lfilled = (__leftPeak = sample) >= 1;
+			}
+
+			if (!rfilled) {
+				if ((sample = bytes.getUInt16(index * channels * 2 + 2) / 65535) > .5) sample = -(sample - 1);
+				if (sample > __rightPeak) rfilled = (__rightPeak = sample) >= 1;
+			}
+
+			index++;
+			todo--;
+		}
+	}
+	#end
+	#end
+
+	@:noCompletion private function __updatePeaks():Void
+	{
+		__leftPeak = __rightPeak = 0;
+
+		#if (lime_cffi && !macro)
+		if (!__isValid) return;
+
+		#if lime_vorbis if (__source.__backend.stream) return __updateVorbisPeaks(); #end
+
+		var buffer = __source.buffer;
+		if (buffer == null || buffer.data == null || !__checkUpdatePeaks(position)) return;
+
+		var index = Int64.make(0, AL.getSourcei(__source.__backend.handle, AL.SAMPLE_OFFSET));
+		var bytes = buffer.data.buffer, length = __source.__backend.samples;
+		if (index >= length) return;
+
+		var temp = index + scanSamples;
+		if (temp < length) length = temp;
+
+		var channels = buffer.channels, sample;
+		var lfilled = false, rfilled = channels < 2;
+
+		while(index < length && (!lfilled || !rfilled)) {
+			if (!lfilled) {
+				if ((sample = bytes.getUInt16(Int64.toInt(index * (channels * 2))) / 65535) > .5) sample = -(sample - 1);
+				if (sample > __leftPeak) lfilled = (__leftPeak = sample) >= 1;
+			}
+			if (!rfilled) {
+				if ((sample = bytes.getUInt16(Int64.toInt(index * (channels * 2) + 2)) / 65535) > .5) sample = -(sample - 1);
+				if (sample > __rightPeak) rfilled = (__rightPeak = sample) >= 1;
+			}
+			index++;
+		}
+		#end
+	}
+
+	@:noCompletion private function __initAudioSource(source:#if lime AudioSource #else Dynamic #end):Void
+	{
+		#if lime
+		__source = source;
+		if (__source == null)
+		{
+			return;
+		}
+
+		__source.onComplete.add(source_onComplete);
+		__source.onLoop.add(source_onLoop);
+		__isValid = true;
+
+		__source.play();
+		#end
 	}
 
 	// Get & Set Methods
@@ -167,27 +272,6 @@ import lime.media.AudioSource;
 		return value;
 	}
 
-	@:noCompletion private function get_pitch():Float
-	{
-		if (!__isValid) return 1;
-
-		#if lime
-		return __source.pitch;
-		#else
-		return 1;
-		#end
-	}
-
-	@:noCompletion private function set_pitch(value:Float):Float
-	{
-		if (!__isValid) return 1;
-
-		#if lime
-		__source.pitch = value;
-		#end
-		return value;
-	}
-
 	@:noCompletion private function get_soundTransform():SoundTransform
 	{
 		return __soundTransform.clone();
@@ -203,7 +287,7 @@ import lime.media.AudioSource;
 			var pan = SoundMixer.__soundTransform.pan + __soundTransform.pan;
 
 			if (pan < -1) pan = -1;
-			else if (pan > 1) pan = 1;
+			if (pan > 1) pan = 1;
 
 			var volume = SoundMixer.__soundTransform.volume * __soundTransform.volume;
 
@@ -225,6 +309,107 @@ import lime.media.AudioSource;
 		return value;
 	}
 
+	@:noCompletion private function get_pitch():Float
+	{
+		if (!__isValid) return 1;
+
+		#if lime
+		return __source.pitch;
+		#else
+		return 0;
+		#end
+	}
+
+	@:noCompletion private function set_pitch(value:Float):Float
+	{
+		if (!__isValid) return 1;
+
+		#if lime
+		return __source.pitch = value;
+		#else
+		return 0;
+		#end
+	}
+
+	@:noCompletion private function get_loopTime():Float
+	{
+		if (!__isValid) return -1;
+
+		#if lime
+		return __source.loopTime;
+		#else
+		return -1;
+		#end
+	}
+
+	@:noCompletion private function set_loopTime(value:Float):Float
+	{
+		if (!__isValid) return -1;
+
+		#if lime
+		return __source.loopTime = value;
+		#else
+		return -1;
+		#end
+	}
+
+	@:noCompletion private function get_endTime():Null<Float>
+	{
+		if (!__isValid) return null;
+
+		#if lime
+		return __source.length;
+		#else
+		return null;
+		#end
+	}
+
+	@:noCompletion private function set_endTime(value:Null<Float>):Null<Float>
+	{
+		if (!__isValid) return null;
+
+		#if lime
+		return __source.length = value;
+		#else
+		return null;
+		#end
+	}
+
+	@:noCompletion private function get_loops():Int
+	{
+		if (!__isValid) return 0;
+
+		#if lime
+		return __source.loops;
+		#else
+		return 0;
+		#end
+	}
+
+	@:noCompletion private function set_loops(value:Int):Int
+	{
+		if (!__isValid) return 0;
+
+		#if lime
+		return __source.loops = value;
+		#else
+		return 0;
+		#end
+	}
+
+	@:noCompletion private function get_leftPeak():Float
+	{
+		__updatePeaks();
+		return __leftPeak * (soundTransform == null ? 1 : soundTransform.volume);
+	}
+
+	@:noCompletion private function get_rightPeak():Float
+	{
+		__updatePeaks();
+		return __rightPeak * (soundTransform == null ? 1 : soundTransform.volume);
+	}
+
+
 	// Event Handlers
 	@:noCompletion private function source_onComplete():Void
 	{
@@ -234,13 +419,13 @@ import lime.media.AudioSource;
 		dispatchEvent(new Event(Event.SOUND_COMPLETE));
 	}
 
-	function set___audioSource(value:AudioSource):AudioSource {
-		return __source = value;
+	@:noCompletion private function source_onLoop():Void
+	{
+		//dispatchEvent(new Event(Event.SOUND_LOOP));
 	}
 
-	function get___audioSource():AudioSource {
-		return __source;
-	}
+	@:noCompletion private function get___audioSource():AudioSource return __source;
+	@:noCompletion private function set___audioSource(source:AudioSource):AudioSource return __source = source;
 }
 #else
 typedef SoundChannel = flash.media.SoundChannel;
