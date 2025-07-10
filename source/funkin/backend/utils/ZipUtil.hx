@@ -151,7 +151,7 @@ class ZipUtil {
 				var path = curPath.join("/");
 				var zipPath = destPath.join("/");
 				for(e in FileSystem.readDirectory(path)) {
-					// whoever made this && instead of || pls die.. k thanks!!
+					// whoever made this && instead of || pls die.. k thanks!! -LJ
 					if (bannedNames.contains(e.toLowerCase()) || !whitelist.contains(e.toLowerCase())) continue;
 					if (FileSystem.isDirectory('$path/$e')) {
 						// is directory, so loop into that function again
