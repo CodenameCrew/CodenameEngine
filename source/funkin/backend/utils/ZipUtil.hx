@@ -50,6 +50,7 @@ class ZipUtil {
 
 			if (prog == null)
 				prog = new ZipProgress();
+
 			prog.fileCount = fields.length;
 			for(k=>field in fields) {
 				prog.curFile = k;
@@ -129,8 +130,12 @@ class ZipUtil {
 		@param path Folder path
 		@param prefix (Additional) allows you to set a prefix in the zip itself.
 	**/
-	public static function writeFolderToZip(zip:ZipWriter, path:String, ?prefix:String = "", ?prog:ZipProgress, ?list:Array<String> = [], ?useWhitelist:Bool = true):ZipProgress {
+	public static function writeFolderToZip(zip:ZipWriter, path:String, prefix:String = "", ?prog:ZipProgress, ?list:Array<String>, ?useWhitelist:Bool):ZipProgress {
+		if (list == null) list = [];
+		if (useWhitelist == null) useWhitelist = true;
 		if (prog == null) prog = new ZipProgress();
+
+		trace('whitelst: $useWhitelist | list: ${list}');
 
 		try {
 			var curPath:Array<String> = [path];
@@ -144,19 +149,19 @@ class ZipUtil {
 
 			var files:Array<StrNameLabel> = [];
 
-			var doFolder:Void->Void = null;
-			(doFolder = function() {
+			var doFolder:Int->Void = null;
+			(doFolder = function(depth:Int) { // adding depth search to check top folder
 				var path = curPath.join("/");
 				var zipPath = destPath.join("/");
 				for(e in FileSystem.readDirectory(path)) {
-					// whoever made this && instead of || pls die.. k thanks!! -LJ
+					
 					if (bannedNames.contains(e.toLowerCase())) continue;
-					// now you can switch to using blacklist or whitelisting specific files to zip.
-					if ((useWhitelist && list.length > 0) && list.contains(e.toLowerCase()) continue;
+					if (depth == 0 && list.contains(e.toLowerCase()) != useWhitelist) continue;
+
 					if (FileSystem.isDirectory('$path/$e')) {
 						// is directory, so loop into that function again
 						for(p in [curPath, destPath]) p.push(e);
-						doFolder();
+						doFolder(depth + 1);
 						for(p in [curPath, destPath]) p.pop();
 					} else {
 						// is file, put it in the list
@@ -165,7 +170,7 @@ class ZipUtil {
 						files.push(new StrNameLabel('$path/$e', zipPath));
 					}
 				}
-			})();
+			})(0);
 
 			prog.fileCount = files.length;
 			for(k=>file in files) {
@@ -193,10 +198,10 @@ class ZipUtil {
 		return prog;
 	}
 
-	public static function writeFolderToZipAsync(zip:ZipWriter, path:String, ?prefix:String):ZipProgress {
+	public static function writeFolderToZipAsync(zip:ZipWriter, path:String, ?prefix:String, ?list:Array<String>, ?useWhitelist:Bool = true):ZipProgress {
 		var zipProg = new ZipProgress();
 		Thread.create(function() {
-			writeFolderToZip(zip, path, prefix, zipProg);
+			writeFolderToZip(zip, path, prefix, zipProg, list, useWhitelist);
 		});
 		return zipProg;
 	}
