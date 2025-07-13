@@ -175,10 +175,13 @@ class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements I
 	{
 		super.doAdditionalMatrixStuff(matrix, camera);
 		matrix.translate(-camera.width / 2, -camera.height / 2);
+		matrix.translate(-camera.scroll.x * scrollFactor.x, -camera.scroll.y * scrollFactor.y);
 
 		var requestedZoom = FlxMath.lerp(1, camera.zoom, zoomFactor);
 		var diff = requestedZoom / camera.zoom;
 		matrix.scale(diff, diff);
+
+		matrix.translate(camera.scroll.x * scrollFactor.x, camera.scroll.y * scrollFactor.y);
 		matrix.translate(camera.width / 2, camera.height / 2);
 	}
 
