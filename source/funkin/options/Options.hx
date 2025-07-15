@@ -119,9 +119,9 @@ class Options
 	// Misc
 	public static var P2_RESET:Array<FlxKey> = [];
 	public static var P2_SWITCHMOD:Array<FlxKey> = [];
-	public static var P2_VOLUME_UP:Array<FlxKey> = [NUMPADPLUS];
-	public static var P2_VOLUME_DOWN:Array<FlxKey> = [NUMPADMINUS];
-	public static var P2_VOLUME_MUTE:Array<FlxKey> = [NUMPADZERO];
+	public static var P2_VOLUME_UP:Array<FlxKey> = [PLUS];
+	public static var P2_VOLUME_DOWN:Array<FlxKey> = [MINUS];
+	public static var P2_VOLUME_MUTE:Array<FlxKey> = [ZERO];
 
 	// Debugs
 	public static var P2_DEBUG_RELOAD:Array<FlxKey> = [];
