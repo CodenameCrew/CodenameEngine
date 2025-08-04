@@ -126,6 +126,8 @@ class MainState extends FlxState {
 		CoolUtil.safeAddAttributes('./.temp/', NativeAPI.FileAttribute.HIDDEN);
 		#end
 
+		var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
+
 		if (Options.devMode && Options.allowConfigWarning) {
 			var lib:ModsFolderLibrary;
 			for (e in Paths.assetsTree.libraries) if ((lib = cast AssetsLibraryList.getCleanLibrary(e)) is ModsFolderLibrary
@@ -133,12 +135,11 @@ class MainState extends FlxState {
 			{
 				if (lib.exists(Paths.ini("config/modpack"), lime.utils.AssetType.TEXT)) break;
 
-				FlxG.switchState(new ModConfigWarning(lib));
+				FlxG.switchState(new ModConfigWarning(lib, startState));
 				return;
 			}
 		}
 
-		if (!Flags.DISABLE_WARNING_SCREEN) FlxG.switchState(new funkin.menus.WarningState());
-		else FlxG.switchState(new TitleState());
+		FlxG.switchState(cast Type.createInstance(startState, []));
 	}
 }
