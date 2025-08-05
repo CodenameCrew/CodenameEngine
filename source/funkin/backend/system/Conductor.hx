@@ -4,6 +4,7 @@ import flixel.FlxState;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import funkin.backend.chart.ChartData;
 import funkin.backend.system.interfaces.IBeatReceiver;
+import funkin.backend.system.interfaces.IBeatCancellableReceiver;
 import funkin.editors.charter.Charter;
 
 enum BeatType {
@@ -371,8 +372,14 @@ final class Conductor
 	private static var __updateMeasure:Bool;
 
 	private static function update() {
-		if (FlxG.state != null && FlxG.state is MusicBeatState && cast(FlxG.state, MusicBeatState).cancelConductorUpdate) return;
-
+		if (FlxG.state == null) return;
+		else {
+			var state = FlxG.state;
+			while (state != null) {
+				if (state is IBeatCancellableReceiver && cast(FlxG.state, IBeatCancellableReceiver).cancelConductorUpdate) return;
+				state = state.subState;
+			}
+		}
 		__updateSongPos(FlxG.elapsed);
 
 		var oldStep = curStep, oldBeat = curBeat, oldMeasure = curMeasure, oldChangeIndex = curChangeIndex;

@@ -372,7 +372,7 @@ class NativeAudioSource {
 
 		if (playing) {
 			var timeRemaining = (getLength() - value) / getPitch();
-			if (timeRemaining < 8) complete();
+			if (timeRemaining < 8 && value > 8) complete();
 			else {
 				completed = streamEnded = false;
 				if (streamed) {

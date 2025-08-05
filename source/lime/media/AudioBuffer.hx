@@ -312,12 +312,29 @@ class AudioBuffer
 		if (vorbisFile == null) return null;
 
 		var info = vorbisFile.info();
+		if (info == null) return null;
 
 		var audioBuffer = new AudioBuffer();
 		audioBuffer.channels = info.channels;
 		audioBuffer.sampleRate = info.rate;
 		audioBuffer.bitsPerSample = 16;
-		audioBuffer.__srcVorbisFile = vorbisFile;
+
+		if (!vorbisFile.seekable() ||
+			vorbisFile.pcmTotal() < #if lime_cffi @:privateAccess lime._internal.backend.native.NativeAudioSource.STREAM_BUFFER_SAMPLES #else 0x4000 #end)
+		{
+			// convert it to static if its too short or unseekable.
+			vorbisFile.rawSeek(0);
+
+			var isBigEndian = lime.system.System.endianness == lime.system.Endian.BIG_ENDIAN;
+			var bytes:Bytes = Bytes.alloc(Std.int(haxe.Int64.toInt(vorbisFile.pcmTotal()) * info.channels * 2));
+			var total = 0, result = 0;
+			do {
+				total += (result = vorbisFile.read(bytes, total, 0x1000, isBigEndian, 2, true));
+			} while (result > 0);
+
+			audioBuffer.data = new UInt8Array(bytes);
+		}
+		else audioBuffer.__srcVorbisFile = vorbisFile;
 
 		return audioBuffer;
 	}

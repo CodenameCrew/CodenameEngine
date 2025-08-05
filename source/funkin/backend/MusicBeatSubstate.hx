@@ -9,16 +9,22 @@ import funkin.backend.scripting.events.*;
 import funkin.backend.system.Conductor;
 import funkin.backend.system.Controls;
 import funkin.backend.system.interfaces.IBeatReceiver;
+import funkin.backend.system.interfaces.IBeatCancellableReceiver;
 import funkin.options.PlayerSettings;
 
 /**
  * Base class for all the sub states.
  * Handles the scripts, the transitions, and the beat and step events.
 **/
-class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
+class MusicBeatSubstate extends FlxSubState implements IBeatCancellableReceiver
 {
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
+
+	/**
+	 * Whenever the Conductor auto update should be enabled or not.
+	 */
+	public var cancelConductorUpdate:Bool = false;
 
 	/**
 	 * Whether this specific substate can open custom transitions

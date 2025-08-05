@@ -87,6 +87,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		lossSFX = FlxG.sound.play(Paths.sound(lossSFXName));
 		Conductor.changeBPM(gameOverSongBPM);
+		cancelConductorUpdate = true;
 
 		DiscordUtil.call("onGameOver", []);
 		gameoverScript.call("postCreate");
@@ -106,22 +107,23 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (!isEnding && ((!lossSFX.playing) || (character.getAnimName() == "firstDeath" && character.isAnimFinished())) && (FlxG.sound.music == null || !FlxG.sound.music.playing))
 		{
+			var event = new CancellableEvent();
+			gameoverScript.call("deathStart", [event]);
+
+			if (event.cancelled) return;
+
 			CoolUtil.playMusic(Paths.music(gameOverSong), false, 1, true, Flags.DEFAULT_BPM);
-			beatHit(0);
+			character.playAnim("deathLoop", true, DANCE);
+			cancelConductorUpdate = false;
+
+			gameoverScript.call("postDeathStart");
 		}
 	}
 
 	override function beatHit(curBeat:Int)
 	{
 		super.beatHit(curBeat);
-
 		gameoverScript.call("beatHit", [curBeat]);
-
-		if (__cancelDefault)
-			return;
-
-		if (FlxG.sound.music != null && FlxG.sound.music.playing)
-			character.playAnim("deathLoop", true, DANCE);
 	}
 
 	override function stepHit(curStep:Int)
