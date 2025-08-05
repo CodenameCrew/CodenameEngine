@@ -7,6 +7,7 @@ import funkin.backend.chart.ChartData;
 import funkin.backend.chart.FNFLegacyParser.SwagSong;
 import funkin.backend.chart.PsychParser;
 import funkin.backend.chart.VSliceParser;
+import funkin.backend.utils.ZipUtil;
 import funkin.backend.utils.ZipUtil.ZipReader;
 import funkin.game.HealthIcon;
 import haxe.Json;
@@ -360,11 +361,11 @@ class SongCreationScreen extends UISubstateWindow {
 		{
 			try switch(engineDropdown.index)
 			{
-				case 0 /*"V-Slice Project (.fnfc)"*/:
+				case 2 /*"V-Slice Project (.fnfc)"*/:
 					var files:Map<String, Any> = [];
 					for (field in new ZipReader(new BytesInput(importChartFile.file)).read()) {
 						var fileName = field.fileName;
-						var fileContent = field.data;
+						var fileContent = ZipUtil.unzip(field);
 						files.set(fileName, fileContent);
 					}
 					saveFromVSlice(files);
@@ -405,8 +406,8 @@ class SongCreationScreen extends UISubstateWindow {
 						CoolUtil.safeSaveFile('$songFolder/charts/${songId}.json', Json.stringify(base, Flags.JSON_PRETTY_PRINT));
 						#end
 					});
-			} catch (e) {
-				openSubState(new UIWarningSubstate("Importing Song/Charts: Error!", Std.string(e), [
+			} catch (e:haxe.Exception) {
+				openSubState(new UIWarningSubstate("Importing Song/Charts: Error!", e.details(), [
 					{label: "Ok", color: 0xFFFF0000, onClick: function(t) {}}
 				]));
 			}
