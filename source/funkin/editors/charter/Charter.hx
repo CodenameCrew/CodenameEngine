@@ -633,22 +633,16 @@ class Charter extends UIState {
 
 		// create events
 		rightEventsGroup.autoSort = leftEventsGroup.autoSort = false;
-		var lastLeftEvents:CharterEvent = null, lastRightEvents:CharterEvent = null, lastEvents:CharterEvent;
-		var lastLeftTime = Math.NaN, lastRightTime = Math.NaN, lastTime:Float;
+		var lastLeftEvents:CharterEvent = null, lastRightEvents:CharterEvent = null;
+		var lastLeftTime = Math.NaN, lastRightTime = Math.NaN;
 		for (e in PlayState.SONG.events) if (e != null) {
 			if (e.global) {
-				lastEvents = lastRightEvents;
-				lastTime = lastRightTime;
+				if (lastRightEvents != null && lastRightTime == e.time) lastRightEvents.events.push(e);
+				else rightEventsGroup.add(lastRightEvents = new CharterEvent(Conductor.getStepForTime(lastRightTime = e.time), [e], e.global));
 			}
 			else {
-				lastEvents = lastLeftEvents;
-				lastTime = lastLeftTime;
-			}
-
-			if (lastEvents != null && lastTime == e.time) lastEvents.events.push(e);
-			else {
-				lastEvents = new CharterEvent(Conductor.getStepForTime(lastTime = e.time), [e], e.global);
-				(e.global ? rightEventsGroup : leftEventsGroup).add(lastEvents);
+				if (lastLeftEvents != null && lastLeftTime == e.time) lastLeftEvents.events.push(e);
+				else leftEventsGroup.add(lastLeftEvents = new CharterEvent(Conductor.getStepForTime(lastLeftTime = e.time), [e], e.global));
 			}
 		}
 

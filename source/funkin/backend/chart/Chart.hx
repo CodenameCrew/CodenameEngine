@@ -106,7 +106,7 @@ class Chart {
 			bpm: 100
 		};
 
-		data.setFieldDefault("name", songName);
+		data.name = songName;
 		data.setFieldDefault("bpm", Flags.DEFAULT_BPM);
 		data.setFieldDefault("beatsPerMeasure", Flags.DEFAULT_BEATS_PER_MEASURE);
 		data.setFieldDefault("stepsPerBeat", Flags.DEFAULT_STEPS_PER_BEAT);
