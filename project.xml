@@ -112,9 +112,6 @@
 	<!-- Comment this out to disable dark mode windows -->
 	<define name="DARK_MODE_WINDOW"/>
 
-	<!-- Comment this out to disable modcharting features -->
-	<define name="MODCHARTING_FEATURES"/>
-
 	<!-- Disable a optimization, to allow reflection to use more functions -->
 	<define name="FLX_NO_GENERIC" />
 
