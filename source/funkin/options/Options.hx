@@ -50,9 +50,6 @@ class Options
 	#if MODCHARTING_FEATURES
 	public static var modchartingHoldSubdivisions:Int = 4;
 	#end
-	#if MODCHARTING_FEATURES
-	public static var modchartHoldSubdivisions:Int = 4;
-	#end
 
 	public static var lastLoadedMod:String = null;
 

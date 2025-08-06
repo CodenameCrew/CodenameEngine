@@ -1,16 +1,16 @@
 package funkin.options.categories;
 
 #if MODCHARTING_FEATURES
-class ModchartingOptions extends OptionsScreen {
+class ModchartingOptions extends TreeMenuScreen {
 	public override function new() {
 		super("Modcharting Options", "Customize your modcharting experience.");
 		add(new NumOption(
 			"Hold Subdivisions",
-			"Softens the tail/hold/sustain of the arrows by subdividing it, giving them greater quality. By higher the subdivisions number is, performance will be affected.",
+			"Subdivides the arrow's hold/sustain tail for smoother visuals, higher values improve quality but can hurt performance",
 			1, // minimum
 			128, // maximum
 			1, // change
-			"modchartHoldSubdivisions" // save name
+			"modchartingHoldSubdivisions" // save name
 			)); // callback
 	}
 }

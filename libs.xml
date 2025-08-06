@@ -12,12 +12,12 @@
 		<git name="flixel" url="https://github.com/CodenameCrew/cne-flixel" />
 		<git name="flixel-addons" url="https://github.com/CodenameCrew/cne-flixel-addons" />
 
-	<!-- Other Libraries -->
-	<git name="hscript-improved" url="https://github.com/CodenameCrew/hscript-improved" ref="custom-classes" />
-	<git name="flxanimate" url="https://github.com/CodenameCrew/cne-flxanimate" />
-	<git name="hxdiscord_rpc" url="https://github.com/CodenameCrew/cne-hxdiscord_rpc" />
-	<lib name="hxvlc" version="1.9.3" skipDeps="true" />
-	<lib name="funkin-modchart" skipDeps="true" />
+		<!-- Other Libraries -->
+		<git name="hscript-improved" url="https://github.com/CodenameCrew/hscript-improved" ref="codename-dev" />
+		<git name="flxanimate" url="https://github.com/CodenameCrew/cne-flxanimate" />
+		<git name="hxdiscord_rpc" url="https://github.com/CodenameCrew/cne-hxdiscord_rpc" skipDeps="true" />
+		<lib name="funkin-modchart" skipDeps="true" />
+		<lib name="hxvlc" version="1.9.3" skipDeps="true" />
 
 		<!-- Documentation and other features -->
 		<git name="away3d" url="https://github.com/CodenameCrew/away3d" />

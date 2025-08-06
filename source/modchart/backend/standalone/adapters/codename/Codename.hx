@@ -1,41 +1,37 @@
-package modchart.standalone.adapters.codename;
+package modchart.backend.standalone.adapters.codename;
 
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import funkin.backend.system.Conductor;
 import funkin.game.Note;
 import funkin.game.PlayState;
+import funkin.game.Splash;
 import funkin.game.Strum;
 import funkin.options.Options;
-import modchart.standalone.IAdapter;
+import modchart.backend.standalone.IAdapter;
 
 class Codename implements IAdapter {
-	private var beatCrochet:Float = 0;
+	public function new() {}
 
 	public function onModchartingInitialization() {
-		beatCrochet = Conductor.crochet;
+		
 	}
 
-	public function isTapNote(sprite:FlxSprite) {
+	public function isTapNote(sprite:FlxSprite)
 		return sprite is Note;
-	}
 
 	// Song related
-	public function getSongPosition():Float {
+	public function getSongPosition():Float
 		return Conductor.songPosition;
-	}
 
-	public function getCurrentBeat():Float {
+	public function getCurrentBeat():Float
 		return Conductor.curBeatFloat;
-	}
 
-	public function getStaticCrochet():Float {
-		return beatCrochet;
-	}
+	public function getCurrentCrochet():Float
+		return Conductor.crochet;
 
-	public function getBeatFromStep(step:Float):Float {
-		return step * Conductor.stepsPerBeat;
-	}
+	public function getBeatFromStep(step:Float):Float
+		return Conductor.getTimeInBeats(Conductor.getStepsInTime(step, Conductor.curChangeIndex), Conductor.curChangeIndex);
 
 	public function arrowHit(arrow:FlxSprite) {
 		if (arrow is Note) {
@@ -60,6 +56,9 @@ class Codename implements IAdapter {
 		} else if (arrow is Strum) {
 			final strum:Strum = cast arrow;
 			return strum.ID;
+		} else if (arrow is Splash) {
+			final splash:Splash = cast arrow;
+			return splash.strumID;
 		}
 		return 0;
 	}
@@ -71,9 +70,17 @@ class Codename implements IAdapter {
 		} else if (arrow is Strum) {
 			final strum:Strum = cast arrow;
 			return strum.strumLine.ID;
+		} else if (arrow is Splash) {
+			final splash:Splash = cast arrow;
+			return splash.strum.strumLine.ID;
 		}
 
 		return 0;
+	}
+
+	public function getHoldLength(item:FlxSprite):Float {
+		final note:Note = cast item;
+		return note.sustainLength;
 	}
 
 	public function getHoldParentTime(arrow:FlxSprite) {
@@ -85,9 +92,7 @@ class Codename implements IAdapter {
 	public function getKeyCount(?player:Int = 0):Int {
 		return PlayState.instance != null
 			&& PlayState.instance.strumLines != null
-			&& PlayState.instance.strumLines.members != null
-			&& PlayState.instance.strumLines.members[player] != null
-			&& PlayState.instance.strumLines.members[player].members != null ? PlayState.instance.strumLines.members[player].members.length : 4;
+			&& PlayState.instance.strumLines.members[player] != null ? PlayState.instance.strumLines.members[player].members.length : 4;
 	}
 
 	public function getPlayerCount():Int {
@@ -103,31 +108,33 @@ class Codename implements IAdapter {
 		return 0;
 	}
 
-	public function getHoldSubdivisions():Int
-		return Options.modchartHoldSubdivisions;
+	public function getHoldSubdivisions(hold:FlxSprite):Int {
+		final val = Options.modchartingHoldSubdivisions;
+		return val < 1 ? 1 : val;
+	}
 
 	public function getDownscroll():Bool
-		return Options.downscroll;
+		return PlayState.instance.downscroll;
 
-	public function getDefaultReceptorX(lane:Int, player:Int):Float {
-		@:privateAccess
+	public function getDefaultReceptorX(lane:Int, player:Int):Float
 		return PlayState.instance.strumLines.members[player].members[lane].x;
-	}
 
-	public function getDefaultReceptorY(lane:Int, player:Int):Float {
-		@:privateAccess
+	public function getDefaultReceptorY(lane:Int, player:Int):Float
 		return PlayState.instance.strumLines.members[player].members[lane].y;
-	}
 
 	public function getArrowCamera():Array<FlxCamera>
 		return [PlayState.instance.camHUD];
 
-	public function getCurrentScrollSpeed():Float {
-		return PlayState.instance.scrollSpeed;
-	}
+	public function getCurrentScrollSpeed():Float
+		return PlayState.instance.scrollSpeed * .45;
 
+	// 0 receptors
+	// 1 tap arrows
+	// 2 hold arrows
+	// 3 receptor attachments
 	public function getArrowItems() {
-		var drawMembers:Array<Array<Array<FlxSprite>>> = [];
+		var pspr:Array<Array<Array<FlxSprite>>> = [];
+
 		var strumLineMembers = PlayState.instance.strumLines.members;
 
 		for (i in 0...strumLineMembers.length) {
@@ -136,28 +143,29 @@ class Codename implements IAdapter {
 			if (!sl.visible)
 				continue;
 
-			// setup list
-			drawMembers[i] = [
-				cast sl.members.copy(),
-				[],
-				[]
-			];
+			pspr[i] = [];
+			pspr[i][0] = cast sl.members.copy();
+			pspr[i][1] = [];
+			pspr[i][2] = [];
+			pspr[i][3] = [];
 
-			// preallocating first
 			var st = 0;
 			var nt = 0;
 			sl.notes.forEachAlive((spr) -> {
 				spr.isSustainNote ? st++ : nt++;
 			});
 
-			drawMembers[i][1].resize(nt);
-			drawMembers[i][2].resize(st);
+			pspr[i][1].resize(nt);
+			pspr[i][2].resize(st);
 
 			var si = 0;
 			var ni = 0;
-			sl.notes.forEachAlive((spr) -> drawMembers[i][spr.isSustainNote ? 2 : 1][spr.isSustainNote ? si++ : ni++] = spr);
+			sl.notes.forEachAlive((spr) -> pspr[i][spr.isSustainNote ? 2 : 1][spr.isSustainNote ? si++ : ni++] = spr);
 		}
 
-		return drawMembers;
+		for (grp in PlayState.instance.splashHandler.grpMap)
+			grp.forEachAlive((spr) -> if (spr.strum != null && spr.active) pspr[spr.strum.strumLine.ID][3].push(spr));
+
+		return pspr;
 	}
 }
