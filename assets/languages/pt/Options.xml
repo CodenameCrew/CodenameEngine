@@ -11,12 +11,12 @@
 		<str id="optionsTree.controls-desc">Mude os Controlos para Jogador 1 e Jogador 2!</str>
 
 		<str id="optionsTree.gameplay-name">Jogo</str>
-		<str id="optionsTree.gameplay-desc">Mude os opções como Downscroll, Velocidade das notas, Indecência...</str>
+		<str id="optionsTree.gameplay-desc">Mude os opções como "Downscroll", Velocidade das notas, Indecência...</str>
 		<str id="optionsTree.gameplay.advanced-desc">Mude as opções mais avançadas como Transmissão de áudio...</str>
 
 		<str id="optionsTree.appearance-name">Aparência</str>
 		<str id="optionsTree.appearance-desc">Mude os opções de aparência como Luzes intermitentes...</str>
-		<str id="optionsTree.appearance.advanced-desc">Mude as opções mais avançadas como Sprites apenas em VRAM, Antialiasing, Shaders</str>
+		<str id="optionsTree.appearance.advanced-desc">Mude as opções mais avançadas como Sprites apenas em VRAM, "Antialiasing", "Shaders"</str>
 
 		<str id="optionsTree.language-name">Idioma</str>
 		<str id="optionsTree.language-desc">Mude o idioma que o jogo usa.</str>
@@ -46,7 +46,7 @@
 
 		<str id="category.engine">Codename Engine</str>
 		<group name="engine" prefix="engine.">
-			<str id="switchMod">Mudar de Mod</str>
+			<str id="switchMod">Trocar Mod</str>
 		</group>
 
 		<str id="category.volume">Volume</str>
@@ -54,8 +54,8 @@
 
 		<str id="category.developer">Desenvolvedor</str>
 		<group name="developer" prefix="developer.">
-			<str id="devMenus">Menus de Desenvolvedor</str>
-			<str id="openConsole">Abrir Consola</str>
+			<str id="devMenus">Menus Dev.</str>
+			<str id="openConsole">Consola</str>
 			<str id="reloadState">Recarregar</str>
 		</group>
 	</group>
@@ -75,19 +75,19 @@
 
 		<group name="AppearanceOptionsAdvanced" prefix="Advanced.">
 			<str id="quality-name">Qualidade</str>
-			<str id="quality-desc">Modos de qualidade para escolher, "BAIXO" = Desativa todos os efeitos visuais pesados para um jogo mais suave, "ALTO" = Ativa todos os efeitos visuais, ao custo do desempenho, "PERSONALIZADO" = Permite opções especiais, disponíveis em "Advançado".</str>
-			<str id="quality-low">BAIXO</str>
-			<str id="quality-high">ALTO</str>
-			<str id="quality-custom">PERSONALIZADO</str>
+			<str id="quality-desc">Modos de qualidade para escolher, "BAIXA" = Desativa todos os efeitos visuais pesados para um jogo mais suave, "ALTA" = Ativa todos os efeitos visuais, ao custo do desempenho, "CUSTOMIZADA" = Permite opções especiais, disponíveis em "Advançado".</str>
+			<str id="quality-low">BAIXA</str>
+			<str id="quality-high">ALTA</str>
+			<str id="quality-custom">CUSTOMIZADA</str>
 
-			<str id="antialiasing-name">Antialiasing</str>
-			<str id="antialiasing-desc">Se desmarcado, irá remover antialiasing a todos os sprites. Poderá aumentar o desempenho ao custo de sprites menos suaves.</str>
+			<str id="antialiasing-name">"Antialiasing"</str>
+			<str id="antialiasing-desc">Se desmarcado, irá remover "antialiasing" a todos os sprites. Poderá aumentar o desempenho ao custo de sprites menos suaves.</str>
 
 			<str id="lowMemoryMode-name">Memória baixa</str>
 			<str id="lowMemoryMode-desc">Se marcado, irá remover certos elementos de fundo para reduzir o uso de memória.</str>
 
-			<str id="gameplayShaders-name">Shaders</str>
-			<str id="gameplayShaders-desc">If desmarcado, Shaders (efeitos visuais como a Aberração cromática de "Thorns") não serão carregadas; poderá ser útil em dispositivos fracos.</str>
+			<str id="gameplayShaders-name">"Shaders"</str>
+			<str id="gameplayShaders-desc">If desmarcado, "Shaders" (efeitos visuais como a Aberração cromática de "Thorns") não serão carregadas; poderá ser útil em dispositivos fracos.</str>
 
 			<str id="gpuOnlyBitmaps-name">Sprites só em VRAM</str>
 			<str id="gpuOnlyBitmaps-desc">Se marcado, irá apenas guardar os bitmaps na GPU, libertando IMENSA memória (EXPERIMENTAL). Desmarcar isto irá consumir muita memória, especialmente em sprites maiores. Se não tiver a certeza, deixe isto marcado.</str>
@@ -95,7 +95,7 @@
 	</group>
 
 	<group name="GameplayOptions" prefix="GameplayOptions.">
-		<str id="downscroll-name">Downscroll</str>
+		<str id="downscroll-name">"Downscroll"</str>
 		<str id="downscroll-desc">Se marcado, notas irão de cima para baixo em vez de baixo para cima, como se estivessem a cair.</str>
 
 		<str id="ghostTapping-name">"Ghost Tapping"</str>
@@ -123,11 +123,11 @@
 			<str id="windowSize-name">Tamanho da Janela</str>
 			<str id="windowSize-desc">...</str>
 
-			<str id="streamedMusic-name">Música Transmitida em Tempo Real</str>
+			<str id="streamedMusic-name">Música em Tempo Real</str>
 			<str id="streamedMusic-desc">Se marcado, músicas serão transmitidas enquanto tocam, libertando IMENSA memória com o custo de maior uso de CPU se mais sons estiverem a ser transmitidos ao mesmo tempo (EXPERIMENTAL). Desativar isto irá consumir muita memória, especialmente em músicas maiores. Se não tiver a certeza, deixe marcado.</str>
 
-			<str id="streamedVocals-name">Vozes Transmitidas em Tempo Real</str>
-			<str id="streamedMusic-desc">Se marcado, vozes também serão transmitidas enquanto tocam se "Música Transmitida" estiver ativada. Irá impactar o desempenho se a canção usar muitas vozes (EXPERIMENTAL). Se não tiver a certeza, deixe marcado.</str>
+			<str id="streamedVocals-name">Vozes em Tempo Real</str>
+			<str id="streamedVocals-desc">Se marcado, vozes também serão transmitidas enquanto tocam se "Música Transmitida" estiver ativada. Irá impactar o desempenho se a canção usar muitas vozes (EXPERIMENTAL). Se não tiver a certeza, deixe marcado.</str>
 		</group>
 	</group>
 

@@ -235,7 +235,7 @@
 				<group name="BookmarkMenu" prefix="bookmarks.">
 					<str id="addBookmarkHere">Adicionar Marcador Aqui</str>
 					<str id="editBookmarkList">Editar Lista de Marcadores</str>
-					<str id="goto">Ir para "{0}"</str>
+					<str id="goTo">Ir para "{0}"</str>
 					<str id="createBookmarkTitle">A Criar Marcador Novo...</str>
 					<str id="createBookmarkName">Nome do Marcador:</str>
 					<str id="createBookmarkColor">Cor do Marcador:</str>
@@ -342,9 +342,9 @@
 
 		<group name="CharacterInfoScreen" prefix="characterInfoScreen.">
 			<str id="win-title">A Editar Personagem</str>
-			<str id="title">Editar Info. de Personagem</str>
+			<str id="title">Editar Info. da Personagem</str>
 			<str id="icon">Ícone</str>
-			<str id="iconColor">Cor de Ícone</str>
+			<str id="iconColor">Cor do Ícone</str>
 			<str id="singDuration">Duração de Canto</str>
 			<str id="useSingDuration">Usar Duração de Canto?</str>
 			<str id="customValues">Valores Especiais (Avançado)</str>
@@ -529,7 +529,7 @@
 				<group name="EditMenu" prefix="edit.">
 					<str id="undo">Desfazer</str>
 					<str id="redo">Refazer</str>
-					<str id="editStageInfo">Editar Info. de Cenário</str>
+					<str id="editStageInfo">Editar Info. do Cenário</str>
 				</group>
 
 				<str id="topBar.select">Seleção</str>
@@ -594,21 +594,22 @@
 			<str id="elementName">Nome do Elemento</str>
 			<str id="nameID">Nome Identificador</str>
 			<str id="imageFile">Imagem (WIP: precisa recarregar)\nEm (${stage.spritesParentFolder})</str>
-			<str id="scroll">Deslocamento {0}</str>
+			<str id="scroll">Scroll {0}</str> <!-- it's "scroll" here because "deslocamento" is too big and "rolagem" sounds weird -->
 			<str id="scale">Tamanho {0}</str>
 			<str id="camera">Câmara {0}</str>
 			<str id="spacing">Espaçamento (X, Y)</str>
-			<str id="skew">Distorção {0}</str>
-			<str id="alpha">Transparência</str>
+			<str id="skew">Incline {0}</str>
+			<str id="alpha">Opacidade</str>
 			<str id="angle">Angulo</str>
-			<str id="zoomFactor">Fator de Ampliação</str>
+			<str id="zoomFactor">Fator de Zoom</str> <!-- same as for scroll, "fator de ampliação" took too much space -->
 			<str id="positionName">Nome de Posição</str>
 			<str id="flipX">Espelhar X</str>
-			<str id="antialiasing">Antialiasing</str>
+			<str id="antialiasing">"Antialiasing"</str>
 			<str id="highMemory">Alta Memória</str>
 			<str id="lowMemory">Baixa Memória</str>
 			<str id="attributes">Atributos</str>
 			<str id="transformPreview">pré-visualização:</str>
+			<str id="animations">Animações</str>
 
 			<str id="animType">Tipo de Animação</str>
 			<group name="AnimTypeDropdown" prefix="animType.">
