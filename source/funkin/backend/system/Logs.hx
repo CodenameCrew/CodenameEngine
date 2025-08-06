@@ -2,11 +2,11 @@ package funkin.backend.system;
 
 import flixel.system.debug.log.LogStyle;
 import flixel.system.frontEnds.LogFrontEnd;
-import haxe.Log;
-import funkin.backend.utils.NativeAPI;
 import funkin.backend.utils.NativeAPI.ConsoleColor;
+import funkin.backend.utils.NativeAPI;
+import haxe.Log;
 
-class Logs {
+final class Logs {
 	private static var __showing:Bool = false;
 
 	public static var nativeTrace = Log.trace;
@@ -24,14 +24,14 @@ class Logs {
 					);
 				}
 			}
-			__showInConsole(prepareColoredTrace(data, TRACE));
+			traceColored(data, TRACE);
 		};
 
 		LogFrontEnd.onLogs = function(data, style, fireOnce) {
 			var prefix = "[FLIXEL]";
 			var color:ConsoleColor = LIGHTGRAY;
 			var level:Level = INFO;
-			if (style == LogStyle.CONSOLE)  // cant place a switch here as these arent inline values  - Nex
+			if (style == LogStyle.CONSOLE)  // cant place a switch here as these aren't inline values  - Nex
 			{
 				prefix = "> ";
 				color = WHITE;
@@ -82,16 +82,13 @@ class Logs {
 			logText('  |'),
 			switch (level)
 			{
-				case WARNING:
-					logText('   WARNING   ', DARKYELLOW);
-				case ERROR:
-					logText('    ERROR    ', DARKRED);
-				case TRACE:
-					logText('    TRACE    ', GRAY);
-				case VERBOSE:
-					logText('   VERBOSE   ', DARKMAGENTA);
-				default:
-					logText(' INFORMATION ', CYAN);
+				case WARNING:	logText('   WARNING   ', DARKYELLOW);
+				case ERROR:		logText('    ERROR    ', DARKRED);
+				case TRACE:		logText('    TRACE    ', GRAY);
+				case VERBOSE:	logText('   VERBOSE   ', DARKMAGENTA);
+				case SUCCESS:	logText('   SUCCESS   ', GREEN);
+				case FAILURE:	logText('   FAILURE   ', RED);
+				default:		logText(' INFORMATION ', CYAN);
 			},
 			logText('] ')
 		];
@@ -134,17 +131,29 @@ class Logs {
 		#end
 	}
 
-	public static function traceColored(text:Array<LogText>, level:Level = INFO)
+	public inline static function traceColored(text:Array<LogText>, level:Level = INFO)
 		__showInConsole(prepareColoredTrace(text, level));
 
-	public static function trace(text:String, level:Level = INFO, color:ConsoleColor = LIGHTGRAY) {
-		traceColored([
-			{
-				text: text,
-				color: color
-			}
-		], level);
+	public static function trace(text:String, level:Level = INFO, color:ConsoleColor = LIGHTGRAY, ?prefix:String) {
+		var text = [logText(text, color)];
+		if(prefix != null) text.insert(0, getPrefix(prefix));
+		traceColored(text, level);
 	}
+
+	public inline static function getPrefix(prefix:String)
+		return logText('[${prefix}] ', BLUE);
+
+	public inline static function infos(text:String, color:ConsoleColor = LIGHTGRAY, ?prefix:String)
+		Logs.trace(text, INFO, color, prefix);
+
+	public inline static function verbose(text:String, color:ConsoleColor = LIGHTGRAY, ?prefix:String)
+		if (Main.verbose) Logs.trace(text, VERBOSE, color, prefix);
+
+	public inline static function warn(text:String, color:ConsoleColor = YELLOW, ?prefix:String)
+		Logs.trace(text, WARNING, color, prefix);
+
+	public inline static function error(text:String, color:ConsoleColor = RED, ?prefix:String)
+		Logs.trace(text, ERROR, color, prefix);
 }
 
 enum abstract Level(Int) {
@@ -153,6 +162,8 @@ enum abstract Level(Int) {
 	var ERROR = 2;
 	var TRACE = 3;
 	var VERBOSE = 4;
+	var SUCCESS = 5;
+	var FAILURE = 6;
 }
 
 typedef LogText = {

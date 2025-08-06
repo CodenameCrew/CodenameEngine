@@ -1,10 +1,11 @@
 package funkin.editors.charter;
 
-import flixel.util.FlxColor;
-import funkin.backend.system.Conductor;
 import flixel.sound.FlxSound;
+import flixel.util.FlxColor;
 import funkin.backend.shaders.CustomShader;
+import funkin.backend.system.Conductor;
 import openfl.display.BitmapData;
+import openfl.display.ShaderInput;
 
 class CharterWaveformHandler extends FlxBasic {
 	public var ampsNeeded:Float = 0;
@@ -28,7 +29,7 @@ class CharterWaveformHandler extends FlxBasic {
 
 	public function generateData(name:String, sound:FlxSound):BitmapData {
 		if (!sounds.exists(name)) sounds.set(name, sound);
-		if (!analyzers.exists(name)) 
+		if (!analyzers.exists(name))
 			analyzers.set(name, new AudioAnalyzer(sound));
 
 		var analyzer:AudioAnalyzer = analyzers.get(name);
@@ -67,12 +68,17 @@ class CharterWaveformHandler extends FlxBasic {
 
 		var waveData:BitmapData = waveDatas.get(name);
 
-		var waveShader:CustomShader = new CustomShader("engine/editorWaveforms");
+		var waveShader:CustomShader = new CustomShader(Options.charterRainbowWaveforms ? "engine/editorWaveformsRainbow" : "engine/editorWaveforms");
 		waveShader.data.waveformSize.value = [waveData.width, waveData.height];
-		waveShader.data.waveformTexture.input = waveData;
+		var waveformInput:ShaderInput<BitmapData> = cast waveShader.data.waveformTexture;
+		waveformInput.input = waveData;
+		waveformInput.filter = NEAREST; // force it to be nearest, incase someone changed it
 		waveShader.data.textureRes.value = [0, 0];
 		waveShader.data.pixelOffset.value = [0];
 		waveShader.data.lowDetail.value = [Options.charterLowDetailWaveforms];
+
+		if (Options.charterRainbowWaveforms)
+			waveShader.data.time.value = [0];
 
 		waveShaders.set(name, waveShader);
 		return waveShader;

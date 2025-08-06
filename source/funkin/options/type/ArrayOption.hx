@@ -1,70 +1,64 @@
 package funkin.options.type;
 
-class ArrayOption extends OptionType {
-	public var selectCallback:String->Void;
-
-	private var __text:Alphabet;
-	private var __selectiontext:Alphabet;
+class ArrayOption extends TextOption {
+	public var changedCallback:String->Void;
 
 	public var options:Array<Dynamic>;
 	public var displayOptions:Array<String>;
-
 	public var currentSelection:Int;
 
-	var optionName:String;
-
 	public var parent:Dynamic;
+	public var optionName:String;
 
-	public var text(get, set):String;
-	private function get_text() {return __text.text;}
-	private function set_text(v:String) {return __text.text = v;}
+	var __selectionText:Alphabet;
 
-	public function new(text:String, desc:String, options:Array<Dynamic>, displayOptions:Array<String>, optionName:String, ?selectCallback:String->Void = null, ?parent:Dynamic) {
-		super(desc);
-		this.selectCallback = selectCallback;
+	override function set_text(v:String) {
+		super.set_text(v);
+		__selectionText.x = __text.x + __text.width + 12;
+		return v;
+	}
+
+	public function new(text:String, desc:String, options:Array<Dynamic>, displayOptions:Array<String>, ?optionName:String, ?changedCallback:Dynamic->Void = null, ?parent:Dynamic) {
+		this.changedCallback = changedCallback;
 		this.displayOptions = displayOptions;
 		this.options = options;
-		if (parent == null)
-			parent = Options;
-
-		this.parent = parent;
+		this.optionName = optionName;
+		this.parent = parent = parent != null ? parent : Options;
 
 		var fieldValue = Reflect.field(parent, optionName);
-		if(fieldValue != null)
-			this.currentSelection = Std.int(Math.max(0, options.indexOf(fieldValue)));
-
-		this.optionName = optionName;
-
-		add(__text = new Alphabet(100, 20, text, true));
-		add(__selectiontext = new Alphabet(__text.width + 120, -30, formatTextOption(), false));
+		if (fieldValue != null) currentSelection = CoolUtil.maxInt(0, options.indexOf(fieldValue));
+	
+		__selectionText = new Alphabet(0, 20, formatTextOption(), 'bold');
+		super(text, desc);
+		add(__selectionText);
 	}
 
-	public override function draw() {
-		super.draw();
+	override function reloadStrings() {
+		__selectionText.text = formatTextOption();
+		super.reloadStrings();
 	}
 
-	public override function onChangeSelection(change:Float):Void
-	{
-		if(currentSelection <= 0 && change == -1 || currentSelection >= options.length - 1 && change == 1) return;
-		currentSelection += Math.round(change);
-		__selectiontext.text = formatTextOption();
-		Reflect.setField(parent, optionName, options[currentSelection]);
-		if(selectCallback != null)
-			selectCallback(options[currentSelection]);
+	function formatTextOption() {
+		var s = ": ";
+
+		if (currentSelection > 0) s += "< ";
+		else s += "  ";
+
+		s += TU.exists(displayOptions[currentSelection]) ? TU.translate(displayOptions[currentSelection]) : displayOptions[currentSelection];
+
+		if (currentSelection < options.length - 1) s += " >";
+
+		return s;
 	}
 
-	private function formatTextOption() {
-		var currentOptionString = ": ";
-		if((currentSelection > 0))
-			currentOptionString += "< ";
-		else
-			currentOptionString += "  ";
+	override function changeSelection(change:Int) {
+		if (locked || currentSelection == (currentSelection = CoolUtil.boundInt(currentSelection + change, 0, options.length - 1))) return;
+		__selectionText.text = formatTextOption();
+		CoolUtil.playMenuSFX(SCROLL);
 
-		currentOptionString += displayOptions[currentSelection];
-
-		if(!(currentSelection >= options.length - 1))
-			currentOptionString += " >";
-
-		return currentOptionString;
+		if (optionName != null) Reflect.setField(parent, optionName, options[currentSelection]);
+		if (changedCallback != null) changedCallback(options[currentSelection]);
 	}
+
+	override function select() {}
 }

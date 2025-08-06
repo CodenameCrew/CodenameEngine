@@ -1,2 +1,4 @@
 <!DOCTYPE codename-engine-week-character>
-<char scale="0.7" x="100" y="-30" flip="true"/>
+<char scale="0.65" x="70" y="-60" flipX="true">
+	<anim name="idle" anim="idle" fps="24" loop="false" forced="true"/>
+</char>

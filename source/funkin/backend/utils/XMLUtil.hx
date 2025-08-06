@@ -1,8 +1,10 @@
 package funkin.backend.utils;
 
+import flixel.util.FlxColor;
+import flixel.util.typeLimit.OneOfTwo;
+import funkin.backend.FunkinSprite.XMLAnimType;
 import funkin.backend.FunkinSprite;
 import funkin.game.Character;
-import funkin.backend.system.ErrorCode;
 import funkin.backend.FunkinSprite.XMLAnimType;
 import flixel.util.FlxColor;
 import haxe.xml.Access;
@@ -11,24 +13,61 @@ import funkin.backend.scripting.DummyScript;
 import funkin.backend.scripting.ScriptPack;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.backend.system.interfaces.IOffsetCompatible;
+import haxe.xml.Access;
 
 using StringTools;
 
+@:dox(hide)
+enum abstract ErrorCode(Int) {
+	var OK = 0;
+	var FAILED = 1;
+	var MISSING_PROPERTY = 2;
+	var TYPE_INCORRECT = 3;
+	var VALUE_NULL = 4;
+	var REFLECT_ERROR = 5;
+}
+
+@:dox(hide)
 typedef TextFormat = { text:String, format:Dynamic }
 
 /**
  * Class made to make XML parsing easier.
+ * Used in Stage.hx, Character.hx, and more.
  */
-class XMLUtil {
-
+final class XMLUtil {
 	/**
 	 * Applies a property XML node to an object.
+	 * The format for the XML is as follows:
+	 * ```xml
+	 * <!-- float -->
+	 * <property name="name" type="float" value="value" />
+	 * <property name="name" type="number" value="value" />
+	 * <property name="name" type="f" value="value" />
+	 * <!-- string -->
+	 * <property name="name" type="string" value="value" />
+	 * <property name="name" type="str" value="value" />
+	 * <property name="name" type="text" value="value" />
+	 * <property name="name" type="s" value="value" />
+	 * <!-- int -->
+	 * <property name="name" type="int" value="value" />
+	 * <property name="name" type="integer" value="value" />
+	 * <property name="name" type="i" value="value" />
+	 * <!-- bool -->
+	 * <property name="name" type="bool" value="value" />
+	 * <property name="name" type="boolean" value="value" />
+	 * <property name="name" type="b" value="value" />
+	 * <!-- color -->
+	 * <property name="name" type="color" value="value" />
+	 * <property name="name" type="c" value="value" />
+	 * ```
+	 *
 	 * @param object Object to which the xml property will be applied
 	 * @param property `property` node.
+	 * @return Error code (0 = OK, 1 = FAILED, 2 = MISSING_PROPERTY, 3 = TYPE_INCORRECT, 4 = VALUE_NULL, 5 = REFLECT_ERROR)
 	 */
 	public static function applyXMLProperty(object:Dynamic, property:Access):ErrorCode {
 		if (!property.has.name || !property.has.type || !property.has.value) {
-			Logs.trace('Failed to apply XML property: XML Element is missing name, type, or value attributes.', WARNING);
+			Logs.warn('Failed to apply XML property: XML Element is missing name, type, or value attributes.');
 			return MISSING_PROPERTY;
 		}
 
@@ -43,7 +82,8 @@ class XMLUtil {
 
 		var value:Dynamic = switch(property.att.type.toLowerCase()) {
 			case "f" | "float" | "number":			Std.parseFloat(property.att.value);
-			case "i" | "int" | "integer" | "color":	Std.parseInt(property.att.value);
+			case "i" | "int" | "integer":			Std.parseInt(property.att.value);
+			case "c" | "color":						FlxColor.fromString(property.att.value);
 			case "s" | "string" | "str" | "text":	property.att.value;
 			case "b" | "bool" | "boolean":			property.att.value.toLowerCase() == "true";
 			default:								return TYPE_INCORRECT;
@@ -61,21 +101,26 @@ class XMLUtil {
 			if(isPath) {
 				str += ' (Path: ${property.att.name})';
 			}
-			Logs.trace(str, WARNING);
+			Logs.warn(str);
 			return REFLECT_ERROR;
 		}
 		return OK;
 	}
 
 	/**
-	 * Overrides a sprite based on a XML node.
+	 * Sets the properties of a sprite based on a XML node.
+	 * @param spr The sprite
+	 * @param node The XML node
+	 * @param parentFolder The parent folder
+	 * @param defaultAnimType The default animation type
 	 */
-	public static function loadSpriteFromXML(spr:FunkinSprite, node:Access, parentFolder:String = "", defaultAnimType:XMLAnimType = BEAT):FunkinSprite {
+	public static function loadSpriteFromXML(spr:FunkinSprite, node:Access, parentFolder:String = "", defaultAnimType:XMLAnimType = BEAT, loadGraphic:Bool = true):FunkinSprite {
 		if (parentFolder == null) parentFolder = "";
 
 		spr.name = node.getAtt("name");
 		spr.antialiasing = true;
-		spr.loadSprite(Paths.image('$parentFolder${node.getAtt("sprite").getDefault(spr.name)}', null, true));
+		if (loadGraphic)
+			spr.loadSprite(Paths.image('$parentFolder${node.getAtt("sprite").getDefault(spr.name)}', null, true));
 
 		spr.spriteAnimType = defaultAnimType;
 		if (node.has.type) {
@@ -148,18 +193,23 @@ class XMLUtil {
 		if (node.has.updateHitbox && node.att.updateHitbox == "true") spr.updateHitbox();
 
 		if (node.has.zoomfactor)
-			spr.zoomFactor = Std.parseFloat(node.getAtt("zoomfactor")).getDefault(spr.zoomFactor);
+			spr.zoomFactor = Std.parseFloat(node.getAtt("zoomfactor")).getDefaultFloat(spr.zoomFactor);
 
 		if (node.has.alpha)
-			spr.alpha = Std.parseFloat(node.getAtt("alpha")).getDefault(spr.alpha);
+			spr.alpha = Std.parseFloat(node.getAtt("alpha")).getDefaultFloat(spr.alpha);
 
 		if(node.has.color)
 			spr.color = FlxColor.fromString(node.getAtt("color")).getDefault(0xFFFFFFFF);
+
+		if(node.has.angle)
+			spr.angle = Std.parseFloat(node.getAtt("angle")).getDefault(spr.angle);
 
 		if (node.has.playOnCountdown)
 			spr.skipNegativeBeats = node.att.playOnCountdown == "true";
 		if (node.has.beatInterval)
 			spr.beatInterval = Std.parseInt(node.att.beatInterval);
+		if (node.has.interval)
+			spr.beatInterval = Std.parseInt(node.att.interval);
 		if (node.has.beatOffset)
 			spr.beatOffset = Std.parseInt(node.att.beatOffset);
 
@@ -184,13 +234,24 @@ class XMLUtil {
 
 	/**
 	 * Creates a new sprite based on a XML node.
+	 * @param node The XML node
+	 * @param parentFolder The parent folder
+	 * @param defaultAnimType The default animation type
+	 * @param cl The class to create (advanced)
+	 * @param args The arguments to pass to the class (advanced)
 	 */
-	public static inline function createSpriteFromXML(node:Access, parentFolder:String = "", defaultAnimType:XMLAnimType = BEAT, ?cl:Class<FunkinSprite>, ?args:Array<Dynamic>):FunkinSprite {
+	public static inline function createSpriteFromXML(node:Access, parentFolder:String = "", defaultAnimType:XMLAnimType = BEAT, ?cl:Class<FunkinSprite>, ?args:Array<Dynamic>, loadGraphic:Bool = true):FunkinSprite {
 		if(cl == null) cl = FunkinSprite;
 		if(args == null) args = [];
-		return loadSpriteFromXML(Type.createInstance(cl, args), node, parentFolder, defaultAnimType);
+		return loadSpriteFromXML(Type.createInstance(cl, args), node, parentFolder, defaultAnimType, loadGraphic);
 	}
 
+	/**
+	 * Extracts an animation from an XML node.
+	 * @param anim The animation node
+	 * @param animType The animation type
+	 * @param loop Whether the animation should loop
+	**/
 	public static function extractAnimFromXML(anim:Access, animType:XMLAnimType = NONE, loop:Bool = false):AnimData {
 		var animData:AnimData = {
 			name: null,
@@ -206,9 +267,9 @@ class XMLUtil {
 		if (anim.has.name) animData.name = anim.att.name;
 		if (anim.has.type) animData.animType = XMLAnimType.fromString(anim.att.type, animData.animType);
 		if (anim.has.anim) animData.anim = anim.att.anim;
-		if (anim.has.fps) animData.fps = Std.parseFloat(anim.att.fps).getDefault(animData.fps);
-		if (anim.has.x) animData.x = Std.parseFloat(anim.att.x).getDefault(animData.x);
-		if (anim.has.y) animData.y = Std.parseFloat(anim.att.y).getDefault(animData.y);
+		if (anim.has.fps) animData.fps = Std.parseFloat(anim.att.fps).getDefaultFloat(animData.fps);
+		if (anim.has.x) animData.x = Std.parseFloat(anim.att.x).getDefaultFloat(animData.x);
+		if (anim.has.y) animData.y = Std.parseFloat(anim.att.y).getDefaultFloat(animData.y);
 		if (anim.has.loop) animData.loop = anim.att.loop == "true";
 		if (anim.has.forced) animData.forced = anim.att.forced == "true";
 		if (anim.has.indices) animData.indices = CoolUtil.parseNumberRange(anim.att.indices);
@@ -229,6 +290,11 @@ class XMLUtil {
 		return addAnimToSprite(sprite, extractAnimFromXML(anim, animType, loop));
 	}
 
+	/**
+	 * Adds an animation to a sprite.
+	 * @param sprite The sprite
+	 * @param animData The animation data (gotten from `extractAnimFromXML`)
+	**/
 	public static function addAnimToSprite(sprite:FlxSprite, animData:AnimData):ErrorCode {
 		if (animData.name != null) {
 			if (animData.fps <= 0 #if web || animData.fps == null #end) animData.fps = 24;
@@ -256,7 +322,7 @@ class XMLUtil {
 				cast(sprite, IOffsetCompatible).addOffset(animData.name, animData.x, animData.y);
 
 			if (sprite is FunkinSprite) {
-				var xmlSpr = cast(sprite, FunkinSprite);
+				var xmlSpr:FunkinSprite = cast sprite;
 				var name = animData.name;
 				switch(animData.animType) {
 					case BEAT:
@@ -265,7 +331,7 @@ class XMLUtil {
 							forced: animData.forced.getDefault(defaultForcedCheck(name, xmlSpr))
 						});
 					case LOOP:
-						xmlSpr.animation.play(name, animData.forced.getDefault(defaultForcedCheck(name, xmlSpr)));
+						xmlSpr.playAnim(name, animData.forced.getDefault(defaultForcedCheck(name, xmlSpr)));
 					default:
 						// nothing
 				}
@@ -285,10 +351,12 @@ class XMLUtil {
 	}
 
 	/**
+	 * Trims and removes spacing from the nodeValue in the XML
+	 *
 	 * WARNING: will edit directly the node!
 	 */
 	public static function fixSpacingInNode(node:Access):Access {
-		var arr = [for(x in node.x) x];
+		var arr = Lambda.array(node.x);
 		for(i => n in arr) {
 			if(n.nodeType == PCData) {
 				if(i == 0) n.nodeValue = n.nodeValue.ltrim();
@@ -302,6 +370,17 @@ class XMLUtil {
 		return node;
 	}
 
+	/**
+	 * Gets the text formats from an XML node.
+	 * The format for the XML is as follows:
+	 * ```xml
+	 * <text>Hello <format color="#FF0000">World</format></text>
+	 * ```
+	 *
+	 * @param _node The XML node
+	 * @param currentFormat The current format
+	 * @param parsedSegments The parsed segments
+	**/
 	public static function getTextFormats(_node:OneOfTwo<Xml, Access>, currentFormat:Dynamic = null, parsedSegments:Array<TextFormat> = null):Array<TextFormat> {
 		var node:Xml = cast _node;
 		if (currentFormat == null)

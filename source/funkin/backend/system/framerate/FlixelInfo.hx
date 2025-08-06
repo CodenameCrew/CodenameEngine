@@ -12,9 +12,7 @@ class FlixelInfo extends FramerateCategory {
 
 
 		@:privateAccess {
-			var c:Int = 0;
-			for(_ in FlxG.bitmap._cache.keys())
-				c++;
+			var c:Int = Lambda.count(FlxG.bitmap._cache);
 
 			if((FlxG.state is ModState)) {
 				var state:ModState = cast FlxG.state;
@@ -27,6 +25,7 @@ class FlixelInfo extends FramerateCategory {
 			_text += '\nBitmaps Count: ${c}';
 			_text += '\nSounds Count: ${FlxG.sound.list.length}';
 			_text += '\nFlxG.game Childs Count: ${FlxG.game.numChildren}';
+			if(FlxG.renderBlit) _text += '\nBlitting Render: true';
 			// _text += '\nCached objects count: ${cachedObjects}';
 			#if FLX_POINT_POOL
 			//var points = flixel.math.FlxPoint.FlxBasePoint.pool;

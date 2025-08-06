@@ -1,32 +1,18 @@
 package funkin.backend.assets;
 
-import lime.utils.Log;
-import lime.utils.AssetLibrary;
-import lime.utils.AssetManifest;
-
 import haxe.io.Path;
-import lime.app.Event;
-import lime.app.Future;
-import lime.app.Promise;
-import lime.media.AudioBuffer;
 import lime.graphics.Image;
+import lime.media.AudioBuffer;
 import lime.text.Font;
-import lime.utils.AssetType;
 import lime.utils.Bytes;
-import lime.utils.Assets as LimeAssets;
-import openfl.text.Font as OpenFLFont;
-
+import openfl.utils.AssetLibrary;
 
 #if MOD_SUPPORT
-import sys.FileStat;
-import sys.FileSystem;
-import sys.io.File;
-import haxe.zip.Reader;
-import funkin.backend.utils.SysZip;
 import funkin.backend.utils.SysZip.SysZipEntry;
+import funkin.backend.utils.SysZip;
 
 class ZipFolderLibrary extends AssetLibrary implements IModsAssetLibrary {
-	public var zipPath:String;
+	public var basePath:String;
 	public var modName:String;
 	public var libName:String;
 	public var useImageCache:Bool = false;
@@ -34,22 +20,28 @@ class ZipFolderLibrary extends AssetLibrary implements IModsAssetLibrary {
 
 	public var zip:SysZip;
 	public var assets:Map<String, SysZipEntry> = [];
+	public var lowerCaseAssets:Map<String, SysZipEntry> = [];
+	public var nameMap:Map<String, String> = [];
 
-	public function new(zipPath:String, libName:String, ?modName:String) {
-		this.zipPath = zipPath;
+	public function new(basePath:String, libName:String, ?modName:String) {
 		this.libName = libName;
 
-		if(modName == null)
-			this.modName = libName;
-		else
-			this.modName = modName;
+		this.basePath = basePath;
+		
+		this.modName = (modName == null) ? libName : modName;
 
-		zip = SysZip.openFromFile(zipPath);
+		zip = SysZip.openFromFile(basePath);
 		zip.read();
-		for(entry in zip.entries)
-			assets[entry.fileName.toLowerCase()] = entry;
+		for(entry in zip.entries) {
+			lowerCaseAssets[entry.fileName.toLowerCase()] = assets[entry.fileName.toLowerCase()] = assets[entry.fileName] = entry;
+			nameMap.set(entry.fileName.toLowerCase(), entry.fileName);
+		}
 
 		super();
+	}
+
+	function toString():String {
+		return '(ZipFolderLibrary: $libName/$modName)';
 	}
 
 	public var _parsedAsset:String;
@@ -95,6 +87,8 @@ class ZipFolderLibrary extends AssetLibrary implements IModsAssetLibrary {
 		}
 
 		_parsedAsset = _parsedAsset.toLowerCase();
+		if(nameMap.exists(_parsedAsset))
+			_parsedAsset = nameMap.get(_parsedAsset);
 		return true;
 	}
 
@@ -110,45 +104,64 @@ class ZipFolderLibrary extends AssetLibrary implements IModsAssetLibrary {
 	}
 
 	private function getAssetPath() {
-		trace('[ZIP]$zipPath/$_parsedAsset');
-		return '[ZIP]$zipPath/$_parsedAsset';
+		trace('[ZIP]$basePath/$_parsedAsset');
+		return '[ZIP]$basePath/$_parsedAsset';
 	}
 
+	// TODO: rewrite this to 1 function, like ModsFolderLibrary
 	public function getFiles(folder:String):Array<String> {
-		var content:Array<String> = [];
-
-		if (!folder.endsWith("/")) folder = folder + "/";
+		if (!folder.endsWith("/")) folder += "/";
 		if (!__parseAsset(folder)) return [];
 
+		var content:Array<String> = [];
+
+		var checkPath = _parsedAsset.toLowerCase();
+
 		@:privateAccess
-		for(k=>e in assets) {
-			if (k.toLowerCase().startsWith(_parsedAsset)) {
+		for(k=>e in lowerCaseAssets) {
+			if (k.toLowerCase().startsWith(checkPath)) {
+				if(nameMap.exists(k))
+					k = nameMap.get(k);
 				var fileName = k.substr(_parsedAsset.length);
-				if (!fileName.contains("/"))
-					content.push(fileName);
+				if (!fileName.contains("/") && fileName.length > 0)
+					content.pushOnce(fileName);
 			}
 		}
 		return content;
 	}
 
 	public function getFolders(folder:String):Array<String> {
-		var content:Array<String> = [];
-
-		if (!folder.endsWith("/")) folder = folder + "/";
+		if (!folder.endsWith("/")) folder += "/";
 		if (!__parseAsset(folder)) return [];
 
+		var content:Array<String> = [];
+
+		var checkPath = _parsedAsset.toLowerCase();
+
 		@:privateAccess
-		for(k=>e in assets) {
-			if (k.toLowerCase().startsWith(_parsedAsset)) {
+		for(k=>e in lowerCaseAssets) {
+			if (k.toLowerCase().startsWith(checkPath)) {
+				if(nameMap.exists(k))
+					k = nameMap.get(k);
 				var fileName = k.substr(_parsedAsset.length);
-				if (fileName.contains("/")) {
-					var s = fileName.split("/")[0];
-					if (!content.contains(s))
-						content.push(s);
+				var index = fileName.indexOf("/");
+				if (index != -1 && fileName.length > 0) {
+					var s = fileName.substr(0, index);
+					content.pushOnce(s);
 				}
 			}
 		}
 		return content;
+	}
+
+	// Backwards compat
+
+	@:noCompletion public var zipPath(get, set):String;
+	@:noCompletion private inline function get_zipPath():String {
+		return basePath;
+	}
+	@:noCompletion private inline function set_zipPath(value:String):String {
+		return basePath = value;
 	}
 }
 #end

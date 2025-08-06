@@ -1,0 +1,110 @@
+<window width="470" height="620" title="${translate('win-title', [stage.stageName])}">
+	<set name="MARGIN" value="20" />
+	<set name="XOFFSET" value="50" />
+	<set name="YOFFSET" value="40" />
+	<set name="TO" value="64" />
+	<set name="storedProps" value="[]" />
+
+	<exec>
+		import haxe.ds.StringMap;
+		var oldInfo = {
+			name: stage.stageName,
+			folder: stage.spritesParentFolder,
+			startCamX: stage.startCam.x,
+			startCamY: stage.startCam.y,
+			zoom: stage.defaultZoom,
+			attrib: new StringMap()
+		};
+
+		function col(c:Int) {
+			return MARGIN + (170 + XOFFSET) * c;
+		}
+
+		for(prop =&gt; val in stage.extra) {
+			if(!StringTools.startsWith(prop, "stageEditor.")) {
+				storedProps.push(prop);
+				oldInfo.attrib.set(prop, val);
+			}
+		}
+	</exec>
+
+	<title name="title" x="MARGIN" y="30 + 16" text="${translate('title')}" />
+
+	<section> <!-- ROW 1 -->
+		<set name="curY" value="title.y + TO" />
+
+		<textbox name="nameTextBox" label="${translate('stageName')}" value="stage.stageName"   x="col(0)" y="curY" width="200" height="32" />
+		<textbox name="spritePathTextBox" value="stage.spritesParentFolder" x="col(1)" y="curY" width="200" height="32" />
+		<label text="${translate('spritePath')}" x="spritePathTextBox.x" y="spritePathTextBox.y - 14" size="15" />
+	</section>
+
+	<section> <!-- ROW 2 -->
+		<set name="curY" value="nameTextBox.y + nameTextBox.bHeight + YOFFSET" />
+
+		<label text="${translate('startCamPos')}" x="col(0)" y="curY" />
+		<stepper name="camxStepper" value="stage.startCam.x" x="col(0)" y="curY" step="1" width="120" />
+		<stepper name="camyStepper" value="stage.startCam.y" x="last.x + last.bWidth + XOFFSET - 30" y="curY" step="1" width="120" />
+
+		<stepper name="zoomStepper" label="${translate('zoom')}" value="stage.defaultZoom" x="col(1)" y="curY" precision="2" step="0.01" width="100" />
+	</section>
+
+	<section>
+		<set name="curY" value="camxStepper.y + camxStepper.bHeight + YOFFSET" />
+		<set name="listWidth" value="self.winWidth - MARGIN * 2" />
+
+		<buttonlist name="attributesList" label="${translate('customAttributes')}" x="col(0)" y="curY" width="listWidth" height="290" buttonSizeX="listWidth-10" buttonSizeY="35" buttonSpacing="5">
+			<texture path="editors/ui/inputbox" />
+			<camSpacing value="0" />
+
+			<code>
+				import funkin.editors.extra.PropertyButton;
+
+				var buttonList = buttonlist; // important for now, since it gets reset after the code is run
+
+				var width = buttonList.buttonSize.x;
+				var height = buttonList.buttonSize.y;
+
+				buttonList.addButton.callback = function() {
+					buttonList.add(new PropertyButton("newProperty", "valueHere", buttonList, width, height, 150, 220, 25));
+				}
+
+				//var defaultAttribs = Stage.DEFAULT_ATTRIBUTES;
+				//for (i in stage.stageXML.attributes()) {
+				//	trace(i, defaultAttribs);
+				//	if (!defaultAttribs.contains(i))
+				//		buttonList.add(new PropertyButton(i, stage.stageXML.get(i), buttonList, width, height, 150, 220, 25));
+				//}
+				for(key =&gt; val in stage.extra)
+					buttonList.add(new PropertyButton(key, val, buttonList, width, height, 150, 220, 25));
+			</code>
+		</buttonlist>
+	</section>
+
+	<exec>
+		function onSave() {
+			stage.startCam.x = camxStepper.value;
+			stage.startCam.y = camyStepper.value;
+			stage.defaultZoom = zoomStepper.value;
+			stage.stageName = nameTextBox.label.text;
+			stage.spritesParentFolder = spritePathTextBox.label.text;
+
+			for(prop in storedProps)
+				stage.extra.remove(prop);
+
+			var newInfo = {
+				name: stage.stageName,
+				folder: stage.spritesParentFolder,
+				startCamX: stage.startCam.x,
+				startCamY: stage.startCam.y,
+				zoom: stage.defaultZoom,
+				attrib: new StringMap()
+			};
+			for(prop in attributesList.buttons.members) {
+				stage.extra.set(prop.propertyText.label.text, prop.valueText.label.text);
+				newInfo.attrib.set(prop.propertyText.label.text, prop.valueText.label.text);
+			}
+
+			FlxG.state.undos.addToUndo(CEditInfo(oldInfo, newInfo));
+		}
+	</exec>
+</window>

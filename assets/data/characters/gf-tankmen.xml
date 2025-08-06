@@ -1,5 +1,5 @@
 <!DOCTYPE codename-engine-character>
-<character sprite="gf-tankmen" icon="gf" color="#A5004D" isGF="true">
+<character sprite="gf-tankmen" icon="gf" color="#A5004D">
 	<anim name="danceLeft" anim="GF Dancing at Gunpoint" x="0" y="0" fps="24" loop="false" indices="0..14"/>
 	<anim name="danceRight" anim="GF Dancing at Gunpoint" x="0" y="0" fps="24" loop="false" indices="15..30"/>
 	<anim name="dance-cutscene" anim="GF Dancing at Gunpoint" x="0" y="0" fps="24" loop="true"/>

@@ -2,28 +2,39 @@ package funkin.options.type;
 
 import flixel.effects.FlxFlicker;
 
+/**
+ * Option type that has text.
+**/
 class TextOption extends OptionType {
+	public var suffix(default, set):String;
 	public var selectCallback:Void->Void;
 
-	private var __text:Alphabet;
+	var __text:Alphabet;
+	override function set_text(v:String) {
+		__text.text = v + suffix;
+		return text = v;
+	}
 
-	public var text(get, set):String;
-	private function get_text() {return __text.text;}
-	private function set_text(v:String) {return __text.text = v;}
+	function set_suffix(v:String) {
+		if (suffix == (suffix = v)) return v;
+		__text.text = text + suffix;
+		return v;
+	}
 
-	public function new(text:String, desc:String, selectCallback:Void->Void) {
-		super(desc);
+	public function new(text:String, desc:String, ?suffix:String = "", ?selectCallback:Void->Void = null) {
+		@:bypassAccessor this.suffix = suffix;
 		this.selectCallback = selectCallback;
-		add(__text = new Alphabet(100, 20, text, true));
+
+		__text = new Alphabet(20, 20, "", "bold");
+
+		super(text, desc);
+		add(__text);
 	}
 
-	public override function draw() {
-		super.draw();
-	}
-	public override function onSelect() {
-		super.onSelect();
+	override function select() {
+		if (locked) return;
 		CoolUtil.playMenuSFX(CONFIRM);
 		FlxFlicker.flicker(this, 1, Options.flashingMenu ? 0.06 : 0.15, true, false);
-		selectCallback();
+		if (selectCallback != null) selectCallback();
 	}
 }

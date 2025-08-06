@@ -3,8 +3,8 @@ package funkin.backend.scripting;
 import flixel.FlxState;
 import funkin.backend.scripting.events.*;
 
-class EventManager {
-	// map doesnt work for that
+final class EventManager {
+	// map doesn't work for that
 	public static var eventValues:Array<CancellableEvent> = [];
 	public static var eventKeys:Array<Class<CancellableEvent>> = [];
 
@@ -14,8 +14,9 @@ class EventManager {
 		var index = eventKeys.indexOf(c);
 		if (index < 0) {
 			eventKeys.push(c);
-			eventValues.push(Type.createInstance(c, []));
-			return cast eventValues.last();
+			var ret;
+			eventValues.push(ret = Type.createInstance(c, []));
+			return cast ret;
 		}
 
 		return cast eventValues[index];

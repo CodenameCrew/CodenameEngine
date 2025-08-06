@@ -25,7 +25,7 @@
 	<dad x="20" y="160"/>
 	<boyfriend x="810"/>
 
-	<!-- FOREGROUND TANKMANS -->
+	<!-- FOREGROUND TANKMENs -->
 
 	<high-memory>
 		<sprite name="tank0" x="-500" y="650" sprite="tank0" scrollx="1.7" scrolly="1.5" type="onbeat" zoomfactor="1.25"/>

@@ -1,12 +1,12 @@
 package funkin.backend.system.updating;
 
-import funkin.backend.shaders.CustomShader;
-import funkin.backend.FunkinText;
-import funkin.menus.TitleState;
 import flixel.math.FlxRect;
 import flixel.sound.FlxSound;
 import flixel.ui.FlxBar;
+import funkin.backend.FunkinText;
+import funkin.backend.shaders.CustomShader;
 import funkin.backend.system.updating.UpdateUtil.UpdateCheckCallback;
+import funkin.menus.TitleState;
 
 class UpdateScreen extends MusicBeatState {
 	public var updater:AsyncUpdater;
@@ -56,7 +56,7 @@ class UpdateScreen extends MusicBeatState {
 		generalProgress.alignment = CENTER;
 		add(generalProgress);
 
-		overSound = FlxG.sound.load(Paths.sound('gameOverEnd'));
+		overSound = FlxG.sound.load(Paths.sound(Flags.DEFAULT_GAMEOVER_RETRY_SFX));
 
 		updater.execute();
 
@@ -82,20 +82,20 @@ class UpdateScreen extends MusicBeatState {
 		switch(prog.step) {
 			case PREPARING:
 				progressBar.value = 0;
-				generalProgress.text = "Preparing update installation... (1/4)";
-				partProgress.text = "Creating installation folder and cleaning old update files...";
+				generalProgress.text = TU.translate("updateScreen.general-1") + " (1/4)";
+				partProgress.text = TU.translate("updateScreen.part-1");
 			case DOWNLOADING_ASSETS:
 				progressBar.value = 1 + ((prog.curFile-1+(prog.bytesLoaded/prog.bytesTotal)) / prog.files);
-				generalProgress.text = "Downloading update assets... (2/4)";
-				partProgress.text = 'Downloading file ${prog.curFileName}\n(${prog.curFile+1}/${prog.files} | ${CoolUtil.getSizeString(prog.bytesLoaded)} / ${CoolUtil.getSizeString(prog.bytesTotal)} | ${CoolUtil.getSizeString(lerpSpeed)}/s)';
+				generalProgress.text = TU.translate("updateScreen.general-2") + " (2/4)";
+				partProgress.text = TU.translate("updateScreen.part-2", [prog.curFileName]) + '\n(${prog.curFile+1}/${prog.files} | ${CoolUtil.getSizeString(prog.bytesLoaded)} / ${CoolUtil.getSizeString(prog.bytesTotal)} | ${CoolUtil.getSizeString(lerpSpeed)}/s)';
 			case DOWNLOADING_EXECUTABLE:
 				progressBar.value = 2 + (prog.bytesLoaded/prog.bytesTotal);
-				generalProgress.text = "Downloading new engine executable... (3/4)";
-				partProgress.text = 'Downloading ${prog.curFileName}\n(${CoolUtil.getSizeString(prog.bytesLoaded)} / ${CoolUtil.getSizeString(prog.bytesTotal)} | ${CoolUtil.getSizeString(lerpSpeed)}/s)';
+				generalProgress.text = TU.translate("updateScreen.general-3") + " (3/4)";
+				partProgress.text = TU.translate("updateScreen.part-3", [prog.curFileName]) + '\n(${CoolUtil.getSizeString(prog.bytesLoaded)} / ${CoolUtil.getSizeString(prog.bytesTotal)} | ${CoolUtil.getSizeString(lerpSpeed)}/s)';
 			case INSTALLING:
 				progressBar.value = 3 + ((prog.curFile-1+(prog.curZipProgress.curFile/prog.curZipProgress.fileCount))/prog.files);
-				generalProgress.text = "Installing new files... (4/4)";
-				partProgress.text = 'Installing ${prog.curFileName}\n(${prog.curFile}/${prog.files})';
+				generalProgress.text = TU.translate("updateScreen.general-4") + " (4/4)";
+				partProgress.text = TU.translate("updateScreen.part-4", [prog.curFileName]) + '\n(${prog.curFile}/${prog.files})';
 		}
 		var rect = new FlxRect(0, (1 - (progressBar.value / 4)) * bf.frameHeight, bf.frameWidth, 0);
 		rect.height = bf.frameHeight - rect.y;

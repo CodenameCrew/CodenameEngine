@@ -35,4 +35,10 @@ class UndoList<T> {
 
 	public inline function save()
 		savedLength = undoList.length;
+
+	public inline function clear() {
+		undoList = [];
+		redoList = [];
+		save();
+	}
 }

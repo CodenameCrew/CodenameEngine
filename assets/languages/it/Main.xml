@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<group name="PlayState">
+		<str id="game.score">Punteggio:{0}</str>
+		<str id="game.misses">Mancati:{0}</str>
+		<str id="game.comboBreaks">Interruzioni combo:{0}</str>
+		<str id="game.accuracy">Precisione:{0} - {1}</str>
+		<str id="game.combo">Combo:{0}</str>
+	</group>
+
+	<group name="StoryMenu">
+		<str id="story.score">PUNTEGGIO SETTIMANA:{0}</str>
+		<str id="story.tracks">TRACCE</str>
+	</group>
+
+	<group name="Freeplay">
+		<str id="freeplay.score">MASSIMO PERSONALE:{0}</str>
+		<str id="freeplay.solo">Solo</str>
+		<str id="freeplay.opponentMode">Modalità Avversario</str>
+		<str id="freeplay.coopMode">Modalità Cooperativa</str>
+		<str id="freeplay.coopModeSwitched">Modalità Cooperativa (Scambiati)</str>
+	</group>
+
+	<group name="Pause">
+		<group name="PauseOptions">
+			<str id="pause.resume">Riprendi</str>
+			<str id="pause.restartSong">Ricomincia Canzone</str>
+			<str id="pause.changeControls">Cambia Controlli</str>
+			<str id="pause.changeOptions">Cambia Opzioni</str>
+			<str id="pause.exitToMenu">Esci al menù</str>
+			<str id="pause.exitToCharter">Esci al charter</str>
+			<str id="pause.resumeCutscene">Riprendi Cutscene</str>
+			<str id="pause.skipCutscene">Salta Cutscene</str>
+			<str id="pause.restartCutscene">Ricomincia Cutscene</str>
+		</group>
+
+		<str id="pause.deathCounter">Bluballato: {0}</str>
+		<str id="pause.coopMode">MODALITÀ COOPERATIVA</str>
+		<str id="pause.opponentMode">MODALITÀ AVVERSARIO</str>
+	</group>
+
+	<group name="Credits">
+		<group name="CreditsCodename">
+			<str id="credits.mainDev" notrim="true"> *- Membro pubblico dei Devs principali!*</str>
+			<str id="credits.totalContributions">Contributi totali: ~{0}~ / *{1}* (~{2}%~) - Seleziona per aprire l'account GitHub</str>
+			<str id="credits.downloadingList">Download dell'elenco...</str>
+			<str id="credits.allContributors">Tutti i collaboratori dell'Engine! - Premi RESET per aggiornare l'elenco (un reset ogni 2 minuti).</str>
+		</group>
+		<group name="CreditsMain">
+			<str id="credits.name">Crediti</str>
+			<str id="credits.madePossible">Le persone che hanno reso tutto questo possibile!</str>
+			<str id="credits.selectCodename">Seleziona qui per vedere tutti i collaboratori dell'engine!</str>
+			<str id="credits.selectBase">Seleziona qui per aprire la pagina itch.io del gioco originale e fare una donazione!</str>
+		</group>
+	</group>
+
+	<group name="Mods">
+		<str id="mods.disableMods">Disabilita Mods</str>
+	</group>
+
+	<group name="MainMenu">
+		<str id="mainMenu.commit">Commit: {0} ({1})</str>
+		<str id="mainMenu.openMods">[{0}] Menù Mods</str>
+	</group>
+
+	<group name="Updater">
+		<group name="UpdateAvailable">
+			<str id="updateAvailable.title">NUOVO AGGIORNAMENTO</str>
+			<str id="updateAvailable.install">INSTALLA</str>
+			<str id="updateAvailable.skip">SALTA</str>
+		</group>
+		<group name="UpdateScreen">
+			<str id="updateScreen.general-1">Preparazione installazione dell'aggiornamento...</str>
+			<str id="updateScreen.part-1">Creazione della cartella di installazione e pulizia dei vecchi file di aggiornamento...</str>
+
+			<str id="updateScreen.general-2">Download delle risorse di aggiornamento...</str>
+			<str id="updateScreen.part-2">Download dei files {0}</str>
+
+			<str id="updateScreen.general-3">Download del nuovo eseguibile dell'Engine...</str>
+			<str id="updateScreen.part-3">Download {0}</str>
+
+			<str id="updateScreen.general-4">Installazione di nuovi file...</str>
+			<str id="updateScreen.part-4">Installando {0}</str>
+		</group>
+	</group>
+
+	<group name="Difficulties">
+		<str id="diff.easy">Facile</str>
+		<str id="diff.normal">Normale</str>
+		<str id="diff.hard">Difficile</str>
+		<str id="diff.erect">Eretto</str>
+		<str id="diff.nightmare">Incubo</str>
+	</group>
+</language>

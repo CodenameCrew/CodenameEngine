@@ -1,31 +1,39 @@
 package funkin.editors.ui;
 
-import lime.ui.KeyModifier;
-import lime.ui.KeyCode;
-import funkin.backend.system.framerate.Framerate;
-import funkin.editors.ui.UIContextMenu.UIContextMenuCallback;
-import openfl.ui.Mouse;
-import funkin.editors.ui.UIContextMenu.UIContextMenuOption;
+import openfl.Lib;
+import funkin.editors.ui.notifications.UIBaseNotification;
 import flixel.math.FlxPoint;
-import openfl.ui.MouseCursor;
 import flixel.math.FlxRect;
+import funkin.backend.system.framerate.Framerate;
+import funkin.backend.utils.NativeAPI.CodeCursor;
+import funkin.editors.ui.UIContextMenu.UIContextMenuCallback;
+import funkin.editors.ui.UIContextMenu.UIContextMenuOption;
+import lime.ui.KeyCode;
+import lime.ui.KeyModifier;
+import flixel.system.scaleModes.StageSizeScaleMode;
+import openfl.ui.Mouse;
+import openfl.ui.MouseCursor;
 
 class UIState extends MusicBeatState {
 	public var curContextMenu:UIContextMenu = null;
 
-	public static var state(get, null):UIState;
+	public static var state(get, never):UIState;
+
+	private inline static function get_state()
+		return FlxG.state is UIState ? cast FlxG.state : null;
 
 	public var buttonHandler:Void->Void = null;
 	public var hoveredSprite:UISprite = null;
 	public var currentFocus:IUIFocusable = null;
 
-	public var currentCursor:MouseCursor = ARROW;
+	public var currentCursor:CodeCursor = ARROW;
+
+	public var uiCameras:Array<FlxCamera> = [];
 
 	private var __rect:FlxRect;
 	private var __mousePos:FlxPoint;
 
-	private inline static function get_state()
-		return FlxG.state is UIState ? cast FlxG.state : null;
+	static var __point:FlxPoint = new FlxPoint();
 
 	public override function create() {
 		__rect = new FlxRect();
@@ -59,37 +67,22 @@ class UIState extends MusicBeatState {
 			currentFocus.onTextEdit(str, start, end);
 	}
 
-	public inline function updateSpriteRect(spr:UISprite) {
-		spr.__rect.x = spr.x;
-		spr.__rect.y = spr.y;
-		spr.__rect.width = spr.width;
-		spr.__rect.height = spr.height;
-	}
-
 	public function updateButtonHandler(spr:UISprite, buttonHandler:Void->Void) {
-		spr.__rect.x = spr.x;
-		spr.__rect.y = spr.y;
-		spr.__rect.width = spr.width;
-		spr.__rect.height = spr.height;
+		spr.updateSpriteRect();
 		updateRectButtonHandler(spr, spr.__rect, buttonHandler);
 	}
 
 	public function isOverlapping(spr:UISprite, rect:FlxRect) {
 		for(camera in spr.__lastDrawCameras) {
-			var pos = FlxG.mouse.getScreenPosition(camera, FlxPoint.get());
-			__rect.x = rect.x;
-			__rect.y = rect.y;
-			__rect.width = rect.width;
-			__rect.height = rect.height;
+			var pos = FlxG.mouse.getScreenPosition(camera, __point);
+			__rect.copyFrom(rect);
 
-			__rect.x -= camera.scroll.x * spr.scrollFactor.x;
-			__rect.y -= camera.scroll.y * spr.scrollFactor.y;
+			__rect.x = __rect.x - camera.scroll.x * spr.scrollFactor.x;
+			__rect.y = __rect.y - camera.scroll.y * spr.scrollFactor.y;
 
 			if (((pos.x > __rect.x) && (pos.x < __rect.x + __rect.width)) && ((pos.y > __rect.y) && (pos.y < __rect.y + __rect.height))) {
-				pos.put();
 				return true;
 			}
-			pos.put();
 		}
 		return false;
 	}
@@ -112,23 +105,38 @@ class UIState extends MusicBeatState {
 			buttonHandler = null;
 		}
 
+		if (FlxG.mouse.justPressed) {
+			FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_CLICK_SOUND));
+		}
+
 		if (FlxG.mouse.justReleased)
 			currentFocus = (hoveredSprite is IUIFocusable) ? (cast hoveredSprite) : null;
 
 		FlxG.sound.keysAllowed = currentFocus != null ? !(currentFocus is UITextBox) : true;
 
-		if (hoveredSprite != null) {
-			Mouse.cursor = hoveredSprite.cursor;
-			hoveredSprite = null;
+		if (hoveredSprite != null && hoveredSprite.cursor != null) {
+			NativeAPI.setCursorIcon(hoveredSprite.cursor);
 		} else {
-			Mouse.cursor = currentCursor;
+			NativeAPI.setCursorIcon(currentCursor);
 		}
+		hoveredSprite = null;
 	}
 
 	public override function destroy() {
+		if (resolutionAware) {
+			resolutionAware = false;
+
+			for (camera in FlxG.cameras.list) {
+				camera.width = FlxG.initialWidth;
+				camera.height = FlxG.initialHeight;
+			}
+			FlxG.scaleMode = Main.scaleMode;
+		}
+
 		super.destroy();
 		__mousePos.put();
 
+		DrawUtil.destroyDrawers();
 		WindowUtils.resetAffixes();
 		SaveWarning.reset();
 
@@ -139,13 +147,15 @@ class UIState extends MusicBeatState {
 	}
 
 	public function closeCurrentContextMenu() {
+		FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_WINDOWCLOSE_SOUND));
 		if(curContextMenu != null) {
 			curContextMenu.close();
 			curContextMenu = null;
 		}
 	}
 
-	public function openContextMenu(options:Array<UIContextMenuOption>, ?callback:UIContextMenuCallback, ?x:Float, ?y:Float) {
+	public function openContextMenu(options:Array<UIContextMenuOption>, ?callback:UIContextMenuCallback, ?x:Float, ?y:Float, ?w:Int) {
+		FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_WINDOWAPPEAR_SOUND));
 		var state = FlxG.state;
 		while(state.subState != null && !(state._requestSubStateReset && state._requestedSubState == null))
 			state = state.subState;
@@ -153,7 +163,32 @@ class UIState extends MusicBeatState {
 		state.persistentDraw = true;
 		state.persistentUpdate = true;
 
-		state.openSubState(curContextMenu = new UIContextMenu(options, callback, x.getDefault(__mousePos.x), y.getDefault(__mousePos.y)));
+		state.openSubState(curContextMenu = new UIContextMenu(options, callback, x.getDefault(__mousePos.x), y.getDefault(__mousePos.y), w));
 		return curContextMenu;
+	}
+
+	public function displayNotification(notification:UIBaseNotification) {
+		notification.cameras = uiCameras;
+		notification.onRemove = (notif) -> {
+			notification.onRemove = null;
+			remove(notif, true);
+		};
+		add(notification);
+		notification.update(0);
+		notification.appearAnimation();
+		// TODO: future tooltips
+		//notification.x = __mousePos.x;
+		//notification.y = __mousePos.y;
+		//notification.alpha = 0;
+		//notification.appearAnimation();
+		//FlxTween.tween(notification, {x: __mousePos.x, y: __mousePos.y, alpha: 1}, .3, {ease: FlxEase.circInOut});
+	}
+
+	public static var resolutionAware:Bool = false;
+	public static var uiScaleMode:UIScaleMode = new UIScaleMode();
+
+	public static function setResolutionAware() {
+		resolutionAware = true;
+		FlxG.scaleMode = uiScaleMode;
 	}
 }

@@ -1,17 +1,14 @@
 package funkin.backend.system.updating;
 
-import sys.FileSystem;
-import haxe.io.Path;
-import funkin.backend.system.github.GitHubRelease;
 import funkin.backend.system.github.GitHub;
+import funkin.backend.system.github.GitHubRelease;
+import haxe.io.Path;
 import lime.app.Application;
+import sys.FileSystem;
 
 using funkin.backend.system.github.GitHub;
 
 class UpdateUtil {
-	public static final repoOwner:String = "YoshiCrafter29";
-	public static final repoName:String = "CodenameTestRepo";
-
 	public static function init() {
 		// deletes old bak file if it exists
 		#if sys
@@ -22,12 +19,12 @@ class UpdateUtil {
 	}
 
 	public static function checkForUpdates():UpdateCheckCallback {
-		var curTag = 'v${Application.current.meta.get('version')}';
+		var curTag = 'v${Flags.VERSION}';
 		trace(curTag);
 
 		var error = false;
 
-		var newUpdates = __doReleaseFiltering(GitHub.getReleases(repoOwner, repoName, function(e) {
+		var newUpdates = __doReleaseFiltering(GitHub.getReleases(Flags.REPO_NAME, Flags.REPO_OWNER, function(e) {
 			error = true;
 		}), curTag);
 

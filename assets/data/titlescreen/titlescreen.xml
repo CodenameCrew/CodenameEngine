@@ -7,7 +7,7 @@
 			<anim name="danceRight" anim="gfDance" indices="15,16,17,18,19,20,21,22,23,24,25,26,27,28,29" />
 		</sprite>
 
-		<titleEnter sprite="titleEnter" x="-150" y="-100" />
+		<!-- <titleEnter sprite="titleEnter" x="100" y="576" /> --> <!-- FlxG.height * 0.8 -->
 	</sprites>
 
 	<intro length="16">
@@ -15,14 +15,14 @@
 			<line text="ninjamuffin99" />
 			<line text="phantomArcade" />
 			<line text="kawaisprite" />
-			<line text="evilsk8er" />
+			<line text="evilsk8r" />
 		</text>
 
 		<text beat="3">
 			<line text="ninjamuffin99" />
 			<line text="phantomArcade" />
 			<line text="kawaisprite" />
-			<line text="evilsk8er" />
+			<line text="evilsk8r" />
 			<line text="presents" />
 		</text>
 

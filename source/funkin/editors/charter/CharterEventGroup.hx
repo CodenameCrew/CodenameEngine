@@ -1,20 +1,23 @@
 package funkin.editors.charter;
 
-import funkin.editors.charter.CharterBackdropGroup.EventBackdrop;
 import flixel.util.FlxSort;
+import funkin.editors.charter.CharterBackdropGroup.EventBackdrop;
 
 class CharterEventGroup extends FlxTypedGroup<CharterEvent> {
+	public static var stopThisFuckingShitDudeIstg = false;
 	public var eventsBackdrop:EventBackdrop;
+	public var eventsRowText:UIText;
 
 	public var autoSort:Bool = true;
 	var __lastSort:Int = 0;
 
 	public override function update(elapsed:Float) {
-		filterEvents();
+		super.update(elapsed);
+		if (!CharterEventGroup.stopThisFuckingShitDudeIstg) filterEvents();
 		if (autoSort && members.length != __lastSort)
 			sortEvents();
 
-		super.update(elapsed);
+		eventsRowText.y = FlxMath.lerp(eventsRowText.y, -40 + (members[0] != null ? Math.min(members[0].y, 0) : 0), 1/20);
 	}
 
 	public override function remove(v:CharterEvent, force:Bool = true):CharterEvent {
@@ -26,20 +29,24 @@ class CharterEventGroup extends FlxTypedGroup<CharterEvent> {
 		for (event in members) {
 			event.eventsBackdrop = eventsBackdrop;
 			event.snappedToGrid = true;
+			event.cameras = cameras;
 		}
 		super.draw();
 	}
 
 	public inline function sortEvents() {
 		__lastSort = members.length;
-		this.sort(function(i, e1, e2) {
-			return FlxSort.byValues(FlxSort.ASCENDING, e1.step, e2.step);
-		});
+		this.sort(sortEventsFilter);
 		updateEventsIDs();
+		updateEventsBackdrop();
 	}
 
 	public inline function updateEventsIDs()
 		for (i => n in members) n.ID = i;
+
+	public inline function updateEventsBackdrop()
+		for (event in members)
+			event.eventsBackdrop = eventsBackdrop;
 
 	public inline function filterEvents() {
 		for (event in members)
@@ -48,4 +55,7 @@ class CharterEventGroup extends FlxTypedGroup<CharterEvent> {
 				event.kill();
 			}
 	}
+
+	public dynamic function sortEventsFilter(i:Int, e1:CharterEvent, e2:CharterEvent)
+		return FlxSort.byValues(FlxSort.ASCENDING, e1.step, e2.step);
 }

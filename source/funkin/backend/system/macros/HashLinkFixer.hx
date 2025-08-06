@@ -5,153 +5,72 @@ import haxe.macro.Expr;
 import haxe.macro.*;
 
 using StringTools;
-using haxe.macro.PositionTools;
 
 class HashLinkFixer {
-	public static var buildMacroString = '@:build(funkin.backend.system.macros.HashLinkFixer.build())';
-
-	public static var applyOn:Array<String> = [
-		"lime",
-		"std",
-		"Math",
-		"",
-	];
-
-	public static var modifiedClasses:Array<String> = [];
-
-	public static function init() {
-		#if !display
-		if(Context.defined("hl")) {
-			for(apply in applyOn) {
-				compile(apply);
-			}
-		}
-		#end
-	}
-
-	public static function compile(name:String) {
-		#if !display
-		Compiler.addGlobalMetadata(name, buildMacroString);
-		#end
-	}
-
 	public static function build():Array<Field> {
-		var fields = Context.getBuildFields();
-		var clRef = Context.getLocalClass();
+		final fields = Context.getBuildFields(), clRef = Context.getLocalClass();
+
 		if (clRef == null) return fields;
-		var cl = clRef.get();
+		final cl = clRef.get();
 
-		if (cl.isAbstract || cl.isExtern || cl.isInterface) return fields;
-		if (!cl.name.endsWith("_Impl_") && !cl.name.endsWith("_HSX") && !cl.name.endsWith("_HSC")) {
-			if(cl.params.length > 0)
-				return fields;
+		if (
+			cl.isAbstract || cl.isExtern || cl.isInterface || cl.params.length > 0 ||
+			cl.name.endsWith("_Impl_") || cl.name.endsWith("_HSX") || cl.name.endsWith("_HSC")
+		) return fields;
 
-			var definedFields = [];
+		final pos = Context.currentPos();
+		for (i in 0...fields.length) {
+			final f = fields[i];
+			if (f == null || f.name == 'new') continue;
 
-			for(f in fields.copy()) {
-				if (f == null)
-					continue;
-				if (f.name == "new")
-					continue;
+			switch (f.kind) {
+				case FFun(func):
+					if (func == null) continue;
 
-				if(definedFields.contains(f.name)) continue; // no duplicate fields
+					var hlNativeMeta = null;
+					final cleanMeta = f.meta.filter((m) -> {
+						if (m.name != ':hlNative') return true;
+						else {
+							hlNativeMeta = m;
+							return false;
+						}
+					});
+					if (hlNativeMeta == null) continue;
 
-				var hlNativeMeta = null;
-				var hasHlNative = false;
-				for(m in f.meta)
-					if (m.name == ":hlNative") {
-						hasHlNative = true;
-						hlNativeMeta = m;
-						break;
+					switch (hlNativeMeta.params) {
+						case []: hlNativeMeta.params = [macro "std", macro $v{f.name}];
+						case [_.expr => EConst(CString(name))]: hlNativeMeta.params = [macro "std", macro $v{name}];
+						case [_.expr => EConst(CFloat(version))]:
+							final curVersion = Context.definedValue("hl_ver");
+							if (curVersion != null && version > curVersion) {
+								if (f.meta.filter((m) -> return m.name == ":noExpr").length > 0)
+									Context.error("Missing function body", hlNativeMeta.pos);
+							}
+							else
+								hlNativeMeta.params = [macro "std", macro $v{f.name}];
+						default:
 					}
 
-				if(!hasHlNative) continue;
+					final name = 'hlf_${f.name}';
+					fields.push({
+						name: name,
+						pos: pos,
+						kind: FFun({ret: func.ret, params: func.params, expr: func.expr, args: func.args}),
+						access: f.access.filter((a) -> return a != APublic && a != APrivate).concat([APrivate]),
+						meta: [hlNativeMeta]
+					});
 
-				switch(f.kind) {
-					case FFun(fun):
-						if (fun == null)
-							continue;
-						if (fun.params != null && fun.params.length > 0) // TODO: Support for this maybe?
-							continue;
+					final args = func.args == null ? [] : [for (a in func.args) macro $i{a.name}];
 
-						if(fun.params == null)
-							fun.params = [];
-
-						var overrideExpr:Expr;
-						var returns:Bool = !fun.ret.match(TPath({name: "Void"}));
-
-						var printer = new haxe.macro.Printer();
-						if(cl.module == "hl.Gc" && fun.ret == null) returns = false; // fix since they dont explicitly set :Void
-						if(cl.module == "hl.Format" && fun.ret == null) returns = false; // fix since they dont explicitly set :Void
-
-						var name = 'hlf_${f.name}';
-
-						var arguments = fun.args == null ? [] : [for(a in fun.args) macro $i{a.name}];
-
-						var funcExpr:Expr = macro @:privateAccess $i{name}($a{arguments});
-						if(returns) funcExpr = macro return $funcExpr;
-
-						var cleanMeta = f.meta.copy().filter(function(m) return m.name != ":hlNative");
-						var hasBareMeta = hlNativeMeta.params.length == 0;
-
-						var meta = f.meta.copy();
-						switch hlNativeMeta {
-							case {params: []}:
-								meta = [{name: ":hlNative", params: [macro "std", macro $v{f.name}], pos: Context.currentPos()}].concat(cleanMeta);
-							case {params: [_.expr => EConst(CString(name))]}:
-								meta = [{name: ":hlNative", params: [macro "std", macro $v{name}], pos: Context.currentPos()}].concat(cleanMeta);
-							case {params: [_.expr => EConst(CFloat(version))]}:
-								var curVersion = Context.definedValue("hl_ver");
-								if(curVersion == null) curVersion = "";
-								if(version > curVersion) {
-									meta = cleanMeta;
-									if(f.meta.filter((m) -> m.name == ":noExpr").length > 0)
-										Context.error("Missing function body", f.pos);
-									funcExpr = fun.expr; // restore to default behaviour
-								} else {
-									meta = [{name: ":hlNative", params: [macro "std", macro $v{f.name}], pos: Context.currentPos()}].concat(cleanMeta);
-								}
-							default:
-						}
-
-						var fiel:Field = {
-							name: name,
-							pos: Context.currentPos(),
-							kind: FFun({
-								ret: fun.ret,
-								params: fun.params.copy(),
-								expr: funcExpr,
-								args: fun.args.copy()
-							}),
-							access: f.access.copy().filter(function(a) return a != APublic && a != APrivate).concat([APrivate]),
-							meta: meta
-						};
-						fields.push(fiel);
-						definedFields.push(f.name);
-
-						// Remove meta from original function
-						for(m in f.meta.copy())
-							if (m.name == ":hlNative") {
-								f.meta.remove(m);
-							}
-
-					default:
-				}
+					f.meta = cleanMeta;
+					func.expr = args.length == 0 ? macro $i{name}() : macro $i{name}($a{args});
+					if (func.ret != null && !func.ret.match(TPath({name: 'Void'})))
+						func.expr = macro return ${func.expr};
+				default:
 			}
-
-			/*if(definedFields.length > 0) {
-				trace(cl.module);
-
-				var printer = new haxe.macro.Printer();
-				for(field in fields) if(field.name.startsWith("hlf_"))
-					Sys.println(printer.printField(field));
-			}*/
 		}
 
 		return fields;
 	}
-}
-#else
-class HashLinkFixer {
 }
 #end

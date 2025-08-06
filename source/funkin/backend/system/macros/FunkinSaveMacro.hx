@@ -42,20 +42,9 @@ class FunkinSaveMacro {
 		/**
 		 * SAVE FUNCTION
 		 */
-		var saveFuncBlocks:Array<Expr> = [for(f in fieldNames)
-			macro ${{
-				pos: Context.currentPos(),
-				expr: EConst(CIdent(saveFieldName))
-			}}.data.$f = ${{
-				pos: Context.currentPos(),
-				expr: EConst(CIdent(f))
-			}}
-		];
+		var saveFuncBlocks:Array<Expr> = [for(f in fieldNames) macro $i{saveFieldName}.data.$f = $i{f}];
 
-		saveFuncBlocks.push(macro ${{
-			pos: Context.currentPos(),
-			expr: EConst(CIdent(saveFieldName))
-		}}.flush());
+		saveFuncBlocks.push(macro $i{saveFieldName}.flush());
 
 		fields.push({
 			pos: Context.currentPos(),
@@ -81,16 +70,8 @@ class FunkinSaveMacro {
 				expr: {
 					pos: Context.currentPos(),
 					expr: EBlock([for(f in fieldNames)
-						macro if (${{
-							pos: Context.currentPos(),
-							expr: EConst(CIdent(saveFieldName))
-						}}.data.$f != null) ${{
-							pos: Context.currentPos(),
-							expr: EConst(CIdent(f))
-						}} = ${{
-							pos: Context.currentPos(),
-							expr: EConst(CIdent(saveFieldName))
-						}}.data.$f
+						macro if ($i{saveFieldName}.data.$f != null)
+							$i{f} = $i{saveFieldName}.data.$f
 					])
 				}
 			}),

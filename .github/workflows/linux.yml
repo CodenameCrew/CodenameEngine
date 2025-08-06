@@ -7,7 +7,7 @@ jobs:
   build:
     name: Linux Build
     permissions: write-all
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Pulling the source
         uses: actions/checkout@v2
@@ -35,18 +35,18 @@ jobs:
       - name: Building the game
         run: |
           haxelib run lime build linux
-      - name: Tar files
-        run: tar -zcvf CodenameEngine.tar.gz -C export/release/linux/bin .
+      # - name: Tar files
+      #   run: tar -zcvf CodenameEngine.tar.gz -C export/release/linux/bin .
+      - name: Uploading artifact (executable)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Codename Engine (Executable Only)
+          path: export/release/linux/bin/CodenameEngine
       - name: Uploading artifact (entire build)
         uses: actions/upload-artifact@v4
         with:
           name: Codename Engine
-          path: CodenameEngine.tar.gz
-      # - name: Uploading artifact (executable)
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: Update-Linux
-      #     path: export/release/linux/bin/CodenameEngine
+          path: export/release/linux/bin/
       - name: Clearing already existing cache
         uses: actions/github-script@v6
         with:

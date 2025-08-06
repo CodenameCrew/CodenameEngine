@@ -10,7 +10,9 @@ typedef ChartData = {
 	public var stage:String;
 	public var scrollSpeed:Float;
 	public var noteTypes:Array<String>;
+	public var ?bookmarks:Array<ChartBookmark>;
 
+	public var ?chartVersion:String;
 	public var ?fromMods:Bool;
 }
 
@@ -19,17 +21,14 @@ typedef ChartMetaData = {
 	public var ?bpm:Float;
 	public var ?displayName:String;
 	public var ?beatsPerMeasure:Float;
-	public var ?stepsPerBeat:Float;
-	public var ?needsVoices:Bool;
+	public var ?stepsPerBeat:Int;
 	public var ?icon:String;
-	public var ?color:Dynamic;
+	public var ?color:FlxColor;
 	public var ?difficulties:Array<String>;
 	public var ?coopAllowed:Bool;
 	public var ?opponentModeAllowed:Bool;
 	public var ?customValues:Dynamic;
-
-	// NOT TO BE EXPORTED
-	public var ?parsedColor:FlxColor;
+	public var ?needsVoices:Bool;
 }
 
 typedef ChartStrumLine = {
@@ -40,10 +39,12 @@ typedef ChartStrumLine = {
 	var ?visible:Null<Bool>;
 	var ?strumPos:Array<Float>;
 	var ?strumScale:Float;
+	var ?strumSpacing:Float;
 	var ?scrollSpeed:Float;
 	var ?vocalsSuffix:String;
+	var ?keyCount:Int; // default=4
 
-	var ?strumLinePos:Float; // Backwards compatability
+	var ?strumLinePos:Float; // Backwards compatibility
 }
 
 typedef ChartNote = {
@@ -53,10 +54,17 @@ typedef ChartNote = {
 	var sLen:Float; // sustain length of the note (ms)
 }
 
+typedef ChartBookmark = {
+	var time:Float;
+	var name:String;
+	var color:String;
+}
+
 typedef ChartEvent = {
 	var name:String;
 	var time:Float;
 	var params:Array<Dynamic>;
+	var ?global:Bool;  // If its from a global event file like events.json; this field might be saved rarely in the chart json directly but modders can mess with this for messing with the saving funcs too  - Nex
 }
 
 enum abstract ChartStrumLineType(Int) from Int to Int {

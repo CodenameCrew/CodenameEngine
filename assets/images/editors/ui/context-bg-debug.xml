@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="context-bg.png">
+	<!-- Created without animate lol i wrote this-->
+	<SubTexture name="topleft" x="0" y="0" width="10" height="10"/>
+	<SubTexture name="top" x="10" y="0" width="44" height="10"/>
+	<SubTexture name="topright" x="54" y="0" width="10" height="10"/>
+
+	<SubTexture name="middleleft" x="0" y="10" width="10" height="44"/>
+	<SubTexture name="middle" x="10" y="10" width="44" height="44"/>
+	<SubTexture name="middleright" x="54" y="10" width="10" height="44"/>
+
+	<SubTexture name="bottomleft" x="0" y="54" width="10" height="10"/>
+	<SubTexture name="bottom" x="10" y="54" width="44" height="10"/>
+	<SubTexture name="bottomright" x="54" y="54" width="10" height="10"/>
+</TextureAtlas>

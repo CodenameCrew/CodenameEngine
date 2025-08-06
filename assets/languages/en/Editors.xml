@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<group name="General Editor Translations" prefix="editor.">
+		<str id="autosavingIn">Autosaving in {0} seconds{1}</str>
+		<str id="autosavingCanceledSuffix">(Canceled)!</str>
+
+		<str id="ok">Ok</str>
+		<str id="cancel">Cancel</str>
+		<str id="save">Save</str>
+		<str id="saveClose">Save &amp; Close</str>
+		<str id="close">Close</str>
+	</group>
+
+	<group name="UIImageExplorer" prefix="uiImageExplorer.">
+		<str id="symbol">Symbol</str>
+		<str id="animation">Animation</str>
+		<str id="atlas">Atlas</str>
+		<str id="spritemap">Spritemap</str>
+
+		<str id="directory">Directory ({0}/)</str>
+		<str id="found">{0} {1} Found</str>
+		<str id="foundplural">{0} {1} Found</str>
+		<str id="notFound">#NO {0}s Found#</str>
+		<str id="foundAtlas">{0} Spritemap Found</str>
+		<str id="foundAtlasplural">{0} Spritemaps Found</str>
+
+		<str id="fileAlreadyExists">The following files alreadly exist: \n\n{0}\n\nIMPORTANT: OVERRIDING CAN NOT BE UNDONE!</str>
+		<str id="override">Override Files</str>
+		<str id="useExisting">Use Existing</str>
+	</group>
+
+	<group name="EditorPicker" prefix="editor.">
+		<str id="alphabet.name">Alphabet Editor</str>
+		<str id="chart.name">Chart Editor</str>
+		<str id="character.name">Character Editor</str>
+		<str id="stage.name">Stage Editor</str>
+		<str id="uiDebug.name">UI Debug State</str>
+		<str id="wiki.name">Wiki</str>
+		<str id="debugOptions.name">Debug Options</str>
+	</group>
+
+	<group name="ChartEditor">
+		<group name="CharterSelection" prefix="charterSelection.">
+			<str id="desc">Select a song to modify the charts from.</str>
+			<str id="acceptSong">Press ACCEPT to choose a difficulty to edit.</str>
+			<str id="acceptDifficulty">Press ACCEPT to edit the chart for the selected difficulty.</str>
+			<str id="selectDifficulty">Select a difficulty to continue.</str>
+			<str id="newDifficulty">New Difficulty</str>
+			<str id="newDifficultyDesc">Press ACCEPT to create a new chart difficulty.</str>
+			<str id="newSong">New Song</str>
+			<str id="newSongDesc">Press ACCEPT to create a new song.</str>
+		</group>
+
+		<group name="ChartCreationScreen" prefix="chartCreation.">
+			<str id="title">Creating New Chart</str>
+			<str id="info">Chart Info</str>
+			<str id="diffName">Difficulty Name</str>
+			<str id="stage">Stage</str>
+			<str id="scrollSpeed">Scroll Speed</str>
+
+			<str id="strumLineList">Strumlines $* Atleast 1 Strumline Required$</str>
+			<str id="strumLine.format">Strumline - #{0}</str>
+
+			<group name="Warnings" prefix="warnings.">
+				<str id="song-exists-title">Creating Song: Error!</str>
+				<str id="song-exists-body">The song you are trying to create already exists, if you would like to override it delete the song first!</str>
+				<str id="chart-exists-title">Creating Chart: Error!</str>
+				<str id="chart-exists-body">The chart you are trying to create already exists, if you would like to override it delete the chart first!</str>
+			</group>
+		</group>
+
+		<group name="ChartDataScreen" prefix="chartDataScreen.">
+			<str id="title">Chart Properties</str>
+			<str id="editChartData">Edit Chart Data</str>
+			<str id="stage">Stage</str>
+			<str id="scrollSpeed">Scroll Speed</str>
+		</group>
+
+		<group name="SongPosInfo" prefix="songPosInfo.">
+			<str id="step">Step: {0}</str>
+			<str id="beat">Beat: {0}</str>
+			<str id="measure">Measure: {0}</str>
+			<str id="bpm">BPM: {0}</str>
+			<str id="timeSignature">Time Signature: {0}/{1}</str>
+		</group>
+
+		<group name="CharterEventScreen" prefix="charterEventScreen.">
+			<str id="title-creating">Create Event Group</str>
+			<str id="title-editing">Edit Event Group</str>
+
+			<str id="noEvent">No Event</str>
+
+			<str id="strumLine.format">Strumline #{0} ({1})</str>
+		</group>
+
+		<group name="CharterEventTypeSelection" prefix="charterEventTypeSelection.">
+			<str id="title">Choose an event type...</str>
+		</group>
+
+		<group name="CharterMetaDataScreen" prefix="charterMetaDataScreen.">
+			<str id="title">Edit Metadata</str>
+
+			<str id="songData">Song Data</str>
+			<str id="songName">Song Name</str>
+			<str id="bpm">BPM</str>
+			<str id="timeSignature">Time Signature</str>
+			<str id="menusData">Menus Data (Freeplay/Story)</str>
+			<str id="displayName">Display Name</str>
+			<str id="icon">Icon</str>
+			<str id="modesAllowed">Modes Allowed</str>
+			<str id="color">Color</str>
+			<str id="difficulties">Difficulties</str>
+			<str id="customValues">Custom Values (Advanced)</str>
+
+			<str id="opponentMode">Opponent Mode</str>
+			<str id="coopAllowed">Co-op Mode</str>
+		</group>
+
+		<group name="CharterNoteTypesList" prefix="charterNoteTypesList.">
+			<str id="title">Note Types List Editor</str>
+
+			<str id="editNoteTypes">Edit Note Types</str>
+			<str id="editType">Note Type {0}</str>
+		</group>
+
+		<group name="CharterStrumlineScreen" prefix="charterStrumlineScreen.">
+			<str id="win-title-creating">Creating strumline {0}</str>
+			<str id="win-title-editing">Editing strumline {0} properties</str>
+
+			<str id="title-creating">Create New Strumline</str>
+			<str id="title-editing">Edit Strumline Properties</str>
+		</group>
+
+		<group name="SongCreationScreen" prefix="songCreationScreen.">
+			<str id="win-title">Creating New Song</str>
+			<str id="win-title-importing">Importing Song</str>
+			<str id="title">Song Info</str>
+
+			<str id="instAudio">Inst Audio File $* Required*$</str>
+			<str id="voicesAudio">Vocal Audio File</str>
+
+			<str id="importFrom">Import from...</str>
+			<str id="importSource">Import Source:</str>
+			<str id="legacyOrPsych">Psych/Legacy FNF</str>
+			<str id="vslice">V-Slice</str>
+			<str id="vsliceProject">V-Slice Project (.fnfc)</str>
+			<str id="importChartFormat">Chart Format</str>
+			<str id="importAudios">Add Audios</str>
+			<str id="songFileName">Song file name $* Required$</str>
+			<str id="songDataFile">Data/Chart File $* Required$</str>
+			<str id="songMetaFile">Meta File $* Required$</str>
+
+			<str id="back">Back</str>
+			<str id="next">Next</str>
+		</group>
+
+		<group name="StrumlineOptions" prefix="charterStrumLine.">
+			<str id="characters">Characters</str>
+			<str id="newChar">New Char</str>
+			<str id="type">Type</str>
+			<str id="scrollSpeed">Scroll Speed</str>
+			<str id="stagePos">Stage Position</str>
+			<str id="scale">Scale</str>
+			<str id="spacing">Spacing</str>
+			<str id="hudPos">Hud Position (X [Ratio 0-1],Y)</str>
+			<str id="visible">Visible?</str>
+			<str id="useChartScrollSpeed">Uses charts scroll speed?</str>
+			<str id="vocalSuffix">Vocal Suffix</str>
+			<str id="keyCount">Key Count</str>
+		</group>
+
+		<group name="ChartEditor" prefix="charter.">
+			<!-- Charter.hx -->
+			<group name="TopBar">
+				<str id="topBar.file">File</str>
+				<group name="FileMenu" prefix="file.">
+					<str id="new">New</str>
+					<str id="save">Save</str>
+					<str id="saveAs">Save As...</str>
+					<str id="saveGlobalEvents">Save Global Events</str>
+					<str id="saveGlobalEventsAs">Save Global Events As...</str>
+					<str id="saveNoLocalEvents">Save Chart without Local Events</str>
+					<str id="saveNoLocalEventsAs">Save Chart without Local Events As...</str>
+					<str id="saveMeta">Save Meta</str>
+					<str id="saveMetaAs">Save Meta As...</str>
+					<str id="exportFnfLegacy">Export For FNF Legacy...</str>
+					<str id="exportPsych">Export For Psych Engine...</str>
+					<str id="exit">Exit</str>
+				</group>
+
+				<str id="topBar.edit">Edit</str>
+				<group name="EditMenu" prefix="edit.">
+					<str id="undo">Undo</str>
+					<str id="redo">Redo</str>
+					<str id="copy">Copy</str>
+					<str id="paste">Paste</str>
+					<str id="cut">Cut</str>
+					<str id="delete">Delete</str>
+				</group>
+
+				<str id="topBar.chart">Chart</str>
+				<group name="ChartMenu" prefix="chart.">
+					<str id="playtest">Playtest</str>
+					<str id="playtestHere">Playtest here</str>
+					<str id="playtestOpponent">Playtest as opponent</str>
+					<str id="playtestOpponentHere">Playtest as opponent here</str>
+					<str id="enableScripts">Enable scripts during playtesting</str>
+					<str id="editChartData">Edit chart data</str>
+					<str id="editMetadata">Edit metadata information</str>
+				</group>
+
+				<str id="topBar.view">View</str>
+				<group name="ViewMenu" prefix="view.">
+					<str id="zoomIn">Zoom in</str>
+					<str id="zoomOut">Zoom out</str>
+					<str id="resetZoom">Reset Zoom</str>
+					<str id="showSectionsSeparator">Show Sections Separator</str>
+					<str id="showBeatsSeparator">Show Beats Separator</str>
+					<str id="rainbowWaveforms">Rainbow Waveforms</str>
+					<str id="lowDetailWaveforms">Low Detail Waveforms</str>
+					<str id="scrollLeft">Scroll Left</str>
+					<str id="scrollRight">Scroll Right</str>
+					<str id="scrollReset">Reset Scroll</str>
+				</group>
+
+				<str id="topBar.song">Song</str>
+				<group name="SongMenu" prefix="song.">
+					<str id="goStart">Go back to the start</str>
+					<str id="goEnd">Go forward to the end</str> <!-- used to be "Go to the end" -->
+					<str id="addOpponentCamera">Add camera on Opponent</str>
+					<str id="addPlayerCamera">Add camera on Player</str>
+					<str id="muteInst">Mute instrumental</str>
+					<str id="muteVoices">Mute voices</str>
+				</group>
+
+				<group name="BookmarkMenu" prefix="bookmarks.">
+					<str id="addBookmarkHere">Add Bookmark Here</str>
+					<str id="editBookmarkList">Edit Bookmark List</str>
+					<str id="goto">Go to "{0}"</str>
+					<str id="createBookmarkTitle">Creating New Bookmark...</str>
+					<str id="createBookmarkName">Bookmark Name:</str>
+					<str id="createBookmarkColor">Bookmark Color:</str>
+					<str id="editBookmarkListTitle">Bookmark List</str>
+					<str id="editBookmarksTitle">Edit Bookmarks</str>
+					<str id="newBookmarkName">New Bookmark</str>
+				</group>
+
+				<str id="topBar.note">Note</str>
+				<group name="NoteMenu" prefix="note.">
+					<str id="addSustainLength">Add sustain length</str>
+					<str id="subtractSustainLength">Subtract sustain length</str>
+					<str id="selectAll">Select all</str>
+					<str id="selectMeasure">Select measure</str>
+					<str id="editNoteTypesList">Edit Note Types List</str>
+				</group>
+				<str id="topBar.snap">Snap</str>
+				<group name="SnapMenu" prefix="snap.">
+					<str id="increaseSnap">↑ Grid Snap</str>
+					<str id="resetSnap">Reset Grid Snap</str>
+					<str id="decreaseSnap">↓ Grid Snap</str>
+
+					<str id="snap">{0}x Grid Snap</str>
+				</group>
+
+				<str id="topBar.playback">Playback</str>
+				<group name="PlaybackMenu" prefix="playback.">
+					<str id="play">Play/Pause</str>
+					<str id="speedRaise">↑ Speed {0}%</str>
+					<str id="speedReset">Reset Speed</str>
+					<str id="speedLower">↓ Speed {0}%</str>
+					<str id="sectionBack">Go back a section</str>
+					<str id="sectionForward">Go forward a section</str>
+					<str id="sectionStart">Go to start of section</str>
+					<str id="backStep">Go back a step</str>
+					<str id="forwardStep">Go forward a step</str>
+					<str id="metronome">Metronome</str>
+					<str id="visualMetronome">Visual metronome</str>
+				</group>
+			</group>
+
+			<group name="NoteTypes" prefix="noteTypes.">
+				<str id="default">Default Note</str>
+			</group>
+
+			<group name="EventTypes" prefix="events.">
+				<!-- You can add your custom event types here! -->
+				<!-- Just need to do some conversion from the raw name to the id -->
+				<!-- Example: HScript Call -> hscriptCall -->
+				<!-- Example: Change Character -> changeCharacter -->
+				<str id="hscriptCall">HScript Call</str>
+				<str id="cameraMovement">Camera Movement</str>
+				<str id="addCameraZoom">Add Camera Zoom</str>
+				<str id="cameraModuloChange">Camera Modulo Change</str>
+				<str id="cameraFlash">Camera Flash</str>
+				<str id="bpmChange">BPM Change</str>
+				<str id="scrollSpeedChange">Scroll Speed Change</str>
+				<str id="altAnimationToggle">Alt Animation Toggle</str>
+				<str id="playAnimation">Play Animation</str>
+			</group>
+
+			<group name="StrumlineOptions" prefix="strumLine.">
+				<str id="button-name">Options ↓</str>
+
+				<str id="hitsounds">Hitsounds</str>
+				<str id="muteVocals">Mute Vocals</str>
+				<str id="edit">Edit</str>
+				<str id="delete">Delete</str>
+
+				<str id="noWaveform">No Waveform</str>
+			</group>
+
+			<str id="createNew">Create New</str>
+			<str id="lock-unlock">Lock/Unlock</str>
+
+			<str id="info.localEvents">Local Events\n(Only This Difficulty)</str>
+			<str id="info.globalEvents">Global Events\n(All Difficulties)</str>
+			<str id="eventType-local">Local Event</str>
+			<str id="eventType-global">Global Event</str>
+
+			<!-- CharterEventAdd.hx -->
+			<str id="addEvent">Add Event</str>
+			<str id="editEvent">Edit</str> <!-- Should maybe be "Edit Event" -->
+			<str id="deleteEvent">Delete Event</str>
+
+			<group name="Notifications" prefix="popup.">
+				<str id="savedChartAt">Saved chart at {0}!</str>
+			</group>
+		</group>
+	</group>
+
+	<group name="CharacterEditor">
+		<group name="CharacterSelection" prefix="characterSelection.">
+			<str id="acceptFolder">Press ACCEPT to edit this folder.</str>
+			<str id="acceptCharacter">Press ACCEPT to edit this character.</str>
+			<str id="newCharacter">New Character</str>
+			<str id="newCharacterDesc">Press ACCEPT to create a new character.</str>
+			<str id="desc">Select a character to edit</str>
+			<str id="desc-folder">Select a character to edit in {0}</str>
+		</group>
+
+		<group name="CharacterInfoScreen" prefix="characterInfoScreen.">
+			<str id="win-title">Editing Character</str>
+			<str id="title">Edit Character Info</str>
+			<str id="icon">Icon</str>
+			<str id="iconColor">Icon Color</str>
+			<str id="singDuration">Sing Duration</str>
+			<str id="useSingDuration">Use Sing Duration?</str>
+			<str id="customValues">Custom Values (Advanced)</str>
+		</group>
+
+		<group name="CharacterEditor" prefix="characterEditor.">
+			<group name="TopBar">
+				<str id="topBar.file">File</str>
+				<group name="FileMenu" prefix="file.">
+					<str id="new">New</str>
+					<str id="save">Save</str>
+					<str id="saveAs">Save As...</str>
+					<str id="exit">Exit</str>
+				</group>
+
+				<str id="topBar.edit">Edit</str>
+				<group name="EditMenu" prefix="edit.">
+					<str id="copyOffset">Copy Offset</str>
+					<str id="pasteOffset">Paste Offset</str>
+					<str id="undo">Undo</str>
+					<str id="redo">Redo</str>
+					<str id="editInfo">Edit information</str>
+					<str id="editSprite">Edit sprite</str>
+				</group>
+
+				<str id="topBar.offset">Offsets</str>
+				<group name="OffsetsMenu" prefix="offset.">
+					<str id="moveLeft">Move Left</str>
+					<str id="moveUp">Move Up</str>
+					<str id="moveDown">Move Down</str>
+					<str id="moveRight">Move Right</str>
+					<str id="moveExtraLeft">Move Extra Left</str>
+					<str id="moveExtraUp">Move Extra Up</str>
+					<str id="moveExtraDown">Move Extra Down</str>
+					<str id="moveExtraRight">Move Extra Right</str>
+					<str id="dragOffsetsMouse">Drag Offsets With Mouse?</str>
+					<str id="clearOffsets">Clear Offsets</str>
+				</group>
+
+				<str id="topBar.stage">Stage</str>
+				<group name="StageMenu" prefix="stage.">
+					<str id="useStage">Use "{0}"</str>
+					<str id="useNone">Use No Stage</str>
+				</group>
+
+				<str id="topBar.view">View</str>
+				<group name="ViewMenu" prefix="view.">
+					<str id="zoomIn">Zoom in</str>
+					<str id="zoomOut">Zoom out</str>
+					<str id="resetZoom">Reset Zoom</str>
+					<str id="charHitbox">Character Hitbox?</str>
+					<str id="charCam">Character Camera?</str>
+					<str id="axis">XY Axis?</str>
+				</group>
+
+				<str id="topBar.animation">Animation</str>
+				<group name="AnimationMenu" prefix="animation.">
+					<str id="playAnim">Play Animation</str>
+					<str id="stopAnim">Stop Animation</str>
+					<str id="changeAnimUp">Change Animation ↑</str>
+					<str id="changeAnimDown">Change Animation ↓</str>
+					<str id="playAnimOnOffset">Play Animation On Offset?</str>
+				</group>
+
+				<group name="CharacterPropertiesWindow" prefix="characterProperties.">
+					<str id="position">Position (X, Y)</str>
+					<str id="scale">Scale</str>
+					<str id="editInfo">Edit Info</str>
+					<str id="editSprite">Edit Sprite</str>
+					<str id="camPosition">Camera Position (X, Y)</str>
+					<str id="charFlipped">Flipped?</str>
+					<str id="antialiased">Antialiased?</str>
+					<str id="testCharAs">Test Character As...</str>
+					<str id="charDesign">Char Designed As...</str>
+				</group>
+
+				<group name="CharacterAnimButton" prefix="characterAnim.">
+					<str id="defaultAnimName">New Anim</str>
+					<str id="name">Name</str>
+					<str id="anim">Animation</str>
+					<str id="position">Position (X, Y)</str>
+					<str id="fps">FPS</str>
+					<str id="indices">Indices (Frames)</str>
+				</group>
+
+				<group name="CharacterSpriteScreen" prefix="characterSpriteScreen.">
+					<str id="win-title">Edit character sprite</str>
+					<str id="charImageFile">Character Image File $* Required$</str>
+				</group>
+			</group>
+		</group>
+
+		<group name="CharacterCreationScreen" prefix="characterCreationScreen.">
+			<str id="win-title">Creating New Character</str>
+			<str id="charName">Character Name $* Required$</str>
+			<str id="charImgName">Character Image File $* Required$</str>
+
+			<group name="Warnings" prefix="warnings.">
+				<str id="char-exists-title">Creating Character: Error!</str>
+				<str id="char-exists-body">The character you are trying to create already exists, if you would like to override it delete the character first!</str>
+			</group>
+		</group>
+	</group>
+
+	<group name="AlphabetEditor" prefix="editor.alphabet.">
+		<group name="AlphabetSelection" prefix="selection.">
+			<str id="acceptTypeface">Press ACCEPT to edit this typeface.</str>
+			<str id="newTypeface">New Typeface</str>
+			<str id="newTypefaceDesc">Press ACCEPT to create a new typeface.</str>
+			<str id="desc">Select a typeface to edit</str>
+
+			<group name="Warnings" prefix="warnings.">
+				<str id="notImplemented-title">New Typeface: Feature Not Implemented!</str>
+				<str id="notImplemented-body">This feature isn't implemented yet. Please wait for more cne updates to have this functional.\n\n\n- Codename Crew</str>
+			</group>
+		</group>
+
+		<group name="AlphabetEditor">
+			<group name="TopBar">
+				<str id="topBar.file">File</str>
+				<group name="FileMenu" prefix="file.">
+					<str id="new">New</str>
+					<str id="save">Save</str>
+					<str id="saveAs">Save As...</str>
+					<str id="exit">Exit</str>
+				</group>
+
+				<str id="topBar.edit">Edit</str>
+				<group name="EditMenu" prefix="edit.">
+					<str id="undo">Undo</str>
+					<str id="redo">Redo</str>
+				</group>
+
+				<str id="topBar.glyph">Glyph</str>
+				<group name="GlyphMenu" prefix="glyph.">
+					<str id="newGlyph">New Glyph</str>
+					<str id="editGlyph">Edit Glyph</str>
+					<str id="deleteGlyph">Delete Glyph</str>
+				</group>
+
+				<str id="topBar.offset">Offsets</str>
+				<group name="OffsetsMenu" prefix="offset.">
+					<str id="moveLeft">Move Left</str>
+					<str id="moveUp">Move Up</str>
+					<str id="moveDown">Move Down</str>
+					<str id="moveRight">Move Right</str>
+					<str id="moveExtraLeft">Move Extra Left</str>
+					<str id="moveExtraUp">Move Extra Up</str>
+					<str id="moveExtraDown">Move Extra Down</str>
+					<str id="moveExtraRight">Move Extra Right</str>
+					<str id="clearOffsets">Clear Offsets</str>
+				</group>
+
+				<str id="topBar.view">View</str>
+				<group name="ViewMenu" prefix="view.">
+					<str id="zoomIn">Zoom in</str>
+					<str id="zoomOut">Zoom out</str>
+					<str id="resetZoom">Reset Zoom</str>
+				</group>
+			</group>
+		</group>
+	</group>
+
+	<group name="StageEditor">
+		<group name="StageSelection" prefix="stageSelection.">
+			<str id="desc">Select a stage to edit. HSCRIPT only stages are not supported.</str>
+			<str id="acceptStage">Press ACCEPT to edit this stage.</str>
+			<str id="newStage">New Stage</str>
+			<str id="acceptNewStage">Press ACCEPT to create a new stage.</str>
+		</group>
+
+		<group name="StageEditor" prefix="stageEditor.">
+			<group name="TopBar">
+				<str id="topBar.file">File</str>
+				<group name="FileMenu" prefix="file.">
+					<str id="save">Save</str>
+					<str id="saveAs">Save As...</str>
+					<str id="exit">Exit</str>
+				</group>
+
+				<str id="topBar.edit">Edit</str>
+				<group name="EditMenu" prefix="edit.">
+					<str id="undo">Undo</str>
+					<str id="redo">Redo</str>
+					<str id="editStageInfo">Edit Stage Info</str>
+				</group>
+
+				<str id="topBar.select">Selection</str>
+				<group name="SelectionMenu" prefix="select.">
+					<str id="all">Select All</str>
+					<str id="deselect">Deselect</str>
+					<str id="inverse">Inverse Selection</str>
+				</group>
+
+				<str id="topBar.view">View</str>
+				<group name="ViewMenu" prefix="view.">
+					<str id="zoomIn">Zoom in</str>
+					<str id="zoomOut">Zoom out</str>
+					<str id="zoomReset">Reset Zoom</str>
+					<str id="focusDad">Focus Dad</str>
+					<str id="focusGF">Focus GF</str>
+					<str id="focusBF">Focus BF</str>
+				</group>
+
+				<str id="topBar.editor">Editor</str>
+				<group name="EditorMenu" prefix="editor.">
+					<str id="showCharacters">Show Characters</str>
+				</group>
+
+				<group name="StageSpriteScreen" prefix="stageSpriteScreen.">
+					<str id="win-title">Edit stage sprite</str>
+					<str id="stageImageFile">Stage Image File $* Required$</str>
+				</group>
+			</group>
+		</group>
+
+		<group name="StageCreationScreen" prefix="stageCreationScreen.">
+			<str id="win-title">Creating New Stage</str>
+			<str id="title">Stage Info</str>
+			<str id="stageName">Stage Name</str>
+			<str id="stagePath">Stage Path</str>
+
+			<group name="Warnings" prefix="warnings.">
+				<str id="stage-exists-title">Creating Stage: Error!</str>
+				<str id="stage-exists-body">The stage you are trying to create alreadly exists, if you would like to override it delete the stage first!</str>
+			</group>
+		</group>
+
+		<group name="StageInfoScreen" prefix="stageInfoScreen">
+			<str id="win-title">Editing Stage "{0}" Infos</str>
+			<str id="title">Stage Info</str>
+			<str id="stageName">Stage Name</str>
+			<str id="spritePath">Sprite Path\n(Needs Refresh)</str>
+			<str id="startCamPos">Start Camera Position (X, Y)</str>
+			<str id="zoom">Zoom</str>
+		</group>
+
+		<group name="StageElementEditScreen" prefix="stageElementEditScreen.">
+			<str id="win-character-title">Editing Character "{0}"</str>
+			<str id="win-sprite-title">Editing Sprite "{0}"</str>
+			<str id="win-title">Editing XML &lt;{0} /&gt;</str>
+
+			<str id="character-title">Character Data</str>
+			<str id="sprite-title">Sprite Data</str>
+			<str id="title">XML Data</str>
+
+			<str id="elementName">Element Name</str>
+			<str id="nameID">Name Identifier</str>
+			<str id="imageFile">Image File (WIP: needs reload)\nIn (${stage.spritesParentFolder})</str>
+			<str id="scroll">Scroll {0}</str>
+			<str id="scale">Scale {0}</str>
+			<str id="camera">Camera {0}</str>
+			<str id="spacing">Spacing (X, Y)</str>
+			<str id="skew">Skew {0}</str>
+			<str id="alpha">Alpha</str>
+			<str id="angle">Angle</str>
+			<str id="zoomFactor">Zoom Factor</str>
+			<str id="positionName">Position Name</str>
+			<str id="flipX">Flip X</str>
+			<str id="antialiasing">Antialiasing</str>
+			<str id="highMemory">High Memory</str>
+			<str id="lowMemory">Low Memory</str>
+			<str id="attributes">Attributes</str>
+			<str id="transformPreview">Transform Preview:</str>
+
+			<str id="animType">Animation Type</str>
+			<group name="AnimTypeDropdown" prefix="animType.">
+				<str id="none">NONE</str>
+				<str id="beat">BEAT</str>
+				<str id="loop">LOOP</str>
+			</group>
+			<str id="tipCustomProperties">Tip: To access custom properties,\nHold Shift when clicking edit</str>
+		</group>
+
+		<group name="StageXMLEditScreen" prefix="stageXMLEditScreen.">
+			<str id="win-title">Editing {0} XML</str>
+			<str id="title">Xml Data</str>
+			<str id="attributes">Attributes</str>
+		</group>
+
+		<str id="stageCharacters.requiredPosition">This character position is required in stages!</str>
+		<str id="stageCharacters.noDeleteGirlfriend">You can't delete Girlfriend</str>
+
+		<group name="StageElement" prefix="stageElement.">
+			<str id="scale">Scale: {0}, {1}</str>
+			<str id="scroll">Scroll: {0}, {1}</str>
+		</group>
+
+		<group name="StageSprites" prefix="stageSprites.">
+			<str id="win-title">Stage Sprites</str>
+			<str id="sprite">Sprite</str>
+			<str id="box">Box</str>
+			<str id="character">Character</str>
+			<str id="warnings.not-implemented">Creating a box isnt implemented yet!</str>
+		</group>
+	</group>
+
+	<!-- PlayTesting and SaveWarning are almost the same but with some small differences -->
+	<!-- PlayTesting allows color in the description by doing *hello* -->
+	<!-- SaveWarning doesn't allow color in the description -->
+	<group name="PlayTesting" prefix="playtesting.">
+		<str id="chartPlaytesting" notrim="true"> (Chart Playtesting)</str>
+		<str id="exitGame">Exit Game</str>
+		<str id="exitToMenu">Exit To Menu</str>
+		<str id="saveAndExitGame">Save &amp; Exit Game</str>
+		<str id="saveAndExitToMenu">Save &amp; Exit To Menu</str>
+		<str id="cancel">Cancel</str>
+
+		<str id="warningTitle">UNSAVED CHANGES!</str>
+		<str id="warningDesc">Your changes will be *lost* if you don't save them. (Can't be recovered)\n\n\nWould you like to Cancel?</str>
+	</group>
+
+	<group name="SaveWarning" prefix="saveWarning.">
+		<str id="warningTitle">Unsaved Changes!</str>
+		<str id="warningDesc">Your changes will be lost if you don't save them. (Can't be recovered)\n\n\nWould you like to Cancel?</str>
+
+		<str id="exitGame">Exit Game</str>
+		<str id="exitToMenu">Exit To Menu</str>
+		<str id="saveAndExitGame">Save &amp; Exit Game</str>
+		<str id="saveAndExitToMenu">Save &amp; Exit To Menu</str>
+		<str id="cancel">Cancel</str>
+	</group>
+</language>

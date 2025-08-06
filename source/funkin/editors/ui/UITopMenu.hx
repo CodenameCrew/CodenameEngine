@@ -21,9 +21,12 @@ class UITopMenu extends UISliceSprite {
 
 	public override function update(elapsed:Float) {
 		anyMenuOpened = false;
-		for(c in members) if (cast(c, UITopMenuButton).curMenu.contextMenuOpened()) {
-			anyMenuOpened = true;
-			break;
+		for(c in members) {
+			var c:UITopMenuButton = cast c;
+			if (c.curMenu.contextMenuOpened()) {
+				anyMenuOpened = true;
+				break;
+			}
 		}
 
 		super.update(elapsed);
@@ -43,7 +46,7 @@ class UITopMenuButton extends UISliceSprite {
 		super(x, y, 0, 23, "editors/ui/menu-item");
 		this.contextMenu = contextMenu;
 		this.parent = parent;
-		cursor = BUTTON;
+		cursor = CLICK;
 
 		this.label = new UIText(4, 0, 0, label);
 		this.label.alignment = CENTER;
@@ -66,10 +69,7 @@ class UITopMenuButton extends UISliceSprite {
 		var opened = curMenu != null ? curMenu.contextMenuOpened() : false;
 
 		if(opened && FlxG.mouse.justPressed) {
-			__rect.x = x;
-			__rect.y = y;
-			__rect.width = bWidth;
-			__rect.height = bHeight;
+			__rect.set(x, y, bWidth, bHeight);
 			if(UIState.state.isOverlapping(this, __rect)) {
 				curMenu.close();
 				justClosed = 2;

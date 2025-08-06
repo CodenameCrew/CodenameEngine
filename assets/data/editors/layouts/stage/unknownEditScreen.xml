@@ -1,0 +1,66 @@
+<window width="350" height="570" title="${translate('win-title', [button.getName()])}">
+	<set name="MARGIN" value="20" />
+	<set name="XOFFSET" value="30" />
+	<set name="YOFFSET" value="40" />
+	<set name="TO" value="64" />
+
+	<exec>
+		function col(c:Int) {
+			return MARGIN + (150 + XOFFSET) * c;
+		}
+	</exec>
+
+	<title name="title" x="MARGIN" y="30 + 16" text="${translate('title')}" />
+
+	<section>
+		<set name="curY" value="title.y + TO" />
+
+		<textbox name="nodeNameTextBox" label="${translate('elementName')}" value="button.getName()"   x="col(0)" y="curY" width="280" height="32" />
+	</section>
+	<section>
+		<set name="curY" value="nodeNameTextBox.y + nodeNameTextBox.bHeight + YOFFSET - 30" />
+
+		<radio for="memoryCheck" name="highMemoryRadio" text="${translate('highMemory')}" value="button.highMemory" x="col(0)" y="curY" />
+		<radio for="memoryCheck" name="lowMemoryRadio" text="${translate('lowMemory')}" value="button.lowMemory" x="col(0)" y="last.y + last.check.height + YOFFSET - 30" />
+	</section>
+
+	<section>
+		<set name="curY" value="lowMemoryRadio.y + lowMemoryRadio.check.height + YOFFSET" />
+		<set name="listWidth" value="self.winWidth - MARGIN * 2" />
+
+		<buttonlist name="attributesList" label="${translate('attributes')}" x="col(0)" y="curY" width="listWidth" height="260" buttonSizeX="listWidth-10" buttonSizeY="35" buttonSpacing="5">
+			<texture path="editors/ui/inputbox" />
+			<camSpacing value="0" />
+
+			<code>
+				import funkin.editors.extra.PropertyButton;
+
+				var buttonList = buttonlist; // important for now, since it gets reset after the code is run
+
+				var width = buttonList.buttonSize.x;
+				var height = buttonList.buttonSize.y;
+
+				buttonList.addButton.callback = function() {
+					buttonList.add(new PropertyButton("newProperty", "valueHere", buttonList, width, height, 110, 145, 25));
+				}
+
+				for (i in xml.attributes())
+					buttonList.add(new PropertyButton(i, xml.get(i), buttonList, width, height, 110, 145, 25));
+			</code>
+		</buttonlist>
+	</section>
+
+	<exec>
+		function onSave() {
+			button.xml.nodeName = nodeNameTextBox.label.text;
+			button.highMemory = highMemoryRadio.checked;
+			button.lowMemory = lowMemoryRadio.checked;
+
+			for (i in xml.attributes())
+				xml.remove(i);
+
+			for (val in attributesList.buttons.members)
+				xml.set(val.propertyText.label.text, val.valueText.label.text);
+		}
+	</exec>
+</window>

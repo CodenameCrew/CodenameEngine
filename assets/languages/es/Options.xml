@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<str id="optionsMenu.desc-missing">No Description</str>
+
+	<group name="OptionsMenu">
+		<str id="optionsMenu.advanced">Avanzado</str>
+		<str id="optionsMenu.header.title">Opciones</str>
+		<str id="optionsMenu.header.desc">Elige una categoría para continuar.</str>
+
+		<str id="optionsTree.controls-name">Controles</str>
+		<str id="optionsTree.controls-desc">¡Cambiar Controles para el Jugador 1 y Jugador 2!</str>
+
+		<str id="optionsTree.gameplay-desc">Cambiar opciones de Gameplay como el Downscroll, Velocidad Visual, Guarradas...</str>
+		<str id="optionsTree.gameplay.advanced-desc">Cambiar opciones más avanzadas como el Tamaño de la Ventana, Transmición de Audio...</str>
+
+		<str id="optionsTree.appearance-name">Apariencia</str>
+		<str id="optionsTree.appearance-desc">Cambiar opciones de Apariencia como las Luces Intermitentes...</str>
+
+		<str id="optionsTree.language-name">Idioma</str>
+		<str id="optionsTree.language-desc">Cambiar el idioma del juego.</str>
+
+		<str id="optionsTree.miscellaneous-name">Otros</str>
+		<str id="optionsTree.miscellaneous-desc">Usa este menú para reiniciar tu guardado o tus configuraciones.</str>
+
+		<str id="optionsTree.debug-name">Desarrollador</str>
+		<str id="optionsTree.debug-desc">Opciones para el Modo Desarrollador.</str>
+
+		<!-- cant have debug here -->
+	</group>
+
+	<group name="KeybindOptions" prefix="KeybindsOptions.">
+		<str id="left">Izquierda</str>
+		<str id="down">Abajo</str>
+		<str id="up">Arriba</str>
+		<str id="right">Derecha</str>
+
+		<str id="category.notes">Notas</str>
+
+		<str id="category.ui">Interfaz</str>
+		<group name="ui" prefix="ui.">
+			<str id="accept">Aceptar</str>
+			<str id="back">Cancelar</str>
+			<str id="reset">Reiniciar</str>
+			<str id="pause">Pausa</str>
+		</group>
+
+		<group name="engine" prefix="engine.">
+			<str id="switchMod">Cambiar Mod</str>
+		</group>
+		
+		<str id="category.volume">Volumen</str>
+		<str id="volume.mute">mutear</str>
+
+		<str id="category.developer">Desarrollador</str>
+		<group name="developer" prefix="developer.">
+			<str id="devMenus">Menús de Desarrollador</str>
+			<str id="openConsole">Abrir Consola</str>
+			<str id="reloadState">Refrescar Pantalla</str>
+		</group>
+	</group>
+
+	<group name="AppearanceOptions" prefix="AppearanceOptions.">
+		<str id="framerate-name">FPS</str>
+		<str id="framerate-desc">Yo creo que se explica sólo.</str>
+
+		<str id="flashingMenu-name">Luces Intermitentes</str>
+		<str id="flashingMenu-desc">Si está desactivado, el menú no parpadeará, y otros parpadeos serán más lentos.</str>
+
+		<str id="colorHealthBar-name">Colores de Barra de HP</str>
+		<str id="colorHealthBar-desc">Si lo desactivas, se usarán los colores verde y rojo, como el FNF original.</str>
+
+		<str id="week6PixelPerfect-name">Efecto Pixel Perfect</str>
+		<str id="week6PixelPerfect-desc">Si está activado, Week 6 tendrá un efecto que alinea todos los píxeles en la pantalla.</str>
+
+		<group name="AppearanceOptionsAdvanced" prefix="Advanced.">
+			<str id="antialiasing-desc">Si está desactivado, desactivará el antialiasing en todos los sprites, lo cual puede aumentar el rendimiento pero hará los visuales más pixelados.</str>
+
+			<str id="lowMemoryMode-name">Modo de Baja Memoria</str>
+			<str id="lowMemoryMode-desc">Si está activado, algunos elementos en los escenarios se eliminarán para mejorar el rendimiento.</str>
+
+			<str id="gameplayShaders-name">Shaders de Gameplay</str>
+			<str id="gameplayShaders-desc">Si está desactivado, shaders de gameplay (como la distorsión en Thorns) serán desactivados; puede ayudar con el rendimiento en dispositivos débiles.</str>
+
+			<str id="gpuOnlyBitmaps-name">Sprites en GPU</str>
+			<str id="gpuOnlyBitmaps-desc">Si está activado, todos los sprites serán cargados en el GPU, liberando MUCHA memoria (EXPERIMENTAL). Desactivar esto consumirá mucha RAM, en especial con sprites grandes. Si no estás seguro, déjalo activado.</str>
+		</group>
+	</group>
+
+	<group name="GameplayOptions" prefix="GameplayOptions.">
+		<str id="downscroll-desc">Si está activado, las notas iran de arriba hacia abajo, como si estuvieran cayendo.</str>
+
+		<str id="ghostTapping-desc">Si está desactivado, apretar una tecla sin ninguna nota contará como un Combo Break.</str>
+
+		<str id="naughtyness-name">Guarradas</str>
+		<str id="naughtyness-desc">Si está desactivado, se censurarán las escenas de Week 7.</str>
+
+		<str id="camZoomOnBeat-name">Pulso de Cámara</str>
+		<str id="camZoomOnBeat-desc">Si está desactivado, la cámara dejará de pulsar con el ritmo.</str>
+
+		<str id="autoPause-name">Auto Pausa</str>
+		<str id="autoPause-desc">Si está activado, el juego se pausará cuando cambies de ventana.</str>
+
+		<str id="volumeMusic-name">Volumen Música</str>
+		<str id="volumeMusic-desc">Cambia sólo el volumen de los música en vez de todo.</str>
+
+		<str id="volumeSFX-name">Volumen SFX</str>
+		<str id="volumeSFX-desc">Cambia sólo el volumen de los sonidos en vez de todo.</str>
+
+		<str id="songOffset-name">Offset de Sonido</str>
+		<str id="songOffset-desc">Empareja la posición en la que empieza una canción.</str>
+
+		<group name="GameplayOptionsAdvanced" prefix="Advanced.">
+			<str id="windowSize-name">Tamaño de Ventana</str>
+
+			<str id="streamedMusic-name">Transmición de Música</str>
+			<str id="streamedMusic-desc">Si está activado, la música será transmitida en tiempo real, liberando un montón de RAM, aunque usará más CPU si hay mucho audio al mismo tiempo (EXPERIMENTAL). Desactivarlo consumirá más RAM, especialmente en canciones más largas. Si no estás seguro, déjalo activado.</str>
+			
+			<str id="streamedVocals-name">Transmición de Vocales</str>
+			<str id="streamedVocals-desc">Si está activado, las vocales también serán transmitidas, impactará el rendimiento si hay muchas vocales (EXPERIMENTAL). Si no estás seguro, déjalo desactivade.</str>
+		</group>
+	</group>
+
+	<group name="LanguageOptions" prefix="LanguageOptions.">
+		<str id="language-name">Idioma</str>
+		<str id="language-desc">Idioma hecho por: {0} (Versión: {1})</str>
+	</group>
+
+	<group name="MiscOptions" prefix="MiscOptions.">
+		<str id="forceCrash-name">Forzar Crash</str>
+		<str id="forceCrash-desc">Selecciona esta opción para crashear el juego.</str>
+
+		<str id="betaUpdates-name">Activar Versión Nightly</str>
+		<str id="betaUpdates-desc">Si está activado, las versiones Nightly se incluirán cuando se detecten actualizaciones.</str>
+
+		<str id="checkForUpdates-name">Chequear Actualizaciones</str>
+		<str id="checkForUpdates-desc">Selecciona esta opción para buscar actualizaciones.</str>
+		<str id="checkForUpdates-noUpdateFound">No se encontraron actualizaciones.</str>
+
+		<str id="devMode-name">Modo Desarrollador</str>
+		<str id="devMode-desc">Si está activado, podrás acceder funciones de desarrollador como ciertas teclas, editores, opciones de desarrollador, refrescar pantallas, la consola y más.</str>
+
+		<str id="resetSaveData-name">Reiniciar Guardado</str>
+		<str id="resetSaveData-desc">Selecciona esta opción para borrar tu partida. Esto eliminará todos tus puntajes altos.</str>
+	</group>
+
+	<group name="DebugOptions" prefix="DebugOptions.">
+		<str id="title">Opciones de Desarrollador</str>
+		<str id="desc">Usa este menú para activar o desactivar opciones de desarrollador.</str>
+
+		<str id="showConsole-name">Mostrar Consola</str>
+		<str id="showConsole-desc">Selecciona esta opción para mostrar la consola, que tiene información sobre el juego.</str>
+
+		<str id="editorsResizable-name">Editores Adaptables</str>
+		<str id="editorsResizable-desc">Si está activado, permite a los editores mostrarse a más de la resolución base 1280x720 de FNF (lo cual permite más espacio...)</str>
+
+		<str id="bypassEditorsResize-name">Desactivar Tamaño Mínimo</str>
+		<str id="bypassEditorsResize-desc">Desactiva el tamaño mínimo de los editores (Editores Adaptables debe estar activado).</str>
+		
+		<str id="editorSFX-name">Sonidos del Editor</str>
+		<str id="editorSFX-desc">Si está activado, habran sonidos en los editores (ej: al activar opciones...)</str>
+
+		<str id="editorPrettyPrint-desc">Si está activado, los charts se guardarán de forma más legible (no aplica a XMLs)</str>
+
+		<str id="intensiveBlur-name">Difuminado Intensivo</str>
+		<str id="intensiveBlur-desc">Si está activado, usará un difuminado más intensivo, se verá mejor, pero afectará al rendimiento.</str>
+
+		<str id="charterAutoSaves-name">Guardar Automáticamente</str>
+		<str id="charterAutoSaves-desc">Si está activado, los editores guardarán tu progreso automáticamente, con las opciones siguientes.</str>
+
+		<str id="charterAutoSaveTime-name">Tiempo de Autoguardado</str>
+		<str id="charterAutoSaveTime-desc">Esto controla cuán seguido se guardará automáticamente (en segundos...)</str>
+
+		<str id="charterAutoSaveWarningTime-name">Tiempo de Advertencia</str>
+		<str id="charterAutoSaveWarningTime-desc">Esto controla por cuánto tiempo te advertirá el editor antes de autoguardar (en segundos..., 0 para desactivar)</str>
+
+		<str id="charterAutoSavesSeparateFolder-name">Carpeta de Autoguardados</str>
+		<str id="charterAutoSavesSeparateFolder-desc">Si está activado, el autoguardado se guardará en otra carpeta con su fecha en vez de sobreescribir el archivo actual. (song/autosaves/)</str>	</group>
+
+</language>

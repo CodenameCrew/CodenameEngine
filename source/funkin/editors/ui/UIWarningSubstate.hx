@@ -3,9 +3,10 @@ package funkin.editors.ui;
 import openfl.display.ShaderParameter;
 import openfl.display.ShaderInput;
 import openfl.filters.ShaderFilter;
-import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import funkin.backend.shaders.CustomShader;
+import openfl.filters.ShaderFilter;
 
 class UIWarningSubstate extends MusicBeatSubstate {
 	var camShaders:Array<FlxCamera> = [];
@@ -20,6 +21,8 @@ class UIWarningSubstate extends MusicBeatSubstate {
 		}
 		_;
 	};
+
+	public var bHeight:Int = 232;
 
 	var title:String;
 	var message:String;
@@ -68,14 +71,25 @@ class UIWarningSubstate extends MusicBeatSubstate {
 		warnCam.zoom = 0.1;
 		FlxG.cameras.add(warnCam, false);
 
-		var spr = new UISliceSprite(0, 0, CoolUtil.maxInt(560, 30 + (170 * buttons.length)), 232, 'editors/ui/${isError ? "normal" : "grayscale"}-popup');
+
+		var spr = new UISliceSprite(0, 0, CoolUtil.maxInt(560, 30 + (170 * buttons.length)), bHeight, 'editors/ui/${isError ? "normal" : "grayscale"}-popup');
+
+		var sprIcon:FlxSprite = new FlxSprite(spr.x + 18, spr.y + 28 + 26).loadGraphic(Paths.image('editors/warnings/${isError ? "error" : "warning"}'));
+		sprIcon.scale.set(1.4, 1.4);
+		sprIcon.updateHitbox();
+
+		messageSpr = new UIText(0,0, spr.bWidth - 100 - (26 * 2), message);
+		spr.bHeight = Std.int(bHeight + Math.abs(Math.min(sprIcon.height-messageSpr.height, 0)));
+
 		spr.x = (FlxG.width - spr.bWidth) / 2;
 		spr.y = (FlxG.height - spr.bHeight) / 2;
 		spr.color = isError ? 0xFFFF0000 : 0xFFFFFF00;
 		add(spr);
 
-		add(titleSpr = new UIText(spr.x + 25, spr.y, spr.bWidth - 50, title, 15, -1));
-		titleSpr.y = spr.y + ((30 - titleSpr.height) / 2);
+		if(title != null) {
+			add(titleSpr = new UIText(spr.x + 25, spr.y, spr.bWidth - 50, title, 15, -1));
+			titleSpr.y = spr.y + ((30 - titleSpr.height) / 2);
+		}
 
 		var sprIcon:FlxSprite = new FlxSprite(spr.x + 18, spr.y + 28 + 26).loadGraphic(Paths.image('editors/warnings/${isError ? "error" : "warning"}'));
 		sprIcon.scale.set(1.4, 1.4);
@@ -83,7 +97,9 @@ class UIWarningSubstate extends MusicBeatSubstate {
 		sprIcon.antialiasing = true;
 		add(sprIcon);
 
-		add(messageSpr = new UIText(sprIcon.x + 70 + 16 + 20, sprIcon.y + 16, spr.bWidth - 100 - (26 * 2), message));
+		messageSpr.x = sprIcon.x + 70 + 16 + 20;
+		messageSpr.y = sprIcon.y;
+		add(messageSpr);
 
 		var xPos = (FlxG.width - (30 + (170 * buttons.length))) / 2;
 		for(k=>b in buttons) {

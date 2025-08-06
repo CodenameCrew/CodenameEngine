@@ -1,8 +1,8 @@
 package funkin.editors.ui;
 
 import flixel.math.FlxPoint;
-import lime.ui.KeyModifier;
 import lime.ui.KeyCode;
+import lime.ui.KeyModifier;
 import openfl.desktop.Clipboard;
 import openfl.geom.Rectangle;
 
@@ -17,10 +17,10 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 
 	var __wasFocused:Bool = false;
 
-	public function new(x:Float, y:Float, text:String = "", width:Int = 320, height:Int = 32, multiline:Bool = false) {
-		super(x, y, width, height, 'editors/ui/inputbox');
+	public function new(x:Float, y:Float, text:String = "", width:Int = 320, height:Int = 32, multiline:Bool = false, small:Bool = false) {
+		super(x, y, width, height, 'editors/ui/inputbox${small ? "-small" : ""}');
 
-		label = new UIText(0, 0, width, text);
+		label = new UIText(0, 0, width, text, small ? 12 : 15);
 		members.push(label);
 
 		caretSpr = new FlxSprite(0, 0);
@@ -110,6 +110,7 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 			case RIGHT:
 				changeSelection(1);
 			case BACKSPACE:
+				FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_TEXTREMOVE_SOUND));
 				if (position > 0) {
 					label.text = label.text.substr(0, position-1) + label.text.substr(position);
 					changeSelection(-1);
@@ -119,6 +120,7 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 			case END:
 				position = label.text.length;
 			case V:
+				FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_TEXTTYPE_SOUND));
 				// Hey lj here, fixed copying because before we checked if the modifier was left or right ctrl
 				// but somehow it gave a int outside of the KeyModifier's range :sob:
 				// apparently there is a boolean that just checks for you. yw :D
@@ -129,13 +131,14 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 				var data:String = Clipboard.generalClipboard.getData(TEXT_FORMAT);
 				if (data != null) onTextInput(data);
 			case C:
+				FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_TEXTTYPE_SOUND));
 				// if we are not holding ctrl, ignore
 				if (!modifier.ctrlKey) return;
 
 				// copying
 				Clipboard.generalClipboard.setData(TEXT_FORMAT, label.text);
 			default:
-				// nothing
+				FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_TEXTTYPE_SOUND));
 		}
 	}
 

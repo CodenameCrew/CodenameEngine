@@ -1,13 +1,11 @@
 package funkin.backend.system.updating;
 
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.math.FlxPoint;
+import funkin.backend.FunkinText;
+import funkin.backend.system.updating.UpdateUtil.UpdateCheckCallback;
 import funkin.backend.utils.MarkdownUtil;
 import funkin.menus.MainMenuState;
-import flixel.math.FlxPoint;
-import funkin.backend.system.updating.UpdateUtil.UpdateCheckCallback;
-import funkin.backend.FunkinText;
-import flixel.text.FlxText;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.tweens.FlxTween;
 
 class UpdateAvailableScreen extends MusicBeatState {
 	public var bg:FlxSprite;
@@ -43,7 +41,9 @@ class UpdateAvailableScreen extends MusicBeatState {
 		bg.screenCenter();
 		add(bg);
 
-		title = new Alphabet(0, 10, "NEW UPDATE", true);
+		// which file should i put this in?
+		// Misc.xml?
+		title = new Alphabet(0, 10, TU.translate("updateAvailable.title"), true);
 		title.screenCenter(X);
 		title.scrollFactor.set();
 
@@ -63,8 +63,8 @@ class UpdateAvailableScreen extends MusicBeatState {
 		changeLogText.borderColor = 0xFF000000;
 		MarkdownUtil.applyMarkdownText(changeLogText, check.updates.last().body);
 
-		installButton = new FunkinText(0, FlxG.height - 25, Std.int(FlxG.width / 2), "> INSTALL <", 32);
-		skipButton = new FunkinText(Std.int(FlxG.width / 2), FlxG.height - 25, Std.int(FlxG.width / 2), "SKIP", 32);
+		installButton = new FunkinText(0, FlxG.height - 25, Std.int(FlxG.width / 2), "PLACEHOLDER", 32);
+		skipButton = new FunkinText(Std.int(FlxG.width / 2), FlxG.height - 25, Std.int(FlxG.width / 2), "PLACEHOLDER", 32);
 
 		skipButton.y -= skipButton.height;
 		installButton.y -= installButton.height;
@@ -93,6 +93,8 @@ class UpdateAvailableScreen extends MusicBeatState {
 
 		oldPos = FlxG.mouse.getScreenPosition();
 
+		changeSelection(false);
+
 		DiscordUtil.call("onMenuLoaded", ["Update Available Screen"]);
 	}
 
@@ -102,7 +104,7 @@ class UpdateAvailableScreen extends MusicBeatState {
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
 
-		destY = FlxMath.bound(destY - (FlxG.mouse.wheel * 75), 0, Math.max(0, changeLogText.height - FlxG.height + versionCheckBG.height + 20 + optionsBG.height));
+		destY = CoolUtil.bound(destY - (FlxG.mouse.wheel * 75), 0, Math.max(0, changeLogText.height - FlxG.height + versionCheckBG.height + 20 + optionsBG.height));
 		FlxG.camera.scroll.y = lerp(FlxG.camera.scroll.y, destY, 1/3);
 
 		if (controls.LEFT_P || controls.RIGHT_P) {
@@ -134,16 +136,18 @@ class UpdateAvailableScreen extends MusicBeatState {
 		}
 	}
 
+	var installText = TU.translate("updateAvailable.install");
+	var skipText = TU.translate("updateAvailable.skip");
 
-	public function changeSelection() {
+	public function changeSelection(playSFX:Bool = true) {
 		CoolUtil.playMenuSFX(SCROLL, 0.7);
-		if (installSelected) {
-			installButton.text = "> INSTALL <";
-			skipButton.text = "SKIP";
-		} else {
-			installButton.text = "INSTALL";
-			skipButton.text = "> SKIP <";
-		}
+
+		// keeping this local just incase we wanna change this later
+		inline function wrap(str:String, shouldWrap:Bool)
+			return shouldWrap ? "> " + str + " <" : str;
+
+		installButton.text = wrap(installText, installSelected);
+		skipButton.text = wrap(skipText, !installSelected);
 	}
 
 	public override function destroy() {

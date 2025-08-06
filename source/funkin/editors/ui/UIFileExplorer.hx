@@ -11,24 +11,23 @@ class UIFileExplorer extends UISliceSprite {
 	public var deleteIcon:FlxSprite;
 
 	public var file:Bytes = null;
-	public var onFile:Bytes->Void;
+	public var filePath:String = null;
+	public var onFile:(String, Bytes)->Void;
 
-	public var uiElement:UISprite;
+	public var uiElement:FlxSprite;
+	
+	public var fileType:String = "txt";
 
-	public function new(x:Float, y:Float, ?w:Int, ?h:Int, fileType:String = "txt", ?onFile:Bytes->Void) {
+	public function new(x:Float, y:Float, ?w:Int, ?h:Int, fileType:String = "txt", ?onFile:(String, Bytes)->Void) {
 		super(x, y, (w != null ? w : 320), (h != null ? h : 58), 'editors/ui/inputbox');
+		this.fileType = fileType;
 
 		if (onFile != null) this.onFile = onFile;
 
-		uploadButton = new UIButton(x + 8, y+ 8, "", function () {
+		uploadButton = new UIButton(x + 8, y+ 8, null, function () {
 			var fileDialog = new FileDialog();
-			fileDialog.onOpen.add(function(res) {
-				file = cast res;
-				deleteButton.visible = deleteButton.selectable = deleteIcon.visible = !(uploadButton.visible = uploadButton.selectable = false);
-
-				if (this.onFile != null) this.onFile(file);
-			});
-			fileDialog.open(fileType);
+			fileDialog.onSelect.add(loadFile);
+			fileDialog.browse(OPEN, this.fileType);
 		}, bWidth - 16, bHeight - 16);
 		members.push(uploadButton);
 
@@ -36,13 +35,13 @@ class UIFileExplorer extends UISliceSprite {
 		uploadIcon.antialiasing = false;
 		uploadButton.members.push(uploadIcon);
 
-		deleteButton = new UIButton(x + bWidth - (bHeight - 16) - 8, y + 8, "", removeFile, bHeight - 16, bHeight - 16);
+		deleteButton = new UIButton(x + bWidth - (bHeight - 16) - 8, y + 8, null, removeFile, bHeight - 16, bHeight - 16);
 		deleteButton.color = 0xFFFF0000;
 		members.push(deleteButton);
 
 		deleteIcon = new FlxSprite(deleteButton.x + ((bHeight - 16)/2) - 8, deleteButton.y + ((bHeight - 16)/2) - 8).loadGraphic(Paths.image('editors/delete-button'));
 		deleteIcon.antialiasing = false;
-		members.push(deleteIcon);
+		deleteButton.members.push(deleteIcon);
 
 		deleteButton.visible = deleteButton.selectable = deleteIcon.visible = false;
 	}
@@ -55,18 +54,28 @@ class UIFileExplorer extends UISliceSprite {
 
 		if (uiElement != null) {
 			uiElement.alpha = alpha;
-			if (uiElement is UIButton)
-				cast(uiElement, UIButton).selectable = selectable;
+			if (uiElement is UIButton) {
+				var uiElement:UIButton = cast uiElement;
+				uiElement.selectable = selectable;
+			}
 		}
 	}
 
+	public function loadFile(path:String) {
+		file = cast sys.io.File.getBytes(filePath = path);
+		deleteButton.visible = deleteButton.selectable = deleteIcon.visible = !(uploadButton.visible = uploadButton.selectable = false);
+
+		if (this.onFile != null) this.onFile(filePath, file);
+	}
+
 	public function removeFile() {
+		if (!selectable) return;
 		if (uiElement != null) {
 			members.remove(uiElement);
 			uiElement.destroy();
 		}
 
-		file = null;
+		file = null; onFile(null, null);
 		MemoryUtil.clearMajor();
 
 		deleteButton.visible = deleteButton.selectable = deleteIcon.visible = !(uploadButton.visible = uploadButton.selectable = true);

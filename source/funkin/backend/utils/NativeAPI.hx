@@ -1,5 +1,8 @@
 package funkin.backend.utils;
 
+import haxe.macro.Expr.Case;
+import openfl.ui.Mouse;
+import openfl.ui.MouseCursor;
 import funkin.backend.utils.native.*;
 import flixel.util.typeLimit.OneOfTwo;
 import flixel.util.typeLimit.OneOfThree;
@@ -35,9 +38,9 @@ class NativeAPI {
 	/**
 	 * Gets the specified file's (or folder) attributes.
 	 */
-	public static function getFileAttributesRaw(path:String, useAbsol:Bool = true):Int {
+	public static function getFileAttributesRaw(path:String, useAbsolute:Bool = true):Int {
 		#if windows
-		if(useAbsol) path = sys.FileSystem.absolutePath(path);
+		if(useAbsolute) path = sys.FileSystem.absolutePath(path);
 		return Windows.getFileAttributes(path);
 		#else
 		return -1;
@@ -47,16 +50,16 @@ class NativeAPI {
 	/**
 	 * Gets the specified file's (or folder) attributes and passes it to `FileAttributeWrapper`.
 	 */
-	public static function getFileAttributes(path:String, useAbsol:Bool = true):FileAttributeWrapper {
-		return new FileAttributeWrapper(getFileAttributesRaw(path, useAbsol));
+	public static function getFileAttributes(path:String, useAbsolute:Bool = true):FileAttributeWrapper {
+		return new FileAttributeWrapper(getFileAttributesRaw(path, useAbsolute));
 	}
 
 	/**
 	 * Sets the specified file's (or folder) attributes. If it fails, the return value is `0`.
 	 */
-	public static function setFileAttributes(path:String, attrib:OneOfThree<NativeAPI.FileAttribute, FileAttributeWrapper, Int>, useAbsol:Bool = true):Int {
+	public static function setFileAttributes(path:String, attrib:OneOfThree<NativeAPI.FileAttribute, FileAttributeWrapper, Int>, useAbsolute:Bool = true):Int {
 		#if windows
-		if(useAbsol) path = sys.FileSystem.absolutePath(path);
+		if(useAbsolute) path = sys.FileSystem.absolutePath(path);
 		return Windows.setFileAttributes(path, attrib is FileAttributeWrapper ? cast(attrib, FileAttributeWrapper).getValue() : cast(attrib, Int));
 		#else
 		return 0;
@@ -66,9 +69,9 @@ class NativeAPI {
 	/**
 	 * Removes from the specified file's (or folder) one (or more) specific attribute.
 	 */
-	public static function addFileAttributes(path:String, attrib:OneOfTwo<NativeAPI.FileAttribute, Int>, useAbsol:Bool = true):Int {
+	public static function addFileAttributes(path:String, attrib:OneOfTwo<NativeAPI.FileAttribute, Int>, useAbsolute:Bool = true):Int {
 		#if windows
-		return setFileAttributes(path, getFileAttributesRaw(path, useAbsol) | cast(attrib, Int), useAbsol);
+		return setFileAttributes(path, getFileAttributesRaw(path, useAbsolute) | cast(attrib, Int), useAbsolute);
 		#else
 		return 0;
 		#end
@@ -77,9 +80,9 @@ class NativeAPI {
 	/**
 	 * Removes from the specified file's (or folder) one (or more) specific attribute.
 	 */
-	public static function removeFileAttributes(path:String, attrib:OneOfTwo<NativeAPI.FileAttribute, Int>, useAbsol:Bool = true):Int {
+	public static function removeFileAttributes(path:String, attrib:OneOfTwo<NativeAPI.FileAttribute, Int>, useAbsolute:Bool = true):Int {
 		#if windows
-		return setFileAttributes(path, getFileAttributesRaw(path, useAbsol) & ~cast(attrib, Int), useAbsol);
+		return setFileAttributes(path, getFileAttributesRaw(path, useAbsolute) & ~cast(attrib, Int), useAbsolute);
 		#else
 		return 0;
 		#end
@@ -188,8 +191,8 @@ class NativeAPI {
 		if(backgroundColor == NONE)
 			backgroundColor = BLACK;
 
-		var fg = cast(foregroundColor, Int);
-		var bg = cast(backgroundColor, Int);
+		var fg:Int = cast foregroundColor;
+		var bg:Int = cast backgroundColor;
 		Windows.setConsoleColors((bg * 16) + fg);
 		#elseif sys
 		Sys.print("\x1b[0m");
@@ -197,6 +200,17 @@ class NativeAPI {
 			Sys.print("\x1b[" + Std.int(consoleColorToANSI(foregroundColor)) + "m");
 		if(backgroundColor != NONE)
 			Sys.print("\x1b[" + Std.int(consoleColorToANSI(backgroundColor) + 10) + "m");
+		#end
+	}
+
+	/**
+	 * Set cursor icon.
+	**/
+	public static function setCursorIcon(icon:CodeCursor) {
+		#if (mac && cpp)
+		Mac.setMouseCursorIcon(cast icon);
+		#else
+		Mouse.cursor = icon.toOpenFL();
 		#end
 	}
 
@@ -289,4 +303,102 @@ enum abstract MessageBoxIcon(Int) {
 	var MSG_QUESTION = 0x00000020;
 	var MSG_WARNING = 0x00000030;
 	var MSG_INFORMATION = 0x00000040;
+}
+
+enum abstract CodeCursor(String) {
+	var CUSTOM;// = "arrow";
+	var ARROW;// = "arrow";
+	var CLICK;// = "click";
+	var CROSSHAIR;// = "crosshair";
+	var HAND;// = "hand";
+	var IBEAM;// = "ibeam";
+	var MOVE;// = "move";
+
+	var RESIZE_H;// = "resize_we";
+	var RESIZE_V;// = "resize_ns";
+	var RESIZE_TL;// = "resize_nw";
+	var RESIZE_TR;// = "resize_ne";
+	var RESIZE_BL;// = "resize_sw";
+	var RESIZE_BR;// = "resize_se";
+	var RESIZE_T;// = "resize_n";
+	var RESIZE_B;// = "resize_b";
+	var RESIZE_L;// = "resize_w";
+	var RESIZE_R;// = "resize_e";
+
+	var RESIZE_TLBR;// = "resize_nw_se";
+	var RESIZE_TRBL;// = "resize_ne_sw";
+
+	var WAIT;// = "wait";
+	var WAIT_ARROW;// = "waitarrow";
+	var DISABLED;// = "disabled";
+	var DRAG;// = "drag";
+	var DRAG_OPEN;// = "dragopen";
+
+	@:to public function toOpenFL():MouseCursor {
+		return @:privateAccess switch(cast this) {
+			case ARROW: MouseCursor.ARROW;
+			case CROSSHAIR: MouseCursor.__CROSSHAIR;
+			case CLICK: MouseCursor.BUTTON;
+			case IBEAM: MouseCursor.IBEAM;
+			case MOVE: MouseCursor.__MOVE;
+			case HAND: MouseCursor.HAND;
+			case DRAG: MouseCursor.HAND;
+			case DRAG_OPEN: MouseCursor.ARROW; // Could be HAND, but it might be better to use ARROW since on windows it would be weird to have the dragging cursor
+			case WAIT: MouseCursor.__WAIT;
+			case WAIT_ARROW: MouseCursor.__WAIT_ARROW;
+
+			case DISABLED: MouseCursor.ARROW;
+
+			case RESIZE_TR: MouseCursor.__RESIZE_NESW;
+			case RESIZE_BL: MouseCursor.__RESIZE_NESW;
+			case RESIZE_TL: MouseCursor.__RESIZE_NWSE;
+			case RESIZE_BR: MouseCursor.__RESIZE_NWSE;
+			case RESIZE_H: MouseCursor.__RESIZE_WE;
+			case RESIZE_V: MouseCursor.__RESIZE_NS;
+
+			case RESIZE_T: MouseCursor.__RESIZE_NS;
+			case RESIZE_B: MouseCursor.__RESIZE_NS;
+			case RESIZE_L: MouseCursor.__RESIZE_WE;
+			case RESIZE_R: MouseCursor.__RESIZE_WE;
+
+			case RESIZE_TLBR: MouseCursor.__RESIZE_NWSE;
+			case RESIZE_TRBL: MouseCursor.__RESIZE_NESW;
+			case CUSTOM: MouseCursor.__CUSTOM;
+			//default: ARROW;
+		}
+	}
+
+	@:to public function toInt():Int {
+		return switch(cast this) {
+			case ARROW: 0;
+			case CROSSHAIR: 1;
+			case CLICK: 2;
+			case IBEAM: 3;
+			case MOVE: 4;
+			case HAND: 5;
+			case DRAG: 6;
+			case DRAG_OPEN: 7;
+			case WAIT: 8;
+			case WAIT_ARROW: 9;
+
+			case DISABLED: 10;
+
+			case RESIZE_TR: 11;
+			case RESIZE_BL: 12;
+			case RESIZE_TL: 13;
+			case RESIZE_BR: 14;
+			case RESIZE_H: 15;
+			case RESIZE_V: 16;
+
+			case RESIZE_T: 17;
+			case RESIZE_B: 18;
+			case RESIZE_L: 19;
+			case RESIZE_R: 20;
+
+			case RESIZE_TLBR: 21;
+			case RESIZE_TRBL: 22;
+
+			case CUSTOM: -1;
+		}
+	}
 }

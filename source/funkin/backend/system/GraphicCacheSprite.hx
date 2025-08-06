@@ -3,7 +3,7 @@ package funkin.backend.system;
 import flixel.graphics.FlxGraphic;
 
 /**
- * Dummy FlxSprite that allows you to cache FlxGraphics, and immediatly send them to GPU memory.
+ * Dummy FlxSprite that allows you to cache FlxGraphics, and immediately send them to GPU memory.
  */
 class GraphicCacheSprite extends FlxSprite {
 	/**

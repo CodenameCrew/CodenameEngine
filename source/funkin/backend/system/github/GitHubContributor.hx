@@ -22,3 +22,11 @@ typedef GitHubContributor = {
 	var site_admin:Bool;
 	var contributions:Int;
 }
+
+typedef CreditsGitHubContributor = {
+	var login:String;
+	var avatar_url:String;
+	var html_url:String;
+	var ?id:Int; // Not available in the avatar part
+	var ?contributions:Int; // Not available in the avatar part
+}

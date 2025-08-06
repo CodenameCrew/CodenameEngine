@@ -75,34 +75,13 @@ class EventMacro {
 				// add a "set this" expr for each variable
 				for(v in values) {
 					var name = v.name;
-					exprs.push({
-						pos: Context.currentPos(),
-						expr: EBinop(OpAssign, {
-								pos: Context.currentPos(),
-								expr: EField({
-									pos: Context.currentPos(),
-									expr: EConst(CIdent("this"))
-								}, name)
-							}, {
-								pos: Context.currentPos(),
-								expr: EConst(CIdent(name))
-							})
-					});
+					exprs.push(macro this.$name = $i{name});
 				}
 
 				// add a "set this" expr to reset each private/hidden variables
 				for(v in hiddenValues) {
 					var name = v.name;
-					exprs.push({
-						pos: Context.currentPos(),
-						expr: EBinop(OpAssign, {
-								pos: Context.currentPos(),
-								expr: EField({
-									pos: Context.currentPos(),
-									expr: EConst(CIdent("this"))
-								}, name)
-							}, v.expr)
-					});
+					exprs.push(macro this.$name = ${v.expr});
 				}
 
 				exprs.push(macro return this);

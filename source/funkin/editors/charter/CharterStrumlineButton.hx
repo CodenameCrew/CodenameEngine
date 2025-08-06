@@ -1,7 +1,7 @@
 package funkin.editors.charter;
 
-import flixel.tweens.FlxTween;
 import flixel.math.FlxPoint;
+import flixel.tweens.FlxTween;
 
 class CharterStrumlineButton extends UISprite {
 	public var button:UISprite;
@@ -24,7 +24,7 @@ class CharterStrumlineButton extends UISprite {
 		button.scale.set(0.85,0.85);
 		button.updateHitbox();
 		button.antialiasing = true;
-		button.cursor = BUTTON;
+		button.cursor = CLICK;
 		members.push(button);
 
 		this.text = new UIText(0,0, 160, text);
@@ -58,8 +58,8 @@ class CharterStrumlineButton extends UISprite {
 
 		super.update(elapsed);
 
-		UIState.state.updateSpriteRect(button);
-		if(UIState.state.curContextMenu == null && UIState.state.isOverlapping(button, button.__rect)) {
+		button.updateSpriteRect();
+		if (UIState.state.curContextMenu == null && UIState.state.isOverlapping(button, button.__rect) && button.visible) {
 			buttonScale.set(0.95, 0.95);
 			if (FlxG.mouse.justPressed && onClick != null) {
 				onClick();

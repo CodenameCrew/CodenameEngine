@@ -1,17 +1,14 @@
 package funkin.menus;
 
-import haxe.Json;
-import funkin.backend.FunkinText;
-import funkin.menus.credits.CreditsMain;
 import flixel.FlxState;
 import flixel.effects.FlxFlicker;
-import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
-import flixel.util.FlxColor;
-import lime.app.Application;
-import funkin.backend.scripting.events.*;
-
+import funkin.backend.FunkinText;
+import funkin.backend.scripting.events.menu.MenuChangeEvent;
+import funkin.backend.scripting.events.NameEvent;
+import funkin.menus.credits.CreditsMain;
 import funkin.options.OptionsMenu;
+import lime.app.Application;
 
 using StringTools;
 
@@ -28,10 +25,11 @@ class MainMenuState extends MusicBeatState
 	var camFollow:FlxObject;
 	var versionText:FunkinText;
 
-	public var canAccessDebugMenus:Bool = true;
+	public var canAccessDebugMenus:Bool = !Flags.DISABLE_EDITORS;
 
 	override function create()
 	{
+
 		super.create();
 
 		DiscordUtil.call("onMenuLoaded", ["Main Menu"]);
@@ -76,7 +74,12 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		versionText = new FunkinText(5, FlxG.height - 2, 0, 'Codename Engine v${Application.current.meta.get('version')}\nCommit ${funkin.backend.system.macros.GitCommitMacro.commitNumber} (${funkin.backend.system.macros.GitCommitMacro.commitHash})\n[${controls.getKeyName(SWITCHMOD)}] Open Mods menu\n');
+		versionText = new FunkinText(5, FlxG.height - 2, 0, [
+			Flags.VERSION_MESSAGE,
+			TU.translate("mainMenu.commit", [Flags.COMMIT_NUMBER, Flags.COMMIT_HASH]),
+			TU.translate("mainMenu.openMods", [controls.getKeyName(SWITCHMOD)]),
+			''
+		].join('\n'));
 		versionText.y -= versionText.height;
 		versionText.scrollFactor.set();
 		add(versionText);
@@ -95,7 +98,7 @@ class MainMenuState extends MusicBeatState
 		if (!selectedSomethin)
 		{
 			if (canAccessDebugMenus) {
-				if (FlxG.keys.justPressed.SEVEN) {
+				if (controls.DEV_ACCESS) {
 					persistentUpdate = false;
 					persistentDraw = true;
 					openSubState(new funkin.editors.EditorPicker());
@@ -165,7 +168,7 @@ class MainMenuState extends MusicBeatState
 			{
 				case 'story mode': FlxG.switchState(new StoryMenuState());
 				case 'freeplay': FlxG.switchState(new FreeplayState());
-				case 'donate', 'credits': FlxG.switchState(new CreditsMain());  // kept donate for not breaking scripts, if you dont want donate to bring you to the credits menu, thats easy softcodable  - Nex
+				case 'donate', 'credits': FlxG.switchState(new CreditsMain());  // kept donate for not breaking scripts, if you don't want donate to bring you to the credits menu, thats easy softcodable  - Nex
 				case 'options': FlxG.switchState(new OptionsMenu());
 			}
 		});

@@ -24,14 +24,8 @@ class OptionsMacro {
 						var ptwoname = 'P2_$name';
 						var newFuncExpr:Expr = macro {
 							var a:Array<FlxKey> = [];
-							for(e in ${{
-								pos: Context.currentPos(),
-								expr: EConst(CIdent(ponename))
-							}}) a.push(e);
-							for(e in ${{
-								pos: Context.currentPos(),
-								expr: EConst(CIdent(ptwoname))
-							}}) a.push(e);
+							for(e in $i{ponename}) a.push(e);
+							for(e in $i{ptwoname}) a.push(e);
 							return a;
 						};
 

@@ -1,10 +1,10 @@
 package funkin.options;
 
-import funkin.backend.system.Controls;
 import flixel.util.FlxSignal;
+import funkin.backend.system.Controls;
 
-// import ui.DeviceManager;
 // import props.Player;
+// import ui.DeviceManager;
 class  PlayerSettings
 {
 	static public var numPlayers(default, null) = 0;

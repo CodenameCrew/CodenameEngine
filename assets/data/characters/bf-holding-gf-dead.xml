@@ -1,5 +1,5 @@
 <!DOCTYPE codename-engine-character>
-<character x="-50" y="330" isGF="false" flipX="true" isPlayer="true" antialiasing="true" sprite="bf-holding-gf-dead" color="#31B0D1">
+<character x="-50" y="330" flipX="true" isPlayer="true" antialiasing="true" sprite="bf-holding-gf-dead" color="#31B0D1">
 	<anim x="0" loop="false" y="0" fps="24" anim="BF Dies with GF" name="firstDeath"/>
 	<anim x="0" loop="false" y="-17" fps="24" anim="BF Dead with GF Loop" name="deathLoop"/>
 	<anim x="0" loop="false" y="14" fps="24" anim="RETRY confirm holding gf" name="deathConfirm"/>

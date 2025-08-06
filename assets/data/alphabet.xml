@@ -2,33 +2,76 @@
 <letters fps="24">
 	<bold spritesheet="menus/alphabet-bold">
 		<!-- Bold Letters !-->
-		<letter char="A"        anim="A bold" />
-		<letter char="B"        anim="B bold" />
-		<letter char="C"        anim="C bold" />
-		<letter char="D"        anim="D bold" />
-		<letter char="E"        anim="E bold" />
-		<letter char="F"        anim="F bold" />
-		<letter char="G"        anim="G bold" />
-		<letter char="H"        anim="H bold" />
-		<letter char="I"        anim="I bold" />
-		<letter char="J"        anim="J bold" />
-		<letter char="K"        anim="K bold" />
-		<letter char="L"        anim="L bold" />
-		<letter char="M"        anim="M bold" />
-		<letter char="N"        anim="N bold" />
-		<letter char="O"        anim="O bold" />
-		<letter char="P"        anim="P bold" />
-		<letter char="Q"        anim="Q bold" />
-		<letter char="R"        anim="R bold" />
-		<letter char="S"        anim="S bold" />
-		<letter char="T"        anim="T bold" />
-		<letter char="U"        anim="U bold" />
-		<letter char="V"        anim="V bold" />
-		<letter char="W"        anim="W bold" />
-		<letter char="X"        anim="X bold" />
-		<letter char="Y"        anim="Y bold" />
-		<letter char="Z"        anim="Z bold" />
-		<letter char=">"        anim="> Bold" />
+		<letter char="A"        anim="character-a" />
+		<letter char="B"        anim="character-b" />
+		<letter char="C"        anim="character-c" />
+		<letter char="D"        anim="character-d" />
+		<letter char="E"        anim="character-e" />
+		<letter char="F"        anim="character-f" />
+		<letter char="G"        anim="character-g" />
+		<letter char="H"        anim="character-h" />
+		<letter char="I"        anim="character-i" />
+		<letter char="J"        anim="character-j" />
+		<letter char="K"        anim="character-k" />
+		<letter char="L"        anim="character-l" />
+		<letter char="M"        anim="character-m" />
+		<letter char="N"        anim="character-n" />
+		<letter char="O"        anim="character-o" />
+		<letter char="P"        anim="character-p" />
+		<letter char="Q"        anim="character-q" />
+		<letter char="R"        anim="character-r" />
+		<letter char="S"        anim="character-s" />
+		<letter char="T"        anim="character-t" />
+		<letter char="U"        anim="character-u" />
+		<letter char="V"        anim="character-v" />
+		<letter char="W"        anim="character-w" />
+		<letter char="X"        anim="character-x" />
+		<letter char="Y"        anim="character-y" />
+		<letter char="Z"        anim="character-z" />
+
+		<letter char="&amp;"    anim="character-ampersand" />
+		<letter char="&lt;"     anim="character-anglebracket-left" />
+		<letter char="&gt;"     anim="character-anglebracket-right" />
+		<letter char="*"        anim="character-asterisk" />
+		<letter char="@"        anim="character-at" />
+		<letter char="\"        anim="character-backslash" />
+		<letter char="`"        anim="character-backtick" />
+		<letter char="^"        anim="character-caret" />
+		<letter char=":"        anim="character-colon" />
+		<letter char=","        anim="character-comma" />
+		<letter char="{"        anim="character-curlybracket-left" />
+		<letter char="}"        anim="character-curlybracket-right" />
+		<letter char="$"        anim="character-dollar" />
+		<letter char='"'        anim="character-doublequote" />
+		<letter char="="        anim="character-equal" />
+		<letter char="!"        anim="character-exclamationmark" />
+		<letter char="-"        anim="character-hyphen" />
+		<letter char="%"        anim="character-percent" />
+		<letter char="."        anim="character-period" />
+		<letter char="+"        anim="character-plus" />
+		<letter char="#"        anim="character-pound" />
+		<letter char="?"        anim="character-questionmark" />
+		<letter char="("        anim="character-roundbracket-left" />
+		<letter char=")"        anim="character-roundbracket-right" />
+		<letter char=";"        anim="character-semicolon" />
+		<letter char="'"        anim="character-singlequote" />
+		<letter char="/"        anim="character-slash" />
+		<letter char="["        anim="character-squarebracket-left" />
+		<letter char="]"        anim="character-squarebracket-right" />
+		<letter char="~"        anim="character-tilde" />
+		<letter char="_"        anim="character-underscore" />
+		<letter char="|"        anim="character-verticalbar" />
+
+		<letter char="0"        anim="character-zero" />
+		<letter char="1"        anim="character-one" />
+		<letter char="2"        anim="character-two" />
+		<letter char="3"        anim="character-three" />
+		<letter char="4"        anim="character-four" />
+		<letter char="5"        anim="character-five" />
+		<letter char="6"        anim="character-six" />
+		<letter char="7"        anim="character-seven" />
+		<letter char="8"        anim="character-eight" />
+		<letter char="9"        anim="character-nine" />
 	</bold>
 	<normal spritesheet="menus/alphabet">
 		<!-- Symbols !-->

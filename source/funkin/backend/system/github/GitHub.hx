@@ -1,11 +1,17 @@
 package funkin.backend.system.github;
 
+import haxe.Exception;
 #if GITHUB_API
 import haxe.Json;
 #end
 import haxe.Exception;
 
 // TODO: Document further and perhaps make this a Haxelib.
+/**
+ * Set of functions to interact with GitHub.
+ * Requires the `GITHUB_API` macro to be defined.
+ * This has no authentication, so it's limited to unauthenticated requests, and rate limits.
+**/
 class GitHub {
 	/**
 	 * Gets all the releases from a specific GitHub repository using the GitHub API.
@@ -82,7 +88,7 @@ class GitHub {
 	 * @param onError Error Callback
 	 * @return Members List
 	 */
-	 public static function getOrganizationMembers(org:String, ?onError:Exception->Void):Array<GitHubContributor> {
+	public static function getOrganizationMembers(org:String, ?onError:Exception->Void):Array<GitHubContributor> {
 		#if GITHUB_API
 		try {
 			var data = Json.parse(HttpUtil.requestText('https://api.github.com/orgs/$org/members'));
@@ -105,7 +111,7 @@ class GitHub {
 	 * @param onError Error Callback
 	 * @return User/Organization
 	 */
-	 public static function getUser(user:String, ?onError:Exception->Void):GitHubUser {
+	public static function getUser(user:String, ?onError:Exception->Void):GitHubUser {
 		#if GITHUB_API
 		try {
 			var url = 'https://api.github.com/users/$user';

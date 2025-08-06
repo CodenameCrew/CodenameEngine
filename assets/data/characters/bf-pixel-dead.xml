@@ -1,5 +1,5 @@
 <!DOCTYPE codename-engine-character>
-<character icon="bf-pixel-dead" x="200" y="570" isGF="false" scale="6" flipX="true" isPlayer="true" antialiasing="false" sprite="bf-pixel-dead" color="#7BD6F6">
+<character icon="bf-pixel-dead" x="200" y="570" scale="6" flipX="true" isPlayer="true" antialiasing="false" sprite="bf-pixel-dead" color="#7BD6F6">
 	<anim x="0" loop="false" y="0" fps="24" anim="BF Dies pixel" name="firstDeath"/>
 	<anim x="-5" loop="true" y="-2" fps="24" anim="Retry Loop" name="deathLoop"/>
 	<anim x="-5" loop="false" y="-2" fps="24" anim="RETRY CONFIRM" name="deathConfirm"/>

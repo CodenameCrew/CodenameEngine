@@ -12,17 +12,17 @@ import funkin.backend.system.Logs as FunkinLogs;
 class Log
 {
 	public static var level:LogLevel;
+	public static var throwErrors:Bool = false;
 
 	public static function debug(message:Dynamic, ?info:PosInfos):Void
 	{
 		if (level >= LogLevel.DEBUG)
 		{
 			#if js
-			untyped __js__("console").debug("[" + info.className + "] " + message);
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").debug("[" + info.className + "] " + message);
 			#else
 			println("[" + info.className + "] " + Std.string(message));
 			#end
-
 		}
 	}
 
@@ -30,23 +30,32 @@ class Log
 	{
 		if (level >= LogLevel.ERROR)
 		{
-			var message = '[${info.className}] $message';
-
-			#if !macro
-			FunkinLogs.trace(message, ERROR, RED);
-			#else
-			trace(message);
-			#end
+			if (throwErrors)
+			{
+				#if webassembly
+				println(message);
+				#end
+				throw message;
+			}
+			else
+			{
+				#if !macro
+				FunkinLogs.trace('[${info.className}] $message', ERROR, RED);
+				#else
+				println("[" + info.className + "] ERROR: " + message);
+				#end
+			}
 		}
 	}
 
 	public static function info(message:Dynamic, ?info:PosInfos):Void
 	{
-		if (level >= LogLevel.INFO) {
+		if (level >= LogLevel.INFO)
+		{
 			#if !macro
 			FunkinLogs.trace('[${info.className}] $message', INFO, RED);
 			#else
-			trace('[${info.className}] $message');
+			println("[" + info.className + "] " + Std.string(message));
 			#end
 		}
 	}
@@ -58,7 +67,7 @@ class Log
 		#elseif flash
 		untyped __global__["trace"](Std.string(message));
 		#elseif js
-		untyped __js__("console").log(message);
+		untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").log(message);
 		#else
 		trace(message);
 		#end
@@ -71,7 +80,7 @@ class Log
 		#elseif flash
 		untyped __global__["trace"](Std.string(message));
 		#elseif js
-		untyped __js__("console").log(message);
+		untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").log(message);
 		#else
 		trace(Std.string(message));
 		#end
@@ -79,11 +88,12 @@ class Log
 
 	public static function verbose(message:Dynamic, ?info:PosInfos):Void
 	{
-		if (level >= LogLevel.VERBOSE) {
+		if (level >= LogLevel.VERBOSE)
+		{
 			#if !macro
 			FunkinLogs.trace('[${info.className}] $message', VERBOSE);
 			#else
-			trace('[${info.className}] $message');
+			println("[" + info.className + "] " + message);
 			#end
 		}
 	}
@@ -95,7 +105,7 @@ class Log
 			#if !macro
 			FunkinLogs.trace('[${info.className}] $message', WARNING, YELLOW);
 			#else
-			trace('[${info.className}] $message');
+			println("[" + info.className + "] WARNING: " + Std.string(message));
 			#end
 		}
 	}
@@ -125,13 +135,13 @@ class Log
 		#end
 
 		#if js
-		if (untyped __js__("typeof console") == "undefined")
+		if (untyped #if haxe4 js.Syntax.code #else __js__ #end ("typeof console") == "undefined")
 		{
-			untyped __js__("console = {}");
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("console = {}");
 		}
-		if (untyped __js__("console").log == null)
+		if (untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").log == null)
 		{
-			untyped __js__("console").log = function() {};
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").log = function() {};
 		}
 		#end
 	}

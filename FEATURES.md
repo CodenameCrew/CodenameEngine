@@ -13,7 +13,7 @@ _**QOL = Quality of Life**_
     - Downscroll
     - Ghost Tapping
 - Opponent & Co-op modes
-- Memory optimisation (most of the game runs < 500mb)
+- Memory optimization (most of the game runs < 500mb)
     - Usage of [flxanimate](https://github.com/Dot-Stuff/flxanimate) on big sprites, such as Girlfriend to save memory.
     - You can further optimize it on certain stages by enabling `Low Memory Mode` in `Options > Appearance`.
 - New volume change SFX (no more loud flixel beep, customizable)
@@ -36,7 +36,7 @@ _**QOL = Quality of Life**_
     - Support for `hscript-improved`, a fork made to allow HScript to push modding even further
         - Allows for imports
         - Allows for public variables (variables shared between every script in a ScriptPack such as a song scripts)
-        - Allows for static variables (variabels shared between every single script ran in this mod)
+        - Allows for static variables (variables shared between every single script ran in this mod)
         - Allows you to use for example `boyfriend` instead of `PlayState.boyfriend` or `game.boyfriend`, for smaller and easier to comprehend code.
         - Allows you to use `@:bypassAccessor`
         - Allows you to use maps
@@ -59,7 +59,7 @@ _**QOL = Quality of Life**_
             - Position them
             - Add animations
             - Change their scale
-            - Change their scrollfactor
+            - Change their scroll factor
             - Change their zoomfactor
             - Turn on/off their antialiasing (on by default)
             - Change additional properties via child nodes.

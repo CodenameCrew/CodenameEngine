@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<str id="optionsMenu.desc-missing">No Description</str>
+
+	<group name="OptionsMenu">
+		<str id="optionsMenu.advanced">Advanced</str>
+		<str id="optionsMenu.header.title">Options Menu</str>
+		<str id="optionsMenu.header.desc">Select a category to continue.</str>
+
+		<str id="optionsTree.controls-name">Controls</str>
+		<str id="optionsTree.controls-desc">Change Controls for Player 1 and Player 2!</str>
+
+		<str id="optionsTree.gameplay-name">Gameplay</str>
+		<str id="optionsTree.gameplay-desc">Change Gameplay options such as Downscroll, Scroll Speed, Naughtyness...</str>
+		<str id="optionsTree.gameplay.advanced-desc">Change more advanced options such as Streaming Audio...</str>
+
+		<str id="optionsTree.appearance-name">Appearance</str>
+		<str id="optionsTree.appearance-desc">Change Appearance options such as Flashing menus...</str>
+		<str id="optionsTree.appearance.advanced-desc">Change more advanced options such as VRAM-Only Sprites, Antialiasing, Shaders</str>
+
+		<str id="optionsTree.language-name">Language</str>
+		<str id="optionsTree.language-desc">Change the language that the engine uses.</str>
+
+		<str id="optionsTree.miscellaneous-name">Miscellaneous</str>
+		<str id="optionsTree.miscellaneous-desc">Use this menu to reset save data or engine settings.</str>
+
+		<str id="optionsTree.debug-name">Debug Options</str>
+		<str id="optionsTree.debug-desc">Debug Options for Developer Mode.</str>
+	</group>
+
+	<group name="KeybindOptions" prefix="KeybindsOptions.">
+		<str id="left">Left</str>
+		<str id="down">Down</str>
+		<str id="up">Up</str>
+		<str id="right">Right</str>
+
+		<str id="category.notes">Notes</str>
+
+		<str id="category.ui">UI</str>
+		<group name="ui" prefix="ui.">
+			<str id="accept">Accept</str>
+			<str id="back">Back</str>
+			<str id="reset">Reset</str>
+			<str id="pause">Pause</str>
+		</group>
+
+		<str id="category.engine">Engine</str>
+		<group name="engine" prefix="engine.">
+			<str id="switchMod">Switch Mod</str>
+		</group>
+
+		<str id="category.volume">Volume</str>
+		<str id="volume.mute">Mute</str>
+
+		<str id="category.developer">Developer</str>
+		<group name="developer" prefix="developer.">
+			<str id="devMenus">Developer Menus</str>
+			<str id="openConsole">Open Console</str>
+			<str id="reloadState">Reload State</str>
+		</group>
+	</group>
+
+	<group name="AppearanceOptions" prefix="AppearanceOptions.">
+		<str id="framerate-name">Framerate</str>
+		<str id="framerate-desc">Pretty self explanatory, isn't it?</str>
+
+		<str id="flashingMenu-name">Flashing Menu</str>
+		<str id="flashingMenu-desc">If unchecked, will disable menu flashing when you select an option in the Main Menu, and other flashes will be slower.</str>
+
+		<str id="colorHealthBar-name">Colored Healthbar</str>
+		<str id="colorHealthBar-desc">If unchecked, the game will use the original red/green health bar from the week 6 fnf game.</str>
+
+		<str id="week6PixelPerfect-name">Pixel Perfect Effect</str>
+		<str id="week6PixelPerfect-desc">If checked, Week 6 or other pixel stages will have a pixel perfect effect to it enabled, aligning every pixel on the screen.</str>
+
+		<group name="AppearanceOptionsAdvanced" prefix="Advanced.">
+			<str id="quality-name">Quality</str>
+			<str id="quality-desc">Quality modes to choose, "LOW" = Disable every heavy visual effects as it can get to smoothen the gameplay, "HIGH" = Enable all of the visual effects, with the cost of performance, "CUSTOM" = Allow of custom options that is available in Advanced.</str>
+			<str id="quality-low">LOW</str>
+			<str id="quality-high">HIGH</str>
+			<str id="quality-custom">CUSTOM</str>
+
+			<str id="antialiasing-name">Antialiasing</str>
+			<str id="antialiasing-desc">If unchecked, will disable antialiasing on every sprite. Can boost performances at the cost of sharper, more pixely sprites.</str>
+
+			<str id="lowMemoryMode-name">Low Memory Mode</str>
+			<str id="lowMemoryMode-desc">If checked, will disable certain background elements in stages to reduce memory usage.</str>
+
+			<str id="gameplayShaders-name">Gameplay Shaders</str>
+			<str id="gameplayShaders-desc">If unchecked, gameplay shaders (visual effects like Thorns's Chromatic Aberration) wont be loaded; this may be helpful on weak devices.</str>
+
+			<str id="gpuOnlyBitmaps-name">VRAM-Only Sprites</str>
+			<str id="gpuOnlyBitmaps-desc">If checked, will only store the bitmaps in the GPU, freeing a LOT of memory (EXPERIMENTAL). Turning this off will consume a lot of memory, especially on bigger sprites. If you aren't sure, leave this on.</str>
+		</group>
+	</group>
+
+	<group name="GameplayOptions" prefix="GameplayOptions.">
+		<str id="downscroll-name">Downscroll</str>
+		<str id="downscroll-desc">If checked, notes will go from up to down instead of down to up, as if they're falling.</str>
+
+		<str id="ghostTapping-name">Ghost Tapping</str>
+		<str id="ghostTapping-desc">If unchecked, trying to hit any strum that have no note that can be hit will cause a miss.</str>
+
+		<str id="naughtyness-name">Naughtyness</str>
+		<str id="naughtyness-desc">If unchecked, will censor the Week 7 cutscenes or more.</str>
+
+		<str id="camZoomOnBeat-name">Camera Zoom on Beat</str>
+		<str id="camZoomOnBeat-desc">If unchecked, will stop the camera from zooming in every 4 beats.</str>
+
+		<str id="autoPause-name">Auto Pause</str>
+		<str id="autoPause-desc">If checked, switching windows will pause the game.</str>
+
+		<str id="volumeMusic-name">Music Volume</str>
+		<str id="volumeMusic-desc">Changes only the volume of the music instead of everything.</str>
+
+		<str id="volumeSFX-name">SFX Volume</str>
+		<str id="volumeSFX-desc">Changes only the volume of the SFX instead of everything.</str>
+
+		<str id="songOffset-name">Song Offset</str>
+		<str id="songOffset-desc">Changes the offset that songs should start with.</str>
+
+		<group name="GameplayOptionsAdvanced" prefix="Advanced.">
+			<str id="windowSize-name">Window Size</str>
+			<str id="windowSize-desc">...</str>
+
+			<str id="streamedMusic-name">Streamed Music</str>
+			<str id="streamedMusic-desc">If checked, only musics will have streamed audio, ALSO freeing a LOT of memory with the downside of higher cpu usage if more audio are being streamed at once (EXPERIMENTAL). Turning this off will consume a lot of memory, especially on longer songs. If you aren't sure, leave this on.</str>
+
+			<str id="streamedVocals-name">Streamed Vocals</str>
+			<str id="streamedVocals-desc">If checked, vocals will also be streamed if Streamed Music is checked, will impact the performance if the song uses alot of vocals (EXPERIMENTAL). If you aren't sure, leave this off.</str>
+		</group>
+	</group>
+
+	<group name="LanguageOptions" prefix="LanguageOptions.">
+		<str id="language-name">Language</str>
+		<str id="language-desc">Language by {0} (Version: {1})</str>
+	</group>
+
+	<group name="MiscOptions" prefix="MiscOptions.">
+		<str id="forceCrash-name">Force Crash</str>
+		<str id="forceCrash-desc">Select this option to force a crash.</str>
+
+		<str id="betaUpdates-name">Nightly Updates</str>
+		<str id="betaUpdates-desc">If checked, will also include nightly builds (the engine repository's commit updates basically, using Actions' builds) in the update checking.</str>
+
+		<str id="checkForUpdates-name">Check for Updates</str>
+		<str id="checkForUpdates-desc">Select this option to check for new engine updates.</str>
+		<str id="checkForUpdates-noUpdateFound">No update found.</str>
+
+		<str id="devMode-name">Developer Mode</str>
+		<str id="devMode-desc">If checked, you will be able to access developer features like certain keybinds, editors, developer options, state reloads, console and more.</str>
+
+		<str id="allowConfigWarning-name">Show Modpacks Warning</str>
+		<str id="allowConfigWarning-desc">If checked, a popup at the start of the game will appear if there are some warnings about the modpack, such as missing configs, incompatible versions and more</str>
+
+		<str id="resetSaveData-name">Reset Save Data</str>
+		<str id="resetSaveData-desc">Select this option to reset save data. This will remove all of your highscores.</str>
+	</group>
+
+	<group name="DebugOptions" prefix="DebugOptions.">
+		<str id="title">Debug Options</str>
+		<str id="desc">Use this menu to enable or disable debug options.</str>
+
+		<str id="showConsole-name">Show Console</str>
+		<str id="showConsole-desc">Select this to show the debug console, which contains log information about the game.</str>
+
+		<str id="editorsResizable-name">Resizable Editors</str>
+		<str id="editorsResizable-desc">If checked, this will allow the editors to render beyond the base 1280x720 resolution of FNF (allowing for more detail and space...)</str>
+
+		<str id="bypassEditorsResize-name">Bypass Editor Resize</str>
+		<str id="bypassEditorsResize-desc">Disables the minimum resolution for resizing editors (Needs Resizable Editors To Be Enabled).</str>
+
+		<str id="editorSFX-name">Editor SFXs</str>
+		<str id="editorSFX-desc">If checked, will play sound effects when working on editors (ex: will play sfxs when checking checkboxes...)</str>
+
+		<str id="editorCharterPrettyPrint-name">Chart Pretty Print</str>
+		<str id="editorCharterPrettyPrint-desc">If checked, the saved files from the chart editor will be formatted to be easily viewable</str>
+
+		<str id="editorCharacterPrettyPrint-name">Character Pretty Print</str>
+		<str id="editorCharacterPrettyPrint-desc">If checked, the saved files from the character editor will be formatted to be easily viewable</str>
+
+		<str id="editorStagePrettyPrint-name">Stage Pretty Print</str>
+		<str id="editorStagePrettyPrint-desc">If checked, the saved files from the stage editor will be formatted to be easily viewable</str>
+
+		<str id="intensiveBlur-name">Intensive Blur</str>
+		<str id="intensiveBlur-desc">If checked, will use more intensive blur that may be laggier but look better.</str>
+
+		<str id="charterAutoSaves-name">Editor Autosaves</str>
+		<str id="charterAutoSaves-desc">If checked, this will autosave your files in the editor, with the settings listed below.</str>
+
+		<str id="charterAutoSaveTime-name">Autosaving Time</str>
+		<str id="charterAutoSaveTime-desc">This controls how often the editor will autosave your file (in seconds...)</str>
+
+		<str id="charterAutoSaveWarningTime-name">Save Warning Time</str>
+		<str id="charterAutoSaveWarningTime-desc">This controls how long the editor will warn you before it autosaves (in seconds..., 0 to disable)</str>
+
+		<str id="charterAutoSavesSeparateFolder-name">Autosaves Folder</str>
+		<str id="charterAutoSavesSeparateFolder-desc">If checked, this will autosave your file in a separate folder with a time stamp instead of overriding your current file. (song/autosaves/)</str>
+
+		<str id="songOffsetAffectEditors-name">Offset in Charter</str>
+		<str id="songOffsetAffectEditors-desc">If checked, this will enable the Song Offset option in the Chart Editor too.</str>
+	</group>
+
+</language>

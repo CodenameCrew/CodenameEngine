@@ -5,7 +5,7 @@ import flixel.graphics.frames.FlxFrame;
 class UISliceSprite extends UISprite {
 	public var bWidth:Int = 120;
 	public var bHeight:Int = 20;
-	public var framesOffset:Int = 0;
+	public var framesOffset(default, set):Int = 0;
 
 	public var incorporeal:Bool = false;
 
@@ -14,14 +14,12 @@ class UISliceSprite extends UISprite {
 
 		frames = Paths.getFrames(path);
 		resize(w, h);
+		calculateFrames();
 	}
 
 	public override function updateButton() {
 		if (incorporeal) return;
-		__rect.x = x;
-		__rect.y = y;
-		__rect.width = bWidth;
-		__rect.height = bHeight;
+		__rect.set(x, y, bWidth, bHeight);
 		UIState.state.updateRectButtonHandler(this, __rect, onHovered);
 	}
 
@@ -30,112 +28,198 @@ class UISliceSprite extends UISprite {
 		bHeight = h;
 	}
 
+	public var topAlpha:Null<Float> = null;
+	public var middleAlpha:Null<Float> = null;
+	public var bottomAlpha:Null<Float> = null;
+
 	public var drawTop:Bool = true;
 	public var drawMiddle:Bool = true;
 	public var drawBottom:Bool = true;
 
+	var topleft:FlxFrame = null;
+	var top:FlxFrame = null;
+	var topright:FlxFrame = null;
+	var middleleft:FlxFrame = null;
+	var middle:FlxFrame = null;
+	var middleright:FlxFrame = null;
+	var bottomleft:FlxFrame = null;
+	var bottom:FlxFrame = null;
+	var bottomright:FlxFrame = null;
+
+	public var topHeight:Int = 0;
+	public var bottomHeight:Int = 0;
+	public var leftWidth:Int = 0;
+	public var rightWidth:Int = 0;
+
+	override function set_frames(val) {
+		super.set_frames(val);
+		calculateFrames();
+		return val;
+	}
+
+	function set_framesOffset(value:Int) {
+		if(value != framesOffset) {
+			framesOffset = value;
+			calculateFrames();
+		}
+		return value;
+	}
+
+	function calculateFrames() {
+		if(frames == null) return;
+		topleft = frames.frames[framesOffset];
+		top = frames.frames[framesOffset + 1];
+		topright = frames.frames[framesOffset + 2];
+		middleleft = frames.frames[framesOffset + 3];
+		middle = frames.frames[framesOffset + 4];
+		middleright = frames.frames[framesOffset + 5];
+		bottomleft = frames.frames[framesOffset + 6];
+		bottom = frames.frames[framesOffset + 7];
+		bottomright = frames.frames[framesOffset + 8];
+
+		leftWidth = Std.int(MathUtil.maxSmart(topleft.frame.width, middleleft.frame.width, bottomleft.frame.width));
+		rightWidth = Std.int(MathUtil.maxSmart(topright.frame.width, middleright.frame.width, bottomright.frame.width));
+		topHeight = Std.int(MathUtil.maxSmart(topleft.frame.height, top.frame.height, topright.frame.height));
+		bottomHeight = Std.int(MathUtil.maxSmart(topleft.frame.height, top.frame.height, topright.frame.height));
+	}
+
+	@:pure private static inline function getFixedSize(value:Float, total:Float):Float {
+		return value * Math.min(total / (value * 2), 1);
+	}
+
 	public override function draw() @:privateAccess {
+		var lastPixelPerfect:Bool = cameras[0] != null ? cameras[0].pixelPerfectRender : false;
+		if (cameras[0] != null) cameras[0].pixelPerfectRender = false;
+
+		var topLeft = (flipX ? (flipY ? bottomright : topright) : (flipY ? bottomleft : topleft));
+		var topMiddle = (flipY ? bottom : top);
+		var topRight = (flipX ? (flipY ? bottomleft : topleft) : (flipY ? bottomright : topright));
+		var middleLeft = (flipX ? middleright : middleleft);
+		var middleRight = (flipX ? middleleft : middleright);
+		var bottomLeft = (flipX ? (flipY ? topright : bottomright) : (flipY ? topleft : bottomleft));
+		var bottomMiddle = (flipY ? top : bottom);
+		var bottomRight = (flipX ? (flipY ? topleft : bottomleft) : (flipY ? topright : bottomright));
+
 		var x:Float = this.x;
 		var y:Float = this.y;
 
 		if (visible && !(bWidth == 0 || bHeight == 0)) {
-			var topleft:FlxFrame = frames.frames[framesOffset];
-			var top:FlxFrame = frames.frames[framesOffset + 1];
-			var topright:FlxFrame = frames.frames[framesOffset + 2];
-			var middleleft:FlxFrame = frames.frames[framesOffset + 3];
-			var middle:FlxFrame = frames.frames[framesOffset + 4];
-			var middleright:FlxFrame = frames.frames[framesOffset + 5];
-			var bottomleft:FlxFrame = frames.frames[framesOffset + 6];
-			var bottom:FlxFrame = frames.frames[framesOffset + 7];
-			var bottomright:FlxFrame = frames.frames[framesOffset + 8];
+			var topLeftWidth:Float = getFixedSize(topLeft.frame.width, bWidth);
+			var topLeftHeight:Float = getFixedSize(topLeft.frame.height, bHeight);
+			//var topMiddleWidth:Float = getFixedSize(topMiddle.frame.width, bWidth);
+			var topMiddleHeight:Float = getFixedSize(topMiddle.frame.height, bHeight);
+			var topRightWidth:Float = getFixedSize(topRight.frame.width, bWidth);
+			var topRightHeight:Float = getFixedSize(topRight.frame.height, bHeight);
+			var middleLeftWidth:Float = getFixedSize(middleLeft.frame.width, bWidth);
+			//var middleLeftHeight:Float = getFixedSize(middleLeft.frame.height, bHeight);
+			//var middleMiddleWidth:Float = getFixedSize(middle.frame.width, bWidth);
+			//var middleMiddleHeight:Float = getFixedSize(middle.frame.height, bHeight);
+			var middleRightWidth:Float = getFixedSize(middleRight.frame.width, bWidth);
+			//var middleRightHeight:Float = getFixedSize(middleRight.frame.height, bHeight);
+			var bottomLeftWidth:Float = getFixedSize(bottomLeft.frame.width, bWidth);
+			var bottomLeftHeight:Float = getFixedSize(bottomLeft.frame.height, bHeight);
+			//var bottomMiddleWidth:Float = getFixedSize(bottomMiddle.frame.width, bWidth);
+			var bottomMiddleHeight:Float = getFixedSize(bottomMiddle.frame.height, bHeight);
+			var bottomRightWidth:Float = getFixedSize(bottomRight.frame.width, bWidth);
+			var bottomRightHeight:Float = getFixedSize(bottomRight.frame.height, bHeight);
 
+			var oldAlpha = alpha;
 			// TOP
 			if (drawTop) {
 				// TOP LEFT
-				frame = topleft;
+				if(topAlpha != null) alpha = topAlpha;
+				frame = topLeft;
 				setPosition(x, y);
 				__setSize(
-					topleft.frame.width * Math.min(bWidth/(topleft.frame.width*2), 1),
-					topleft.frame.height * Math.min(bHeight/(topleft.frame.height*2), 1)
+					topLeftWidth,
+					topLeftHeight
 				);
 				super.drawSuper();
 
 				// TOP
-				if (bWidth > topleft.frame.width + topright.frame.width) {
-					frame = top;
-					setPosition(x + topleft.frame.width, y);
-					__setSize(bWidth - topleft.frame.width - topright.frame.width, top.frame.height * Math.min(bHeight/(top.frame.height*2), 1));
+				if (bWidth > topLeft.frame.width + topRight.frame.width) {
+					frame = topMiddle;
+					setPosition(x + topLeft.frame.width, y);
+					__setSize(
+						bWidth - topLeft.frame.width - topRight.frame.width,
+						topMiddleHeight
+					);
 					super.drawSuper();
 				}
 
 				// TOP RIGHT
-				setPosition(x + bWidth - (topright.frame.width * Math.min(bWidth/(topright.frame.width*2), 1)), y);
-				frame = topright;
+				setPosition(x + bWidth - topRightWidth, y);
+				frame = topRight;
 				__setSize(
-					topright.frame.width * Math.min(bWidth/(topright.frame.width*2), 1),
-					topright.frame.height * Math.min(bHeight/(topright.frame.height*2), 1)
+					topRightWidth,
+					topRightHeight
 				);
 				super.drawSuper();
 			}
 
 			// MIDDLE
-			if (drawMiddle && bHeight > top.frame.height + bottom.frame.height) {
-				var middleHeight:Float = bHeight - (topleft.frame.height * Math.min(bHeight/(topleft.frame.height*2), 1)) -
-				bottomleft.frame.height * Math.min(bHeight/(bottomleft.frame.height*2), 1);
+			if (drawMiddle && bHeight > topMiddle.frame.height + bottomMiddle.frame.height) {
+				if(middleAlpha != null) alpha = middleAlpha;
+				var middleHeight:Float = bHeight - topLeftHeight - bottomLeftHeight;
 
 				// MIDDLE LEFT
-				frame = middleleft;
-				setPosition(x, y + top.frame.height);
-				__setSize(middleleft.frame.width * Math.min(bWidth/(middleleft.frame.width*2), 1), middleHeight);
+				frame = middleLeft;
+				setPosition(x, y + topMiddle.frame.height);
+				__setSize(middleLeftWidth, middleHeight);
 				super.drawSuper();
 
-				if (bWidth > (middleleft.frame.width * Math.min(bWidth/(middleleft.frame.width*2), 1)) + middleright.frame.width) {
+				if (bWidth > (middleLeftWidth) + middleRight.frame.width) {
 					// MIDDLE
 					frame = middle;
-					setPosition(x + topleft.frame.width, y + top.frame.height);
-					__setSize(bWidth - middleleft.frame.width - middleright.frame.width, middleHeight);
+					setPosition(x + topLeft.frame.width, y + topMiddle.frame.height);
+					__setSize(bWidth - middleLeft.frame.width - middleRight.frame.width, middleHeight);
 					super.drawSuper();
 				}
 
 				// MIDDLE RIGHT
-				frame = middleright;
-				setPosition(x + bWidth - (topright.frame.width * Math.min(bWidth/(topright.frame.width*2), 1)), y + top.frame.height);
-				__setSize(middleright.frame.width * Math.min(bWidth/(middleright.frame.width*2), 1), middleHeight);
+				frame = middleRight;
+				setPosition(x + bWidth - (topRightWidth), y + topMiddle.frame.height);
+				__setSize(middleRightWidth, middleHeight);
 				super.drawSuper();
 			}
 
 			// BOTTOM
 			if (drawBottom) {
+				if(bottomAlpha != null) alpha = bottomAlpha;
 				// BOTTOM LEFT
-				frame = bottomleft;
-				setPosition(x, y + bHeight - (bottomleft.frame.height * Math.min(bHeight/(bottomleft.frame.height*2), 1)));
+				frame = bottomLeft;
+				setPosition(x, y + bHeight - (bottomLeftHeight));
 				__setSize(
-					bottomleft.frame.width * Math.min(bWidth/(bottomleft.frame.width*2), 1),
-					bottomleft.frame.height * Math.min(bHeight/(bottomleft.frame.height*2), 1)
+					bottomLeftWidth,
+					bottomLeftHeight
 				);
 				super.drawSuper();
 
-				if (bWidth > bottomleft.frame.width + bottomright.frame.width) {
+				if (bWidth > bottomLeft.frame.width + bottomRight.frame.width) {
 					// BOTTOM
-					frame = bottom;
-					setPosition(x + bottomleft.frame.width, y + bHeight - (bottom.frame.height * Math.min(bHeight/(bottom.frame.height*2), 1)));
-					__setSize(bWidth - bottomleft.frame.width - bottomright.frame.width, bottom.frame.height * Math.min(bHeight/(bottom.frame.height*2), 1));
+					frame = bottomMiddle;
+					setPosition(x + bottomLeft.frame.width, y + bHeight - (bottomMiddleHeight));
+					__setSize(bWidth - bottomLeft.frame.width - bottomRight.frame.width, bottomMiddleHeight);
 					super.drawSuper();
 				}
 
 				// BOTTOM RIGHT
-				frame = bottomright;
+				frame = bottomRight;
+
 				setPosition(
-					x + bWidth - (bottomright.frame.width * Math.min(bWidth/(bottomright.frame.width*2), 1)),
-					y + bHeight - (bottomright.frame.height * Math.min(bHeight/(bottomright.frame.height*2), 1))
+					x + bWidth - (bottomRightWidth),
+					y + bHeight - (bottomRightHeight)
 				);
 				__setSize(
-					bottomright.frame.width * Math.min(bWidth/(bottomright.frame.width*2), 1),
-					bottomright.frame.height * Math.min(bHeight/(bottomright.frame.height*2), 1)
+					bottomRightWidth,
+					bottomRightHeight
 				);
 				super.drawSuper();
+
 			}
+			alpha = oldAlpha;
 		}
+		if (cameras[0] != null) cameras[0].pixelPerfectRender = lastPixelPerfect;
 
 		setPosition(x, y);
 		super.drawMembers();

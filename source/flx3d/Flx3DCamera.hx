@@ -1,33 +1,31 @@
 package flx3d;
 
 #if THREE_D_SUPPORT
-import away3d.entities.SegmentSet;
 import away3d.cameras.Camera3D;
-import away3d.entities.TextureProjector;
-import away3d.primitives.SkyBox;
-import away3d.lights.LightBase;
 import away3d.containers.ObjectContainer3D;
-import away3d.library.Asset3DLibraryBundle;
+import away3d.containers.View3D;
+import away3d.entities.Mesh;
+import away3d.entities.SegmentSet;
+import away3d.entities.TextureProjector;
+import away3d.events.Asset3DEvent;
 import away3d.events.LoaderEvent;
-import away3d.loaders.AssetLoader;
+import away3d.library.Asset3DLibrary;
+import away3d.library.Asset3DLibraryBundle;
+import away3d.library.assets.Asset3DType;
+import away3d.lights.LightBase;
+import away3d.loaders.misc.AssetLoaderContext;
 import away3d.loaders.misc.AssetLoaderToken;
-import funkin.backend.system.Logs;
+import away3d.loaders.parsers.*;
+import away3d.materials.TextureMaterial;
+import away3d.primitives.SkyBox;
+import away3d.utils.Cast;
+import away3d.utils.Utils.expect;
 import flixel.FlxG;
 import flx3d.Flx3DUtil;
-import away3d.library.assets.Asset3DType;
-import away3d.library.Asset3DLibrary;
-import away3d.events.Asset3DEvent;
-import away3d.loaders.parsers.*;
-import away3d.utils.Cast;
-import away3d.materials.TextureMaterial;
 import haxe.io.Path;
-import away3d.loaders.misc.AssetLoaderContext;
 import openfl.Assets;
-import away3d.entities.Mesh;
-import away3d.loaders.Loader3D;
-import funkin.backend.utils.NativeAPI.ConsoleColor;
-import away3d.containers.View3D;
 #end
+
 import flixel.FlxCamera;
 
 class Flx3DCamera extends FlxCamera {
@@ -68,7 +66,6 @@ class Flx3DCamera extends FlxCamera {
 	}
 
 	public function addModel(assetPath:String, callback:Asset3DEvent->Void, ?texturePath:String, smoothTexture:Bool = true) {
-
 		var model = Assets.getBytes(assetPath);
 		if (model == null)
 			throw 'Model at ${assetPath} was not found.';
@@ -76,7 +73,7 @@ class Flx3DCamera extends FlxCamera {
 		var context = new AssetLoaderContext();
 		var noExt = Path.withoutExtension(assetPath);
 		trace(noExt);
-		context.mapUrlToData('${Path.withoutDirectory(noExt)}.mtl', '$noExt.mtl');
+		context.mapUrlToData(Path.withoutDirectory(noExt) + '.mtl', noExt + '.mtl');
 
 		var material:TextureMaterial = null;
 		if (texturePath != null)
@@ -90,7 +87,7 @@ class Flx3DCamera extends FlxCamera {
 			default:	new OBJParser();
 		}, (event:Asset3DEvent) -> {
 			if (event.asset != null && event.asset.assetType == Asset3DType.MESH) {
-				var mesh:Mesh = cast(event.asset, Mesh);
+				var mesh:Mesh = cast event.asset;
 				if (material != null)
 					mesh.material = material;
 				meshes.push(mesh);
@@ -105,29 +102,21 @@ class Flx3DCamera extends FlxCamera {
 	private function loadData(data:Dynamic, context:AssetLoaderContext, parser:ParserBase, onAssetCallback:Asset3DEvent->Void):AssetLoaderToken {
 		var token:AssetLoaderToken;
 
-		var lib:Asset3DLibraryBundle;
-		lib = Asset3DLibraryBundle.getInstance('Flx3DView-${__cur3DStageID}');
+		var lib:Asset3DLibraryBundle = Asset3DLibraryBundle.getInstance('Flx3DView-${__cur3DStageID}');
 		token = lib.loadData(data, context, null, parser);
 
 		token.addEventListener(Asset3DEvent.ASSET_COMPLETE, (event:Asset3DEvent) -> {
 			// ! Taken from Loader3D https://github.com/openfl/away3d/blob/master/away3d/loaders/Loader3D.hx#L207-L232
 			if (event.type == Asset3DEvent.ASSET_COMPLETE) {
-				var obj:ObjectContainer3D = null;
-				switch (event.asset.assetType) {
-					case Asset3DType.LIGHT:
-						obj = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(event.asset, LightBase) ? cast event.asset : null;
-					case Asset3DType.CONTAINER:
-						obj = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(event.asset, ObjectContainer3D) ? cast event.asset : null;
-					case Asset3DType.MESH:
-						obj = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(event.asset, Mesh) ? cast event.asset : null;
-					case Asset3DType.SKYBOX:
-						obj = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(event.asset, SkyBox) ? cast event.asset : null;
-					case Asset3DType.TEXTURE_PROJECTOR:
-						obj = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(event.asset, TextureProjector) ? cast event.asset : null;
-					case Asset3DType.CAMERA:
-						obj = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(event.asset, Camera3D) ? cast event.asset : null;
-					case Asset3DType.SEGMENT_SET:
-						obj = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(event.asset, SegmentSet) ? cast event.asset : null;
+				var obj:ObjectContainer3D = switch (event.asset.assetType) {
+					case Asset3DType.LIGHT: expect(event.asset, LightBase);
+					case Asset3DType.CONTAINER: expect(event.asset, ObjectContainer3D);
+					case Asset3DType.MESH: expect(event.asset, Mesh);
+					case Asset3DType.SKYBOX: expect(event.asset, SkyBox);
+					case Asset3DType.TEXTURE_PROJECTOR: expect(event.asset, TextureProjector);
+					case Asset3DType.CAMERA: expect(event.asset, Camera3D);
+					case Asset3DType.SEGMENT_SET: expect(event.asset, SegmentSet);
+					default: null;
 				}
 				if (obj != null && obj.parent == null)
 					view.scene.addChild(obj);

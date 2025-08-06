@@ -29,6 +29,6 @@ class Config {
 	];
 
 	public static final DISALLOW_ABSTRACT_AND_ENUM = [
-		"funkin.backend.scripting.events.PlayAnimEvent", // Error: expected member name or ';' after declaration specifiers, Due to Func
+		"funkin.backend.scripting.events.sprite.PlayAnimContext", // Error: expected member name or ';' after declaration specifiers, Due to define macro from math.h
 	];
 }

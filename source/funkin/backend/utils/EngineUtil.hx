@@ -1,9 +1,9 @@
 package funkin.backend.utils;
 
-import funkin.backend.scripting.Script;
 import funkin.backend.scripting.MultiThreadedScript;
+import funkin.backend.scripting.Script;
 
-class EngineUtil {
+final class EngineUtil {
 	/**
 	 * Starts a new multithreaded script.
 	 * This script will share all the variables with the current one, which means already existing callbacks will be replaced by new ones on conflict.

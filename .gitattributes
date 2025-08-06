@@ -8,3 +8,8 @@ pages/** linguist-vendored
 *.hxs linguist-language=Haxe
 *.hsc linguist-language=Haxe
 *.hscript linguist-language=Haxe
+
+# Include Shader files as GLSL
+*.frag linguist-language=GLSL
+*.vert linguist-language=GLSL
+*.glsl linguist-language=GLSL

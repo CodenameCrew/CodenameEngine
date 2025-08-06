@@ -8,10 +8,7 @@ var tankmanPool = [];
 
 function recycleTankman() {
 	if(tankmanPool.length == 0) {
-		var a = new TankmenBG();
-		a.self = a;
-		a.fuckingnewfuckingnew();
-		return a;
+		return new TankmenBG();
 	} else {
 		return tankmanPool.shift(); // can be pop but it causes it to be less random
 	}
@@ -73,8 +70,7 @@ function update(elapsed) {
 	}
 }
 
-class TankmenBG
-{
+class TankmenBG {
 	var strumTime = 0;
 	var goingRight = false;
 	var tankSpeed = 0.7;
@@ -82,11 +78,9 @@ class TankmenBG
 	var endingOffset = null;
 	var sprite = null;
 
-	var self = null;
 	var killed = false;
 
-	var fuckingnewfuckingnew = function()
-	{
+	function new() {
 		this.sprite = new FlxSprite();
 		var sprite = this.sprite;
 
@@ -102,8 +96,7 @@ class TankmenBG
 		sprite.updateHitbox();
 	}
 
-	var resetShit = function(x, y, isGoingRight)
-	{
+	function resetShit(x, y, isGoingRight) {
 		var sprite = this.sprite;
 		sprite.revive();
 		sprite.setPosition(x, y);
@@ -120,8 +113,7 @@ class TankmenBG
 		sprite.flipX = goingRight;
 	}
 
-	var update = function(elapsed)
-	{
+	function update(elapsed) {
 		var sprite = this.sprite;
 		sprite.visible = !(sprite.x >= FlxG.width * 1.5 || sprite.x <= FlxG.width * -0.5);
 
@@ -143,8 +135,8 @@ class TankmenBG
 				killed = true;
 				grpTankmanRun.remove(sprite, true);
 				sprite.kill();
-				tankmanPool.push(self);
-				tankmanRun.remove(self);
+				tankmanPool.push(this);
+				tankmanRun.remove(this);
 			}
 
 			if (goingRight)

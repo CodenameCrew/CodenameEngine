@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<libraries>
-	<!-- OpenFL & Lime (Required for Flixel) -->
-	<lib name="openfl" version="9.2.2" />
-	<lib name="lime"  version="8.1.2" />
+<libraries checkVersion="update || all">
+	<if cond="update || all">
+		<print pretty="true">Preparing installation...</print>
 
-	<!-- Flixel -->
-	<git name="flixel" url="https://github.com/CodenameCrew/cne-flixel" />
-	<git name="flixel-addons" url="https://github.com/CodenameCrew/cne-flixel-addons" />
+		<!-- OpenFL & Lime (Required for Flixel) -->
+		<git name="openfl" url="https://github.com/CodenameCrew/cne-openfl" />
+		<lib name="lime" version="8.1.2" />
+		<!-- <git name="lime" url="https://github.com/CodenameCrew/cne-lime" />  disabled for now until fixed -->
+
+		<!-- Flixel -->
+		<git name="flixel" url="https://github.com/CodenameCrew/cne-flixel" />
+		<git name="flixel-addons" url="https://github.com/CodenameCrew/cne-flixel-addons" />
 
 	<!-- Other Libraries -->
 	<git name="hscript-improved" url="https://github.com/CodenameCrew/hscript-improved" ref="custom-classes" />
@@ -15,10 +19,36 @@
 	<lib name="hxvlc" version="1.9.3" skipDeps="true" />
 	<lib name="funkin-modchart" skipDeps="true" />
 
-	<!-- Documentation and other features -->
-	<git name="away3d" url="https://github.com/CodenameCrew/away3d" />
-	<!-- <lib name="dox" /> -->
-	<lib name="format" />
-	<lib name="markdown" />
-	<lib name="nape-haxe4" />
+		<!-- Documentation and other features -->
+		<git name="away3d" url="https://github.com/CodenameCrew/away3d" />
+		<!-- <lib name="dox" /> -->
+		<lib name="markdown" />
+		<lib name="hxcpp-debug-server" />
+
+		<lib name="nape-haxe4" />
+
+		<!-- For building lime -->
+		<lib global="true" name="hxp" /> <lib name="hxp" />
+		<lib global="true" name="format" /> <lib name="format" />
+
+		<git name="hxcpp" url="https://github.com/CodenameCrew/cne-hxcpp" />
+	</if>
+
+	<!-- Hxcpp Building -->
+	<if cond="build-hxcpp || all">
+		<print pretty="true">Rebuilding Hxcpp...</print>
+
+		<!-- Build hxcpp -->
+		<cmd inLib="hxcpp" dir="tools/hxcpp" cmd="haxe compile.hxml" />
+	</if>
+
+	<!-- Lime Building -->
+	<!-- <if cond="build-lime || all">
+		<print pretty="true">Rebuilding Lime...</print>
+
+		<!- - Build lime - ->
+		<cmd inLib="lime" cmd="haxelib run lime rebuild . $PLATFORM -release -clean" />
+		<cmd inLib="lime" dir="tools" cmd="haxe tools.hxml" />
+	</if> -->
+
 </libraries>

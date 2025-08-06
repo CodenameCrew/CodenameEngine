@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<str id="optionsMenu.desc-missing">Brak Opisu</str>
+
+	<group name="OptionsMenu">
+		<str id="optionsMenu.advanced">Zaawansowane</str>
+		<str id="optionsMenu.header.title">Menu Opcji</str>
+		<str id="optionsMenu.header.desc">Wybierz kategorię aby kontynuować.</str>
+
+		<str id="optionsTree.controls-name">Klawisze</str>
+		<str id="optionsTree.controls-desc">Zmień klawisze dla Gracza 1 i Gracza 2!</str>
+
+		<str id="optionsTree.gameplay-name">Rozgrywka</str>
+		<str id="optionsTree.gameplay-desc">Zmień ustawienia rozgrywki takie jak Przewijanie w dół, Prędkość Przewijania, Niegrzeczność...</str>
+		<str id="optionsTree.gameplay.advanced-desc">Zmień bardziej zaawansowane opcje takie jak Strumieniowanie Audio...</str>
+
+		<str id="optionsTree.appearance-name">Wygląd</str>
+		<str id="optionsTree.appearance-desc">Zmień ustawienia wyglądu takie jak Migające Światła...</str>
+
+		<str id="optionsTree.language-name">Język</str>
+		<str id="optionsTree.language-desc">Wybierz język którego używa silnik.</str>
+
+		<str id="optionsTree.miscellaneous-name">Różnorodne</str>
+		<str id="optionsTree.miscellaneous-desc">Użyj tej kategorii aby usunąć zapis lub zmienić ustawienia silnika.</str>
+	</group>
+
+	<group name="KeybindOptions" prefix="KeybindsOptions.">
+		<str id="left">Lewo</str>
+		<str id="down">Dół</str>
+		<str id="up">Góra</str>
+		<str id="right">Prawo</str>
+
+		<str id="category.notes">Nuty</str>
+
+		<str id="category.ui">Interfejs</str>
+		<group name="ui" prefix="ui.">
+			<str id="accept">Akceptuj</str>
+			<str id="back">Wstecz</str>
+			<str id="reset">Reset</str>
+			<str id="pause">Pauza</str>
+		</group>
+
+		<str id="category.engine">Silnik</str>
+		<group name="engine" prefix="engine.">
+			<str id="switchMod">Zmień Moda</str>
+		</group>
+		
+		<str id="category.volume">Głośność</str>
+		<str id="volume.mute">Wycisz</str>
+
+		<str id="category.developer">Deweloper</str>
+		<group name="developer" prefix="developer.">
+			<str id="devMenus">Edytory</str>
+			<str id="openConsole">Konsola</str>
+			<str id="reloadState">Odświerz</str>
+		</group>
+	</group>
+
+	<group name="AppearanceOptions" prefix="AppearanceOptions.">
+		<str id="framerate-name">Klatki</str>
+		<str id="framerate-desc">Ilość Klatek na sekundę ktore gra renderuje</str>
+
+		<str id="colorHealthBar-name">Kolorowe Zdrowie</str>
+		<str id="colorHealthBar-desc">Jeśli wyłączone, Pasek zdrowia będzie tylko używał czerwonego i zielonego koloru, takiego jak z oryginalnej gry.</str>
+
+		<str id="week6PixelPerfect-name">Perfekcyjne Piksele</str>
+		<str id="week6PixelPerfect-desc">Jeśli włączone, Tydzień 6 będzie miał efekt perfekcyjnych pikseli, ustawiający każdy piksel na ekranie.</str>
+
+		<str id="flashingMenu-name">Migające Menu</str>
+		<str id="flashingMenu-desc">Jeśli wyłączone, tło menu głównego nie będzie migać kolorów po wybraniu opcji. Inne migania będą znacznie wolniejsze.</str>
+
+		<group name="AppearanceOptionsAdvanced" prefix="Advanced.">
+			<str id="antialiasing-name">Wygładzanie</str>
+		<str id="antialiasing-desc">Jeśli wyłączone, Wygładzanie nie będzie widoczne na Sprite'ach. Może poprawić wydajność na koszt ostrzejszego, pikselowatego wyglądu Sprite'ów.</str>
+
+			<str id="lowMemoryMode-name">Niskie zużycie pamięci</str>
+		<str id="lowMemoryMode-desc">Jeśli włączone, usunie niektóre elementy tła, co użyje mniej pamięci.</str>
+
+			<str id="gameplayShaders-name">Shadery Rozgrywki</str>
+		<str id="gameplayShaders-desc">Jeśli wyłączone, Shadery Rozgrywki (efekty wizualne jak Aberacja Chromatyczna z Thorns) nie będą ładowane; może być to pomocne na słabszych urządzeniach.</str>
+
+			<str id="gpuOnlyBitmaps-name">Sprite'y w VRAM</str>
+			<str id="gpuOnlyBitmaps-desc">Jeśli włączone, utrzyma obrazy tylko w GPU, uwalniając więcej pamięci (EKSPERYMENTALNE). Wyłaczenie tego użyje o wiele więcej pamięci, szczególnie przy większych duszkach. Zostaw włączone w wypadku wątpliwości.</str>
+		</group>
+	</group>
+
+	<group name="GameplayOptions" prefix="GameplayOptions.">
+		<str id="downscroll-name">Przewijanie w dół</str>
+		<str id="downscroll-desc">Jeśli włączone, nuty będą spadać w dół zamiast lecieć w górę.</str>
+
+		<str id="ghostTapping-name">Wolne stukanie</str>
+		<str id="ghostTapping-desc">Jeśli wyłączone, próba kliknięcia struny która nie ma nuty sprawi chybienie.</str>
+
+		<str id="naughtyness-name">Niegrzeczność</str>
+		<str id="naughtyness-desc">Jeśli wyłączone, cenzuruje scenki 7 Tygodnia.</str>
+
+		<str id="camZoomOnBeat-name">Bicie Kamery do Bitu</str>
+		<str id="camZoomOnBeat-desc">Jeśli wyłączone, kamera nie będzie się zbliżać co 4 bity.</str>
+
+		<str id="autoPause-name">Auto Pauza</str>
+		<str id="autoPause-desc">Jeśli włączone, opuszczając okno gry zatrzyma ją.</str>
+
+		<str id="volumeSFX-name">Głośność SFX</str>
+		<str id="volumeSFX-desc">Zmienia wyłącznie głośność efektów dzwiękowych.</str>
+
+		<str id="songOffset-name">Opóźnienie Ścieżki</str>
+		<str id="songOffset-desc">Wyrównuje opóźnienie w jakim ścieżki się zaczną.</str>
+
+		<group name="GameplayOptionsAdvanced" prefix="Advanced.">
+			<str id="windowSize-name">Rozmiar Okna</str>
+			<str id="windowSize-desc">...</str>
+
+			<str id="streamedMusic-name">Strumieniowana Muzyka</str>
+			<str id="streamedMusic-desc">Jeśli włączone, tylko muzyka będzie strumieniować audio, uwalniając więcej pamięci, na możliwy koszt większego użycia CPU. (EKSPERYMENTALNE)</str>
+	
+			<str id="streamedVocals-name">Strumieniowane Wokale</str>
+			<str id="streamedVocals-desc">Jeśli włączone, tylko wokale będą strumieniować audio, uwalniając więcej pamięci, na możliwy koszt większego użycia CPU. (EKSPERYMENTALNE)</str>
+		</group>
+	</group>
+
+	<group name="LanguageOptions" prefix="LanguageOptions.">
+		<str id="language-name">Język (Language)</str>
+		<str id="language-desc">Język stworzony przez: {0} (Wersja: {1})</str>
+	</group>
+
+	<group name="MiscOptions" prefix="MiscOptions.">
+		<str id="forceCrash-name">Zmuś Zawieszenie</str>
+		<str id="forceCrash-desc">Wybierz by zmusić grę do zawieszenia.</str>
+
+		<str id="betaUpdates-name">Nocne Aktualizacje</str>
+		<str id="betaUpdates-desc">Jeśli włączone, uwzględni nocne budowy gry przy sprawdzaniu aktualizacji.</str>
+
+		<str id="checkForUpdates-name">Sprawdź Aktualizacje</str>
+		<str id="checkForUpdates-desc">Wybierz by sprawdzić czy nie ma nowszej wersji silnika.</str>
+		<str id="checkForUpdates-noUpdateFound">Nie znaleziono aktualizacji.</str>
+
+		<str id="devMode-name">Tryb Dewelopera</str>
+		<str id="devMode-desc">Jeśli włączone, otrzymasz dostęp do funkcji deweloperskich, na przykład niektóre skróty klawiszowe, edytory, konsola, itd.</str>
+		
+		<str id="resetSaveData-name">Usuń Zapis Gry</str>
+		<str id="resetSaveData-desc">Wybierz aby usunąć zapis gry. To usunie wszystkie twoje wyniki.</str>
+	</group>
+
+	<group name="DebugOptions" prefix="DebugOptions.">
+		<str id="title">Opcje Debugowania</str>
+		<str id="desc">Użyj tego menu aby ustawić opcje związane z debugowaniem.</str>
+
+		<str id="showConsole-name">Pokaż Konsolę</str>
+		<str id="showConsole-desc">Wybierz aby pokazać konsolę gry, która pokazuje zapisy debugowe. (tylko po angielsku.)</str>
+
+		<str id="editorsResizable-name">Zmienny Rozmiar Edytorów</str>
+		<str id="editorsResizable-desc">Jeśli włączone, pozwoli edytorom na renderowanie poza bazową rozdzielczością 1280x720 oryginalnej gry, pozwalając na więcej detali i miejsca.</str>
+		
+		<str id="bypassEditorsResize-name">Objedź Zmienny Rozmiar</str>
+		<str id="bypassEditorsResize-desc">Pozwala obejść minimalną rodzielczość edytorów (Wymaga aby opcja "Zmienny Rozmiar Edytorów" była włączona).</str>
+		
+		<str id="editorSFX-name">Dźwięki Edytorów</str>
+		<str id="editorSFX-desc">Jeśli włączone, niektóre elementy edytorów będą grać dźwięki. (Na przykład: dźwięki pól wyboru...)</str>
+
+		<str id="intensiveBlur-name">Mocniejszy Rozmaz</str>
+		<str id="intensiveBlur-desc">Jeśli włączone, gra użyje mocniejszego rozmazu, który kosztuje wydajność, ale wygląda lepiej.</str>
+
+		<str id="charterAutoSaves-name">Autozapisy Edytorów</str>
+		<str id="charterAutoSaves-desc">Jeśli włączone, edytory automatycznie będą zapisywać twój progres, używając poniższych opcji.</str>
+
+		<str id="charterAutoSaveTime-name">Częstość Autozapisu</str>
+		<str id="charterAutoSaveTime-desc">Kontroluje co jaki czas edytor będzie automatycznie zapisywać. (w sekundach...)</str>
+
+		<str id="charterAutoSaveWarningTime-name">Czas Ostrzeżenia</str>
+		<str id="charterAutoSaveWarningTime-desc">Kontroluje czas przed którym edytor cię ostrzeże o automatycznym zapisie. (w sekundach..., 0 by wyłączyć.)</str>
+
+		<str id="charterAutoSavesSeparateFolder-name">Folder Autozapisów</str>
+		<str id="charterAutoSavesSeparateFolder-desc">Jeśli włączone, Edytor będzie zapisywać pliki w osobnym folderze, zamiast nadpisywania aktualnego pliku. (song/autosaves/)</str>
+	</group>
+
+</language>

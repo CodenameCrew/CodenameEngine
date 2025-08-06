@@ -3,6 +3,7 @@ package funkin.backend.shaders;
 // STOLEN FROM HAXEFLIXEL DEMO LOL
 import flixel.system.FlxAssets.FlxShader;
 
+@:dox(hide)
 enum WiggleEffectType
 {
 	DREAMY;
@@ -12,6 +13,7 @@ enum WiggleEffectType
 	FLAG;
 }
 
+@:dox(hide)
 class WiggleEffect
 {
 	public var shader(default, null):WiggleShader = new WiggleShader();
@@ -59,6 +61,7 @@ class WiggleEffect
 	}
 }
 
+@:dox(hide)
 class WiggleShader extends FlxShader
 {
 	@:glFragmentSource('
@@ -75,18 +78,18 @@ const int EFFECT_TYPE_FLAG = 4;
 uniform int effectType;
 
 /**
-	* How fast the waves move over time
-	*/
+* How fast the waves move over time
+*/
 uniform float uSpeed;
 
 /**
-	* Number of waves over time
-	*/
+* Number of waves over time
+*/
 uniform float uFrequency;
 
 /**
-	* How much the pixels are going to stretch over the waves
-	*/
+* How much the pixels are going to stretch over the waves
+*/
 uniform float uWaveAmplitude;
 
 vec2 sineWave(vec2 pt)

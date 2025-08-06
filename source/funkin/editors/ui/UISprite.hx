@@ -1,6 +1,7 @@
 package funkin.editors.ui;
 
 import flixel.math.FlxRect;
+import funkin.backend.utils.NativeAPI.CodeCursor;
 import openfl.ui.MouseCursor;
 
 @:allow(funkin.editors.ui.UIState)
@@ -21,7 +22,7 @@ class UISprite extends FlxSprite {
 
 	public var hoverCallback:Void->Void = null;
 
-	public var cursor:MouseCursor = ARROW;
+	public var cursor:CodeCursor = ARROW;
 
 	public var focused(get, set):Bool;
 	public var selectable:Bool = true;
@@ -55,7 +56,8 @@ class UISprite extends FlxSprite {
 			FlxCamera._defaultCameras = cameras;
 
 			for(m in members)
-				m.update(elapsed);
+				if(m.exists && m.active)
+					m.update(elapsed);
 
 			FlxCamera._defaultCameras = __oldDefCams;
 		}
@@ -113,5 +115,9 @@ class UISprite extends FlxSprite {
 			pressed = true;
 		if (hoverCallback != null)
 			hoverCallback();
+	}
+
+	public function updateSpriteRect() {
+		__rect.set(x, y, width, height);
 	}
 }

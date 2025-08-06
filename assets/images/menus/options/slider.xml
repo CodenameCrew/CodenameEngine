@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="slider.png" width="463" height="151">
+  <SubTexture name="bar empty0000.png" x="119" y="134" width="70" height="4" rotated="true" frameX="-0" frameY="-0" frameWidth="4" frameHeight="70"/>
+  <SubTexture name="bar filled0000.png" x="193" y="131" width="70" height="4" rotated="true" frameX="-0" frameY="-0" frameWidth="4" frameHeight="70"/>
+  <SubTexture name="corner empty0000.png" x="267" y="114" width="70" height="26" rotated="true" frameX="-0" frameY="-0" frameWidth="26" frameHeight="70"/>
+  <SubTexture name="corner filled0000.png" x="341" y="108" width="70" height="26" rotated="true" frameX="-0" frameY="-0" frameWidth="26" frameHeight="70"/>
+  <SubTexture name="segment empty0000.png" x="372" y="98" width="70" height="4" rotated="true" frameX="-0" frameY="-0" frameWidth="4" frameHeight="70"/>
+  <SubTexture name="segment filled0000.png" x="193" y="144" width="70" height="4" rotated="true" frameX="-0" frameY="-0" frameWidth="4" frameHeight="70"/>
+  <SubTexture name="slider deselect0000.png" x="372" y="2"  width="89" height="91" frameX="-0" frameY="-12" frameWidth="89" frameHeight="109"/>
+  <SubTexture name="slider deselect0001.png" x="372" y="2"  width="89" height="91" frameX="-0" frameY="-12" frameWidth="89" frameHeight="109"/>
+  <SubTexture name="slider deselect0002.png" x="250" y="2"  width="56" height="108" frameX="-17" frameY="-1" frameWidth="89" frameHeight="109"/>
+  <SubTexture name="slider deselect0003.png" x="250" y="2"  width="56" height="108" frameX="-17" frameY="-1" frameWidth="89" frameHeight="109"/>
+  <SubTexture name="slider segment0000.png" x="61" y="2"  width="54" height="137" frameX="-0" frameY="-1" frameWidth="54" frameHeight="138"/>
+  <SubTexture name="slider segment0001.png" x="61" y="2"  width="54" height="137" frameX="-0" frameY="-1" frameWidth="54" frameHeight="138"/>
+  <SubTexture name="slider selected0000.png" x="119" y="2"  width="56" height="124" frameX="-0" frameY="-0" frameWidth="56" frameHeight="124"/>
+  <SubTexture name="slider selecting0000.png" x="2" y="2"  width="55" height="140" frameX="-7" frameY="-0" frameWidth="67" frameHeight="140"/>
+  <SubTexture name="slider selecting0001.png" x="2" y="2"  width="55" height="140" frameX="-7" frameY="-0" frameWidth="67" frameHeight="140"/>
+  <SubTexture name="slider selecting0002.png" x="179" y="2"  width="67" height="121" frameX="-0" frameY="-10" frameWidth="67" frameHeight="140"/>
+  <SubTexture name="slider selecting0003.png" x="179" y="2"  width="67" height="121" frameX="-0" frameY="-10" frameWidth="67" frameHeight="140"/>
+  <SubTexture name="slider unselected0000.png" x="310" y="2"  width="58" height="102" frameX="-0" frameY="-0" frameWidth="58" frameHeight="102"/>
+</TextureAtlas>

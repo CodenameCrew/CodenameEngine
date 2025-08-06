@@ -1,14 +1,14 @@
 package funkin.menus;
 
-import funkin.backend.MusicBeatGroup;
-import funkin.backend.utils.XMLUtil;
-import flixel.util.typeLimit.OneOfTwo;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import openfl.Assets;
+import flixel.util.typeLimit.OneOfTwo;
+import funkin.backend.MusicBeatGroup;
+import funkin.backend.utils.XMLUtil;
 import haxe.xml.Access;
+import openfl.Assets;
 
 using StringTools;
 
@@ -23,9 +23,6 @@ class TitleState extends MusicBeatState
 
 	public var blackScreen:FlxSprite;
 	public var textGroup:FlxGroup;
-	public var ngSpr:FlxSprite;
-
-	public var wackyImage:FlxSprite;
 
 	override public function create():Void
 	{
@@ -40,9 +37,6 @@ class TitleState extends MusicBeatState
 		DiscordUtil.call("onMenuLoaded", ["Title Screen"]);
 	}
 
-	var logoBl:FlxSprite;
-	var gfDance:FlxSprite;
-	var danceLeft:Bool = false;
 	var titleText:FlxSprite;
 	var titleScreenSprites:MusicBeatGroup;
 
@@ -56,20 +50,19 @@ class TitleState extends MusicBeatState
 		var bg:FlxSprite = new FlxSprite().makeSolid(FlxG.width, FlxG.height, FlxColor.BLACK);
 		add(bg);
 
-		#if TITLESCREEN_XML
 		titleScreenSprites = new MusicBeatGroup();
 		add(titleScreenSprites);
 		loadXML();
-		#end
 
 		if (titleText == null) {
-			titleText = new FlxSprite(100, FlxG.height * 0.8);
+			titleText = new FlxSprite(0, FlxG.height * 0.8);
 			titleText.frames = Paths.getFrames('menus/titlescreen/titleEnter');
 			titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
 			titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
 			titleText.antialiasing = true;
 			titleText.animation.play('idle');
 			titleText.updateHitbox();
+			titleText.screenCenter(X);
 		}
 		add(titleText);
 
@@ -77,16 +70,6 @@ class TitleState extends MusicBeatState
 
 		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		add(blackScreen);
-
-		#if !TITLESCREEN_XML
-		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadAnimatedGraphic(Paths.image('newgrounds_logo'));
-		add(ngSpr);
-		ngSpr.visible = false;
-		ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.8));
-		ngSpr.updateHitbox();
-		ngSpr.screenCenter(X);
-		ngSpr.antialiasing = true;
-		#end
 
 		FlxG.mouse.visible = false;
 
@@ -192,7 +175,7 @@ class TitleState extends MusicBeatState
 		for (i=>text in textArray)
 		{
 			if (text == "" || text == null) continue;
-			var money:Alphabet = new Alphabet(0, (i * 60) + 200, text, true, false);
+			var money:Alphabet = new Alphabet(0, (i * 60) + 200, text, "bold");
 			money.screenCenter(X);
 			textGroup.add(money);
 		}
@@ -200,7 +183,7 @@ class TitleState extends MusicBeatState
 
 	public function addMoreText(text:String)
 	{
-		var coolText:Alphabet = new Alphabet(0, (textGroup.length * 60) + 200, text, true, false);
+		var coolText:Alphabet = new Alphabet(0, (textGroup.length * 60) + 200, text, "bold");
 		coolText.screenCenter(X);
 		textGroup.add(coolText);
 	}
@@ -217,7 +200,6 @@ class TitleState extends MusicBeatState
 	{
 		super.beatHit(curBeat);
 
-		#if TITLESCREEN_XML
 		if (curBeat >= titleLength || skippedIntro) {
 			if (!skippedIntro) skipIntro();
 			return;
@@ -225,27 +207,8 @@ class TitleState extends MusicBeatState
 		var introText = titleLines[curBeat];
 		if (introText != null)
 			introText.show();
-		#else
-		switch (curBeat)
-		{
-			case 1:		createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
-			case 3:		addMoreText('present');
-			case 4:		deleteCoolText();
-			case 5:		createCoolText(['In association', 'with']);
-			case 7:		addMoreText('newgrounds');	ngSpr.visible = true;
-			case 8:		deleteCoolText();			ngSpr.visible = false;
-			case 9:		createCoolText([curWacky[0]]);
-			case 11:	addMoreText(curWacky[1]);
-			case 12:	deleteCoolText();
-			case 13:	addMoreText('Friday');
-			case 14:	addMoreText('Night');
-			case 15:	addMoreText('Funkin');
-			case 16:	skipIntro();
-		}
-		#end
 	}
 
-	#if TITLESCREEN_XML
 	public var xml:Access;
 	public var titleLength:Int = 16;
 	public var titleLines:Map<Int, IntroText> = [
@@ -267,12 +230,14 @@ class TitleState extends MusicBeatState
 		15 => new IntroText(['Friday', 'Night', "Funkin'"]),
 	];
 
+	public var titleSprites:Map<String, FlxSprite> = [];
+
 	public function loadXML() {
 		try {
 			xml = new Access(Xml.parse(Assets.getText(Paths.xml('titlescreen/titlescreen'))).firstElement());
 			if (xml.hasNode.intro) {
 				titleLines = [];
-				if (xml.node.intro.has.length) titleLength = CoolUtil.getDefault(Std.parseInt(xml.node.intro.att.length), 16);
+				if (xml.node.intro.has.length) titleLength = Std.parseInt(xml.node.intro.att.length).getDefault(16);
 				for(node in xml.nodes.sprites) {
 					var parentFolder:String = node.getAtt("folder").getDefault("");
 					if (parentFolder != "" && !parentFolder.endsWith("/")) parentFolder += "/";
@@ -284,26 +249,28 @@ class TitleState extends MusicBeatState
 							default:
 								titleScreenSprites.add(spr);
 						}
+						if(node.has.name) titleSprites[node.att.name] = spr;
 					}
 				}
 				for(text in xml.node.intro.nodes.text) {
-					var beat:Int = CoolUtil.getDefault(text.has.beat ? Std.parseInt(text.att.beat) : null, 0);
+					var beat:Int = text.has.beat ? Std.parseInt(text.att.beat).getDefault(0) : 0;
 					var texts:Array<OneOfTwo<String, TitleStateImage>> = [];
-					for(e in text.elements) {
-						switch(e.name) {
+					for(node in text.elements) {
+						switch(node.name) {
 							case "line":
-								if (!e.has.text) continue;
-								texts.push(e.att.text);
+								if (!node.has.text) continue;
+								texts.push(node.att.text);
 							case "introtext":
-								if (!e.has.line) continue;
-								texts.push('{introText${e.att.line}}');
+								if (!node.has.line) continue;
+								texts.push('{introText${node.att.line}}');
 							case "sprite":
-								if (!e.has.path) continue;
-								var name:String = e.has.name ? e.att.name : null;
-								var path:String = e.att.path;
-								var flipX:Bool = e.has.flipX ? e.att.flipX == "true" : false;
-								var flipY:Bool = e.has.flipY ? e.att.flipY == "true" : false;
-								var scale:Float = e.has.scale ? CoolUtil.getDefault(Std.parseFloat(e.att.scale), 1) : 1;
+								if (!node.has.path) continue;
+								var name:String = node.has.name ? node.att.name : null;
+								var path:String = node.att.path;
+								var flipX:Bool = node.has.flipX ? node.att.flipX == "true" : false;
+								var flipY:Bool = node.has.flipY ? node.att.flipY == "true" : false;
+								var scale:Float = node.has.scale ? Std.parseFloat(node.att.scale).getDefault(1) : 1;
+
 								texts.push({
 									name: name,
 									path: path,
@@ -317,10 +284,9 @@ class TitleState extends MusicBeatState
 				}
 			}
 		} catch(e) {
-			Logs.trace('Failed to load titlescreen XML: $e', ERROR);
+			Logs.error('Failed to load titlescreen XML: $e');
 		}
 	}
-	#end
 
 	var skippedIntro:Bool = false;
 
@@ -328,10 +294,6 @@ class TitleState extends MusicBeatState
 	{
 		if (!skippedIntro)
 		{
-			#if !TITLESCREEN_XML
-			remove(ngSpr);
-			#end
-
 			FlxG.camera.flash(FlxColor.WHITE, 4);
 			remove(blackScreen);
 			blackScreen.destroy();
@@ -355,13 +317,13 @@ class IntroText {
 		for(e in lines) {
 			if (e is String) {
 				var text = cast(e, String);
-				for(k=>e in state.curWacky) text = text.replace('{introText${k+1}', e);
+				for(k=>e in state.curWacky) text = text.replace('{introText${k+1}}', e);
 				state.addMoreText(text);
 			} else if (e is Dynamic) {
 				var image:TitleStateImage = e;
 				if (image.path == null) continue;
 
-				var scale:Float = CoolUtil.getDefault(image.scale, 1);
+				var scale:Float = image.scale.getDefault(1);
 
 				var yPos:Float = 200;
 				if(state.textGroup.members.length > 0) {
@@ -370,11 +332,12 @@ class IntroText {
 				}
 
 				var sprite = new FlxSprite(0, yPos).loadAnimatedGraphic(Paths.image(image.path));
-				sprite.flipX = CoolUtil.getDefault(image.flipX, false);
-				sprite.flipY = CoolUtil.getDefault(image.flipY, false);
+				sprite.flipX = image.flipX.getDefault(false);
+				sprite.flipY = image.flipY.getDefault(false);
 				sprite.scale.set(scale, scale);
 				sprite.updateHitbox();
 				sprite.screenCenter(X);
+				sprite.antialiasing = true;
 				state.textGroup.add(sprite);
 			}
 		}

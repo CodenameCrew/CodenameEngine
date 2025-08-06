@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<group name="PlayState">
+		<str id="game.score">Puntaje:{0}</str>
+		<str id="game.accuracy">Precisión:{0} - {1}</str>
+	</group>
+
+	<group name="StoryMenu">
+		<str id="story.score">PUNTAJE DE WEEK:{0}</str>
+		<str id="story.tracks">CANCIONES</str>
+	</group>
+
+	<group name="Freeplay">
+		<str id="freeplay.score">MEJOR PUNTAJE:{0}</str>
+		<str id="freeplay.opponentMode">Modo Oponente</str>
+		<str id="freeplay.coopMode">Modo Co-Op</str>
+		<str id="freeplay.coopModeSwitched">Modo Co-Op (Invertido)</str>
+	</group>
+
+	<group name="Pause">
+		<group name="PauseOptions">
+			<str id="pause.resume">Continuar</str>
+			<str id="pause.restartSong">Reiniciar Canción</str>
+			<str id="pause.changeControls">Cambiar Controles</str>
+			<str id="pause.changeOptions">Cambiar Opciones</str>
+			<str id="pause.exitToMenu">Volver al menú</str>
+			<str id="pause.exitToCharter">Volver al editor</str>
+			<str id="pause.resumeCutscene">Continuar Escena</str>
+			<str id="pause.skipCutscene">Saltear Escena</str>
+			<str id="pause.restartCutscene">Reiniciar Escena</str>
+		</group>
+
+		<str id="pause.deathCounter">Huevos azules: {0}</str>
+		<str id="pause.coopMode">MODO CO-OP</str>
+		<str id="pause.opponentMode">MODO OPONENTE</str>
+	</group>
+
+	<group name="Credits">
+		<group name="CreditsCodename">
+			<str id="credits.mainDev" notrim="true"> *- ¡Miembro público de los Desarrolladores!*</str>
+			<str id="credits.totalContributions">Contribuciones Totales: ~{0}~ / *{1}* (~{2}%~) - Seleccionar para abrir cuenta de GitHub</str>
+			<str id="credits.downloadingList">Descargando Lista...</str>
+			<str id="credits.allContributors">Todos los contribuidores! - Presiona REINICIAR para actualizar la lista (Una vez cada 2 minutos).</str>
+		</group>
+		<group name="CreditsMain">
+			<str id="credits.name">Créditos</str>
+			<str id="credits.madePossible">¡La gente que hizo esto posible!</str>
+			<str id="credits.selectCodename">¡Selecciona esto para ver todos los contribuidores del Engine!</str>
+			<str id="credits.selectBase">¡Selecciona esto para abrir la página del juego y donar!</str>
+		</group>
+	</group>
+
+	<group name="Mods">
+		<str id="mods.disableMods">Desactivar Mods</str>
+	</group>
+
+	<group name="MainMenu">
+		<str id="mainMenu.openMods">[{0}] Abrir menú de Mods</str>
+	</group>
+
+	<group name="BetaWarning">
+		<str id="betaWarning.title">ADVERTENCIA</str>
+		<str id="betaWarning.desc">Este Engine todavía está en estado *{0}*. Esto significa que *la mayoría de las funciones no funcionan correctamente* o *no están terminadas*. Si encuentras cualquier error, por favor repórtalo al GitHub de Codename Engine.</str>
+		<str id="betaWarning.proceed">Presiona {0} para continuar</str>
+	</group>
+
+	<group name="Updater">
+		<group name="UpdateAvailable">
+			<str id="updateAvailable.title">NUEVA ACTUALIZACIÓN</str>
+			<str id="updateAvailable.install">INSTALAR</str>
+			<str id="updateAvailable.skip">SALTEAR</str>
+		</group>
+		<group name="UpdateScreen">
+			<str id="updateScreen.general-1">Preparando actualización...</str>
+			<str id="updateScreen.part-1">Creando carpeta de instalación y borrando archivos viejos...</str>
+
+			<str id="updateScreen.general-2">Descargando archivos...</str>
+			<str id="updateScreen.part-2">Descargando archivo {0}</str>
+
+			<str id="updateScreen.general-3">Descargando nuevo ejecutable...</str>
+			<str id="updateScreen.part-3">Descargando {0}</str>
+
+			<str id="updateScreen.general-4">Instalando nuevos archivos...</str>
+			<str id="updateScreen.part-4">Instalando {0}</str>
+		</group>
+	</group>
+
+	<group name="Difficulties">
+		<str id="diff.easy">Fácil</str>
+		<str id="diff.normal">Normal</str>
+		<str id="diff.hard">Difícil</str>
+		<str id="diff.erect">Vergudo</str>
+		<str id="diff.nightmare">Pesadilla</str>
+	</group>
+</language>

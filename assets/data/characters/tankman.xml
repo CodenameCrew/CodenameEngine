@@ -1,5 +1,5 @@
 <!DOCTYPE codename-engine-character>
-<character y="180" sprite="tankman" flipX="true" isPlayer="true" icon="tankman" color="#FFFFFF" isGF="false">
+<character y="180" sprite="tankman" flipX="true" isPlayer="true" icon="tankman" color="#FFFFFF">
 	<anim name="idle" anim="Tankman Idle Dance instance 100" x="0" y="0" fps="24" loop="false"/>
 	<anim name="singRIGHT" anim="Tankman Right Note instance 1000" x="-24" y="-13" fps="24" loop="false"/>
 	<anim name="singDOWN" anim="Tankman DOWN note instance 1000" x="75" y="-105" fps="24" loop="false"/>
