@@ -116,7 +116,7 @@
 		</group>
 
 		<group name="CharterNoteTypesList" prefix="charterNoteTypesList.">
-			<str id="title">Editor de Lista de Tipos de Nota</str>
+			<str id="title">Editor da Lista de Tipos de Nota</str>
 
 			<str id="editNoteTypes">Editar Tipos de Nota</str>
 			<str id="editType">Tipo de Nota {0}</str>
@@ -458,7 +458,7 @@
 
 			<group name="Warnings" prefix="warnings.">
 				<str id="notImplemented-title">Novo Tipo de Letra: Função Não Implementada!</str>
-				<str id="notImplemented-body">Esta função ainda não foi implementada. Por favor espere por mais atualizações até ser implementado.\n\n\n- Codename Crew (Equipa Codename)</str>
+				<str id="notImplemented-body">Esta função ainda não foi implementada. Por favor espere por mais atualizações até ser implementada.\n\n\n- Codename Crew (Equipa Codename)</str>
 			</group>
 		</group>
 
@@ -535,7 +535,7 @@
 				<str id="topBar.select">Seleção</str>
 				<group name="SelectionMenu" prefix="select.">
 					<str id="all">Selecionar Tudo</str>
-					<str id="deselect">Desseleccionar</str>
+					<str id="deselect">Desselecionar</str>
 					<str id="inverse">Inverter Seleção</str>
 				</group>
 
@@ -594,7 +594,7 @@
 			<str id="elementName">Nome do Elemento</str>
 			<str id="nameID">Nome Identificador</str>
 			<str id="imageFile">Imagem (WIP: precisa recarregar)\nEm (${stage.spritesParentFolder})</str>
-			<str id="scroll">Scroll {0}</str> <!-- it's "scroll" here because "deslocamento" is too big and "rolagem" sounds weird -->
+			<str id="scroll">Scroll {0}</str> <!-- it's "scroll" here because "deslocamento" is too big -->
 			<str id="scale">Tamanho {0}</str>
 			<str id="camera">Câmara {0}</str>
 			<str id="spacing">Espaçamento (X, Y)</str>
@@ -608,7 +608,7 @@
 			<str id="highMemory">Alta Memória</str>
 			<str id="lowMemory">Baixa Memória</str>
 			<str id="attributes">Atributos</str>
-			<str id="transformPreview">pré-visualização:</str>
+			<str id="transformPreview">Pré-visualização:</str>
 			<str id="animations">Animações</str>
 
 			<str id="animType">Tipo de Animação</str>

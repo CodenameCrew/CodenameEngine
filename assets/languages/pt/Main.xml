@@ -54,10 +54,10 @@
 			<str id="credits.mainDev" notrim="true"> *- Membro público dos Desenvolvedores!*</str>
 			<str id="credits.totalContributions">Contribuições Totais: ~{0}~ / *{1}* (~{2}%~) - Selecione para abrir a sua conta GitHub</str>
 			<str id="credits.downloadingList">A Descarregar Lista...</str>
-			<str id="credits.allContributors">Todos os contribuidores! Carregue em RESET para atualizar a lista (Uma vez a cada 2 minutos).</str>
+			<str id="credits.allContributors">Todos os contribuidores! Carregue em REINICIAR para atualizar a lista (Uma vez a cada 2 minutos).</str>
 		</group>
 		<group name="CreditsMain">
-			<str id="credits.name">Creditos</str>
+			<str id="credits.name">Créditos</str>
 			<str id="credits.madePossible">As pessoas que fizeram isto possível!</str>
 			<str id="credits.selectCodename">Selecione isto para ver todos os contribuidores de Codename Engine!</str>
 			<str id="credits.selectBase">Selecione isto para abrir a página itch.io do jogo original para doar!</str>

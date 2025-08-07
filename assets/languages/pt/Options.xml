@@ -50,6 +50,8 @@
 		</group>
 
 		<str id="category.volume">Volume</str>
+		<str id="volume.up">Subir</str>
+		<str id="volume.down">Baixar</str>
 		<str id="volume.mute">Silenciar</str>
 
 		<str id="category.developer">Desenvolvedor</str>
@@ -123,11 +125,11 @@
 			<str id="windowSize-name">Tamanho da Janela</str>
 			<str id="windowSize-desc">...</str>
 
-			<str id="streamedMusic-name">Música em Tempo Real</str>
-			<str id="streamedMusic-desc">Se marcado, músicas serão transmitidas enquanto tocam, libertando IMENSA memória com o custo de maior uso de CPU se mais sons estiverem a ser transmitidos ao mesmo tempo (EXPERIMENTAL). Desativar isto irá consumir muita memória, especialmente em músicas maiores. Se não tiver a certeza, deixe marcado.</str>
+			<str id="streamedMusic-name">Transmissão de Música</str>
+			<str id="streamedMusic-desc">Se marcado, músicas serão transmitidas enquanto tocam, libertando IMENSA memória com o custo de maior uso de CPU se mais sons estiverem a ser transmitidos ao mesmo tempo (EXPERIMENTAL). Desmarcar isto irá consumir muita memória, especialmente em músicas maiores. Se não tiver a certeza, deixe marcado.</str>
 
-			<str id="streamedVocals-name">Vozes em Tempo Real</str>
-			<str id="streamedVocals-desc">Se marcado, vozes também serão transmitidas enquanto tocam se "Música Transmitida" estiver ativada. Irá impactar o desempenho se a canção usar muitas vozes (EXPERIMENTAL). Se não tiver a certeza, deixe marcado.</str>
+			<str id="streamedVocals-name">Transmissão de Vozes</str>
+			<str id="streamedVocals-desc">Se marcado, vozes também serão transmitidas enquanto tocam se "Transmissão de Música" estiver ativada. Irá impactar o desempenho se a canção usar muitas vozes (EXPERIMENTAL). Se não tiver a certeza, deixe marcado.</str>
 		</group>
 	</group>
 
