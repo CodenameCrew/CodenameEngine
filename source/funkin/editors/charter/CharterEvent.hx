@@ -195,7 +195,8 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 	**/
 	public static function getIconFromStrumline(index:Null<Int>) {
 		var state = cast(FlxG.state, Charter);
-		if (index != null && index >= 0 && index < state.strumLines.length) {
+		var count:Int = -1; state.strumLines.forEachAlive((_) -> count++);
+		if (index != null && index >= 0 && index < count) {
 			return getIconFromCharName(state.strumLines.members[index].strumLine.characters[0]);
 		}
 		return null;
