@@ -47,9 +47,17 @@
 	<anim char="8">character-eight</anim>
 	<anim char="9">character-nine</anim>
 
+	<composite char="ã">
+		<component anim="character-a0" x="0" y="0"/>
+		<component anim="diacritic-tilde-fill" x="11" y="73" outline="diacritic-tilde-outline" outlineX="-1" hasOutline="true"/>
+	</composite>
 	<composite char="ẽ">
 		<component anim="character-e0" x="0" y="0"/>
 		<component anim="diacritic-tilde-fill" x="3" y="73" outline="diacritic-tilde-outline" outlineX="-1" hasOutline="true"/>
+	</composite>
+	<composite char="õ">
+		<component anim="character-o0" x="0" y="0"/>
+		<component anim="diacritic-tilde-fill" x="8" y="73" outline="diacritic-tilde-outline" outlineX="-1" hasOutline="true"/>
 	</composite>
 	<composite char="ñ">
 		<component anim="character-n0" x="0" y="0"/>
@@ -75,12 +83,32 @@
 		<component anim="character-u0" x="0" y="0"/>
 		<component anim="diacritic-acute-fill" x="15" y="60" outline="diacritic-acute-outline" outlineX="-1" hasOutline="true"/>
 	</composite>
+	<composite char="â">
+		<component anim="character-a0" x="0" y="0"/>
+		<component anim="character-caret" x="5" y="60"/>
+	</composite>
+	<composite char="ê">
+		<component anim="character-e0" x="0" y="0"/>
+		<component anim="character-caret" x="-1" y="60"/>
+	</composite>
+	<composite char="ô">
+		<component anim="character-o0" x="0" y="0"/>
+		<component anim="character-caret" x="2" y="60"/>
+	</composite>
+	<composite char="à">
+		<component anim="character-a0" x="0" y="0"/>
+		<!-- <component anim="character-caret" x="5" y="60"/> --> <!-- no `, so keeping this here as a placeholder for when someone draws it-->
+	</composite>
 	<composite char="ą">
 		<component anim="character-a0" x="0" y="0"/>
 		<component anim="diacritic-ogonek-fill" x="34" y="-12" outline="diacritic-ogonek-outline" outlineX="2" outlineY="-2" hasOutline="true"/>
 	</composite>
 	<composite char="ę">
 		<component anim="character-e0" x="0" y="0"/>
+		<component anim="diacritic-ogonek-fill" x="23" y="-14" outline="diacritic-ogonek-outline" outlineX="2" outlineY="-2" hasOutline="true"/>
+	</composite>
+	<composite char="ç">
+		<component anim="character-c0" x="0" y="0"/>
 		<component anim="diacritic-ogonek-fill" x="23" y="-14" outline="diacritic-ogonek-outline" outlineX="2" outlineY="-2" hasOutline="true"/>
 	</composite>
 	<composite char="ć">
