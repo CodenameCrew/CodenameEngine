@@ -42,11 +42,12 @@
 			<str id="back">Cancelar</str>
 			<str id="reset">Reiniciar</str>
 			<str id="pause">Pausa</str>
+			<str id="changeMode">Mudar Modo</str>
 		</group>
 
 		<str id="category.engine">Codename Engine</str>
 		<group name="engine" prefix="engine.">
-			<str id="switchMod">Mudar Mod</str>
+			<str id="switchMod">Trocar Mod</str>
 		</group>
 
 		<str id="category.volume">Volume</str>
