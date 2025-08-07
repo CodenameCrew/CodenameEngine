@@ -25,8 +25,9 @@ class Paths
 
 	public static inline function getPath(file:String, ?library:String) {
 		var returnedPath:String = library != null ? '$library:assets/$library/$file' : 'assets/$file';
-		#if linux
+		#if (sys && !windows)
 		returnedPath = Path.normalize(returnedPath);
+		if (OpenFlAssets.exists(returnedPath)) return returnedPath;
 		var fixedPath:String = library != null ? '$library:assets/$library/' : 'assets/';
 		var parts:Array<String> = returnedPath.split("/");
 		for (it=>part in parts) {
@@ -40,11 +41,7 @@ class Paths
 				}
 			}
 		}
-		if (returnedPath.toLowerCase() != fixedPath.toLowerCase()) {
-			trace("linux path broke");
-			trace(fixedPath);
-		}
-		else returnedPath = fixedPath;
+		if (returnedPath.toLowerCase() == fixedPath.toLowerCase()) returnedPath = fixedPath;
 		#end
 		return returnedPath;
 	}
