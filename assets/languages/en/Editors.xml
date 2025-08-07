@@ -111,6 +111,7 @@
 			<str id="color">Color</str>
 			<str id="difficulties">Difficulties</str>
 			<str id="customValues">Custom Values (Advanced)</str>
+			<str id="needsVoices">Needs Voices?</str>
 
 			<str id="opponentMode">Opponent Mode</str>
 			<str id="coopAllowed">Co-op Mode</str>

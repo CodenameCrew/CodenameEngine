@@ -4,6 +4,7 @@ import flixel.math.FlxPoint;
 import funkin.backend.chart.ChartData.ChartMetaData;
 import funkin.editors.extra.PropertyButton;
 import funkin.game.HealthIcon;
+import flixel.sound.FlxSound;
 
 using StringTools;
 
@@ -23,6 +24,7 @@ class CharterMetaDataScreen extends UISubstateWindow {
 	public var iconSprite:HealthIcon;
 	public var opponentModeCheckbox:UICheckbox;
 	public var coopAllowedCheckbox:UICheckbox;
+	public var needsVoicesCheckbox:UICheckbox;
 	public var colorWheel:UIColorwheel;
 	public var difficultiesTextBox:UITextBox;
 
@@ -84,6 +86,9 @@ class CharterMetaDataScreen extends UISubstateWindow {
 		opponentModeCheckbox = new UICheckbox(displayNameTextBox.x, iconTextBox.y + 10 + 32 + 26, translate("opponentMode"), metadata.opponentModeAllowed);
 		add(opponentModeCheckbox);
 		addLabelOn(opponentModeCheckbox, translate("modesAllowed"));
+
+		needsVoicesCheckbox = new UICheckbox(beatsPerMeasureStepper.x + 100, beatsPerMeasureStepper.y + 6, translate("needsVoices"), metadata.needsVoices);
+		add(needsVoicesCheckbox);
 
 		coopAllowedCheckbox = new UICheckbox(opponentModeCheckbox.x + 150 + 26, opponentModeCheckbox.y, translate("coopAllowed"), metadata.coopAllowed);
 		add(coopAllowedCheckbox);
@@ -149,6 +154,7 @@ class CharterMetaDataScreen extends UISubstateWindow {
 		PlayState.SONG.meta = {
 			name: songNameTextBox.label.text,
 			bpm: bpmStepper.value,
+			needsVoices: needsVoicesCheckbox.checked,
 			beatsPerMeasure: Std.int(beatsPerMeasureStepper.value),
 			stepsPerBeat: Std.int(16 / denominatorStepper.value),
 			displayName: displayNameTextBox.label.text,
@@ -160,6 +166,11 @@ class CharterMetaDataScreen extends UISubstateWindow {
 			customValues: customVals,
 		};
 
-		Charter.instance.updateBPMEvents();
+		var editor = Charter.instance;
+		editor.updateBPMEvents();
+		if (PlayState.SONG.meta.needsVoices != false && Assets.exists(Paths.voices(PlayState.SONG.meta.name, PlayState.difficulty))) // did this to not load the whole song when using loadSong
+			editor.vocals = FlxG.sound.load(Paths.voices(PlayState.SONG.meta.name, PlayState.difficulty));
+		else
+			editor.vocals = new FlxSound();
 	}
 }

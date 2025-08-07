@@ -109,6 +109,7 @@
 			<str id="color">Kolor</str>
 			<str id="difficulties">Trudności</str>
 			<str id="customValues">Własna Waluta (Zaawansowane)</str>
+			<str id="needsVoices">Potrzebne Wokale?</str>
 
 			<str id="opponentMode">Tryb Przeciwnika</str>
 			<str id="coopAllowed">Tryb Ko-operacyjny</str>

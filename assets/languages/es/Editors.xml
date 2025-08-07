@@ -105,6 +105,7 @@
 			<str id="modesAllowed">Modos Permitidos</str>
 			<str id="difficulties">Difficultades</str>
 			<str id="customValues">Valores Especiales (Avanzado)</str>
+			<str id="needsVoices">Needs Voices?</str> <!-- english as a placeholder -->
 
 			<str id="opponentMode">Modo Oponente</str>
 			<str id="coopAllowed">Modo Co-op</str>
