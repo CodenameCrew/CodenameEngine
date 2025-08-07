@@ -234,7 +234,7 @@
 				<group name="BookmarkMenu" prefix="bookmarks.">
 					<str id="addBookmarkHere">Dodaj Zakładkę Tutaj</str>
 					<str id="editBookmarkList">Edytuj Listę Zakładek</str>
-					<str id="goto">Idź do "{0}"</str>
+					<str id="goTo">Idź do "{0}"</str>
 					<str id="createBookmarkTitle">Tworzenie Nowej Zakładki...</str>
 					<str id="createBookmarkName">Nazwa Zakładki:</str>
 					<str id="createBookmarkColor">Kolor Zakładki:</str>
@@ -559,7 +559,7 @@
 			<str id="stagePath">Ścieżka Plikowa Sceny</str>
 		</group>
 
-		<group name="StageInfoScreen" prefix="stageInfoScreen">
+		<group name="StageInfoScreen" prefix="stageInfoScreen.">
 			<str id="win-title">Edytowanie Info Sceny "{0}"</str>
 			<str id="title">Info Sceny</str>
 			<str id="stageName">Nazwa Sceny</str>

@@ -236,7 +236,7 @@
 				<group name="BookmarkMenu" prefix="bookmarks.">
 					<str id="addBookmarkHere">Add Bookmark Here</str>
 					<str id="editBookmarkList">Edit Bookmark List</str>
-					<str id="goto">Go to "{0}"</str>
+					<str id="goTo">Go to "{0}"</str>
 					<str id="createBookmarkTitle">Creating New Bookmark...</str>
 					<str id="createBookmarkName">Bookmark Name:</str>
 					<str id="createBookmarkColor">Bookmark Color:</str>
@@ -571,7 +571,7 @@
 			</group>
 		</group>
 
-		<group name="StageInfoScreen" prefix="stageInfoScreen">
+		<group name="StageInfoScreen" prefix="stageInfoScreen.">
 			<str id="win-title">Editing Stage "{0}" Infos</str>
 			<str id="title">Stage Info</str>
 			<str id="stageName">Stage Name</str>

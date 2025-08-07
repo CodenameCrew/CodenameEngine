@@ -231,7 +231,7 @@
                     <group name="BookmarkMenu" prefix="bookmarks.">
 						<str id="addBookmarkHere">Aggiungi Segnalibro Qui</str>
 						<str id="editBookmarkList">Modifica Lista Segnalibri</str>
-						<str id="goto">Vai a "{0}"</str>
+						<str id="goTo">Vai a "{0}"</str>
 						<str id="createBookmarkTitle">Creazione nuovo Segnalibro...</str>
 						<str id="createBookmarkName">Nome Segnalibro:</str>
 						<str id="createBookmarkColor">Colore Segnalibro:</str>
@@ -554,7 +554,7 @@
 		<str id="stagePath">Percorso file Palcoscenico</str>
 	</group>
 
-	<group name="StageInfoScreen" prefix="stageInfoScreen">
+	<group name="StageInfoScreen" prefix="stageInfoScreen.">
 		<str id="win-title">Modificando Informazioni Palcoscenico "{0}"</str>
 		<str id="title">Informazioni Palcoscenico</str>
 		<str id="stageName">Nome Palcoscenico</str>
