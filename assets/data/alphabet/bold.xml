@@ -85,15 +85,15 @@
 	</composite>
 	<composite char="â">
 		<component anim="character-a0" x="0" y="0"/>
-		<component anim="character-caret" x="5" y="60"/>
+		<component anim="diacritic-circumflex-fill" x="13" y="70" outline="diacritic-circumflex-outline" outlineX="-1" hasOutline="true"/>
 	</composite>
 	<composite char="ê">
 		<component anim="character-e0" x="0" y="0"/>
-		<component anim="character-caret" x="-1" y="60"/>
+		<component anim="diacritic-circumflex-fill" x="6" y="70" outline="diacritic-circumflex-outline" outlineX="-1" hasOutline="true"/>
 	</composite>
 	<composite char="ô">
 		<component anim="character-o0" x="0" y="0"/>
-		<component anim="character-caret" x="2" y="60"/>
+		<component anim="diacritic-circumflex-fill" x="11" y="70" outline="diacritic-circumflex-outline" outlineX="-1" hasOutline="true"/>
 	</composite>
 	<composite char="à">
 		<component anim="character-a0" x="0" y="0"/>
