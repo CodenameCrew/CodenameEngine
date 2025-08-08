@@ -24,257 +24,257 @@
 		<str id="foundAtlas">发现 {0} 精灵表</str>
 		<str id="foundAtlasplural">发现 {0} 精灵表</str>
 
-		<str id="fileAlreadyExists">The following files alreadly exist: \n\n{0}\n\nIMPORTANT: OVERRIDING CAN NOT BE UNDONE!</str>
-		<str id="override">Override Files</str>
-		<str id="useExisting">Use Existing</str>
+		<str id="fileAlreadyExists">以下文件已存在: \n\n{0}\n\n注意:覆盖操作无法取消!</str>
+		<str id="override">覆盖</str>
+		<str id="useExisting">保留</str>
 	</group>
 
 	<group name="EditorPicker" prefix="editor.">
-		<str id="alphabet.name">Alphabet Editor</str>
-		<str id="chart.name">Chart Editor</str>
-		<str id="character.name">Character Editor</str>
-		<str id="stage.name">Stage Editor</str>
-		<str id="uiDebug.name">UI Debug State</str>
-		<str id="wiki.name">Wiki</str>
-		<str id="debugOptions.name">Debug Options</str>
+		<str id="alphabet.name">字体表编辑器</str>
+		<str id="chart.name">谱面编辑器</str>
+		<str id="character.name">角色编辑器</str>
+		<str id="stage.name">舞台编辑器</str>
+		<str id="uiDebug.name">UI调试State</str>
+		<str id="wiki.name">维基百科</str>
+		<str id="debugOptions.name">调试设置</str>
 	</group>
 
 	<group name="ChartEditor">
 		<group name="CharterSelection" prefix="charterSelection.">
 			<str id="desc">Select a song to modify the charts from.</str>
-			<str id="acceptSong">Press ACCEPT to choose a difficulty to edit.</str>
-			<str id="acceptDifficulty">Press ACCEPT to edit the chart for the selected difficulty.</str>
-			<str id="selectDifficulty">Select a difficulty to continue.</str>
-			<str id="newDifficulty">New Difficulty</str>
-			<str id="newDifficultyDesc">Press ACCEPT to create a new chart difficulty.</str>
-			<str id="newSong">New Song</str>
-			<str id="newSongDesc">Press ACCEPT to create a new song.</str>
+			<str id="acceptSong">按 ACCEPT 来选择一个难度去编辑.</str>
+			<str id="acceptDifficulty">按 ACCEPT 来编辑当前选择难度的谱面.</str>
+			<str id="selectDifficulty">选择一个难度继续.</str>
+			<str id="newDifficulty">新难度</str>
+			<str id="newDifficultyDesc">按 ACCEPT 来创建新的谱面难度.</str>
+			<str id="newSong">新曲</str>
+			<str id="newSongDesc">按 ACCEPT 来创建新曲.</str>
 		</group>
 
 		<group name="ChartCreationScreen" prefix="chartCreation.">
-			<str id="title">Creating New Chart</str>
-			<str id="info">Chart Info</str>
-			<str id="diffName">Difficulty Name</str>
-			<str id="stage">Stage</str>
-			<str id="scrollSpeed">Scroll Speed</str>
+			<str id="title">正在创建新谱面</str>
+			<str id="info">谱面信息</str>
+			<str id="diffName">难度名称</str>
+			<str id="stage">舞台</str>
+			<str id="scrollSpeed">谱面滚动速度</str>
 
-			<str id="strumLineList">Strumlines $* Atleast 1 Strumline Required$</str>
-			<str id="strumLine.format">Strumline - #{0}</str>
+			<str id="strumLineList"流线>l $* 至少需要一条流线$</str>
+			<str id="strumLine.format">流线 - #{0}</str>
 
 			<group name="Warnings" prefix="warnings.">
-				<str id="song-exists-title">Creating Song: Error!</str>
-				<str id="song-exists-body">The song you are trying to create already exists, if you would like to override it delete the song first!</str>
-				<str id="chart-exists-title">Creating Chart: Error!</str>
-				<str id="chart-exists-body">The chart you are trying to create already exists, if you would like to override it delete the chart first!</str>
+				<str id="song-exists-title">创建曲子: 错误!</str>
+				<str id="song-exists-body">你试图创建的曲子已存在, 如果你想覆盖请先删除它!</str>
+				<str id="chart-exists-title">创建谱面: 错误!</str>
+				<str id="chart-exists-body">你试图创建的谱面已存在, 如果你想覆盖请先删除它!</str>
 			</group>
 		</group>
 
 		<group name="ChartDataScreen" prefix="chartDataScreen.">
-			<str id="title">Chart Properties</str>
-			<str id="editChartData">Edit Chart Data</str>
-			<str id="stage">Stage</str>
-			<str id="scrollSpeed">Scroll Speed</str>
+			<str id="title">谱面配置</str>
+			<str id="editChartData">编辑谱面数据</str>
+			<str id="stage">舞台</str>
+			<str id="scrollSpeed">谱面滚动速度</str>
 		</group>
 
 		<group name="SongPosInfo" prefix="songPosInfo.">
-			<str id="step">Step: {0}</str>
-			<str id="beat">Beat: {0}</str>
-			<str id="measure">Measure: {0}</str>
+			<str id="step">步: {0}</str>
+			<str id="beat">拍: {0}</str>
+			<str id="measure">测量: {0}</str>
 			<str id="bpm">BPM: {0}</str>
-			<str id="timeSignature">Time Signature: {0}/{1}</str>
+			<str id="timeSignature">时间戳: {0}/{1}</str>
 		</group>
 
 		<group name="CharterEventScreen" prefix="charterEventScreen.">
-			<str id="title-creating">Create Event Group</str>
-			<str id="title-editing">Edit Event Group</str>
+			<str id="title-creating">创建事件组</str>
+			<str id="title-editing">编辑事件组</str>
 
-			<str id="noEvent">No Event</str>
+			<str id="noEvent">无事件</str>
 
-			<str id="strumLine.format">Strumline #{0} ({1})</str>
+			<str id="strumLine.format">流线 #{0} ({1})</str>
 		</group>
 
 		<group name="CharterEventTypeSelection" prefix="charterEventTypeSelection.">
-			<str id="title">Choose an event type...</str>
+			<str id="title">选择一个事件种类...</str>
 		</group>
 
 		<group name="CharterMetaDataScreen" prefix="charterMetaDataScreen.">
-			<str id="title">Edit Metadata</str>
+			<str id="title">编辑元信息</str>
 
-			<str id="songData">Song Data</str>
-			<str id="songName">Song Name</str>
+			<str id="songData">曲数据</str>
+			<str id="songName">曲名称</str>
 			<str id="bpm">BPM</str>
-			<str id="timeSignature">Time Signature</str>
-			<str id="menusData">Menus Data (Freeplay/Story)</str>
-			<str id="displayName">Display Name</str>
-			<str id="icon">Icon</str>
-			<str id="modesAllowed">Modes Allowed</str>
-			<str id="color">Color</str>
-			<str id="difficulties">Difficulties</str>
-			<str id="customValues">Custom Values (Advanced)</str>
+			<str id="timeSignature">时间戳</str>
+			<str id="menusData">菜单数据 (自由/故事)</str>
+			<str id="displayName">显示名称</str>
+			<str id="icon">图标</str>
+			<str id="modesAllowed">允许模组</str>
+			<str id="color">颜色</str>
+			<str id="difficulties">难度</str>
+			<str id="customValues">自定义参数 (高级)</str>
 
-			<str id="opponentMode">Opponent Mode</str>
-			<str id="coopAllowed">Co-op Mode</str>
+			<str id="opponentMode">对手模式</str>
+			<str id="coopAllowed">合作模式</str>
 		</group>
 
 		<group name="CharterNoteTypesList" prefix="charterNoteTypesList.">
-			<str id="title">Note Types List Editor</str>
+			<str id="title">箭头种类表编辑</str>
 
-			<str id="editNoteTypes">Edit Note Types</str>
-			<str id="editType">Note Type {0}</str>
+			<str id="editNoteTypes">编辑箭头种类</str>
+			<str id="editType">箭头种类 {0}</str>
 		</group>
 
 		<group name="CharterStrumlineScreen" prefix="charterStrumlineScreen.">
-			<str id="win-title-creating">Creating strumline {0}</str>
-			<str id="win-title-editing">Editing strumline {0} properties</str>
+			<str id="win-title-creating">创建流线 {0} 中</str>
+			<str id="win-title-editing">编辑流线 {0} 配置中</str>
 
-			<str id="title-creating">Create New Strumline</str>
-			<str id="title-editing">Edit Strumline Properties</str>
+			<str id="title-creating">创建新流线</str>
+			<str id="title-editing">编辑流线配置</str>
 		</group>
 
 		<group name="SongCreationScreen" prefix="songCreationScreen.">
-			<str id="win-title">Creating New Song</str>
-			<str id="win-title-importing">Importing Song</str>
-			<str id="title">Song Info</str>
+			<str id="win-title">创建新曲</str>
+			<str id="win-title-importing">导出曲中</str>
+			<str id="title">歌曲信息</str>
 
-			<str id="instAudio">Inst Audio File $* Required*$</str>
-			<str id="voicesAudio">Vocal Audio File</str>
+			<str id="instAudio">伴奏文件 Inst $* 被需要*$</str>
+			<str id="voicesAudio">人声文件 Voice</str>
 
-			<str id="importFrom">Import from...</str>
-			<str id="importSource">Import Source:</str>
+			<str id="importFrom">导入来源...</str>
+			<str id="importSource">导入源：</str>
 			<str id="legacyOrPsych">Psych/Legacy FNF</str>
 			<str id="vslice">V-Slice</str>
-			<str id="vsliceProject">V-Slice Project (.fnfc)</str>
-			<str id="importChartFormat">Chart Format</str>
-			<str id="importAudios">Add Audios</str>
-			<str id="songFileName">Song file name $* Required$</str>
-			<str id="songDataFile">Data/Chart File $* Required$</str>
-			<str id="songMetaFile">Meta File $* Required$</str>
+			<str id="vsliceProject">V-Slice 项目 (.fnfc)</str>
+			<str id="importChartFormat">图表格式</str>
+			<str id="importAudios">添加音频</str>
+			<str id="songFileName">歌曲文件名 $* 必填$</str>
+			<str id="songDataFile">数据/图表文件 $* 必填$</str>
+			<str id="songMetaFile">元数据文件 $* 必填$</str>
 
-			<str id="back">Back</str>
-			<str id="next">Next</str>
+			<str id="back">返回</str>
+			<str id="next">下一步</str>
 		</group>
 
 		<group name="StrumlineOptions" prefix="charterStrumLine.">
-			<str id="characters">Characters</str>
-			<str id="newChar">New Char</str>
-			<str id="type">Type</str>
-			<str id="scrollSpeed">Scroll Speed</str>
-			<str id="stagePos">Stage Position</str>
-			<str id="scale">Scale</str>
-			<str id="spacing">Spacing</str>
-			<str id="hudPos">Hud Position (X [Ratio 0-1],Y)</str>
-			<str id="visible">Visible?</str>
-			<str id="useChartScrollSpeed">Uses charts scroll speed?</str>
-			<str id="vocalSuffix">Vocal Suffix</str>
-			<str id="keyCount">Key Count</str>
+			<str id="characters">角色</str>
+			<str id="newChar">新建角色</str>
+			<str id="type">类型</str>
+			<str id="scrollSpeed">滚动速度</str>
+			<str id="stagePos">舞台位置</str>
+			<str id="scale">缩放</str>
+			<str id="spacing">间距</str>
+			<str id="hudPos">HUD位置 (X [比例0-1],Y)</str>
+			<str id="visible">可见？</str>
+			<str id="useChartScrollSpeed">使用图表滚动速度？</str>
+			<str id="vocalSuffix">人声后缀</str>
+			<str id="keyCount">键位数量</str>
 		</group>
 
 		<group name="ChartEditor" prefix="charter.">
 			<!-- Charter.hx -->
 			<group name="TopBar">
-				<str id="topBar.file">File</str>
+				<str id="topBar.file">文件</str>
 				<group name="FileMenu" prefix="file.">
-					<str id="new">New</str>
-					<str id="save">Save</str>
-					<str id="saveAs">Save As...</str>
-					<str id="saveGlobalEvents">Save Global Events</str>
-					<str id="saveGlobalEventsAs">Save Global Events As...</str>
-					<str id="saveNoLocalEvents">Save Chart without Local Events</str>
-					<str id="saveNoLocalEventsAs">Save Chart without Local Events As...</str>
-					<str id="saveMeta">Save Meta</str>
-					<str id="saveMetaAs">Save Meta As...</str>
-					<str id="exportFnfLegacy">Export For FNF Legacy...</str>
-					<str id="exportPsych">Export For Psych Engine...</str>
-					<str id="exit">Exit</str>
+					<str id="new">新建</str>
+				    <str id="save">保存</str>
+				    <str id="saveAs">另存为...</str>
+				    <str id="saveGlobalEvents">保存全局事件</str>
+				    <str id="saveGlobalEventsAs">全局事件另存为...</str>
+				    <str id="saveNoLocalEvents">保存不含本地事件的图表</str>
+				    <str id="saveNoLocalEventsAs">不含本地事件的图表另存为...</str>
+				    <str id="saveMeta">保存元数据</str>
+				    <str id="saveMetaAs">元数据另存为...</str>
+			    	<str id="exportFnfLegacy">为原FNF导出...</str>
+				    <str id="exportPsych">为Psych引擎导出...</str>
+				    <str id="exit">退出</str>
 				</group>
 
-				<str id="topBar.edit">Edit</str>
+				<str id="topBar.edit">编辑</str>
 				<group name="EditMenu" prefix="edit.">
-					<str id="undo">Undo</str>
-					<str id="redo">Redo</str>
-					<str id="copy">Copy</str>
-					<str id="paste">Paste</str>
-					<str id="cut">Cut</str>
-					<str id="delete">Delete</str>
+					<str id="undo">撤销</str>
+				    <str id="redo">重做</str>
+				    <str id="copy">复制</str>
+				    <str id="paste">粘贴</str>
+				    <str id="cut">剪切</str>
+				    <str id="delete">删除</str>
 				</group>
 
-				<str id="topBar.chart">Chart</str>
+				<str id="topBar.chart">谱面</str>
 				<group name="ChartMenu" prefix="chart.">
-					<str id="playtest">Playtest</str>
-					<str id="playtestHere">Playtest here</str>
-					<str id="playtestOpponent">Playtest as opponent</str>
-					<str id="playtestOpponentHere">Playtest as opponent here</str>
-					<str id="enableScripts">Enable scripts during playtesting</str>
-					<str id="editChartData">Edit chart data</str>
-					<str id="editMetadata">Edit metadata information</str>
+					<str id="playtest">测试</str>
+				<str id="playtestHere">从此处测试</str>
+				<str id="playtestOpponent">测试对手模式</str>
+				<str id="playtestOpponentHere">从此处测试对手模式</str>
+				<str id="enableScripts">测试时启用脚本</str>
+				<str id="editChartData">编辑图表数据</str>
+				<str id="editMetadata">编辑元数据</str>
 				</group>
 
-				<str id="topBar.view">View</str>
+				<str id="topBar.view">视图</str>
 				<group name="ViewMenu" prefix="view.">
-					<str id="zoomIn">Zoom in</str>
-					<str id="zoomOut">Zoom out</str>
-					<str id="resetZoom">Reset Zoom</str>
-					<str id="showSectionsSeparator">Show Sections Separator</str>
-					<str id="showBeatsSeparator">Show Beats Separator</str>
-					<str id="rainbowWaveforms">Rainbow Waveforms</str>
-					<str id="lowDetailWaveforms">Low Detail Waveforms</str>
-					<str id="scrollLeft">Scroll Left</str>
-					<str id="scrollRight">Scroll Right</str>
-					<str id="scrollReset">Reset Scroll</str>
+					<str id="zoomIn">放大</str>
+				    <str id="zoomOut">缩小</str>
+				    <str id="resetZoom">重置缩放</str>
+				    <str id="showSectionsSeparator">显示段落分隔线</str>
+				    <str id="showBeatsSeparator">显示节拍分隔线</str>
+				    <str id="rainbowWaveforms">波形彩虹色</str>
+				    <str id="lowDetailWaveforms">低精度波形</str>
+				    <str id="scrollLeft">向左滚动</str>
+				    <str id="scrollRight">向右滚动</str>
+				    <str id="scrollReset">重置滚动</str>
 				</group>
 
-				<str id="topBar.song">Song</str>
+				<str id="topBar.song">歌曲</str>
 				<group name="SongMenu" prefix="song.">
-					<str id="goStart">Go back to the start</str>
-					<str id="goEnd">Go forward to the end</str> <!-- used to be "Go to the end" -->
-					<str id="addOpponentCamera">Add camera on Opponent</str>
-					<str id="addPlayerCamera">Add camera on Player</str>
-					<str id="muteInst">Mute instrumental</str>
-					<str id="muteVoices">Mute voices</str>
+					<str id="goStart">跳到开头</str>
+				    <str id="goEnd">跳到结尾</str>
+				    <str id="addOpponentCamera">添加对手镜头</str>
+				    <str id="addPlayerCamera">添加玩家镜头</str>
+				    <str id="muteInst">静音伴奏</str>
+				    <str id="muteVoices">静音人声</str>
 				</group>
 
 				<group name="BookmarkMenu" prefix="bookmarks.">
-					<str id="addBookmarkHere">Add Bookmark Here</str>
-					<str id="editBookmarkList">Edit Bookmark List</str>
-					<str id="goTo">Go to "{0}"</str>
-					<str id="createBookmarkTitle">Creating New Bookmark...</str>
-					<str id="createBookmarkName">Bookmark Name:</str>
-					<str id="createBookmarkColor">Bookmark Color:</str>
-					<str id="editBookmarkListTitle">Bookmark List</str>
-					<str id="editBookmarksTitle">Edit Bookmarks</str>
-					<str id="newBookmarkName">New Bookmark</str>
+					<str id="addBookmarkHere">在此添加书签</str>
+				    <str id="editBookmarkList">编辑书签列表</str>
+				    <str id="goTo">跳转到"{0}"</str>
+				    <str id="createBookmarkTitle">创建新书签...</str>
+				    <str id="createBookmarkName">书签名称：</str>
+				    <str id="createBookmarkColor">书签颜色：</str>
+				    <str id="editBookmarkListTitle">书签列表</str>
+				    <str id="editBookmarksTitle">编辑书签</str>
+				    <str id="newBookmarkName">新书签</str>
 				</group>
 
-				<str id="topBar.note">Note</str>
+				<str id="topBar.note">箭头</str>
 				<group name="NoteMenu" prefix="note.">
-					<str id="addSustainLength">Add sustain length</str>
-					<str id="subtractSustainLength">Subtract sustain length</str>
-					<str id="selectAll">Select all</str>
-					<str id="selectMeasure">Select measure</str>
-					<str id="editNoteTypesList">Edit Note Types List</str>
+					<str id="addSustainLength">增加持续长度</str>
+				    <str id="subtractSustainLength">减少持续长度</str>
+				    <str id="selectAll">全选</str>
+				    <str id="selectMeasure">选择小节</str>
+				    <str id="editNoteTypesList">编辑音符类型列表</str>
 				</group>
-				<str id="topBar.snap">Snap</str>
+				<str id="topBar.snap">对齐</str>
 				<group name="SnapMenu" prefix="snap.">
-					<str id="increaseSnap">↑ Grid Snap</str>
-					<str id="resetSnap">Reset Grid Snap</str>
-					<str id="decreaseSnap">↓ Grid Snap</str>
+					<str id="increaseSnap">↑ 网格对齐</str>
+					<str id="resetSnap">重置网格对齐</str>
+					<str id="decreaseSnap">↓ 网格对齐</str>
 
-					<str id="snap">{0}x Grid Snap</str>
+					<str id="snap">{0}x 网格对齐</str>
 				</group>
 
-				<str id="topBar.playback">Playback</str>
+				<str id="topBar.playback">回放</str>
 				<group name="PlaybackMenu" prefix="playback.">
-					<str id="play">Play/Pause</str>
-					<str id="speedRaise">↑ Speed {0}%</str>
-					<str id="speedReset">Reset Speed</str>
-					<str id="speedLower">↓ Speed {0}%</str>
-					<str id="sectionBack">Go back a section</str>
-					<str id="sectionForward">Go forward a section</str>
-					<str id="sectionStart">Go to start of section</str>
-					<str id="backStep">Go back a step</str>
-					<str id="forwardStep">Go forward a step</str>
-					<str id="metronome">Metronome</str>
-					<str id="visualMetronome">Visual metronome</str>
+					<str id="play">播放/暂停</str>
+				    <str id="speedRaise">↑ 速度 {0}%</str>
+				    <str id="speedReset">重置速度</str>
+				    <str id="speedLower">↓ 速度 {0}%</str>
+			    	<str id="sectionBack">上一段落</str>
+			    	<str id="sectionForward">下一段落</str>
+			    	<str id="sectionStart">跳至段落开头</str>
+			    	<str id="backStep">后退一步</str>
+				    <str id="forwardStep">前进一步</str>
+				    <str id="metronome">节拍器</str>
+				    <str id="visualMetronome">可视化节拍器</str
 				</group>
 			</group>
 
