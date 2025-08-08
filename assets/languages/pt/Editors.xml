@@ -110,6 +110,7 @@
 			<str id="color">Cor</str>
 			<str id="difficulties">Dificuldades</str>
 			<str id="customValues">Valores Especiais (Avançado)</str>
+			<str id="needsVoices">Necessita Vozes</str>
 
 			<str id="opponentMode">Modo Oponente</str>
 			<str id="coopAllowed">Modo Cooperativo</str>
