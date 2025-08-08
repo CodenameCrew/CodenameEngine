@@ -151,6 +151,11 @@ class OptionsMenu extends TreeMenu {
 		var options:Array<FlxSprite> = [];
 
 		for(node in xml.elements) {
+			switch(node.name) { // literally just so you don't need "name" because there is no need for this to require it 😭  - RodneyFurball
+				case 'separator':
+					options.push(new Separator(Std.parseInt(node.has.height ? node.att.height : 67)));
+			}
+
 			if (!node.has.name) {
 				Logs.warn("An option node requires a name attribute.");
 				continue;
@@ -195,7 +200,7 @@ class OptionsMenu extends TreeMenu {
 						continue;
 					}
 					var v:Dynamic = Std.parseFloat(node.att.value);
-					options.push(new RadioButton(screen, name, desc, node.att.id, v != null ? v : node.att.value, null, FlxG.save.data, node.att.forId));
+					options.push(new RadioButton(screen, name, desc, node.att.id, v != null ? v : node.att.value, null, FlxG.save.data, node.has.forId ? node.att.forId : null));
 				case 'slider':
 					if (!node.has.id) {
 						Logs.warn("A slider option requires an \"id\" for option saving.");
@@ -204,9 +209,6 @@ class OptionsMenu extends TreeMenu {
 					var step = node.has.change ? Std.parseFloat(node.att.change) : (node.has.step ? Std.parseFloat(node.att.step) : null);
 					var segments = node.has.segments ? Std.parseInt(node.att.segments) : 5;
 					options.push(new SliderOption(name, desc, Std.parseFloat(node.att.min), Std.parseFloat(node.att.max), step, segments, node.att.id, Std.parseInt(node.att.barWidth), null, FlxG.save.data));
-
-				case 'separator':
-					options.push(new Separator(Std.parseInt(node.att.height)));
 
 				case "menu":
 					options.push(new TextOption(name, desc, ' >', () -> {
