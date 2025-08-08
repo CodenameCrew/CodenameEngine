@@ -1,1 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<group name="PlayState">
+		<str id="game.score">分数:{0}</str>
+		<str id="game.misses">失误:{0}</str>
+		<str id="game.comboBreaks">连击中断:{0}</str>
+		<str id="game.accuracy">准确率:{0} - {1}</str>
+		<str id="game.combo">连击:{0}</str>
 
+		<str id="game.rating.[N/A]">[无评级]</str>
+		<str id="game.rating.F">F</str>
+		<str id="game.rating.E">E</str>
+		<str id="game.rating.D">D</str>
+		<str id="game.rating.C">C</str>
+		<str id="game.rating.B">B</str>
+		<str id="game.rating.A">A</str>
+		<str id="game.rating.S">S</str>
+		<str id="game.rating.S++">S++</str>
+	</group>
+
+	<group name="StoryMenu">
+		<str id="story.score">周目分数:{0}</str>
+		<str id="story.tracks">曲目</str>
+	</group>
+
+	<group name="Freeplay">
+		<str id="freeplay.score">个人最佳:{0}</str>
+		<str id="freeplay.solo">单人模式</str>
+		<str id="freeplay.opponentMode">对手模式</str>
+		<str id="freeplay.coopMode">合作模式</str>
+		<str id="freeplay.coopModeSwitched">合作模式(交换)</str>
+	</group>
+
+	<group name="Pause">
+		<group name="PauseOptions">
+			<str id="pause.resume">继续游戏</str>
+			<str id="pause.restartSong">重新开始</str>
+			<str id="pause.changeControls">更改控制</str>
+			<str id="pause.changeOptions">更改选项</str>
+			<str id="pause.exitToMenu">返回菜单</str>
+			<str id="pause.exitToCharter">返回编辑器</str>
+			<str id="pause.resumeCutscene">继续过场</str>
+			<str id="pause.skipCutscene">跳过过场</str>
+			<str id="pause.restartCutscene">重播过场</str>
+		</group>
+
+		<str id="pause.deathCounter">失败次数: {0}</str>
+		<str id="pause.coopMode">合作模式</str>
+		<str id="pause.opponentMode">对手模式</str>
+	</group>
+
+	<group name="Credits">
+		<group name="CreditsCodename">
+			<str id="credits.mainDev" notrim="true"> *- 核心开发组成员!*</str>
+			<str id="credits.totalContributions">总贡献: ~{0}~ / *{1}* (~{2}%~) - 选择打开GitHub账户</str>
+			<str id="credits.downloadingList">正在下载列表...</str>
+			<str id="credits.allContributors">引擎所有贡献者！ - 按RESET更新列表(每2分钟限一次)。</str>
+		</group>
+		<group name="CreditsMain">
+			<str id="credits.name">制作名单</str>
+			<str id="credits.madePossible">让这一切成为可能的人们！</str>
+			<str id="credits.selectCodename">选择查看引擎所有贡献者！</str>
+			<str id="credits.selectBase">选择打开原版游戏itch.io页面捐赠！</str>
+		</group>
+	</group>
+
+	<group name="Mods">
+		<str id="mods.disableMods">禁用模组</str>
+	</group>
+
+	<group name="MainMenu">
+		<str id="mainMenu.commit">版本: {0} ({1})</str>
+		<str id="mainMenu.openMods">[{0}] 打开模组菜单</str>
+	</group>
+
+	<group name="Updater">
+		<group name="UpdateAvailable">
+			<str id="updateAvailable.title">新版本可用</str>
+			<str id="updateAvailable.install">安装</str>
+			<str id="updateAvailable.skip">跳过</str>
+		</group>
+		<group name="UpdateScreen">
+			<str id="updateScreen.general-1">准备更新安装...</str>
+			<str id="updateScreen.part-1">创建安装文件夹并清理旧更新文件...</str>
+
+			<str id="updateScreen.general-2">下载更新资源...</str>
+			<str id="updateScreen.part-2">正在下载文件 {0}</str>
+
+			<str id="updateScreen.general-3">下载新引擎执行文件...</str>
+			<str id="updateScreen.part-3">正在下载 {0}</str>
+
+			<str id="updateScreen.general-4">安装新文件...</str>
+			<str id="updateScreen.part-4">正在安装 {0}</str>
+		</group>
+	</group>
+
+	<group name="Difficulties">
+		<str id="diff.easy">简单</str>
+		<str id="diff.normal">普通</str>
+		<str id="diff.hard">困难</str>
+		<str id="diff.erect">进阶</str>
+		<str id="diff.nightmare">噩梦</str>
+	</group>
+</language>
