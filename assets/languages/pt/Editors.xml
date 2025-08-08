@@ -670,7 +670,7 @@
 	</group>
 
 	<group name="ModConfigWarning" prefix="modConfigWarning.">
-		<str id="warningTitle">Configuração da pasta de mods em falta!</str>
+		<str id="warningTitle">Configuração da pasta do mod em falta!</str>
 		<str id="warningDesc">Está a faltar um ficheiro de configurações ao seu mod!\n\nGostaria de criar um automaticamente?\n\n(PS: Se este mod não for seu, por favor desative o Modo de desenvolvedor para fazer esta notificação parar de aparecer.)</str>
 
 		<str id="createdTitle">Config. de mod criada!</str>
