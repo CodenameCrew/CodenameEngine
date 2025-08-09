@@ -97,7 +97,7 @@
 	</composite>
 	<composite char="à">
 		<component anim="character-a0" x="0" y="0"/>
-		<!-- <component anim="character-caret" x="5" y="60"/> --> <!-- no `, so keeping this here as a placeholder for when someone draws it-->
+		<component anim="diacritic-acute-fill" x="16" y="70"  outline="diacritic-acute-outline" outlineX="1" hasOutline="true" flipX="true"/>
 	</composite>
 	<composite char="ą">
 		<component anim="character-a0" x="0" y="0"/>
