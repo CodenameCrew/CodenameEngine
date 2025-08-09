@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<group name="PlayState">
+		<str id="game.score">Pontos:{0}</str>
+		<str id="game.misses">Erros:{0}</str>
+		<str id="game.comboBreaks">Quebras de Combo:{0}</str>
+		<str id="game.accuracy">Precisão:{0} - {1}</str>
+		<str id="game.combo">Combo:{0}</str>
+
+		<str id="game.rating.[N/A]">[N/A]</str>
+		<str id="game.rating.F">F</str>
+		<str id="game.rating.E">E</str>
+		<str id="game.rating.D">D</str>
+		<str id="game.rating.C">C</str>
+		<str id="game.rating.B">B</str>
+		<str id="game.rating.A">A</str>
+		<str id="game.rating.S">S</str>
+		<str id="game.rating.S++">S++</str>
+	</group>
+
+	<group name="StoryMenu">
+		<str id="story.score">PONTUAÇÃO DA SEMANA:{0}</str>
+		<str id="story.tracks">FAIXAS</str>
+	</group>
+
+	<group name="Freeplay">
+		<str id="freeplay.score">RECORDE PESSOAL:{0}</str>
+		<str id="freeplay.solo">Solo</str>
+		<str id="freeplay.opponentMode">Modo Oponente</str>
+		<str id="freeplay.coopMode">Modo Co-Op</str>
+		<str id="freeplay.coopModeSwitched">Modo Co-Op (Trocado)</str>
+	</group>
+
+	<group name="Pause">
+		<group name="PauseOptions">
+			<str id="pause.resume">Continuar</str>
+			<str id="pause.restartSong">Recomeçar Canção</str>
+			<str id="pause.changeControls">Mudar Controlos</str>
+			<str id="pause.changeOptions">Opções</str>
+			<str id="pause.exitToMenu">Sair para menu</str>
+			<str id="pause.exitToCharter">Sair para editor</str>
+			<str id="pause.resumeCutscene">Resumir Cena</str>
+			<str id="pause.skipCutscene">Saltar Cena</str>
+			<str id="pause.restartCutscene">Recomeçar Cena</str>
+		</group>
+
+		<str id="pause.deathCounter">Tomates azuis: {0}</str>
+		<str id="pause.coopMode">MODO CO-OP</str>
+		<str id="pause.opponentMode">MODO OPONENTE </str>
+	</group>
+
+	<group name="Credits">
+		<group name="CreditsCodename">
+			<str id="credits.mainDev" notrim="true"> *- Membro público dos Desenvolvedores!*</str>
+			<str id="credits.totalContributions">Contribuições Totais: ~{0}~ / *{1}* (~{2}%~) - Selecione para abrir a sua conta GitHub</str>
+			<str id="credits.downloadingList">A Descarregar Lista...</str>
+			<str id="credits.allContributors">Todos os contribuidores! Carregue em REINICIAR para atualizar a lista (Uma vez a cada 2 minutos).</str>
+		</group>
+		<group name="CreditsMain">
+			<str id="credits.name">Créditos</str>
+			<str id="credits.madePossible">As pessoas que fizeram isto possível!</str>
+			<str id="credits.selectCodename">Selecione isto para ver todos os contribuidores de Codename Engine!</str>
+			<str id="credits.selectBase">Selecione isto para abrir a página itch.io do jogo original para doar!</str>
+		</group>
+	</group>
+
+	<group name="Mods">
+		<str id="mods.disableMods">Desativar Mods</str>
+	</group>
+
+	<group name="MainMenu">
+		<str id="mainMenu.commit">Commit: {0} ({1})</str>
+		<str id="mainMenu.openMods">[{0}] Abrir menu de mods</str>
+	</group>
+
+	<group name="Updater">
+		<group name="UpdateAvailable">
+			<str id="updateAvailable.title">NOVA ATUALIZAÇÃO</str>
+			<str id="updateAvailable.install">INSTALAR</str>
+			<str id="updateAvailable.skip">SALTAR</str>
+		</group>
+		<group name="UpdateScreen">
+			<str id="updateScreen.general-1">A Preparar a instalação...</str>
+			<str id="updateScreen.part-1">A Criar a pasta de instalação e a limpar ficheiros antigos...</str>
+
+			<str id="updateScreen.general-2">A Transferir ficheiros...</str>
+			<str id="updateScreen.part-2">A Transferir ficheiro {0}</str>
+
+			<str id="updateScreen.general-3">A transferir executável novo...</str>
+			<str id="updateScreen.part-3">A Transferir {0}</str>
+
+			<str id="updateScreen.general-4">A instalar ficheiros novos...</str>
+			<str id="updateScreen.part-4">A Instalar {0}</str>
+		</group>
+	</group>
+
+	<group name="Difficulties">
+		<str id="diff.easy">Fácil</str>
+		<str id="diff.normal">Normal</str>
+		<str id="diff.hard">Difícil</str>
+		<str id="diff.erect">Ereto</str>
+		<str id="diff.nightmare">Pesadelo</str>
+	</group>
+</language>
