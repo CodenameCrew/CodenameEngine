@@ -212,7 +212,7 @@ class Chart {
 		}
 		#end
 
-		var loadedMeta = loadChartMeta(songName, variant, base.fromMods, false);
+		var loadedMeta = loadChartMeta(songName, variant != null && variant != "" ? variant : difficulty, base.fromMods, false);
 		if (base.meta == null) base.meta = loadedMeta;
 		else {
 			for (field in Reflect.fields(base.meta)) {
