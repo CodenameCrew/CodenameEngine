@@ -6,7 +6,7 @@ import flixel.FlxBasic;
 
 class Separator extends FlxSprite {
 	var separatorHeight:Float;
-	public function new(height = 67) {
+	public function new(height:Float = 67) {
 		super();
 		separatorHeight = height;
 	}
