@@ -57,7 +57,7 @@
 			<str id="credits.allContributors">Wszyscy współpracownicy silnika! - Naciśnij RESET aby zaktualizować listę (Jeden reset co 2 minuty).</str>
 		</group>
 		<group name="CreditsMain">
-			<str id="credits.name">Kredyty</str>
+			<str id="credits.name">Twórcy</str>
 			<str id="credits.madePossible">Ludzie którzy to umożliwili!</str>
 			<str id="credits.selectCodename">Wybierz to aby zobaczyć wszystkich współpracowników!</str>
 			<str id="credits.selectBase">Wybierz to aby otworzyć stronę itch.io oryginalnej gry!</str>

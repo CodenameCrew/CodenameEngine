@@ -83,13 +83,11 @@ class Chart {
 		return data;
 	}
 
-	public static function loadChartMeta(songName:String, ?difficulty:String, fromMods:Bool = true):ChartMetaData {
-		if (difficulty == null) difficulty = Flags.DEFAULT_DIFFICULTY;
-
+	public static function loadChartMeta(songName:String, difficulty:String = '', fromMods:Bool = true, includeMetaDifficulties:Bool = true):ChartMetaData {
 		var metaPath = Paths.file('songs/${songName}/meta.json');
 		var metaDiffPath = Paths.file('songs/${songName}/meta-${difficulty}.json');
 
-		var data:ChartMetaData = null;
+		var data:ChartMetaData = null, fromDifficulty = false;
 		var fromMods:Bool = fromMods;
 		for (path in [metaDiffPath, metaPath]) if (Assets.exists(path)) {
 			fromMods = Paths.assetsTree.existsSpecific(path, "TEXT", MODS);
@@ -98,24 +96,33 @@ class Chart {
 				tempData.color = CoolUtil.getColorFromDynamic(tempData.color).getDefault(Flags.DEFAULT_COLOR);
 				data = tempData;
 			} catch(e) Logs.trace('Failed to load song metadata for ${songName} ($path): ${Std.string(e)}', ERROR);
-			if (data != null) break;
+			if (data != null) {
+				fromDifficulty = path == metaDiffPath;
+				break;
+			}
 		}
 
-		if (data == null) data = {
-			name: songName,
-			bpm: 100
-		};
+		if (data == null) {
+			data = {
+				name: songName,
+				bpm: Flags.DEFAULT_BPM
+			};
+		}
+		else {
+			data.name = songName;
+			data.setFieldDefault("bpm", Flags.DEFAULT_BPM);
+		}
 
-		data.name = songName;
-		data.setFieldDefault("bpm", Flags.DEFAULT_BPM);
+		data.setFieldDefault("displayName", data.name);
 		data.setFieldDefault("beatsPerMeasure", Flags.DEFAULT_BEATS_PER_MEASURE);
 		data.setFieldDefault("stepsPerBeat", Flags.DEFAULT_STEPS_PER_BEAT);
-		data.setFieldDefault("needsVoices", true);
 		data.setFieldDefault("icon", Flags.DEFAULT_HEALTH_ICON);
 		data.setFieldDefault("difficulties", []);
 		data.setFieldDefault("coopAllowed", Flags.DEFAULT_COOP_ALLOWED);
 		data.setFieldDefault("opponentModeAllowed", Flags.DEFAULT_OPPONENT_MODE_ALLOWED);
-		data.setFieldDefault("displayName", data.name);
+		data.setFieldDefault("instSuffix", "");
+		data.setFieldDefault("vocalsSuffix", "");
+		data.setFieldDefault("needsVoices", true);
 
 		if (data.difficulties.length <= 0) {
 			data.difficulties = [for(f in Paths.getFolderContent('songs/${songName}/charts/', false, fromMods ? MODS : SOURCE)) if (Path.extension(f.toUpperCase()) == "JSON") Path.withoutExtension(f)];
@@ -129,6 +136,14 @@ class Chart {
 					}
 				}
 				data.difficulties = tempDiffs;
+			}
+		}
+
+		if (includeMetaDifficulties && !fromDifficulty) {
+			data.metas = [];
+			for (difficulty in data.difficulties) {
+				if (!data.metas.exists(difficulty) && Assets.exists(Paths.file('songs/${songName}/meta-${difficulty}.json')))
+					data.metas.set(difficulty, loadChartMeta(songName, difficulty, fromMods, false));
 			}
 		}
 
@@ -265,7 +280,7 @@ class Chart {
 
 		CoolUtil.safeSaveFile(chartPath, Json.stringify(filteredChart, null, saveSettings.prettyPrint == true ? Flags.JSON_PRETTY_PRINT : null));
 
-		if (saveSettings.overrideExistingMeta == true || !FileSystem.exists(metaPath))
+		if (meta != null && (saveSettings.overrideExistingMeta || !FileSystem.exists(metaPath)))
 			CoolUtil.safeSaveFile(metaPath, makeMetaSaveable(meta));
 		#end
 		return filteredChart;
@@ -305,7 +320,8 @@ class Chart {
 
 	public static inline function makeMetaSaveable(meta:ChartMetaData, prettyPrint:Bool = true):String {
 		var data:Dynamic = Reflect.copy(meta);
-		if (data.color != null) data.color = new FlxColor(data.color).toWebString();  // dont even ask me  - Nex
+		if (data.color != null) data.color = FlxColor.fromInt(data.color).toWebString();  // dont even ask me  - Nex
+		Reflect.deleteField(data, 'metas');
 		return Json.stringify(data, null, prettyPrint ? Flags.JSON_PRETTY_PRINT : null);
 	}
 }

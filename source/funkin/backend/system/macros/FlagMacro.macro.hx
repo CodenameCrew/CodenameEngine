@@ -33,10 +33,8 @@ class FlagMacro {
 		resetExprs.push(macro $i{"customFlags"} = $v{[]});
 
 		for (field in fields) {
-			var skip = field.meta.hasMeta(":bypass");
+			if (field.meta.hasMeta(":bypass")) continue;
 			var hasLazy = field.meta.hasMeta(":lazy");
-
-			if (skip) continue;
 
 			switch (field.kind) {
 				case FVar(type, expr):

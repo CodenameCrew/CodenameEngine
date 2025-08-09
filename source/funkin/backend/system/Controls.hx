@@ -22,6 +22,7 @@ enum Control
 	ACCEPT;
 	BACK;
 	PAUSE;
+	CHANGE_MODE;
 	//CHEAT;
 	SWITCHMOD;
 
@@ -144,6 +145,11 @@ class Controls extends FlxActionSet
 	@:justPressed("reset") public var RESET(get, set): Bool;
 	@:pressed("reset") public var RESET_HOLD(get, set): Bool;
 	@:justReleased("reset") public var RESET_R(get, set): Bool;
+
+	@:gamepad([FlxGamepadInputID.BACK]) // select button
+	@:justPressed("change-mode") public var CHANGE_MODE(get, set): Bool;
+	@:pressed("change-mode") public var CHANGE_MODE_HOLD(get, set): Bool;
+	@:justReleased("change-mode") public var CHANGE_MODE_R(get, set): Bool;
 
 	//@:gamepad([])
 	//@:justPressed("cheat") public var CHEAT(get, set): Bool;

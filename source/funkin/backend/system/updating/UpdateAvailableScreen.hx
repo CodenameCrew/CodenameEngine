@@ -24,7 +24,11 @@ class UpdateAvailableScreen extends MusicBeatState {
 
 	public function new(check:UpdateCheckCallback) {
 		super();
+
 		this.check = check;
+		if (Date.now().getTime() - check.date.getTime() > 15000) {
+			if ((check = UpdateUtil.checkForUpdates(true)).newUpdate) this.check = check;
+		}
 	}
 
 	public override function create() {

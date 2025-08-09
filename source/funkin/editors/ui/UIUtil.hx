@@ -150,7 +150,7 @@ class UIUtil {
 			} else if (member is UITextBox) @:privateAccess {
 				var textbox:UITextBox = cast member;
 				if (textbox.__wasFocused) {
-					textbox.onChange(textbox.label.text);
+					if (textbox.onChange != null) textbox.onChange(textbox.label.text);
 					textbox.__wasFocused = false;
 				}
 			}

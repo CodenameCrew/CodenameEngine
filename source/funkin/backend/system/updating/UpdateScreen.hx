@@ -56,7 +56,7 @@ class UpdateScreen extends MusicBeatState {
 		generalProgress.alignment = CENTER;
 		add(generalProgress);
 
-		overSound = FlxG.sound.load(Paths.sound(Flags.DEFAULT_GAMEOVER_RETRY_SFX));
+		overSound = FlxG.sound.load(Paths.sound(Flags.DEFAULT_GAMEOVEREND_SOUND));
 
 		updater.execute();
 

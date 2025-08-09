@@ -10,7 +10,7 @@ import openfl.Assets;
 using StringTools;
 
 class EventsData {
-	public static var defaultEventsList:Array<String> = ["HScript Call", "Camera Movement", "Camera Position", "Add Camera Zoom", "Camera Zoom", "Camera Modulo Change", "Camera Flash", "BPM Change", "Continuous BPM Change", "Time Signature Change", "Scroll Speed Change", "Alt Animation Toggle", "Play Animation"];
+	public static var defaultEventsList:Array<String> = ["HScript Call", "Camera Movement", "Camera Position", "Add Camera Zoom", "Camera Bop", "Camera Zoom", "Camera Modulo Change", "Camera Flash", "BPM Change", "Continuous BPM Change", "Time Signature Change", "Scroll Speed Change", "Alt Animation Toggle", "Play Animation"];
 	public static var defaultEventsParams:Map<String, Array<EventParamInfo>> = [
 		"HScript Call" => [
 			{name: "Function Name", type: TString, defValue: "myFunc"},
@@ -55,6 +55,9 @@ class EventsData {
 		"Add Camera Zoom" => [
 			{name: "Amount", type: TFloat(-10, 10, 0.01, 2), defValue: 0.05},
 			{name: "Camera", type: TDropDown(['camGame', 'camHUD']), defValue: "camGame"}
+		],
+		"Camera Bop" => [
+			{name: "Amount", type: TFloat(-10, 10, 0.1, 2), defValue: 0.1}
 		],
 		"Camera Zoom" => [
 			{name: "Tween Zoom?", type: TBool, defValue: true},

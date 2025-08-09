@@ -362,6 +362,10 @@ class PlayState extends MusicBeatState
 	 * Speed at which the game camera zoom lerps to.
 	 */
 	public var camGameZoomLerp:Float = Flags.DEFAULT_CAM_ZOOM_LERP;
+	/**
+	 * The current multiplier for game camera zooming.
+	 */
+	public var camGameZoomMult:Float = Flags.DEFAULT_CAM_ZOOM_MULT;
 
 	/**
 	 * Camera zoom at which the hud lerps to.
@@ -371,6 +375,21 @@ class PlayState extends MusicBeatState
 	 * Speed at which the hud camera zoom lerps to.
 	 */
 	public var camHUDZoomLerp:Float = Flags.DEFAULT_HUD_ZOOM_LERP;
+	/**
+	 * The current multiplier for game camera zooming.
+	 */
+	public var camHUDZoomMult:Float = Flags.DEFAULT_HUD_ZOOM_MULT;
+
+	/**
+	 * Camera zoom at which the cameras that zooms lerps to.
+	 * (Only used if useCamZoomMult is on).
+	 */
+	public var defaultZoom:Float = Flags.DEFAULT_ZOOM;
+	/**
+	 * Speed at which the cameras that zooms zoom lerps to.
+	 * (Only used if useCamZoomMult is on).
+	 */
+	public var camZoomLerp:Float = Flags.DEFAULT_ZOOM_LERP;
 
 	/**
 	 * Whenever cam zooming is enabled, enables on a note hit if not cancelled.
@@ -401,15 +420,24 @@ class PlayState extends MusicBeatState
 	 */
 	public var camZoomingStrength:Float = Flags.DEFAULT_CAM_ZOOM_STRENGTH;
 	/**
-	  * Default multiplier for `maxCamZoom`.
-	  */
+	 * Default multiplier for `maxCamZoom`.
+	 */
 	public var maxCamZoomMult:Float = Flags.MAX_CAMERA_ZOOM_MULT;
 	/**
-	  * Maximum amount of zoom for the camera (based on `maxCamZoomMult` and the camera's zoom IF not set).
-	  */
+	 * Whether it should use a implementation where it multiplies the current camera zoom instead.
+	 */
+	public var useCamZoomMult:Bool = Flags.USE_CAM_ZOOM_MULT;
+	/**
+	 * The current multiplier for camera zooming.
+	 * (Only used if useCamZoomMult is on).
+	 */
+	public var camZoomingMult:Float = Flags.DEFAULT_ZOOM;
+	/**
+	 * Maximum amount of zoom for the camera (based on `maxCamZoomMult` and the camera's zoom IF not set).
+	 */
 	public var maxCamZoom(get, default):Float = Math.NaN;
 
-	private inline function get_maxCamZoom() return Math.isNaN(maxCamZoom) ? maxCamZoomMult * defaultCamZoom : maxCamZoom;
+	private inline function get_maxCamZoom() return Math.isNaN(maxCamZoom) ? defaultCamZoom + (camZoomingMult * camGameZoomMult) : maxCamZoom;
 
 	/**
 	 * Zoom for the pixel assets.
@@ -524,7 +552,7 @@ class PlayState extends MusicBeatState
 	@:noCompletion @:dox(hide) private var _endSongCalled:Bool = false;
 
 	@:dox(hide)
-	var __vocalSyncTimer:Float = 0;
+	var __vocalSyncTimer:Float = 1;
 
 	private function get_accuracy():Float {
 		if (accuracyPressedNotes <= 0) return -1;
@@ -1085,9 +1113,11 @@ class PlayState extends MusicBeatState
 		curSong = songData.meta.name.toLowerCase();
 		curSongID = curSong.replace(" ", "-");
 
-		FlxG.sound.setMusic(inst = FlxG.sound.load(Assets.getMusic(Paths.inst(SONG.meta.name, difficulty))));
-		if (SONG.meta.needsVoices != false && Assets.exists(Paths.voices(SONG.meta.name, difficulty))) // null or true
-			vocals = FlxG.sound.load(Options.streamedVocals ? Assets.getMusic(Paths.voices(SONG.meta.name, difficulty)) : Paths.voices(SONG.meta.name, difficulty));
+		FlxG.sound.setMusic(inst = FlxG.sound.load(Assets.getMusic(Paths.inst(SONG.meta.name, difficulty, SONG.meta.instSuffix))));
+
+		var vocalsPath = Paths.voices(SONG.meta.name, difficulty, SONG.meta.vocalsSuffix);
+		if (SONG.meta.needsVoices && Assets.exists(vocalsPath))
+			vocals = FlxG.sound.load(Options.streamedVocals ? Assets.getMusic(vocalsPath) : vocalsPath);
 		else
 			vocals = new FlxSound();
 
@@ -1196,7 +1226,7 @@ class PlayState extends MusicBeatState
 		var time = Conductor.songPosition + Conductor.songOffset;
 		for (strumLine in strumLines.members) strumLine.vocals.play(true, time);
 		vocals.play(true, time);
-		inst.play(true, time);
+		if (!inst.playing) inst.play(true, time);
 
 		gameAndCharsCall("onVocalsResync");
 	}
@@ -1324,12 +1354,17 @@ class PlayState extends MusicBeatState
 		if (canAccessDebugMenus && chartingMode && controls.DEV_ACCESS)
 			FlxG.switchState(new funkin.editors.charter.Charter(SONG.meta.name, difficulty, false));
 
-		if (Options.camZoomOnBeat && camZooming && FlxG.camera.zoom < maxCamZoom) {
+		if (Options.camZoomOnBeat && camZooming) {
 			var beat = Conductor.getBeats(camZoomingEvery, camZoomingInterval, camZoomingOffset);
 			if (camZoomingLastBeat != beat) {
 				camZoomingLastBeat = beat;
-				FlxG.camera.zoom += 0.015 * camZoomingStrength;
-				camHUD.zoom += 0.03 * camZoomingStrength;
+				if (useCamZoomMult) {
+					if (camZoomingMult < maxCamZoomMult) camZoomingMult += camZoomingStrength;
+				}
+				else if (FlxG.camera.zoom < maxCamZoom) {
+					FlxG.camera.zoom += camGameZoomMult * camZoomingStrength;
+					camHUD.zoom += camHUDZoomMult * camZoomingStrength;
+				}
 			}
 		}
 
@@ -1342,20 +1377,19 @@ class PlayState extends MusicBeatState
 			updateIconPositions();
 
 		if (startingSong) {
-			if (startedCountdown) {
-				Conductor.songPosition += Conductor.songOffset + elapsed * 1000;
-				if (Conductor.songPosition >= 0)
-					startSong();
+			if (startedCountdown && (Conductor.songPosition += Conductor.songOffset + elapsed * 1000) >= 0) {
+				Conductor.songPosition = Conductor.songOffset;
+				startSong();
 			}
 		}
 		else if (FlxG.sound.music != null && (__vocalSyncTimer -= elapsed) < 0) {
 			__vocalSyncTimer = 1;
 
 			var instTime = FlxG.sound.music.getActualTime();
-			var isOffsync:Bool = vocals.loaded && Math.abs(instTime - vocals.getActualTime()) > 30;
+			var isOffsync:Bool = vocals.loaded && Math.abs(instTime - vocals.getActualTime()) > 100;
 			if (!isOffsync) {
 				for (strumLine in strumLines.members) {
-					if ((isOffsync = strumLine.vocals.loaded && Math.abs(instTime - strumLine.vocals.getActualTime()) > 30)) break;
+					if ((isOffsync = strumLine.vocals.loaded && Math.abs(instTime - strumLine.vocals.getActualTime()) > 100)) break;
 				}
 			}
 
@@ -1372,6 +1406,12 @@ class PlayState extends MusicBeatState
 			moveCamera();
 
 		if (camZooming) {
+			if (useCamZoomMult) {
+				camZoomingMult = lerp(camZoomingMult, defaultZoom, camZoomLerp) - defaultZoom;
+				FlxG.camera.zoomMultiplier = camZoomingMult * camGameZoomMult + defaultZoom;
+				camHUD.zoomMultiplier = camZoomingMult * camHUDZoomMult + defaultZoom;
+				camZoomingMult += defaultZoom;
+			}
 			FlxG.camera.zoom = lerp(FlxG.camera.zoom, defaultCamZoom, camGameZoomLerp);
 			camHUD.zoom = lerp(camHUD.zoom, defaultHudZoom, camHUDZoomLerp);
 		}
@@ -1530,6 +1570,8 @@ class PlayState extends MusicBeatState
 			case "Add Camera Zoom":
 				var camera:FlxCamera = event.params[1] == "camHUD" ? camHUD : camGame;
 				camera.zoom += event.params[0];
+			case "Camera Bop":
+				camZoomingMult += event.params[0];
 			case "Camera Zoom":
 				var cam = event.params[2] == "camHUD" ? camHUD : camGame;
 				var name = (event.params[2] == "camHUD" ? "camHUD" : "camGame") + ".zoom";  // avoiding having different values from these 2  - Nex
@@ -1648,17 +1690,12 @@ class PlayState extends MusicBeatState
 		endingSong = true;
 		gameAndCharsCall("onSongEnd");
 		canPause = false;
-		inst.volume = 0;
-		vocals.volume = 0;
-		for (strumLine in strumLines.members) {
-			strumLine.vocals.volume = 0;
-			strumLine.vocals.pause();
-		}
-		inst.pause();
-		vocals.pause();
 
-		if (validScore)
-		{
+		for (strumLine in strumLines.members) strumLine.vocals.stop();
+		inst.stop();
+		vocals.stop();
+
+		if (validScore) {
 			#if !switch
 			FunkinSave.setSongHighscore(SONG.meta.name, difficulty, {
 				score: songScore,
@@ -1686,20 +1723,18 @@ class PlayState extends MusicBeatState
 	 * Immediately switches to the next song, or goes back to the Story/Freeplay menu.
 	 */
 	public function nextSong() {
-		if (isStoryMode)
-		{
+		if (isStoryMode) {
 			campaignScore += songScore;
 			campaignMisses += misses;
 			campaignAccuracyTotal += accuracy;
 			campaignAccuracyCount++;
 			storyPlaylist.shift();
 
-			if (storyPlaylist.length <= 0)
-			{
+			if (storyPlaylist.length <= 0) {
 				FlxG.switchState(new StoryMenuState());
 
-				if (validScore)
-				{
+				if (validScore) {
+					#if !switch
 					// TODO: more week info saving
 					FunkinSave.setWeekHighscore(storyWeek.id, difficulty, {
 						score: campaignScore,
@@ -1708,29 +1743,23 @@ class PlayState extends MusicBeatState
 						hits: [],
 						date: Date.now().toString()
 					});
+					#end
 				}
 				FlxG.save.flush();
 			}
-			else
-			{
+			else {
 				Logs.infos('Loading next song (${storyPlaylist[0].toLowerCase()}/$difficulty)', "PlayState");
 
 				registerSmoothTransition();
 
-				FlxG.sound.music.stop();
-
 				__loadSong(storyPlaylist[0], difficulty);
-
 				FlxG.switchState(new PlayState());
 			}
 		}
+		else if (chartingMode)
+			FlxG.switchState(new funkin.editors.charter.Charter(SONG.meta.name, difficulty, false));
 		else
-		{
-			if (chartingMode)
-				FlxG.switchState(new funkin.editors.charter.Charter(SONG.meta.name, difficulty, false));
-			else
-				FlxG.switchState(new FreeplayState());
-		}
+			FlxG.switchState(new FreeplayState());
 	}
 
 	public function registerSmoothTransition() {
@@ -1902,6 +1931,8 @@ class PlayState extends MusicBeatState
 		}
 
 		if (event.deleteNote) strumLine.deleteNote(note);
+
+		gameAndCharsEvent("onPostNoteHit", event);
 	}
 
 	public function displayRating(myRating:String, ?evt:NoteHitEvent = null):Void {

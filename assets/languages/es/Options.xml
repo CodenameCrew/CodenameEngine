@@ -49,6 +49,8 @@
 		</group>
 		
 		<str id="category.volume">Volumen</str>
+		<str id="volume.up">Arriba</str>
+		<str id="volume.down">Abajo</str>
 		<str id="volume.mute">mutear</str>
 
 		<str id="category.developer">Desarrollador</str>

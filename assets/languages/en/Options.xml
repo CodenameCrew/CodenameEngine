@@ -42,6 +42,7 @@
 			<str id="back">Back</str>
 			<str id="reset">Reset</str>
 			<str id="pause">Pause</str>
+			<str id="changeMode">Change Mode</str>
 		</group>
 
 		<str id="category.engine">Engine</str>
@@ -50,6 +51,8 @@
 		</group>
 
 		<str id="category.volume">Volume</str>
+		<str id="volume.up">Up</str>
+		<str id="volume.down">Down</str>
 		<str id="volume.mute">Mute</str>
 
 		<str id="category.developer">Developer</str>

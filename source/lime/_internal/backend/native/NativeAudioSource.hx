@@ -25,10 +25,10 @@ import lime.utils.ArrayBufferView;
 @:access(lime.media.AudioBuffer)
 @:access(lime.utils.ArrayBufferView)
 class NativeAudioSource {
-	private static var STREAM_BUFFER_SAMPLES:Int = 0x1000;
-	private static var STREAM_MAX_BUFFERS:Int = 32;
+	private static var STREAM_BUFFER_SAMPLES:Int = 0x4000;
+	private static var STREAM_MAX_BUFFERS:Int = 8;
 	private static var STREAM_TIMER_FREQUENCY:Int = 100;
-	private static var STREAM_BUFFER_FREQUENCY:Int = 6;
+	private static var STREAM_BUFFER_FREQUENCY:Int = 3;
 
 	private var parent:AudioSource;
 	private var disposed:Bool;

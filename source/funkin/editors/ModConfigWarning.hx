@@ -56,9 +56,9 @@ LOGO_TEXT=""
 		super.createPost();
 		hadPopup = true;
 
-		var substate = new UIWarningSubstate("Missing mod folder configuration!", "Your mod is currently missing a mod config file!\n\nWould you like to automatically generate one?\n\n(PS: If this is not your mod please disable Developer mode to stop this popup from appearing.)", [
+		var substate = new UIWarningSubstate(TU.translate("modConfigWarning.warningTitle"), TU.translate("modConfigWarning.warningDesc"), [
 			{
-				label: "Not Now",
+				label: TU.translate("editor.notNow"),
 				color: 0x969533,
 				onClick: function (_) {
 					MusicBeatState.skipTransOut = MusicBeatState.skipTransIn = false;
@@ -66,13 +66,13 @@ LOGO_TEXT=""
 				}
 			},
 			{
-				label: "Yes",
+				label: TU.translate("editor.yes"),
 				onClick: function(_) {
 					var path = '${library.folderPath}/data/config/modpack.ini';
 					CoolUtil.safeSaveFile(path, defaultModConfigText);
-					openSubState(new UIWarningSubstate("Created mod config!", "Your mod config file has been created at " + path + "!", [
+					openSubState(new UIWarningSubstate(TU.translate("modConfigWarning.createdTitle"), TU.translate("modConfigWarning.createdDesc", [path]), [
 						{
-							label: "Ok",
+							label: TU.translate("editor.ok"),
 							onClick: function (_) {
 								MusicBeatState.skipTransOut = MusicBeatState.skipTransIn = false;
 								FlxG.switchState(cast Type.createInstance(goToState, []));

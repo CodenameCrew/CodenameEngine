@@ -37,6 +37,9 @@ final class AlphabetComponent {
 	public var scaleX:Float;
 	public var scaleY:Float;
 
+	public var flipX:Bool;
+	public var flipY:Bool;
+
 	public var hasColorMode:Bool;
 	public var colorMode:ColorMode;
 }
@@ -346,9 +349,9 @@ class Alphabet extends FlxSprite {
 
 		_matrix.translate(_frame.frame.width * -0.5, _frame.frame.height * -0.5);
 		if (__useDrawScale)
-			_matrix.scale(__drawScale.x, __drawScale.y);
+			_matrix.scale(__drawScale.x * (__component.flipX ? -1 : 1), __drawScale.y * (__component.flipY ? -1 : 1));
 		else
-			_matrix.scale(__component.scaleX, __component.scaleY);
+			_matrix.scale(__component.scaleX * (__component.flipX ? -1 : 1), __component.scaleY * (__component.flipY ? -1 : 1));
 		if(__component.shouldRotate)
 			_matrix.rotateWithTrig(__component.cos, __component.sin);
 		_matrix.translate(_frame.frame.width * 0.5, _frame.frame.height * 0.5);
@@ -558,6 +561,9 @@ class Alphabet extends FlxSprite {
 						cos: angleCos,
 						sin: angleSin,
 
+						flipX: node.get("flipX") == "true",
+						flipY: node.get("flipY") == "true",
+
 						hasColorMode: false,
 						colorMode: 0
 					}],
@@ -593,6 +599,9 @@ class Alphabet extends FlxSprite {
 
 					var colorMode = ["tint", "offsets", "none"].indexOf(component.get("colorMode"));
 
+					var xFlip = component.get("flipX") == "true";
+					var yFlip = component.get("flipY") == "true";
+
 					if (component.get("hasOutline") == "true") {
 						components.insert(startIndex, {
 							refIndex: componentsPushed,
@@ -607,6 +616,9 @@ class Alphabet extends FlxSprite {
 							angle: angle,
 							cos: angleCos,
 							sin: angleSin,
+
+							flipX: xFlip,
+							flipY: yFlip,
 
 							hasColorMode: colorMode >= 0,
 							colorMode: colorMode,
@@ -627,6 +639,9 @@ class Alphabet extends FlxSprite {
 						angle: angle,
 						cos: angleCos,
 						sin: angleSin,
+
+						flipX: xFlip,
+						flipY: yFlip,
 
 						hasColorMode: colorMode >= 0,
 						colorMode: colorMode,
@@ -659,6 +674,9 @@ class Alphabet extends FlxSprite {
 				var yScale:Float = Std.parseFloat(node.get("scaleY")).getDefaultFloat(1.0);
 				var advance:Float = Std.parseFloat(node.get("advance"));
 
+				var xFlip = node.get("flipX") == "true";
+				var yFlip = node.get("flipY") == "true";
+
 				var colorMode = ["tint", "offsets", "none"].indexOf(node.get("colorMode"));
 
 				var components:Array<AlphabetComponent> = [];
@@ -676,6 +694,9 @@ class Alphabet extends FlxSprite {
 						angle: angle,
 						cos: angleCos,
 						sin: angleSin,
+
+						flipX: xFlip,
+						flipY: yFlip,
 
 						hasColorMode: colorMode >= 0,
 						colorMode: colorMode,
@@ -695,6 +716,9 @@ class Alphabet extends FlxSprite {
 					angle: angle,
 					cos: angleCos,
 					sin: angleSin,
+
+					flipX: xFlip,
+					flipY: yFlip,
 
 					hasColorMode: colorMode >= 0,
 					colorMode: colorMode,
@@ -758,7 +782,7 @@ class Alphabet extends FlxSprite {
 	}
 
 	private static var alphabetProperties:Array<String> = ["fps", "advance", "lineGap", "forceCasing", "useColorOffsets", "antialiasing"];
-	private static var componentProperties:Array<String> = ["name", "anim", "x", "y", "scaleX", "scaleY", "angle", "offsetX", "offsetY"];
+	private static var componentProperties:Array<String> = ["name", "anim", "x", "y", "scaleX", "scaleY", "angle", "offsetX", "offsetY", "flipX", "flipY"];
 
 	public function buildXML():Xml {
 		var xml = Xml.createElement("alphabet");

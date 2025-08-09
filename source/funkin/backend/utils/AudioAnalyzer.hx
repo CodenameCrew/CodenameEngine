@@ -474,7 +474,7 @@ final class AudioAnalyzer {
 		var n = Math.floor((endPos - startPos) * __toBits);
 		if (startPos >= time && startPos < backend.bufferTimes[backend.bufferSizes.length - 1] * 1000) {
 			var pos = Math.floor((startPos - time) * __toBits), buf = backend.bufferDatas[i].buffer, size = backend.bufferSizes[i], c = 0;
-			while (pos > size) {
+			while (pos >= size) {
 				if (++i >= backend.bufferSizes.length) {
 					n = 0;
 					break;
@@ -484,6 +484,7 @@ final class AudioAnalyzer {
 				size = backend.bufferSizes[i];
 			}
 			pos -= pos % __sampleSize;
+			n -= pos % __sampleSize;
 
 			while (n > 0) {
 				callback(getByte(buf, pos, __wordSize), c);

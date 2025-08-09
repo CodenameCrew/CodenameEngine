@@ -388,7 +388,7 @@ class HealthIcon extends FunkinSprite
 			}) + sprTrackerOffset.x, sprTracker.y + sprTrackerOffset.y);
 		}
 
-		if (animation.curAnim != null || (this.animated && animateAtlas != null)) {
+		if (animation.curAnim != null || this.animated) {
 			var data = getIconAnim(health);
 			var localAnimState = data.animState;
 

@@ -6,5 +6,37 @@
 		"*.hscript": "haxe",
 		"*.hsc": "haxe",
 		"*.hxs": "haxe"
-	  }
+	},
+	"lime.targetConfigurations": [
+		{
+			"label": "Windows (Test Build)",
+			"target": "windows",
+			"args": ["-DTEST_BUILD"]
+		},
+		{
+			"label": "Linux (Test Build)",
+			"target": "linux",
+			"args": ["-DTEST_BUILD"]
+		},
+		{
+			"label": "MacOS (Test Build)",
+			"target": "macos",
+			"args": ["-DTEST_BUILD"]
+		},
+		{
+			"label": "Windows / Debug (Test Build)",
+			"target": "windows",
+			"args": ["-debug", "-DTEST_BUILD"]
+		},
+		{
+			"label": "Linux / Debug (Test Build)",
+			"target": "linux",
+			"args": ["-debug", "-DTEST_BUILD"]
+		},
+		{
+			"label": "MacOS / Debug (Test Build)",
+			"target": "macos",
+			"args": ["-debug", "-DTEST_BUILD"]
+		},
+	]
 }

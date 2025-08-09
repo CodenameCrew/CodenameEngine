@@ -48,6 +48,8 @@
 			<str id="switchMod">Cambia Mod</str>
 		</group>
 
+		<str id="volume.up">Su</str>
+		<str id="volume.down">Giù</str>
 		<str id="volume.mute">Muto</str>
 
 		<str id="category.developer">Sviluppatore</str>

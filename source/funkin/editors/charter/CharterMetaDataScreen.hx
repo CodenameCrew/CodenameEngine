@@ -23,6 +23,7 @@ class CharterMetaDataScreen extends UISubstateWindow {
 	public var iconSprite:HealthIcon;
 	public var opponentModeCheckbox:UICheckbox;
 	public var coopAllowedCheckbox:UICheckbox;
+	public var needsVoicesCheckbox:UICheckbox;
 	public var colorWheel:UIColorwheel;
 	public var difficultiesTextBox:UITextBox;
 
@@ -67,6 +68,9 @@ class CharterMetaDataScreen extends UISubstateWindow {
 
 		denominatorStepper = new UINumericStepper(beatsPerMeasureStepper.x + 30 + 24, beatsPerMeasureStepper.y, Math.floor(16 / metadata.stepsPerBeat), 1, 0, 1, null, 54);
 		add(denominatorStepper);
+
+		needsVoicesCheckbox = new UICheckbox(beatsPerMeasureStepper.x + 100, beatsPerMeasureStepper.y + 6, translate("needsVoices"), metadata.needsVoices);
+		add(needsVoicesCheckbox);
 
 		add(title = new UIText(songNameTextBox.x, songNameTextBox.y + 10 + 46, 0, translate("menusData"), 28));
 
@@ -149,6 +153,7 @@ class CharterMetaDataScreen extends UISubstateWindow {
 		PlayState.SONG.meta = {
 			name: songNameTextBox.label.text,
 			bpm: bpmStepper.value,
+			needsVoices: needsVoicesCheckbox.checked,
 			beatsPerMeasure: Std.int(beatsPerMeasureStepper.value),
 			stepsPerBeat: Std.int(16 / denominatorStepper.value),
 			displayName: displayNameTextBox.label.text,
@@ -161,5 +166,6 @@ class CharterMetaDataScreen extends UISubstateWindow {
 		};
 
 		Charter.instance.updateBPMEvents();
+		Charter.instance.vocals.muted = !needsVoicesCheckbox.checked;
 	}
 }

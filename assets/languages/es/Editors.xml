@@ -105,6 +105,7 @@
 			<str id="modesAllowed">Modos Permitidos</str>
 			<str id="difficulties">Difficultades</str>
 			<str id="customValues">Valores Especiales (Avanzado)</str>
+			<str id="needsVoices">Necesita Voces</str>
 
 			<str id="opponentMode">Modo Oponente</str>
 			<str id="coopAllowed">Modo Co-op</str>
@@ -225,7 +226,7 @@
 				<group name="BookmarkMenu" prefix="bookmarks.">
 					<str id="addBookmarkHere">Añadir Marcador Aquí</str>
 					<str id="editBookmarkList">Editar Lista de Marcadores</str>
-					<str id="goto">Ir hacia "{0}"</str>
+					<str id="goTo">Ir hacia "{0}"</str>
 					<str id="createBookmarkTitle">Creando Nuevo Marcador...</str>
 					<str id="createBookmarkName">Nombre de Marcador:</str>
 					<str id="createBookmarkColor">Color de Marcador:</str>
@@ -544,7 +545,7 @@
 			<str id="stagePath">Ubicación de Imágenes</str>
 		</group>
 
-		<group name="StageInfoScreen" prefix="stageInfoScreen">
+		<group name="StageInfoScreen" prefix="stageInfoScreen.">
 			<str id="win-title">Editando info. del escenario: "{0}"</str>
 			<str id="title">Info. del Escenario</str>
 			<str id="stageName">Nombre del Escenario</str>
