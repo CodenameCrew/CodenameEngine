@@ -9,6 +9,8 @@
 		<str id="save">Guardar</str>
 		<str id="saveClose">Guardar e Fechar</str>
 		<str id="close">Fechar</str>
+		<str id="notNow">Agora Não</str>
+		<str id="yes">Sim</str>
 	</group>
 
 	<group name="UIImageExplorer" prefix="uiImageExplorer.">
@@ -114,6 +116,7 @@
 			<str id="color">Cor</str>
 			<str id="difficulties">Dificuldades</str>
 			<str id="customValues">Valores Especiais (Avançado)</str>
+			<str id="needsVoices">Necessita Vozes</str>
 
 			<str id="opponentMode">Modo Oponente</str>
 			<str id="coopAllowed">Modo Cooperativo</str>
@@ -668,5 +671,13 @@
 		<str id="saveAndExitGame">Guardar e Sair do Jogo</str>
 		<str id="saveAndExitToMenu">Guardar e Sair Para Menu</str>
 		<str id="cancel">Cancelar</str>
+	</group>
+
+	<group name="ModConfigWarning" prefix="modConfigWarning.">
+		<str id="warningTitle">Configuração da pasta do mod em falta!</str>
+		<str id="warningDesc">Está a faltar um ficheiro de configurações ao seu mod!\n\nGostaria de criar um automaticamente?\n\n(PS: Se este mod não for seu, por favor desative o Modo de desenvolvedor para fazer esta notificação parar de aparecer.)</str>
+
+		<str id="createdTitle">Config. de mod criada!</str>
+		<str id="createdDesc">As configurações do seu mod foram criadas em {0}!</str>
 	</group>
 </language>
