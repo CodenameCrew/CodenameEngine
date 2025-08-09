@@ -16,11 +16,13 @@ class UIFileExplorer extends UISliceSprite {
 
 	public var uiElement:FlxSprite;
 	
-	public var fileType:String = "txt";
+	public var fileType:String = null;
 
 	public function new(x:Float, y:Float, ?w:Int, ?h:Int, fileType:String = "txt", ?onFile:(String, Bytes)->Void) {
 		super(x, y, (w != null ? w : 320), (h != null ? h : 58), 'editors/ui/inputbox');
+		#if !mac
 		this.fileType = fileType;
+		#end
 
 		if (onFile != null) this.onFile = onFile;
 
