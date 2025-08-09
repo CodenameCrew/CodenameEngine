@@ -41,13 +41,16 @@
 	<group name="ChartEditor">
 		<group name="CharterSelection" prefix="charterSelection.">
 			<str id="desc">Selecione uma canção para modificar os seus mapas.</str>
-			<str id="acceptSong">Carregue em ACEITAR para selecionar uma dificuldade para editar.</str>
+			<str id="acceptSong">Carregue em ACEITAR para escolher uma dificuldade para editar.</str>
+			<str id="acceptVariation">Carregue em ACEITAR para escolher uma variação para editar.</str>
 			<str id="acceptDifficulty">Carregue em ACEITAR para editar o mapa para a dificuldade selecionada.</str>
 			<str id="selectDifficulty">Selecione uma dificuldade para continuar.</str>
 			<str id="newDifficulty">Nova Dificuldade</str>
 			<str id="newDifficultyDesc">Carregue em ACEITAR para criar uma dificuldade nova.</str>
 			<str id="newSong">Nova Canção</str>
 			<str id="newSongDesc">Carregue em ACEITAR para criar uma canção nova.</str>
+			<str id="newVariation">Nova Variação</str>
+			<str id="newSongDesc">Carregue em ACEITAR para criar uma variação nova.</str>
 		</group>
 
 		<group name="ChartCreationScreen" prefix="chartCreation.">
@@ -101,6 +104,7 @@
 
 			<str id="songData">Dados da Canção</str>
 			<str id="songName">Nome da Canção</str>
+			<str id="variation">Variação da Canção</str>
 			<str id="bpm">BPM</str>
 			<str id="timeSignature">Compasso</str>
 			<str id="menusData">Dados dos Menus (Jogo Livre/História)</str>
