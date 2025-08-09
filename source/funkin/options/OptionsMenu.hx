@@ -153,7 +153,7 @@ class OptionsMenu extends TreeMenu {
 		for(node in xml.elements) {
 			switch(node.name) { // literally just so you don't need "name" because there is no need for this to require it 😭  - RodneyFurball
 				case 'separator':
-					options.push(new Separator(Std.parseFloat(node.has.height ? node.att.height : 67)));
+					options.push(new Separator(node.has.height ? Std.parseFloat(node.att.height) : 67));
 			}
 
 			if (!node.has.name) {
