@@ -6,24 +6,32 @@ class UIButton extends UISliceSprite {
 	public var shouldPress = true;
 	public var hasBeenPressed = false;
 
+	public var autoFrames:Bool = true;
+	public var autoFollow:Bool = true;
+
 	public override function new(x:Float, y:Float, text:String, callback:Void->Void, w:Int = 120, h:Int = 32) {
 		super(x, y, w, h, 'editors/ui/button');
 		this.callback = callback;
-		members.push(field = new UIText(x, y, w, text));
-		field.alignment = CENTER;
-		field.fieldWidth = w;
+		if(text != null) {
+			members.push(field = new UIText(x, y, w, text));
+			field.alignment = CENTER;
+			field.fieldWidth = w;
+		}
 
-		cursor = BUTTON;
+		cursor = CLICK;
 	}
 
 	public override function resize(w:Int, h:Int) {
 		super.resize(w, h);
-		if (field != null) field.fieldWidth = w;
+		if (field != null && autoFollow) field.fieldWidth = w;
 	}
 
 	public override function onHovered() {
 		super.onHovered();
-		if (FlxG.mouse.justPressed) hasBeenPressed = true;
+		if (FlxG.mouse.justPressed) {
+			hasBeenPressed = true;
+			FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_BUTTONCLICK_SOUND));
+		}
 		if (FlxG.mouse.justReleased && callback != null && shouldPress && hasBeenPressed) {
 			callback();
 			hasBeenPressed = false;
@@ -31,14 +39,21 @@ class UIButton extends UISliceSprite {
 	}
 
 	public override function update(elapsed:Float) {
-		field.follow(this, 0, (bHeight - field.height) / 2);
+		if (autoFollow && field != null) field.follow(this, 0, (bHeight - field.height) / 2);
 		if (!hovered && hasBeenPressed && FlxG.mouse.justReleased) hasBeenPressed = false;
-		if (autoAlpha) alpha = field.alpha = selectable ? 1 : 0.4;
+		if (autoAlpha) {
+			alpha = selectable ? 1 : 0.4;
+			if(field != null) field.alpha = alpha;
+		}
 		super.update(elapsed);
 	}
 
 	public override function draw() {
-		framesOffset = hovered ? (pressed ? 18 : 9) : 0;
+		setFrameOffset();
 		super.draw();
+	}
+
+	public function setFrameOffset() {
+		framesOffset = hovered ? (pressed ? 18 : 9) : 0;
 	}
 }

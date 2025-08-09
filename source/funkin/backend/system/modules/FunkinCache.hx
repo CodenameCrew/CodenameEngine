@@ -1,9 +1,9 @@
 package funkin.backend.system.modules;
 
-import openfl.utils.AssetCache;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
 import openfl.text.Font;
+import openfl.utils.AssetCache;
 #if lime
 import lime.utils.Assets as LimeAssets;
 #end

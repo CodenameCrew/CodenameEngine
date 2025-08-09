@@ -1,7 +1,7 @@
 package funkin.backend.utils;
 
 #if ALLOW_MULTITHREADING
-class ThreadUtil {
+final class ThreadUtil {
 	/**
 	 * Creates a new Thread with an error handler.
 	 * @param func Function to execute

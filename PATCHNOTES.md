@@ -15,7 +15,7 @@
 		- New SEXY editor assets by paige and nex!!!! (and lunar, does 16x16 even count??? 😭)
 		- NEW EVENTS (Camera events, play animation, scroll speed change)
 		- Events window is now scrollable (more events, more room)
-		- Custom Properities in Meta AND Character (Editable in Charter and Character Editor :D) (accessible with SONG.meta.customValues.[property] and [character].extras.[property])
+		- Custom Properties in Meta AND Character (Editable in Charter and Character Editor :D) (accessible with SONG.meta.customValues.[property] and [character].extras.[property])
 	- SMALLER BUT STILL COOL
 		- Multiple Icons now show up on strumlines with multiple characters in the charter
 		- Note hoverer to show where your note is going to be placed
@@ -63,7 +63,7 @@
 	- Fix for pressing F5 in an editor breaking it
 	- Fix when getting GitHub data and a redirect happens
 	- Fix for healthbar incorrectly colored in opponent mode
-	- Video cutscenes are ALOT more stable (thanks majigsaw :D)
+	- Video cutscenes are A LOT more stable (thanks majigsaw :D)
 	- 3D now works again (so cool i love away3d in 2024)
 	- Lots and lots of grammar and wording fixes (so true bro -lunar)
 	- Lots and lots of other optimizations made
@@ -76,5 +76,5 @@
 	- Some other shit idk ill add it whenever someone tells me backward compat is broke 💔
 </details>
 
-thanks so much for the support and always being there, it really does mean alot to us < 3
+thanks so much for the support and always being there, it really does mean a lot to us < 3
 we are one step closer to turning beta so we really can't wait !

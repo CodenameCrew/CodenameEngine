@@ -1,8 +1,8 @@
 package funkin.editors.charter;
 
-import flixel.util.FlxTimer;
-import flixel.tweens.FlxTween;
 import flixel.math.FlxRect;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
 
 using flixel.util.FlxSpriteUtil;
 
@@ -26,12 +26,12 @@ class CharterAutoSaveUI extends UISliceSprite {
 		icon.animation.play("icon"); icon.animation.curAnim.curFrame = 0;
 		members.push(icon);
 
-		members.push(autosavingText = new UIText(x+12+10+4, y+8, 0, "Autosaving in 10 seconds...", 12));
+		members.push(autosavingText = new UIText(x+12+10+4, y+8, 0, TU.translate("editor.autosavingIn", ["?", "..."]), 12));
 
 		progressBarBack = new FlxSprite(x + 10, y + bHeight - 20).makeGraphic(Std.int(bWidth-20), 10, 0x00000000, true);
 		progressBarBack.drawRoundRect(0, 0, progressBarBack.width, progressBarBack.height, 4, 6, 0xFF727272, null, {smoothing: false});
 		progressBarBack.drawRoundRect(1, 1, progressBarBack.width-2, progressBarBack.height-2, 4, 6, 0xFF0D0D0D, null, {smoothing: false});
-		members.push(progressBarBack); progressBarBack.antialiasing = false; 
+		members.push(progressBarBack); progressBarBack.antialiasing = false;
 
 		progressBar = new FlxSprite(x + 10, y + bHeight - 20).makeGraphic(Std.int(bWidth-20), 10, 0x00000000, true);
 		progressBar.drawRoundRect(0, 0, progressBar.width, progressBar.height, 4, 6, 0xFF727272, null, {smoothing: false});
@@ -39,13 +39,14 @@ class CharterAutoSaveUI extends UISliceSprite {
 		progressBar.antialiasing = false; progressBar.clipRect = new FlxRect(0, 0, progressBar.width, progressBar.height);
 		members.push(progressBar);
 
-		cancelButton = new UIButton(x-(10+16), y+8, "", () -> {
+		cancelButton = new UIButton(x-(10+16), y+8, null, () -> {
 			if (cancelled || !showedAnimation) return;
 			cancelled = true; __timer.cancel(); __tween.cancel();
 
 			icon.animation.curAnim.curFrame = 2;
 			(new FlxTimer()).start(1, (_) -> {disappearAnimation(true);});
-			autosavingText.text += " (Canceled)!"; cancelButton.visible = false;
+			autosavingText.text += " " + TU.translate("editor.autosavingCanceledSuffix");
+			cancelButton.visible = false;
 			for (member in [this, autosavingText]) member.color = 0xFFE67F7F;
 			for (member in [progressBar, progressBarBack]) member.color = 0xFFE67F7F;
 		}, 24, 14);
@@ -63,21 +64,25 @@ class CharterAutoSaveUI extends UISliceSprite {
 	var __timer:FlxTimer;
 	var __tween:FlxTween;
 
-	public function startAutoSave(time:Float, sucessText:String) {
+	public function startAutoSave(time:Float, successText:String) {
 		appearAnimation();
-		
+
 		__tween = FlxTween.num(0, 1, time, null, (v:Float) -> {
 			if ((progress = v) < .95) {
-				autosavingText.text = 'Autosaving in ${Math.min(Math.round(time), 1+Math.floor(Math.abs(time-(progress*time))))} seconds';
-				autosavingText.text += [for (i in 0...(Math.floor((progress*time*3)%4))) "."].join("");
+				autosavingText.text = TU.translate("editor.autosavingIn", [
+					Math.min(Math.round(time), 1+Math.floor(Math.abs(time-(progress*time)))),
+					".".repeat(Math.floor((progress*time*3)%4))
+				]);
 			}
 		});
 		__timer = new FlxTimer();
 		__timer.start(time, (_) -> {
-			autosavingText.text = sucessText; cancelButton.visible = false;
+			autosavingText.text = successText; cancelButton.visible = false;
 
 			icon.animation.curAnim.curFrame = 1;
 			for (member in [this, progressBar, progressBarBack, autosavingText]) member.color = 0xFFA3EC95;
+
+			FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_AUTOSAVE_SOUND));
 
 			(new FlxTimer()).start(1, (_) -> {disappearAnimation();});
 		});
@@ -100,16 +105,16 @@ class CharterAutoSaveUI extends UISliceSprite {
 
 		autosavingText.follow(this, 12+10+4, 8);
 		autosavingText.alpha = alpha;
-		
+
 		for (bar in [progressBar, progressBarBack]) {
 			bar.follow(this, 10, bHeight-20);
 			bar.alpha = alpha;
 		}
-		progressBar.clipRect = progressBar.clipRect.set(0, 0, progressBar.width*progress,progressBar.height);
+		progressBar.rawClipRect = progressBar.rawClipRect.set(0, 0, progressBar.frameWidth*progress,progressBar.frameHeight);
 	}
 
 	public function appearAnimation() {
-		autosavingText.text = "Autosaving in seconds..."; progress = 0; icon.animation.curAnim.curFrame = 0;
+		progress = 0; icon.animation.curAnim.curFrame = 0;
 		for (member in [this, autosavingText, progressBar, progressBarBack]) member.color = 0xFFFFFFFF;
 
 		x = -(320); alpha=0; FlxTween.cancelTweensOf(this); cancelled = false; cancelButton.visible = true;

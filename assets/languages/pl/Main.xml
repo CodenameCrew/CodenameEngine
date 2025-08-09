@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<group name="PlayState">
+		<str id="game.score">Wynik:{0}</str>
+		<str id="game.misses">Chybienia:{0}</str>
+		<str id="game.comboBreaks">Utraty Kombo:{0}</str>
+		<str id="game.accuracy">Celność:{0} - {1}</str>
+		<str id="game.combo">Kombo:{0}</str>
+
+		<str id="game.rating.[N/A]">[N/A]</str>
+		<str id="game.rating.F">F</str>
+		<str id="game.rating.E">E</str>
+		<str id="game.rating.D">D</str>
+		<str id="game.rating.C">C</str>
+		<str id="game.rating.B">B</str>
+		<str id="game.rating.A">A</str>
+		<str id="game.rating.S">S</str>
+		<str id="game.rating.S++">S++</str>
+	</group>
+
+	<group name="StoryMenu">
+		<str id="story.score">WYNIK TYGODNIA:{0}</str>
+		<str id="story.tracks">PIOSENKI</str>
+	</group>
+
+	<group name="Freeplay">
+		<str id="freeplay.score">NAJWYŻSZY WYNIK:{0}</str>
+		<str id="freeplay.solo">Solo</str>
+		<str id="freeplay.opponentMode">Tryb Przeciwnika</str>
+		<str id="freeplay.coopMode">Tryb Ko-operacyjny</str>
+		<str id="freeplay.coopModeSwitched">Tryb Ko-operacyjny (Zamianka)</str>
+	</group>
+
+	<group name="Pause">
+		<group name="PauseOptions">
+			<str id="pause.resume">Wznów</str>
+			<str id="pause.restartSong">Powtórz Piosenkę</str>
+			<str id="pause.changeControls">Zmień Klawisze</str>
+			<str id="pause.changeOptions">Zmień Ustawienia</str>
+			<str id="pause.exitToMenu">Wyjdź do Menu</str>
+			<str id="pause.exitToCharter">Wróć do Mapowania</str>
+			<str id="pause.resumeCutscene">Wznów Scenkę</str>
+			<str id="pause.skipCutscene">Pomiń Scenkę</str>
+			<str id="pause.restartCutscene">Powtórz Scenkę</str>
+		</group>
+
+		<str id="pause.deathCounter">Niebieskie Jaja: {0}</str>
+		<str id="pause.coopMode">TRYB KO-OPERACYJNY</str>
+		<str id="pause.opponentMode">TRYB PRZECIWNIKA</str>
+	</group>
+
+	<group name="Credits">
+		<group name="CreditsCodename">
+			<str id="credits.mainDev" notrim="true"> *- Publiczny członek głównej drużyny!*</str>
+			<str id="credits.totalContributions">Totalne Udziały: ~{0}~ / *{1}* (~{2}%~) - Wybierz by otworzyć konto Github</str>
+			<str id="credits.downloadingList">Pobieranie Listy...</str>
+			<str id="credits.allContributors">Wszyscy współpracownicy silnika! - Naciśnij RESET aby zaktualizować listę (Jeden reset co 2 minuty).</str>
+		</group>
+		<group name="CreditsMain">
+			<str id="credits.name">Twórcy</str>
+			<str id="credits.madePossible">Ludzie którzy to umożliwili!</str>
+			<str id="credits.selectCodename">Wybierz to aby zobaczyć wszystkich współpracowników!</str>
+			<str id="credits.selectBase">Wybierz to aby otworzyć stronę itch.io oryginalnej gry!</str>
+		</group>
+	</group>
+
+	<group name="Mods">
+		<str id="mods.disableMods">Wyłącz Mody</str>
+	</group>
+
+	<group name="MainMenu">
+		<str id="mainMenu.commit">Udział: {0} ({1})</str>
+		<str id="mainMenu.openMods">[{0}] Otwórz menu modów</str>
+	</group>
+
+	<group name="Updater">
+		<group name="UpdateAvailable">
+			<str id="updateAvailable.title">NOWA AKTUALIZACJA</str>
+			<str id="updateAvailable.install">INSTALUJ</str>
+			<str id="updateAvailable.skip">POMIŃ</str>
+		</group>
+		<group name="UpdateScreen">
+			<str id="updateScreen.general-1">Przygotowanie instalacji aktualizacji...</str>
+			<str id="updateScreen.part-1">Tworzenie folderu instalacji i czyszczenie starych plików...</str>
+
+			<str id="updateScreen.general-2">Pobieranie plików aktualizacji...</str>
+			<str id="updateScreen.part-2">Pobieranie pliku {0}</str>
+
+			<str id="updateScreen.general-3">Pobieranie nowego pliku exe silnika...</str>
+			<str id="updateScreen.part-3">Pobieranie {0}</str>
+
+			<str id="updateScreen.general-4">Instalowanie nowych plików...</str>
+			<str id="updateScreen.part-4">Instalowanie {0}</str>
+		</group>
+	</group>
+
+	<group name="Difficulties">
+		<str id="diff.easy">Łatwy</str>
+		<str id="diff.normal">Normalny</str>
+		<str id="diff.hard">Trudny</str>
+		<str id="diff.erect">Erekcja</str>
+		<str id="diff.nightmare">Koszmarny</str>
+	</group>
+</language>

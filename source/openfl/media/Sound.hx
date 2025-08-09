@@ -599,17 +599,6 @@ class Sound extends EventDispatcher
 		#end
 	}
 
-	var changeID:Int = 0;
-	public function regen() {
-		var audioBuffer = new AudioBuffer();
-		audioBuffer.bitsPerSample = __buffer.bitsPerSample;
-		audioBuffer.channels = __buffer.channels;
-		audioBuffer.data = __buffer.data;
-		audioBuffer.sampleRate = __buffer.sampleRate;
-
-		__buffer = audioBuffer;
-	}
-
 	/**
 		Generates a new SoundChannel object to play back the sound. This method
 		returns a SoundChannel object, which you access to stop the sound and to
@@ -635,13 +624,6 @@ class Sound extends EventDispatcher
 		{
 			return null;
 		}
-
-		#if !macro
-		if (changeID < funkin.backend.system.Main.changeID) {
-			changeID = funkin.backend.system.Main.changeID;
-			regen();
-		}
-		#end
 
 		if (sndTransform == null)
 		{
@@ -690,25 +672,10 @@ class Sound extends EventDispatcher
 			#if (js && html5 && howlerjs)
 			return __buffer.src.duration() * 1000;
 			#else
-			if (__buffer.data != null)
-			{
-				// var samples = (__buffer.data.length * 8) / (__buffer.channels * __buffer.bitsPerSample);
-				// return Std.int(samples / __buffer.sampleRate * 1000);
-				var samples = (Int64.make(0, __buffer.data.length) * Int64.ofInt(8)) / Int64.ofInt(__buffer.channels * __buffer.bitsPerSample);
-				var value = samples / Int64.ofInt(__buffer.sampleRate) * Int64.ofInt(1000);
-				return Int64.toInt(value);
-			}
-			else if (__buffer.__srcVorbisFile != null)
-			{
-				//var samples = Int64.toInt(__buffer.__srcVorbisFile.pcmTotal());
-				//return Std.int(samples / __buffer.sampleRate * 1000);
-				var samples = __buffer.__srcVorbisFile.pcmTotal();
-				var value = Int64.fromFloat(__buffer.__srcVorbisFile.timeTotal()) * 1000;
-				return Int64.toInt(value);
-			}
-			else
-			{
-				return 0;
+			if (__buffer.data != null) return (__buffer.data.length >> 0) / __buffer.channels / (__buffer.bitsPerSample >> 3) / __buffer.sampleRate * 1000;
+			else if (__buffer.__srcVorbisFile != null) {
+				var x = __buffer.__srcVorbisFile.pcmTotal();
+				return (x.high * 4294967296. + (x.low >> 0)) / __buffer.sampleRate * 1000;
 			}
 			#end
 		}

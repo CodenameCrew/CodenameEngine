@@ -3,6 +3,10 @@ package funkin.backend.chart;
 import funkin.backend.chart.ChartData.ChartEvent;
 import funkin.backend.system.Conductor;
 
+/**
+ * Legacy FNF chart parser.
+ * This is for charts that that were made before v0.5.0.
+**/
 class FNFLegacyParser {
 	public static function parse(data:Dynamic, result:ChartData) {
 		// base fnf chart parsing
@@ -40,7 +44,7 @@ class FNFLegacyParser {
 
 		var camFocusedBF:Bool = false;
 		var altAnims:Bool = false;
-		var beatsPerMeasure:Float = data.beatsPerMeasure.getDefault(4);
+		var beatsPerMeasure:Float = data.beatsPerMeasure.getDefault(Flags.DEFAULT_BEATS_PER_MEASURE);
 		var curBPM:Float = data.bpm;
 		var curTime:Float = 0;
 		var curCrochet:Float = ((60 / curBPM) * 1000);
@@ -49,6 +53,18 @@ class FNFLegacyParser {
 			if (section == null) {
 				curTime += curCrochet * beatsPerMeasure;
 				continue; // Yoshi Engine charts crash fix
+			}
+
+			var newBeatsPerMeasure:Float = section.sectionBeats != null ? section.sectionBeats : data.beatsPerMeasure.getDefault(4); // Default to 4 if sectionBeats is null or undefined (oops :3)
+
+			if (newBeatsPerMeasure != beatsPerMeasure) {
+				beatsPerMeasure = newBeatsPerMeasure;
+				
+				result.events.push({
+					time: curTime,
+					name: "Time Signature Change",
+					params: [newBeatsPerMeasure, 4]
+				});	
 			}
 
 			if (camFocusedBF != (camFocusedBF = section.mustHitSection)) {
@@ -126,7 +142,7 @@ class FNFLegacyParser {
 
 					if ((swagSection.mustHitSection && strumLine.type == OPPONENT) ||
 						(!swagSection.mustHitSection && strumLine.type == PLAYER))
-					   sectionNote[1] += 4;
+						sectionNote[1] += 4;
 					swagSection.sectionNotes.push(sectionNote);
 				}
 			}
@@ -140,8 +156,8 @@ class FNFLegacyParser {
 			song: chart.meta.name,
 			notes: null,
 			bpm: chart.meta.bpm,
-			needsVoices: chart.meta.needsVoices,
 			speed: chart.scrollSpeed,
+			needsVoices: chart.meta.needsVoices,
 
 			player1: null,
 			player2: null,
@@ -151,9 +167,9 @@ class FNFLegacyParser {
 		for (strumLine in chart.strumLines)
 			switch (strumLine.type) {
 				case OPPONENT:
-					if (base.player2 == null) base.player2 = strumLine.characters.getDefault(["dad"])[0];
+					if (base.player2 == null) base.player2 = strumLine.characters.getDefault([Flags.DEFAULT_OPPONENT])[0];
 				case PLAYER:
-					if (base.player1 == null) base.player1 = strumLine.characters.getDefault(["bf"])[0];
+					if (base.player1 == null) base.player1 = strumLine.characters.getDefault([Flags.DEFAULT_CHARACTER])[0];
 				case ADDITIONAL: // do nothing
 			}
 
@@ -174,7 +190,8 @@ class FNFLegacyParser {
 				mustHitSection: notes[section-1] != null ? notes[section-1].mustHitSection : false,
 				bpm: notes[section-1] != null ? notes[section-1].bpm : chart.meta.bpm,
 				changeBPM: false,
-				altAnim: notes[section-1] != null ? notes[section-1].altAnim : false
+				altAnim: notes[section-1] != null ? notes[section-1].altAnim : false,
+				sectionBeats: notes[section-1] != null ? notes[section-1].sectionBeats : chart.meta.beatsPerMeasure.getDefault(4)
 			};
 
 			var sectionEndTime:Float = Conductor.getTimeForStep(Conductor.getMeasureLength() * (section+1));
@@ -188,6 +205,8 @@ class FNFLegacyParser {
 					case "BPM Change":
 						baseSection.changeBPM = true;
 						baseSection.bpm = event.params[0];
+					case "Time Signature Change":
+						baseSection.sectionBeats = event.params[0];
 				}
 			}
 			notes[section] = baseSection;
@@ -201,11 +220,11 @@ typedef SwagSong =
 	var song:String;
 	var notes:Array<SwagSection>;
 	var bpm:Float;
-	var needsVoices:Bool;
 	var speed:Float;
 	var ?stage:String;
 	var ?noteTypes:Array<String>;
 	var ?events:Array<Dynamic>;
+	var ?needsVoices:Bool;
 
 	var player1:String;
 	var player2:String;
@@ -217,12 +236,12 @@ typedef SwagSong =
 	// ADDITIONAL STUFF THAT MAY NOT BE PRESENT IN CHART
 	var ?maxHealth:Float;
 	var ?beatsPerMeasure:Float;
-	var ?stepsPerBeat:Float;
+	var ?stepsPerBeat:Int;
 }
 
 typedef SwagSection =
 {
-	var sectionNotes:Array<Dynamic>;
+	var sectionNotes:Array<Array<Dynamic>>;
 	var lengthInSteps:Int;
 	var ?sectionBeats:Float;
 	var ?typeOfSection:Int;

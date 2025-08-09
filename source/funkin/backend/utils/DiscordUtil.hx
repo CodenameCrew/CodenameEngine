@@ -1,22 +1,23 @@
 package funkin.backend.utils;
 
-import funkin.backend.scripting.events.DiscordPresenceUpdateEvent;
-import funkin.backend.scripting.events.CancellableEvent;
-import funkin.backend.scripting.*; // lazy
+import flixel.util.FlxSignal.FlxTypedSignal;
+import flixel.sound.FlxSound;
 import flixel.util.typeLimit.OneOfTwo;
-import openfl.display.BitmapData;
+import funkin.backend.scripting.*; // lazy
+import funkin.backend.scripting.events.CancellableEvent;
+import funkin.backend.scripting.events.discord.*;
 import funkin.backend.system.macros.Utils;
 import haxe.Json;
-import flixel.sound.FlxSound;
+import openfl.display.BitmapData;
 #if DISCORD_RPC
+import Sys;
 import hxdiscord_rpc.Discord;
 import hxdiscord_rpc.Types;
-import sys.thread.Thread;
-import Sys;
 import lime.app.Application;
+import sys.thread.Thread;
 #end
 
-class DiscordUtil
+final class DiscordUtil
 {
 	public static var currentID(default, set):String = null;
 	public static var discordThread:#if DISCORD_RPC Thread #else Dynamic #end = null;
@@ -79,15 +80,19 @@ class DiscordUtil
 			try
 				config = Json.parse(Assets.getText(jsonPath))
 			catch (e)
-				Logs.trace('Couldn\'t load Discord RPC configuration: ${e.toString()}', ERROR);
+				Logs.error('Couldn\'t load Discord RPC configuration: ${e.toString()}');
 		}
 
 		if (config == null)
 			config = {};
 
-		config.logoKey = config.logoKey.getDefault("icon");
-		config.logoText = config.logoText.getDefault(Application.current.meta.get('title'));
-		config.clientID = config.clientID.getDefault("1027994136193810442");
+		config.logoKey = config.logoKey.getDefault(Flags.DEFAULT_DISCORD_LOGO_KEY);
+		config.logoText = config.logoText.getDefault(Flags.DEFAULT_DISCORD_LOGO_TEXT);
+		config.clientID = config.clientID.getDefault(Flags.DEFAULT_DISCORD_CLIENT_ID);
+		
+		if (Flags.MOD_DISCORD_CLIENT_ID.length > 0) config.clientID = Flags.MOD_DISCORD_CLIENT_ID;
+		if (Flags.MOD_DISCORD_LOGO_KEY.length > 0) config.logoKey = Flags.MOD_DISCORD_LOGO_KEY;
+		if (Flags.MOD_DISCORD_LOGO_TEXT.length > 0) config.logoText = Flags.MOD_DISCORD_LOGO_TEXT;
 		currentID = config.clientID;
 		#end
 	}
@@ -107,14 +112,28 @@ class DiscordUtil
 
 	public static function loadScript()
 	{
+		#if DISCORD_RPC
 		if (script != null)
 		{
 			call("destroy");
 			script = FlxDestroyUtil.destroy(script);
 		}
 		script = Script.create(Paths.script('data/discord'));
+		script.set("ActivityType", {
+			Playing: ActivityType.Playing,
+			PLAYING: ActivityType.Playing,
+			Streaming: ActivityType.Streaming,
+			STREAMING: ActivityType.Streaming,
+			Watching: ActivityType.Watching,
+			WATCHING: ActivityType.Watching,
+			Listening: ActivityType.Listening,
+			LISTENING: ActivityType.Listening,
+			Competing: ActivityType.Competing,
+			COMPETING: ActivityType.Competing
+		});
 		// script.setParent(DiscordUtil);
 		script.load();
+		#end
 	}
 
 	public static function changePresence(details:String, state:String, ?smallImageKey:String)
@@ -218,6 +237,8 @@ class DiscordUtil
 		Utils.safeSetWrapper(dp.joinSecret, data.joinSecret, fixString);
 		Utils.safeSetWrapper(dp.spectateSecret, data.spectateSecret, fixString);
 		Utils.safeSet(dp.instance, data.instance);
+		Utils.safeSet(dp.activityType, data.activityType);
+		Utils.safeSetWrapper(dp.streamUrl, data.streamUrl, fixString);
 		if (data.matchSecret == null && data.joinSecret == null && data.spectateSecret == null)
 		{
 			Utils.safeSetWrapper(dp.button1Label, data.button1Label, fixString);
@@ -252,6 +273,7 @@ class DiscordUtil
 		handlers.joinGame = cpp.Function.fromStaticFunction(onJoin);
 		handlers.joinRequest = cpp.Function.fromStaticFunction(onJoinReq);
 		handlers.spectateGame = cpp.Function.fromStaticFunction(onSpectate);
+		handlers.anyResponse = cpp.Function.fromStaticFunction(onAnyResponse);
 		Discord.Initialize(id, cpp.RawPointer.addressOf(handlers), 1, null);
 		stopThread = false;
 
@@ -287,7 +309,7 @@ class DiscordUtil
 		user = DUser.initRaw(request);
 
 		Logs.traceColored([
-			Logs.logText("[Discord] ", BLUE),
+			Logs.getPrefix("Discord"),
 			Logs.logText("Connected to User " + user.globalName + " ("),
 			Logs.logText(user.handle, GRAY),
 			Logs.logText(")")
@@ -303,13 +325,13 @@ class DiscordUtil
 		var finalMsg:String = cast(message, String);
 
 		Logs.traceColored([
-			Logs.logText("[Discord] ", BLUE),
+			Logs.getPrefix("Discord"),
 			Logs.logText("Disconnected ("),
 			Logs.logText('$errorCode: $finalMsg', RED),
 			Logs.logText(")")
 		], INFO);
 
-		call("onReady", [errorCode, cast(finalMsg, String)]);
+		call("onDisconnected", [errorCode, cast(finalMsg, String)]);
 	}
 
 	private static function onError(errorCode:Int, message:cpp.ConstCharStar):Void
@@ -317,7 +339,7 @@ class DiscordUtil
 		var finalMsg:String = cast(message, String);
 
 		Logs.traceColored([
-			Logs.logText("[Discord] ", BLUE),
+			Logs.getPrefix("Discord"),
 			Logs.logText('Error ($errorCode: $finalMsg)', RED)
 		], ERROR);
 
@@ -326,7 +348,7 @@ class DiscordUtil
 
 	private static function onJoin(joinSecret:cpp.ConstCharStar):Void
 	{
-		Logs.traceColored([Logs.logText("[Discord] ", BLUE), Logs.logText("Someone has just joined", GREEN)], INFO);
+		Logs.traceColored([Logs.getPrefix("Discord"), Logs.logText("Someone has just joined", GREEN)], INFO);
 
 		call("onJoinGame", [cast(joinSecret, String)]);
 	}
@@ -334,7 +356,7 @@ class DiscordUtil
 	private static function onSpectate(spectateSecret:cpp.ConstCharStar):Void
 	{
 		Logs.traceColored([
-			Logs.logText("[Discord] ", BLUE),
+			Logs.getPrefix("Discord"),
 			Logs.logText("Someone started spectating your game", YELLOW)
 		], INFO);
 
@@ -344,14 +366,45 @@ class DiscordUtil
 	private static function onJoinReq(request:cpp.RawConstPointer<DiscordUser>):Void
 	{
 		Logs.traceColored([
-			Logs.logText("[Discord] ", BLUE),
+			Logs.getPrefix("Discord"),
 			Logs.logText("Someone has just requested to join", YELLOW)
-		], WARNING);
+		], INFO);
 
 		var req:DUser = DUser.initRaw(request);
 		call("onJoinRequest", [req]);
 	}
+
+	public static var anyResponse:FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
+
+	private static function onAnyResponse(data:cpp.ConstCharStar):Void
+	{
+		call("onAnyResponse", [data]);
+		anyResponse.dispatch(data);
+	}
 	#end
+
+	private static function getUUID():String {
+		var uuid = new StringBuf();
+		for (i in 0...16) {
+			uuid.add(StringTools.hex(Math.floor(Math.random() * 16), 1));
+		}
+		return uuid.toString();
+	}
+
+	public static function sendCustomCommand(data:Dynamic) {
+		#if DISCORD_RPC
+		if(data == null) return;
+		if(data.nonce == null) data.nonce = getUUID();
+		var json = Json.stringify(data);
+		Discord.SendCustomCommand(json);
+		#end
+	}
+
+	public static function setDebugMode(mode:Bool) {
+		#if DISCORD_RPC
+		Discord.SetDebugMode(mode);
+		#end
+	}
 }
 
 typedef DiscordJson =
@@ -476,6 +529,8 @@ typedef DPresence =
 	var ?button1Url:String; /* max 512 bytes */
 	var ?button2Label:String; /* max 32 bytes */
 	var ?button2Url:String; /* max 512 bytes */
+	var ?activityType:#if DISCORD_RPC ActivityType #else Dynamic #end;
+	var ?streamUrl:String; /* max 512 bytes */
 }
 
 typedef DEvents =

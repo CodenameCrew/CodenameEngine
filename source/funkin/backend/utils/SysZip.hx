@@ -3,10 +3,10 @@ package funkin.backend.utils;
 #if sys
 import haxe.io.Input;
 import haxe.zip.Entry;
+import haxe.zip.InflateImpl;
 import haxe.zip.Reader;
 import sys.io.File;
 import sys.io.FileInput;
-import haxe.zip.InflateImpl;
 
 /**
  * Class that extends Reader allowing you to load ZIP entries without blowing your RAM up!!

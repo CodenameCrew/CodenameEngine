@@ -1,5 +1,5 @@
 <!DOCTYPE codename-engine-character>
-<character x="115" y="325" sprite="gf-christmas" icon="gf" color="#A5004D" isGF="true">
+<character x="115" y="325" sprite="gf-christmas" icon="gf" color="#A5004D">
 	<anim name="danceLeft" anim="GF Dancing Beat" x="0" y="-9" fps="24" loop="false" indices="0..14"/>
 	<anim name="danceRight" anim="GF Dancing Beat" x="0" y="-9" fps="24" loop="false" indices="15..30"/>
 	<anim name="singUP" anim="GF Up Note" x="0" y="-9" fps="24" loop="false"/>

@@ -1,9 +1,11 @@
 package funkin.backend.scripting;
 
-import funkin.backend.scripting.events.CancellableEvent;
-import funkin.backend.system.Conductor;
 import flixel.FlxState;
 import funkin.backend.assets.ModsFolder;
+import funkin.backend.scripting.events.CancellableEvent;
+import funkin.backend.system.Conductor;
+import funkin.options.PlayerSettings;
+
 #if GLOBAL_SCRIPT
 /**
  * Class for THE Global Script, aka script that runs in the background at all times.
@@ -11,7 +13,13 @@ import funkin.backend.assets.ModsFolder;
 class GlobalScript {
 	public static var scripts:ScriptPack;
 
+	private static var initialized:Bool = false;
+	private static var reloading:Bool = false;
+	private static var _lastAllow_Reload:Bool = false;
+
 	public static function init() {
+		if(initialized) return;
+		initialized = true;
 		#if MOD_SUPPORT
 		ModsFolder.onModSwitch.add(onModSwitch);
 		#end
@@ -42,17 +50,13 @@ class GlobalScript {
 		});
 		FlxG.signals.postUpdate.add(function() {
 			call("postUpdate", [FlxG.elapsed]);
-			if (FlxG.keys.justPressed.F5) {
-				if (scripts.scripts.length > 0) {
-					Logs.trace('Reloading global script...', WARNING, YELLOW);
-					scripts.reload();
-					Logs.trace('Global script successfully reloaded.', WARNING, GREEN);
-				} else {
-					Logs.trace('Loading global script...', WARNING, YELLOW);
-					onModSwitch(#if MOD_SUPPORT ModsFolder.currentModFolder #else null #end);
-				}
+
+			if (reloading) {
+				reloading = false;
+				MusicBeatState.ALLOW_DEV_RELOAD = _lastAllow_Reload;
 			}
-			if (FlxG.keys.justPressed.F2)
+
+			if (PlayerSettings.solo.controls.DEV_CONSOLE)
 				NativeAPI.allocConsole();
 		});
 		FlxG.signals.preDraw.add(function() {
@@ -69,13 +73,37 @@ class GlobalScript {
 		});
 		FlxG.signals.preStateSwitch.add(function() {
 			call("preStateSwitch", []);
+
+			var stateName = Type.getClassName(Type.getClass(@:privateAccess FlxG.game._requestedState));
+			stateName = stateName.substring(stateName.lastIndexOf(".") + 1);
+			if (Flags.MOD_REDIRECT_STATES.exists(stateName)) {
+				@:privateAccess {
+					var classFromString = Type.resolveClass(Flags.MOD_REDIRECT_STATES.get(stateName));
+					if (classFromString != null) FlxG.game._requestedState = Type.createInstance(classFromString, []);
+					else FlxG.game._requestedState = new funkin.backend.scripting.ModState(Flags.MOD_REDIRECT_STATES.get(stateName));
+				}
+			}
 		});
+
 		FlxG.signals.preUpdate.add(function() {
 			call("preUpdate", [FlxG.elapsed]);
 			call("update", [FlxG.elapsed]);
-		});
 
-		onModSwitch(#if MOD_SUPPORT ModsFolder.currentModFolder #else null #end);
+			if (FlxG.keys.pressed.SHIFT) {
+				// If we want, we could just make reseting GlobalScript it's own keybind, but for now this works.
+				if (PlayerSettings.solo.controls.DEV_RELOAD) {
+					reloading = true;
+					Logs.trace("Reloading Global Scripts...", INFO, YELLOW);
+
+					// yeah its a bit messy, sorry. This just prevents actually reloading the actual state.
+					_lastAllow_Reload = MusicBeatState.ALLOW_DEV_RELOAD;
+					MusicBeatState.ALLOW_DEV_RELOAD = false;
+
+					// Would be better to just re-initalize GlobalScript so there aren't any lose ends.
+					onModSwitch(#if MOD_SUPPORT ModsFolder.currentModFolder #else null #end);
+				}
+			}
+		});
 	}
 
 	public static function event<T:CancellableEvent>(name:String, event:T):T {
@@ -88,6 +116,7 @@ class GlobalScript {
 		if (scripts != null)
 			scripts.call(name, args);
 	}
+
 	public static function onModSwitch(newMod:String) {
 		call("destroy");
 		scripts = FlxDestroyUtil.destroy(scripts);

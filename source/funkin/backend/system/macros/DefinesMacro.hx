@@ -9,7 +9,7 @@ class DefinesMacro {
 	/**
 	 * Returns the defined values
 	 */
-	public static var defines(get, null):Map<String, Dynamic>;
+	public static var defines(get, never):Map<String, Dynamic>;
 
 	// GETTERS
 	#if REGION

@@ -1,8 +1,11 @@
 ---
 name: Compiling help
-about: If you need help compiling the game, and you're running into issues. (Look through the 'compiling help' label in case it's been solved!)
+about: If you need help compiling the game, and you're running into issues. (Look
+  through the 'compiling help' label in case it's been solved!)
 title: 'Compiling help: [BRIEF DESCRIPTION / ERROR MESSAGE OUTPUT]'
-labels: compiling help
+labels: ''
+assignees: ''
+
 ---
 
 [weed]: <> (MAKE SURE THAT THE ISSUE IS AS COMPLETE AS POSSIBLE. ISSUES THAT HAVE BARELY ANY INFORMATION OR IS ONLY MADE FOR TROLLING WILL BE INSTANTLY CLOSED.)

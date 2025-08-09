@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<str id="optionsMenu.desc-missing">Nessuna descrizione</str>
+
+	<group name="OptionsMenu">
+		<str id="optionsMenu.advanced">Avanzate</str>
+		<str id="optionsMenu.header.title">Menu Opzioni</str>
+		<str id="optionsMenu.header.desc">Seleziona una categoria per continuare.</str>
+
+		<str id="optionsTree.controls-name">Comandi</str>
+		<str id="optionsTree.controls-desc">Modifica i comandi per Giocatore 1 e Giocatore 2!</str>
+
+		<str id="optionsTree.gameplay-name">Gioco</str>
+		<str id="optionsTree.gameplay-desc">Modifica opzioni di gioco come Downscroll, Velocità di scorrimento, Volgarità...</str>
+		<str id="optionsTree.gameplay.advanced-desc">Cambia opzioni più avanzate come Streaming Audio...</str>
+
+		<str id="optionsTree.appearance-name">Aspetto</str>
+		<str id="optionsTree.appearance-desc">Modifica Opzioni d'aspetto come il Menu lampeggiante...</str>
+		<str id="optionsTree.appearance.advanced-desc">Cambia opzioni più avanzate come Sprites VRAM-Only, Antialiasing, Shaders</str>
+
+		<str id="optionsTree.language-name">Lingua</str>
+		<str id="optionsTree.language-desc">Modifica il linguaggio utilizzato dall'engine.</str>
+
+		<str id="optionsTree.miscellaneous-name">Varie</str>
+		<str id="optionsTree.miscellaneous-desc">Usa questo menu per resettare i dati salvati e le impostazioni dell'engine.</str>
+
+		<str id="optionsTree.debug-name">Opzioni di Debug</str>
+		<str id="optionsTree.debug-desc">Opzioni di Debug per la Modalità Sviluppatore.</str>
+	</group>
+
+	<group name="KeybindOptions" prefix="KeybindsOptions.">
+		<str id="left">Sinistra</str>
+		<str id="down">Giù</str>
+		<str id="up">Su</str>
+		<str id="right">Destra</str>
+
+		<str id="category.notes">Note</str>
+
+		<str id="category.ui">UI</str>
+		<group name="ui" prefix="ui.">
+			<str id="accept">Conferma</str>
+			<str id="back">Indietro</str>
+			<str id="reset">Resetta</str>
+			<str id="pause">Pausa</str>
+		</group>
+
+		<group name="engine" prefix="engine.">
+			<str id="switchMod">Cambia Mod</str>
+		</group>
+
+		<str id="volume.up">Su</str>
+		<str id="volume.down">Giù</str>
+		<str id="volume.mute">Muto</str>
+
+		<str id="category.developer">Sviluppatore</str>
+		<group name="developer" prefix="developer.">
+			<str id="devMenus">Menu Sviluppatore</str>
+			<str id="openConsole">Apri Console</str>
+			<str id="reloadState">Ricarica State</str>
+		</group>
+	</group>
+
+	<group name="AppearanceOptions" prefix="AppearanceOptions.">
+		<str id="framerate-name">Framerate</str>
+		<str id="framerate-desc">Non c'è proprio bisogno di una descrizione.</str>
+
+		<str id="flashingMenu-name">Menu Flashing</str>
+		<str id="flashingMenu-desc">Se disattivato, disabiliterà le luci lampeggianti quando selezioni un'opzione nel Menu Principale, e le altre luci saranno più lente.</str>
+
+		<str id="colorHealthBar-name">Healthbar colorata</str>
+		<str id="colorHealthBar-desc">Se disattivato, il gioco utilizzerà la barra rossa/verde originale dalla week 6 di fnf.</str>
+
+		<str id="week6PixelPerfect-name">Effetto Pixel Perfetti</str>
+		<str id="week6PixelPerfect-desc">Se attivato, la Week 6 o altri pixel stages avranno ogni pixel allineato con i pixel sullo schermo.</str>
+
+		<group name="AppearanceOptionsAdvanced" prefix="Advanced.">
+			<str id="quality-name">Qualita'</str>
+			<str id="quality-desc">Modalità qualità da scegliere, "BASSO" = Disabilita il più possibile ogni effetto visivo pesante per rendere fluido il gioco, "ALTO" = Abilita tutti gli effetti visivi, al costo della performance, "PERSONALIZZATO" = Scegli tustesso le opzioni presenti in Avanzate.</str>
+			<str id="quality-low">BASSO</str>
+			<str id="quality-high">ALTO</str>
+			<str id="quality-custom">PERSONALIZ.</str>
+
+			<str id="antialiasing-name">Antialiasing</str>
+			<str id="antialiasing-desc">Se disattivato, disabiliterà l'antialiasing su ogni sprite. Può aumentare le prestazioni abbassando la qualità grafica delle sprite in gioco.</str>
+
+			<str id="lowMemoryMode-name">Bassa memoria</str>
+			<str id="lowMemoryMode-desc">Se disattivato, disabiliterà certi elementi nei diversi sfondi per ridurre l'utilizzo di memoria.</str>
+
+			<str id="gameplayShaders-name">Shaders in gioco</str>
+			<str id="gameplayShaders-desc">Se disattivato, le shaders in gioco (effetti estetici come l'aberrazione cromatica di Thorns) non saranno caricate; questo potrebbe aiutare i dispositivi più deboli.</str>
+
+			<str id="gpuOnlyBitmaps-name">Sprite VRAM-Only</str>
+			<str id="gpuOnlyBitmaps-desc">Se attivato, conserverà le bitmaps solo nella GPU, risparmiando TANTA memoria (SPERIMENTALE). Disattivare questa opzione farà consumare molta più memoria, specialmente con le sprites più grandi. Se non sei sicuro, lascia questa opzione attivata.</str>
+		</group>
+	</group>
+	<group name="GameplayOptions" prefix="GameplayOptions.">
+		<str id="downscroll-name">Downscroll</str>
+		<str id="downscroll-desc">Se attivato, le note andranno dall'alto al basso invece che dal basso all'alto, come se stessero cadendo.</str>
+
+		<str id="ghostTapping-name">Ghost Tapping</str>
+		<str id="ghostTapping-desc">Se disattivato, cliccare una strum in assenza di una nota risulterà in un miss.</str>
+
+		<str id="naughtyness-name">Volgarita'</str>
+		<str id="naughtyness-desc">Se disattivato, censorerà i filmati della Week 7 o altro.</str>
+
+		<str id="camZoomOnBeat-name">Camera Zoom a Tempo</str>
+		<str id="camZoomOnBeat-desc">Se disattivato, fermerà la telecamera dallo zoommare ogni 4 battiti.</str>
+
+		<str id="autoPause-name">Pausa automatica</str>
+		<str id="autoPause-desc">Se disattivato, cambiare finestra metterà in pausa il gioco.</str>
+
+		<str id="volumeMusic-name">Volume Musica</str>
+		<str id="volumeMusic-desc">Cambia solo il volume della musica invece che tutto.</str>
+
+		<str id="volumeSFX-name">Volume SFX</str>
+		<str id="volumeSFX-desc">Cambia solo il volume degli SFX (ovvero gli effetti sonori) invece che tutto.</str>
+
+		<str id="songOffset-name">Offset Canzone</str>
+		<str id="songOffset-desc">Cambia l'offset con cui la canzone dovrebbe iniziare.</str>
+
+		<group name="GameplayOptionsAdvanced" prefix="Advanced.">
+			<str id="windowSize-name">Dimensioni Finestra</str>
+			<str id="windowSize-desc">...</str>
+
+			<str id="streamedMusic-name">Streaming Musica</str>
+			<str id="streamedMusic-desc">Se attivato, solo la musica avrà l'audio in streaming, liberando inoltre MOLTA memoria con lo svantaggio di un maggiore utilizzo della CPU se vengono trasmessi in streaming più audio contemporaneamente (SPERIMENTALE). Disattivarlo consumerà molta memoria, soprattutto su canzoni più lunghe. Se non sei sicuro, lascia questa opzione attivata.</str>
+
+			<str id="streamedVocals-name">Streaming Voci</str>
+			<str id="streamedVocals-desc">Se attivato, anche la voce verrà trasmessa in streaming se è selezionata anche Streaming Musica, avrà un impatto sulla performance se la canzone utilizza molte voci (SPERIMENTALE). Se non sei sicuro, lascia questa opzione disattivata.</str>
+		</group>
+	</group>
+
+	<group name="LanguageOptions" prefix="LanguageOptions.">
+		<str id="language-name">Lingua</str>
+		<str id="language-desc">Lingua fatta da {0} (Versione: {1})</str>
+	</group>
+
+	<group name="MiscOptions" prefix="MiscOptions.">
+		<str id="forceCrash-name">Forza un crash</str>
+		<str id="forceCrash-desc">Seleziona questa opzione per far chiudere il gioco bruscamente (crash)</str>
+
+		<str id="betaUpdates-name">Aggiornamenti Nightly</str>
+		<str id="betaUpdates-desc">Se attivato, verranno incluse anche le nightly builds (praticamente gli aggiornamenti a commit della repository dell'engine, usando le builds delle Actions) nel controllo degli aggiornamenti.</str>
+
+		<str id="checkForUpdates-name">Controllo aggiornamenti</str>
+		<str id="checkForUpdates-desc">Abilita questa opzione per controllare nuovi aggiornamenti di sistema</str>
+		<str id="checkForUpdates-noUpdateFound">Nessun aggiornamento disponibile</str>
+
+		<str id="devMode-name">Modal. Sviluppatore</str>
+		<str id="devMode-desc">Se attivato, sarai in grado di accedere a features per sviluppatori come certi comandi, editors, opziondi da sviluppatori, ricariche di stati, console e più.</str>
+
+		<str id="allowConfigWarning-name">Avvertimenti Modpack</str>
+		<str id="allowConfigWarning-desc">Se attivato, verrà visualizzato un popup all'inizio del gioco se sono presenti avvisi sul modpack, come configurazioni mancanti, versioni incompatibili e altro</str>
+
+		<str id="resetSaveData-name">Reimposta dati</str>
+		<str id="resetSaveData-desc">Seleziona questa opzione per reimpostare i tuoi dati salvati. Quest'azione rimuoverà tutti i tuoi highscores.</str>
+	</group>
+
+	<group name="DebugOptions" prefix="DebugOptions.">
+		<str id="title">Opzioni di debug</str>
+		<str id="desc">Usa questo menu per abilitare o disabilitare le opzioni di debug.</str>
+
+		<str id="showConsole-name">Mostra console</str>
+		<str id="showConsole-desc">Attiva questo per mostrare la console di debug, contenente informazioni logs riguardanti il gioco.</str>
+
+		<str id="editorsResizable-name">Editor Resize</str>
+		<str id="editorsResizable-desc">Se selezionato, ciò consentirà agli editor di eseguire il rendering oltre la risoluzione base 1280x720 di FNF (consentendo maggiori dettagli e spazio...)</str>
+
+		<str id="bypassEditorsResize-name">Bypassa l'Editor Resize</str>
+		<str id="bypassEditorsResize-desc">Disabilita la risoluzione minima per il ridimensionamento degli editor (è necessario che l'Editor Resize sia abilitato).</str>
+
+		<str id="editorSFX-name">Editor SFXs</str>
+		<str id="editorSFX-desc">Se attivato, abiliterà suoni ad effetto quando si lavora su editors (esempio: suoneranno quando clicchi checkboxes...)</str>
+
+		<str id="editorCharterPrettyPrint-name">Chart Pretty Print</str>
+		<str id="editorCharterPrettyPrint-desc">Se abilitato, i file salvati dall'Editor Chart saranno formattati per essere facilmente visibili</str>
+
+		<str id="editorCharacterPrettyPrint-name">Pers. Pretty Print</str>
+		<str id="editorCharacterPrettyPrint-desc">Se abilitato, i file salvati dall'Editor Personaggio saranno formattati per essere facilmente visibili</str>
+
+		<str id="editorStagePrettyPrint-name">Stage Pretty Print</str>
+		<str id="editorStagePrettyPrint-desc">Se abilitato, i file salvati dall'Editor Stage saranno formattati per essere facilmente visibili</str>
+
+		<str id="intensiveBlur-name">Sfocatura intensa</str>
+		<str id="intensiveBlur-desc">Se attivato, userà una sfocatura maggiore che potrebbe risultare in maggiore uso di dati ma sarà più bello esteticamente</str>
+
+		<str id="charterAutoSaves-name">Autosalvataggi</str>
+		<str id="charterAutoSaves-desc">Se attivato, salverà automaticamente i tuoi file nell'editor, con le opzioni elencate in basso.</str>
+
+		<str id="charterAutoSaveTime-name">Tempo salvataggi</str>
+		<str id="charterAutoSaveTime-desc">Questo controlla quanto spesso l'editor salverà i tuoi file (in secondi...) se gli Autosalvataggi sono attivi.</str>
+
+		<str id="charterAutoSaveWarningTime-name">Tempo avvisi</str>
+		<str id="charterAutoSaveWarningTime-desc">Questo controlla quanto l'editor ti avvertirà prima di autosalvare (in secondi..., 0 per disattivare)</str>
+
+		<str id="charterAutoSavesSeparateFolder-name">Cartella salvataggi</str>
+		<str id="charterAutoSavesSeparateFolder-desc">Se attivato, questo salverà i tuoi file in una cartella separata con un timestamp invece di sovrascrivere il tuo file attuale. (song/autosaves/)</str>
+
+		<str id="songOffsetAffectEditors-name">Offset Editor Chart</str>
+		<str id="songOffsetAffectEditors-desc">Se abilitato, questo attiverà l'opzione Offset Canzone anche nel Editor Chart.</str>
+	</group>
+</language>

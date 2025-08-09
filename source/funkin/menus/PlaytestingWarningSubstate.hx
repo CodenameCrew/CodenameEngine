@@ -1,11 +1,11 @@
 package funkin.menus;
 
-import flixel.tweens.FlxTween;
-import funkin.editors.ui.UIWarningSubstate.WarningButton;
-import flixel.util.FlxColor;
 import flixel.text.FlxText.FlxTextFormat;
 import flixel.text.FlxText.FlxTextFormatMarkerPair;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
 import funkin.backend.FunkinText;
+import funkin.editors.ui.UIWarningSubstate.WarningButton;
 
 class PlaytestingWarningSubstate extends MusicBeatSubstate
 {
@@ -40,13 +40,13 @@ class PlaytestingWarningSubstate extends MusicBeatSubstate
 		bg.scrollFactor.set();
 		add(bg);
 
-		titleAlphabet = new Alphabet(0, 140, "UNSAVED CHANGES!", true);
+		titleAlphabet = new Alphabet(0, 140, TU.translate("playtesting.warningTitle"), "bold");
 		titleAlphabet.screenCenter(X);
 		add(titleAlphabet);
 
 		disclaimer = new FunkinText(16, titleAlphabet.y + titleAlphabet.height + 70, FlxG.width - 32, "", 32);
 		disclaimer.alignment = CENTER;
-		disclaimer.applyMarkup("Your changes will be *lost* if you don't save them. (Can't be recovered)\n\n\nWould you like to Cancel?",
+		disclaimer.applyMarkup(TU.translate("playtesting.warningDesc"),
 			[
 				new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFFF4444), "*")
 			]

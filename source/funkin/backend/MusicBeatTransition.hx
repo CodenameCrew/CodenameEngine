@@ -1,14 +1,16 @@
 package funkin.backend;
 
-import funkin.backend.scripting.events.CancellableEvent;
-import funkin.backend.scripting.events.TransitionCreationEvent;
-import funkin.backend.scripting.Script;
-import flixel.tweens.FlxTween;
 import flixel.FlxState;
+import flixel.tweens.FlxTween;
+import funkin.backend.scripting.Script;
+import funkin.backend.scripting.events.CancellableEvent;
+import funkin.backend.scripting.events.ResizeEvent;
+import funkin.backend.scripting.events.TransitionCreationEvent;
 import funkin.backend.utils.FunkinParentDisabler;
+import funkin.editors.ui.UIState;
 
 class MusicBeatTransition extends MusicBeatSubstate {
-	public static var script:String = "";
+	public static var script:String = Flags.DEFAULT_TRANSITION_SCRIPT;
 	public var transitionScript:Script;
 
 	var nextFrameSkip:Bool = false;
@@ -52,23 +54,12 @@ class MusicBeatTransition extends MusicBeatSubstate {
 			return;
 		}
 
-		blackSpr = new FlxSprite(0, transOut ? -transitionCamera.height : transitionCamera.height).makeGraphic(1, 1, -1);
-		blackSpr.scale.set(transitionCamera.width, transitionCamera.height);
+		add(blackSpr = new FlxSprite(0, transOut ? -transitionCamera.height : transitionCamera.height).makeGraphic(1, 1, -1));
 		blackSpr.color = 0xFF000000;
-		blackSpr.updateHitbox();
-		add(blackSpr);
+		add(transitionSprite = new FunkinSprite().loadSprite(Paths.image('menus/transitionSpr')));
+		resizeDefaultSprites();
 
-		transitionSprite = new FunkinSprite();
-		transitionSprite.loadSprite(Paths.image('menus/transitionSpr'));
-		if (transitionSprite.animateAtlas == null) {
-			transitionSprite.setGraphicSize(transitionCamera.width, transitionCamera.height);
-			transitionSprite.updateHitbox();
-		} else {
-			transitionSprite.screenCenter();
-		}
 		transitionCamera.flipY = !transOut;
-		add(transitionSprite);
-
 		transitionCamera.scroll.y = transitionCamera.height;
 		transitionTween = FlxTween.tween(transitionCamera.scroll, {y: -transitionCamera.height}, 2/3, {
 			ease: FlxEase.sineOut,
@@ -108,6 +99,28 @@ class MusicBeatTransition extends MusicBeatSubstate {
 			}
 		}
 		transitionScript.call('postUpdate', [elapsed]);
+	}
+
+	public override function onResize(w:Int, h:Int) {
+		super.onResize(w, h);
+		if (FlxG.state is UIState && UIState.resolutionAware) resizeDefaultSprites();
+		transitionScript.call('onResize', [EventManager.get(ResizeEvent).recycle(w, h, null, null)]);
+	}
+
+	public function resizeDefaultSprites() {
+		if (blackSpr != null) {
+			blackSpr.scale.set(transitionCamera.width, transitionCamera.height);
+			blackSpr.updateHitbox();
+		}
+
+		if (transitionSprite != null) {
+			if (transitionSprite.animateAtlas == null) {
+				transitionSprite.setGraphicSize(transitionCamera.width, transitionCamera.height);
+				transitionSprite.updateHitbox();
+			} else {
+				transitionSprite.screenCenter();
+			}
+		}
 	}
 
 	public function finish() {

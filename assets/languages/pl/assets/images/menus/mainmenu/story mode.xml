@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="story mode.png" width="1230" height="556">
+	<SubTexture name="story mode basic0000" x="734" y="1" width="495" height="116" frameX="-0" frameY="-0" frameWidth="495" frameHeight="116"/>
+	<SubTexture name="story mode basic0001" x="734" y="1" width="495" height="116" frameX="-0" frameY="-0" frameWidth="495" frameHeight="116"/>
+	<SubTexture name="story mode basic0002" x="734" y="1" width="495" height="116" frameX="-0" frameY="-0" frameWidth="495" frameHeight="116"/>
+	<SubTexture name="story mode basic0003" x="734" y="119" width="495" height="116" frameX="-0" frameY="-0" frameWidth="495" frameHeight="116"/>
+	<SubTexture name="story mode basic0004" x="734" y="119" width="495" height="116" frameX="-0" frameY="-0" frameWidth="495" frameHeight="116"/>
+	<SubTexture name="story mode basic0005" x="734" y="119" width="495" height="116" frameX="-0" frameY="-0" frameWidth="495" frameHeight="116"/>
+	<SubTexture name="story mode basic0006" x="730" y="237" width="495" height="116" frameX="-0" frameY="-0" frameWidth="495" frameHeight="116"/>
+	<SubTexture name="story mode basic0007" x="730" y="237" width="495" height="116" frameX="-0" frameY="-0" frameWidth="495" frameHeight="116"/>
+	<SubTexture name="story mode basic0008" x="730" y="237" width="495" height="116" frameX="-0" frameY="-0" frameWidth="495" frameHeight="116"/>
+	<SubTexture name="story mode white0000" x="1" y="375" width="732" height="180" frameX="-0" frameY="28" frameWidth="732" frameHeight="186"/>
+	<SubTexture name="story mode white0001" x="1" y="1" width="731" height="185" frameX="-0" frameY="30" frameWidth="732" frameHeight="186"/>
+	<SubTexture name="story mode white0002" x="1" y="188" width="727" height="185" frameX="-0" frameY="29" frameWidth="732" frameHeight="186"/>
+</TextureAtlas>

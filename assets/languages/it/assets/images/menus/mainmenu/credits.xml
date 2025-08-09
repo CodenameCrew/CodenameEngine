@@ -1,0 +1,19 @@
+<!-- Credits to ITALetsPlayer -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="credits.png" width="1095" height="515">
+	<SubTexture name="credits basic0000" x="631" y="175" width="461" height="129" frameX="-0" frameY="-0" frameWidth="461" frameHeight="129"/>
+	<SubTexture name="credits basic0001" x="631" y="175" width="461" height="129" frameX="-0" frameY="-0" frameWidth="461" frameHeight="129"/>
+	<SubTexture name="credits basic0002" x="631" y="175" width="461" height="129" frameX="-0" frameY="-0" frameWidth="461" frameHeight="129"/>
+	<SubTexture name="credits basic0003" x="633" y="1" width="461" height="129" frameX="-0" frameY="-0" frameWidth="461" frameHeight="129"/>
+	<SubTexture name="credits basic0004" x="633" y="1" width="461" height="129" frameX="-0" frameY="-0" frameWidth="461" frameHeight="129"/>
+	<SubTexture name="credits basic0005" x="633" y="1" width="461" height="129" frameX="-0" frameY="-0" frameWidth="461" frameHeight="129"/>
+	<SubTexture name="credits basic0006" x="633" y="307" width="461" height="129" frameX="-0" frameY="-0" frameWidth="461" frameHeight="129"/>
+	<SubTexture name="credits basic0007" x="633" y="307" width="461" height="129" frameX="-0" frameY="-0" frameWidth="461" frameHeight="129"/>
+	<SubTexture name="credits basic0008" x="633" y="307" width="461" height="129" frameX="-0" frameY="-0" frameWidth="461" frameHeight="129"/>
+	<SubTexture name="credits white0000" x="1" y="349" width="629" height="165" frameX="-0" frameY="-7" frameWidth="630" frameHeight="172"/>
+	<SubTexture name="credits white0001" x="1" y="175" width="627" height="171" frameX="-0" frameY="-0" frameWidth="630" frameHeight="172"/>
+	<SubTexture name="credits white0002" x="1" y="1" width="629" height="171" frameX="-1" frameY="-0" frameWidth="630" frameHeight="172"/>
+</TextureAtlas>

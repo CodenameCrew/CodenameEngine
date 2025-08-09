@@ -1,14 +1,15 @@
 package funkin.options.type;
 
-import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
+import flixel.util.FlxColor;
 import funkin.backend.shaders.CustomShader;
 import funkin.backend.system.github.GitHub;
-import flixel.util.FlxColor;
+import openfl.display.BitmapData;
+import funkin.backend.system.github.GitHubContributor.CreditsGitHubContributor;
 
 class GithubIconOption extends TextOption
 {
-	public var user(default, null):Dynamic;  // Can possibly be GitHubUser or GitHubContributor
+	public var user(default, null):CreditsGitHubContributor;  // Can possibly be GitHubUser or GitHubContributor, but CreditsGitHubContributor has only the fields we need
 	public var icon:GithubUserIcon = null;
 	public var usePortrait(default, set) = true;
 
@@ -19,22 +20,23 @@ class GithubIconOption extends TextOption
 		return usePortrait = value;
 	}
 
-	public function new(user:Dynamic, desc:String, ?callback:Void->Void, ?customName:String, size:Int = 96, usePortrait:Bool = true, waitUntilLoad:Float = 0.25) {
+	public function new(user:CreditsGitHubContributor, desc:String, ?callback:Void->Void, ?customName:String, size:Int = 96, usePortrait:Bool = true, waitUntilLoad:Float = 0.25) {
 		super(customName == null ? user.login : customName, desc, callback == null ? function() CoolUtil.openURL(user.html_url) : callback);
 		this.user = user;
 		this.icon = new GithubUserIcon(user, size, waitUntilLoad);
 		this.usePortrait = usePortrait;
 		add(icon);
+		__text.x = 100;
 	}
 }
 
 class GithubUserIcon extends FlxSprite
 {
 	public var waitUntilLoad:Null<Float>;
-	private var user:Dynamic;
+	private var user:CreditsGitHubContributor;
 	private var size:Int;
 
-	public override function new(user:Dynamic, size:Int = 96, waitUntilLoad:Float = 0.25) {
+	public override function new(user:CreditsGitHubContributor, size:Int = 96, waitUntilLoad:Float = 0.25) {
 		this.user = user;
 		this.size = size;
 		this.waitUntilLoad = waitUntilLoad;
@@ -48,8 +50,22 @@ class GithubUserIcon extends FlxSprite
 		super.update(elapsed);
 	}
 
+	#if target.threaded
 	final mutex = new sys.thread.Mutex();
-	override function drawComplex(camera:FlxCamera):Void {  // Making the image downlaod only if the player actually sees it on the screeeeen  - Nex
+	#end
+
+	inline function acquireMutex() {
+		#if target.threaded
+		mutex.acquire();
+		#end
+	}
+	inline function releaseMutex() {
+		#if target.threaded
+		mutex.release();
+		#end
+	}
+
+	override function drawComplex(camera:FlxCamera):Void {  // Making the image download only if the player actually sees it on the screen  - Nex
 		if(waitUntilLoad <= 0) {
 			waitUntilLoad = null;
 			Main.execAsync(function() {
@@ -64,7 +80,7 @@ class GithubUserIcon extends FlxSprite
 					var bytes = null;
 					if(unfLink) {
 						try bytes = HttpUtil.requestBytes('${user.avatar_url}?size=$size')
-						catch(e) Logs.traceColored([Logs.logText('Failed to download github pfp for ${user.login}: ${CoolUtil.removeIP(e.message)} - (Retrying using the api..)', RED)], ERROR);
+						catch(e) Logs.error('Failed to download github pfp for ${user.login}: ${CoolUtil.removeIP(e.message)} - (Retrying using the api..)');
 
 						if(bytes != null) {
 							bmap = BitmapData.fromBytes(bytes);
@@ -73,27 +89,27 @@ class GithubUserIcon extends FlxSprite
 					}
 
 					if(planB) {
-						if(unfLink) user = GitHub.getUser(user.login, function(e) Logs.traceColored([Logs.logText('Failed to download github user info for ${user.login}: ${CoolUtil.removeIP(e.message)}', RED)], ERROR));  // Api part - Nex
+						if(unfLink) user = cast GitHub.getUser(user.login, function(e) Logs.error('Failed to download github user info for ${user.login}: ${CoolUtil.removeIP(e.message)}'));  // Api part - Nex
 						try bytes = HttpUtil.requestBytes('${user.avatar_url}&size=$size')
-						catch(e) Logs.traceColored([Logs.logText('Failed to download github pfp for ${user.login}: ${CoolUtil.removeIP(e.message)}', RED)], ERROR);
+						catch(e) Logs.error('Failed to download github pfp for ${user.login}: ${CoolUtil.removeIP(e.message)}');
 
 						if(bytes != null) bmap = BitmapData.fromBytes(bytes);
 					}
 
 					if(bmap != null) try {
-						mutex.acquire();  // Avoiding critical section  - Nex
+						acquireMutex();  // Avoiding critical section  - Nex
 						var leGraphic:FlxGraphic = FlxG.bitmap.add(bmap, false, key);
 						leGraphic.persist = true;
 						updateDaFunni(leGraphic);
 						bmap = null;
-						mutex.release();
+						releaseMutex();
 					} catch(e) {
-						Logs.traceColored([Logs.logText('Failed to update the pfp for ${user.login}: ${e.message}', RED)], ERROR);
+						Logs.error('Failed to update the pfp for ${user.login}: ${e.message}');
 					}
 				} else {
-					mutex.acquire();
+					acquireMutex();
 					updateDaFunni(bmap);
-					mutex.release();
+					releaseMutex();
 				}
 			});
 		}

@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<group name="General Editor Translations" prefix="editor.">
+		<str id="autosavingIn">Autozapisywanie za {0} sekund{1}</str>
+		<str id="autosavingCanceledSuffix">(Anulowane)!</str>
+
+		<str id="ok">Ok</str>
+		<str id="cancel">Anuluj</str>
+		<str id="save">Zapisz</str>
+		<str id="saveClose">Zapisz i Zamknij</str>
+		<str id="close">Zamknij</str>
+		<str id="notNow">Nie Teraz</str>
+		<str id="yes">Tak</str>
+	</group>
+
+	<group name="UIImageExplorer" prefix="uiImageExplorer.">
+		<str id="symbol">Symbol</str>
+		<str id="animation">Animacja</str>
+		<str id="atlas">Atlas</str>
+		<str id="spritemap">Mapa sprite'ów</str>
+		
+		<str id="directory">Folder ({0}/)</str>
+		<str id="found">{0} {1} Znaleziono</str>
+		<str id="foundplural">{0} {1} Znaleziono</str>
+		<str id="notFound">#Nie znaleziono {0}#</str>
+		<str id="foundAtlas">{0} Znalezione Atlasy</str>
+		<str id="foundAtlasplural">{0} Znalezione Mapy Sprite'ów</str>
+
+		<str id="fileAlreadyExists">Dane pliki już istnieją: \n\n{0}\n\nWAŻNE: NADPISYWANIE NIE MOŻE BYĆ COFNIĘTE!</str>
+		<str id="override">Nadpisz</str>
+		<str id="useExisting">Użyj Istniejących</str>
+	</group>
+
+	<group name="EditorPicker" prefix="editor.">
+		<str id="alphabet.name">Edytor Alfabetów</str>
+		<str id="chart.name">Edytor Mapy</str>
+		<str id="character.name">Edytor Postaci</str>
+		<str id="stage.name">Edytor Scen</str>
+		<str id="uiDebug.name">Debug Interfejsu Użytkownika</str>
+		<str id="wiki.name">Wiki</str>
+		<str id="debugOptions.name">Opcje Debugowania</str>
+	</group>
+
+	<group name="ChartEditor">
+		<group name="CharterSelection" prefix="charterSelection.">
+			<str id="desc">Wybierz mapę piosenki do edytowania."</str>
+			<str id="acceptSong">Naciśnij AKCEPTUJ aby wybrać trudność do edytowania.</str>
+			<str id="acceptDifficulty">Naciśnij AKCEPTUJ aby edytować mapę wybranej trudności.</str>
+			<str id="selectDifficulty">Wybierz trudność aby kontynuować.</str>
+			<str id="newDifficulty">Nowa Trudność</str>
+			<str id="newSong">Nowa Piosenka</str>
+		</group>
+
+		<group name="ChartCreationScreen" prefix="chartCreation.">
+			<str id="title">Tworzenie Nowej Mapy</str>
+			<str id="info">Informacja Mapy</str>
+			<str id="diffName">Nazwa Trudności</str>
+			<str id="stage">Scena</str>
+			<str id="scrollSpeed">Prędkość Przewijania</str>
+
+			<str id="strumLineList">Strumy $* Potrzebna Przynajmniej 1 Struma $</str>
+			<str id="strumLine.format">Struma - #{0}</str>
+
+			<group name="Warnings" prefix="warnings.">
+				<str id="song-exists-title">Tworzenie Piosenki: Błąd!</str>
+				<str id="song-exists-body">Piosenka którą próbujesz utworzyć już istnieje, jeśli chcesz nadpisać piosenkę, najpierw ją usuń!</str>
+				<str id="chart-exists-title">Tworzenie Mapy: Błąd!</str>
+				<str id="chart-exists-body">Mapa którą próbujesz utworzyć już istnieje, jeśli chcesz nadpisać mapę, najpierw ją usuń!</str>
+			</group>
+		</group>
+
+		<group name="ChartDataScreen" prefix="chartDataScreen.">
+			<str id="title">Właściwości Mapy</str>
+			<str id="editChartData">Edytuj Dane Mapy</str>
+			<str id="stage">Scena</str>
+			<str id="scrollSpeed">Prędkość Przewijania</str>
+		</group>
+
+		<group name="SongPosInfo" prefix="songPosInfo.">
+			<str id="step">Krok: {0}</str>
+			<str id="beat">Bit: {0}</str>
+			<str id="measure">Miara: {0}</str>
+			<str id="bpm">Tempo: {0}</str>
+			<str id="timeSignature">Metrum: {0}/{1}</str>
+		</group>
+
+		<group name="CharterEventScreen" prefix="charterEventScreen.">
+			<str id="title-creating">Stwórz Grupę Wydarzeń</str>
+			<str id="title-editing">Edytuj Grupę Wydarzeń</str>
+			
+			<str id="noEvent">Brak Wydarzenia</str>
+
+			<str id="strumLine.format">Struma #{0} ({1})</str>
+		</group>
+
+		<group name="CharterEventTypeSelection" prefix="charterEventTypeSelection.">
+			<str id="title">Wybierz typ wydarzenia...</str>
+		</group>
+
+		<group name="CharterMetaDataScreen" prefix="charterMetaDataScreen.">
+			<str id="title">Edytuj Metadane</str>
+
+			<str id="songData">Dane Ścieżki</str>
+			<str id="songName">Nazwa Ścieżki</str>
+			<str id="bpm">Tempo</str>
+			<str id="timeSignature">Metrum</str>
+			<str id="menusData">Dane Menu (Gra Dowolna/Opowieść)</str>
+			<str id="displayName">Wyświetlana Nazwa</str>
+			<str id="icon">Ikona</str>
+			<str id="modesAllowed">Dozwolone Tryby</str>
+			<str id="color">Kolor</str>
+			<str id="difficulties">Trudności</str>
+			<str id="customValues">Własna Waluta (Zaawansowane)</str>
+			<str id="needsVoices">Potrzebne Wokale</str>
+
+			<str id="opponentMode">Tryb Przeciwnika</str>
+			<str id="coopAllowed">Tryb Ko-operacyjny</str>
+		</group>
+
+		<group name="CharterNoteTypesList" prefix="charterNoteTypesList.">
+			<str id="title">Edytor Listy Typów Nut</str>
+
+			<str id="editNoteTypes">Edytuj Typy Nut</str>
+			<str id="editType">Typ Nuty {0}</str>
+		</group>
+
+		<group name="CharterStrumlineScreen" prefix="charterStrumlineScreen.">
+			<str id="win-title-creating">Tworzenie strumy {0}</str>
+			<str id="win-title-editing">Edytowanie właściwości strumy {0}</str>
+
+			<str id="title-creating">Stwórz Nową Strumę</str>
+			<str id="title-editing">Edytuj Właściwości Strumy</str>
+		</group>
+
+		<group name="SongCreationScreen" prefix="songCreationScreen.">
+			<str id="win-title">Tworzenie Nowej Ścieżki</str>
+			<str id="win-title-importing">Importowanie Ścieżki</str>
+			<str id="title">Informacja Ścieżki</str>
+
+			<str id="instAudio">Instrumentalny Plik Audio $* Wymagane*$</str>
+			<str id="voicesAudio">Wokalny Plik Audio</str>
+
+			<str id="importFrom">Importuj z...</str>
+			<str id="importSource">Źródło Importu:</str>
+			<str id="legacyOrPsych">Psych/Legacy FNF</str>
+			<str id="vslice">V-Slice</str>
+			<str id="vsliceProject">Projekt V-Slice (.fnfc)</str>
+			<str id="importChartFormat">Format Mapy</str>
+			<str id="importAudios">Dodaj pliki Audio</str>
+			<str id="songFileName">Nazwa pliku ścieżki $* Wymagane$</str>
+			<str id="songDataFile">Plik Danych/Mapy $* Wymagane$</str>
+			<str id="songMetaFile">Plik Meta $* Wymagane$</str>
+
+			<str id="back">Wstecz</str>
+			<str id="next">Następny</str>
+		</group>
+
+		<group name="StrumlineOptions" prefix="charterStrumLine.">
+			<str id="characters">Postacie</str>
+			<str id="newChar">Nowa Postać</str>
+			<str id="type">Typ</str>
+			<str id="scrollSpeed">Prędkość Przewijania</str>
+			<str id="spacing">Oddział</str>
+			<str id="stagePos">Pozycja Na Scenie</str>
+			<str id="scale">Rozmiar</str>
+			<str id="hudPos">Pozycja Interfejsu (X [Stosunek 0-1],Y)</str>
+			<str id="visible">Widoczne?</str>
+			<str id="useChartScrollSpeed">Używa Prędkości Przewijania Mapy?</str>
+			<str id="vocalSuffix">Suffix Wokali</str>
+			<str id="keyCount">Liczba Kluczy</str>
+		</group>
+
+		<group name="ChartEditor" prefix="charter.">
+			<!-- Charter.hx -->
+		<group name="TopBar">
+			<str id="topBar.file">Plik</str>
+			<group name="FileMenu" prefix="file.">
+				<str id="new">Nowy</str>
+				<str id="save">Zapisz</str>
+				<str id="saveAs">Zapisz Jako...</str>
+				<str id="saveGlobalEvents">Zapisz Wydarzenia Globalne</str>
+				<str id="saveGlobalEventsAs">Zapisz Wydarzenia Globalne Jako...</str>
+				<str id="saveNoLocalEvents">Zapisz mapę bez Wydarzeń Lokalnych</str>
+				<str id="saveNoLocalEventsAs">Zapisz mapę bez Wydarzeń Lokalnych Jako...</str>
+				<str id="saveMeta">Zapisz Metadane</str>
+				<str id="saveMetaAs">Zapisz Metadane Jako...</str>
+				<str id="exportFnfLegacy">Eksportuj Dla FNF Legacy...</str>
+				<str id="exportPsych">Eksportuj Dla Psych Engine...</str>
+				<str id="exit">Wyjdź</str>
+			</group>
+
+			<str id="topBar.edit">Edytuj</str>
+			<group name="EditMenu" prefix="edit.">
+				<str id="undo">Cofnij</str>
+				<str id="redo">Awansuj</str>
+				<str id="copy">Kopiuj</str>
+				<str id="paste">Wklej</str>
+				<str id="cut">Wytnij</str>
+				<str id="delete">Usuń</str>
+			</group>
+
+			<str id="topBar.chart">Mapa</str>
+			<group name="ChartMenu" prefix="chart.">
+				<str id="playtest">Testuj Mapę</str>
+				<str id="playtestHere">Testuj Mapę tutaj</str>
+				<str id="playtestOpponent">Testuj Mapę jako przeciwnik</str>
+				<str id="playtestOpponentHere">Testuj Mapę jako przeciwnik tutaj</str>
+				<str id="enableScripts">Włącz skrypty podczas Testowania Mapy</str>
+				<str id="editChartData">Edytuj Dane Mapy</str>
+				<str id="editMetadata">Edytuj Informacje Metadanych</str>
+			</group>
+
+			<str id="topBar.view">Widok</str>
+			<group name="ViewMenu" prefix="view.">
+				<str id="zoomIn">Przybliż</str>
+				<str id="zoomOut">Oddal</str>
+				<str id="resetZoom">Resetuj Przybliżenie</str>
+				<str id="showSectionsSeparator">Pokaż Oddział Sekcji</str>
+				<str id="showBeatsSeparator">Pokaż Oddział Bitów</str>
+				<str id="rainbowWaveforms">Tęczowe Fale Dźwiękowe</str>
+				<str id="lowDetailWaveforms">Mało Detalowe Fale Dźwiękowe</str>
+				<str id="scrollLeft">Przewiń w Lewo</str>
+				<str id="scrollRight">Przewiń w Prawo</str>
+				<str id="scrollReset">Resetuj Przewinięcie</str>
+			</group>
+			
+			<str id="topBar.song">Ścieżka</str>
+			<group name="SongMenu" prefix="song.">
+				<str id="goStart">Wróć do początku</str>
+				<str id="goEnd">Idź do końca</str> <!-- used to be "Go to the end" -->
+				<str id="addOpponentCamera">Dodaj kamerę na Oponenta</str>
+				<str id="addPlayerCamera">Dodaj kamerę na Gracza</str>
+				<str id="muteInst">Wycisz Instrumental</str>
+				<str id="muteVoices">Wycisz Wokale</str>
+			</group>
+
+				<group name="BookmarkMenu" prefix="bookmarks.">
+					<str id="addBookmarkHere">Dodaj Zakładkę Tutaj</str>
+					<str id="editBookmarkList">Edytuj Listę Zakładek</str>
+					<str id="goTo">Idź do "{0}"</str>
+					<str id="createBookmarkTitle">Tworzenie Nowej Zakładki...</str>
+					<str id="createBookmarkName">Nazwa Zakładki:</str>
+					<str id="createBookmarkColor">Kolor Zakładki:</str>
+					<str id="editBookmarkListTitle">Lista Zakładek</str>
+					<str id="editBookmarksTitle">Edytuj Zakładki</str>
+					<str id="newBookmarkName">Nowa Zakładka</str>
+				</group>
+
+				<str id="topBar.note">Nuty</str>
+				<group name="NoteMenu" prefix="note.">
+					<str id="addSustainLength">Przedłuż Nutę</str>
+					<str id="subtractSustainLength">Skróć Nutę</str>
+					<str id="selectAll">Wybierz wszystkie</str>
+					<str id="selectMeasure">Wybierz metrum</str>
+					<str id="editNoteTypesList">Edytuj Listę Typów Nut</str>
+				</group>
+				<str id="topBar.snap">Snapowanie</str>
+				<group name="SnapMenu" prefix="snap.">
+					<str id="increaseSnap">↑ Snapowanie do Siatki</str>
+					<str id="resetSnap">Resetuj Snapowanie do Siatki</str>
+					<str id="decreaseSnap">↓ Snapowanie do Siatki</str>
+
+					<str id="snap">{0}x Snapowanie do Siatki</str>
+				</group>
+
+				<str id="topBar.playback">Odtwarzanie</str>
+				<group name="PlaybackMenu" prefix="playback.">
+					<str id="play">Graj/Pauzuj</str>
+					<str id="speedRaise">↑ Prędkość {0}%</str>
+					<str id="speedReset">Resetuj Prędkość</str>
+					<str id="speedLower">↓ Prędkość {0}%</str>
+					<str id="sectionBack">Cofnij o Sekcję</str>
+					<str id="sectionForward">Awansuj o Sekcję</str>
+					<str id="sectionStart">Idź do początku Sekcji</str>
+					<str id="backStep">Wróć o Krok</str>
+					<str id="forwardStep">Awansuj o Krok</str>
+					<str id="metronome">Taktomierz</str>
+					<str id="visualMetronome">Wizualny taktomierz</str>
+				</group>
+			</group>
+
+			<group name="NoteTypes" prefix="noteTypes.">
+				<str id="default">Domyślna Nuta</str>
+			</group>
+
+			<group name="EventTypes" prefix="events.">
+				<!-- You can add your custom event types here! -->
+				<!-- Just need to do some conversion from the raw name to the id -->
+				<!-- Example: HScript Call -> hscriptCall -->
+				<!-- Example: Change Character -> changeCharacter -->
+				<str id="hscriptCall">Zawołanie HScript</str>
+				<str id="cameraMovement">Ruch Kamery</str>
+				<str id="addCameraZoom">Dodaj Przybliżenie Kamery</str>
+				<str id="cameraModuloChange">Zmień Modulo Kamery</str>
+				<str id="cameraFlash">Błyskanie Kamery</str>
+				<str id="bpmChange">Zmiana Tempa</str>
+				<str id="scrollSpeedChange">Zmiana Prędkości Przewijania</str>
+				<str id="altAnimationToggle">Przełącznik Animacji Alternatywnej</str>
+				<str id="playAnimation">Odtwórz Animację</str>
+			</group>
+
+			<group name="StrumlineOptions" prefix="strumLine.">
+				<str id="button-name">Opcje ↓</str>
+
+				<str id="hitsounds">Dźwięki Uderzenia</str>
+				<str id="muteVocals">Wycisz Wokal</str>
+				<str id="edit">Edytuj</str>
+				<str id="delete">Usuń</str>
+
+				<str id="noWaveform">Brak Fali Dźwiękowej</str>
+			</group>
+
+			<str id="createNew">Stwórz Nowe</str>
+			<str id="lock-unlock">Kłódka</str>
+
+			<str id="info.localEvents">Wydarzenia Lokalne\n(Tylko Ta Trudność)</str>
+			<str id="info.globalEvents">Wydarzenia Globalne\n(Wszystkie Trudności)</str>
+			<str id="eventType-local">Wydarzenie Lokalne</str>
+			<str id="eventType-global">Wydarzenie Globalne</str>
+
+			<!-- CharterEventAdd.hx -->
+			<str id="addEvent">Dodaj Wydarzenie</str>
+			<str id="editEvent">Edytuj Wydarzenie</str> <!-- Should maybe be "Edit Event" -->
+			<str id="deleteEvent">Usuń Wydarzenie</str>
+
+			<group name="Notifications" prefix="popup.">
+				<str id="savedChartAt">Zapisano Mapę pod {0}!</str>
+			</group>
+		</group>
+	</group>
+
+	<group name="CharacterEditor">
+		<group name="CharacterSelection" prefix="characterSelection.">
+			<str id="acceptFolder">Naciśnij AKCEPTUJ aby edytować ten folder.</str>
+			<str id="acceptCharacter">Naciśnij AKCEPTUJ aby edytować tą postać.</str>
+			<str id="newCharacter">Nowa Postać</str>
+			<str id="newCharacterDesc">Naciśnij AKCEPTUJ aby stworzyć nową postać.</str>
+			<str id="desc">Wybierz postać do edytowania</str>
+			<str id="desc-folder">Wybierz postać do edytowania w: {0}</str>
+		</group>
+
+		<group name="CharacterInfoScreen" prefix="characterInfoScreen.">
+			<str id="win-title">Edytowanie Postaci</str>
+			<str id="title">Edytuj Informacje Postaci</str>
+			<str id="icon">Ikona</str>
+			<str id="iconColor">Kolor Ikony</str>
+			<str id="singDuration">Trwanie Śpiewu</str>
+			<str id="useSingDuration">Użyj Trwania Śpiewu?</str>
+			<str id="customValues">Własna Waluta (Zaawansowane)</str>
+		</group>
+
+		<group name="CharacterEditor" prefix="characterEditor.">
+			<group name="TopBar">
+				<str id="topBar.file">Plik</str>
+				<group name="FileMenu" prefix="file.">
+					<str id="new">Nowy</str>
+					<str id="save">Zapisz</str>
+					<str id="saveAs">Zapisz jako...</str>
+					<str id="exit">Wyjdź</str>
+				</group>
+
+				<str id="topBar.edit">Edytuj</str>
+				<group name="EditMenu" prefix="edit.">
+					<str id="copyOffset">Kopiuj Domiar</str>
+					<str id="pasteOffset">Wklej Domiar</str>
+					<str id="undo">Cofnij</str>
+					<str id="redo">Ponów</str>
+					<str id="editInfo">Edytuj Informacje</str>
+					<str id="editSprite">Edytuj Sprite'a</str>
+				</group>
+
+				<str id="topBar.offset">Domiary</str>
+				<group name="OffsetsMenu" prefix="offset.">
+					<str id="moveLeft">Rusz w Lewo</str>
+					<str id="moveUp">Rusz w Górę</str>
+					<str id="moveDown">Rusz w Dół</str>
+					<str id="moveRight">Rusz w Prawo</str>
+					<str id="moveExtraLeft">Rusz Mocniej w Lewo</str>
+					<str id="moveExtraUp">Rusz Mocniej w Górę</str>
+					<str id="moveExtraDown">Rusz Mocniej w Dół</str>
+					<str id="moveExtraRight">Rusz Mocniej w Prawo</str>
+					<str id="dragOffsetsMouse">Ruszaj Domiary Myszą?</str>
+					<str id="clearOffsets">Wyczyść Domiary</str>
+				</group>
+
+				<str id="topBar.stage">Scena</str>
+				<group name="StageMenu" prefix="stage.">
+					<str id="useStage">Użyj "{0}"</str>
+					<str id="useNone">Nie Używaj Scen</str>
+				</group>
+
+				<str id="topBar.view">Widok</str>
+				<group name="ViewMenu" prefix="view.">
+					<str id="zoomIn">Przybliż</str>
+					<str id="zoomOut">Oddal</str>
+					<str id="resetZoom">Resetuj Przybliżenie</str>
+					<str id="charHitbox">Hitboks Postaci?</str>
+					<str id="charCam">Kamera Postaci?</str>
+					<str id="axis">Osie XY?</str>
+				</group>
+
+				<str id="topBar.animation">Animacje</str>
+				<group name="AnimationMenu" prefix="animation.">
+					<str id="playAnim">Odtwórz Animację</str>
+					<str id="stopAnim">Zatrzymaj Animację</str>
+					<str id="changeAnimUp">Zmień Animację ↑</str>
+					<str id="changeAnimDown">Zmień Animację ↓</str>
+					<str id="playAnimOnOffset">Graj Animacje na zmianę Domiaru?</str>
+				</group>
+
+				<group name="CharacterPropertiesWindow" prefix="characterProperties.">
+					<str id="position">Pozycja (X, Y)</str>
+					<str id="scale">Skala</str>
+					<str id="editInfo">Edytuj Info</str>
+					<str id="editSprite">Edytuj Sprite'a</str>
+					<str id="camPosition">Pozycja Kamery (X, Y)</str>
+					<str id="charFlipped">Obrócone?</str>
+					<str id="antialiased">Wygładzone?</str>
+					<str id="testCharAs">Testuj Postać Jako...</str>
+					<str id="charDesign">Postać Zaprojektowana Jako...</str>
+				</group>
+
+				<group name="CharacterAnimButton" prefix="characterAnim.">
+					<str id="defaultAnimName">Nowa Animacja</str>
+					<str id="name">Imię</str>
+					<str id="anim">Animacja</str>
+					<str id="position">Pozycja (X, Y)</str>
+					<str id="fps">Klatki na Sekundę</str>
+					<str id="indices">Indeksy (Klatki)</str>
+				</group>
+
+				<group name="CharacterSpriteScreen" prefix="characterSpriteScreen.">
+					<str id="win-title">Edytuj sprite'a postaci</str>
+					<str id="charImageFile">Plik Obrazu Postaci $* Wymagane$</str>
+				</group>
+			</group>
+		</group>
+
+		<group name="CharacterCreationScreen" prefix="characterCreationScreen.">
+			<str id="win-title">Tworzenie nowej Postaci</str>
+			<str id="charName">Imię postaci $* Wymagane$</str>
+			<str id="charImgName">Plik Obrazu Postaci $* Wymagane$</str>
+		</group>
+	</group>
+
+	<group name="AlphabetEditor" prefix="editor.alphabet.">
+		<group name="AlphabetSelection" prefix="selection.">
+			<str id="acceptTypeface">Naciśnij AKCEPTUJ aby edytować to Pismo.</str>
+			<str id="newTypeface">Nowe Pismo</str>
+			<str id="desc">Wybierz Pismo do edytowania</str>
+
+			<group name="Warnings" prefix="warnings.">
+				<str id="notImplemented-title">Funkcja nie dodana!</str>
+				<str id="notImplemented-body">Ta funkcja jeszcze nie została dodana. Proszę oczekiwać aktualizacji która doda tą funkcję.\n\n\n- Codename Crew</str>
+			</group>
+		</group>
+
+		<group name="AlphabetEditor">
+			<group name="TopBar">
+				<str id="topBar.file">Plik</str>
+				<group name="FileMenu" prefix="file.">
+					<str id="new">Nowy</str>
+					<str id="save">Zapisz</str>
+					<str id="saveAs">Zapisz Jako...</str>
+					<str id="exit">Wyjdź</str>
+				</group>
+
+				<str id="topBar.edit">Edytuj</str>
+				<group name="EditMenu" prefix="edit.">
+					<str id="undo">Cofnij</str>
+					<str id="redo">Ponów</str>
+				</group>
+
+				<str id="topBar.glyph">Glif</str>
+				<group name="GlyphMenu" prefix="glyph.">
+					<str id="newGlyph">Nowy Glif</str>
+					<str id="editGlyph">Edytuj Glif</str>
+					<str id="deleteGlyph">Usuń Glif</str>
+				</group>
+
+				<str id="topBar.offset">Domiary</str>
+				<group name="OffsetsMenu" prefix="offset.">
+					<str id="moveLeft">Rusz w Lewo</str>
+					<str id="moveUp">Rusz w Górę</str>
+					<str id="moveDown">Rusz w Dół</str>
+					<str id="moveRight">Rusz w Prawo</str>
+					<str id="moveExtraLeft">Rusz Mocniej w Lewo</str>
+					<str id="moveExtraUp">Rusz Mocniej w Górę</str>
+					<str id="moveExtraDown">Rusz Mocniej w Dół</str>
+					<str id="moveExtraRight">Rusz Mocniej w Prawo</str>
+					<str id="dragOffsetsMouse">Ruszaj Domiary Myszą?</str>
+					<str id="clearOffsets">Wyczyść Domiary</str>
+				</group>
+
+				<str id="topBar.view">Widok</str>
+				<group name="ViewMenu" prefix="view.">
+					<str id="zoomIn">Przybliż</str>
+					<str id="zoomOut">Oddal</str>
+					<str id="resetZoom">Resetuj Przybliżenie</str>
+				</group>
+			</group>
+		</group>
+	</group>
+
+	<group name="StageEditor">
+		<group name="StageSelection" prefix="stageSelection.">
+			<str id="desc">Wybierz scenę do edytowania. Sceny zaprogramowane w samym HSCRIPT nie są wspierane.</str>
+			<str id="acceptStage">Naciśnij AKCEPTUJ aby edytować tą scenę.</str>
+			<str id="newStage">Nowa Scena</str>
+			<str id="acceptNewStage">Naciśnij AKCEPTUJ aby stworzyć nową scenę.</str>
+		</group>
+
+		<group name="StageEditor" prefix="stageEditor.">
+			<group name="TopBar">
+				<str id="topBar.file">Plik</str>
+				<group name="FileMenu" prefix="file.">
+					<str id="save">Zapisz</str>
+					<str id="saveAs">Zapisz Jako...</str>
+					<str id="exit">Wyjdź</str>
+				</group>
+
+				<str id="topBar.edit">Edytuj</str>
+				<group name="EditMenu" prefix="edit.">
+					<str id="undo">Cofnij</str>
+					<str id="redo">Ponów</str>
+					<str id="editStageInfo">Edytuj Info Sceny</str>
+				</group>
+
+				<str id="topBar.select">Zaznaczenie</str>
+				<group name="SelectionMenu" prefix="select.">
+					<str id="all">Zaznacz Wszystko</str>
+					<str id="deselect">Odznacz</str>
+					<str id="inverse">Odwróć Zaznaczenie</str>
+				</group>
+
+				<str id="topBar.view">Widok</str>
+				<group name="ViewMenu" prefix="view.">
+					<str id="zoomIn">Przybliż</str>
+					<str id="zoomOut">Oddal</str>
+					<str id="resetZoom">Resetuj Przybliżenie</str>
+					<str id="focusDad">Skupienie na Dad</str>
+					<str id="focusGF">Skupienie na GF</str>
+					<str id="focusBF">Skupienie na BF</str>
+				</group>
+
+				<str id="topBar.editor">Edytor</str>
+				<group name="EditorMenu" prefix="editor.">
+					<str id="showCharacters">Pokaż Postacie</str>
+				</group>
+
+				<group name="StageSpriteScreen" prefix="stageSpriteScreen.">
+					<str id="win-title">Edytuj Sprite'a Sceny</str>
+					<str id="stageImageFile">Plik Obrazu Sceny $* Wymagane$</str>
+				</group>
+			</group>
+		</group>
+
+		<group name="StageCreationScreen" prefix="stageCreationScreen.">
+			<str id="win-title">Tworzenie Nowej Sceny</str>
+			<str id="title">Info Sceny</str>
+			<str id="stageName">Nazwa Sceny</str>
+			<str id="stagePath">Ścieżka Plikowa Sceny</str>
+		</group>
+
+		<group name="StageInfoScreen" prefix="stageInfoScreen.">
+			<str id="win-title">Edytowanie Info Sceny "{0}"</str>
+			<str id="title">Info Sceny</str>
+			<str id="stageName">Nazwa Sceny</str>
+			<str id="spritePath">Ścieżka Plikowa Sprite'a\n(Wymaga Odświeżenia)</str>
+			<str id="startCamPos">Pozycja Startowa Kamery (X, Y)</str>
+			<str id="zoom">Przybliżenie</str>
+		</group>
+
+		<group name="StageElementEditScreen" prefix="stageElementEditScreen.">
+			<str id="win-character-title">Edytowanie Postaci "{0}"</str>
+			<str id="win-sprite-title">Edytowanie Sprite'a "{0}"</str>
+			<str id="win-title">Edytowanie Pliku XML &lt;{0} /&gt;</str>
+
+			<str id="character-title">Dane Postaci</str>
+			<str id="sprite-title">Dane Sprite'a</str>
+			<str id="title">Dane Pliku XML</str>
+
+			<str id="elementName">Nazwa Elementu</str>
+			<str id="nameID">Nazwa Identyfikatora</str>
+			<str id="imageFile">Plik Obrazu (W TRACKIE PRACY: wymaga odświeżenia)\nIn (${stage.spritesParentFolder})</str>
+			<str id="scroll">Przewijanie {0}</str>
+			<str id="scale">Skala {0}</str>
+			<str id="camera">Kamera {0}</str>
+			<str id="spacing">Miejsce (X, Y)</str>
+			<str id="skew">Krzywienie {0}</str>
+			<str id="alpha">Przezroczystość</str>
+			<str id="angle">Kąt</str>
+			<str id="zoomFactor">Czynnik Przybliżania</str>
+			<str id="positionName">Nazwa Pozycji</str>
+			<str id="flipX">Odwróć w Osi X</str>
+			<str id="antialiasing">Wygładzanie</str>
+			<str id="highMemory">Wysoka Pamięć</str>
+			<str id="lowMemory">Niska Pamięć</str>
+			<str id="attributes">Atrybuty</str>
+			<str id="transformPreview"> Podgląd Transformacji:</str>
+
+			<str id="animType">Typ Animacji</str>
+			<group name="AnimTypeDropdown" prefix="animType.">
+				<str id="none">BRAK</str>
+				<str id="beat">BIT</str>
+				<str id="loop">PĘTLA</str>
+			</group>
+			<str id="tipCustomProperties">Wskazówka: Aby dostać się do własnych atrybutów,\ntrzymaj Shift przy kliknięciu "Edytuj"</str>
+		</group>
+
+		<group name="StageXMLEditScreen" prefix="stageXMLEditScreen.">
+			<str id="win-title">Edytowanie Pliku XML {0}</str>
+			<str id="title">Dane Pliku XML</str>
+			<str id="attributes">Atrybuty</str>
+		</group>
+
+		<str id="stageCharacters.requiredPosition">Ta pozycja postaci jest wymagana w Scenach!</str>
+		<str id="stageCharacters.noDeleteGirlfriend">Nie możesz usunąć Girlfriend.</str>
+
+		<group name="StageElement" prefix="stageElement.">
+			<str id="scale">Skala: {0}, {1}</str>
+			<str id="scroll">Przewijanie: {0}, {1}</str>
+		</group>
+
+		<group name="StageSprites" prefix="stageSprites.">
+			<str id="win-title">Sprite'y Sceny</str>
+			<str id="sprite">Sprite</str>
+			<str id="box">Blok</str>
+			<str id="character">Postać</str>
+			<str id="warnings.not-implemented">Tworzenie Bloku jeszcze nie istnieje!</str>
+		</group>
+	</group>
+
+	<!-- PlayTesting and SaveWarning are almost the same but with some small differences -->
+	<!-- PlayTesting allows color in the description by doing *hello* -->
+	<!-- SaveWarning doesn't allow color in the description -->
+	<group name="PlayTesting" prefix="playtesting.">
+		<str id="chartPlaytesting" notrim="true"> (Testowanie Mapy)</str>
+		<str id="exitGame">Wyjdź z Gry</str>
+		<str id="exitToMenu">Wyjdź do Menu</str>
+		<str id="saveAndExitGame">Zapisz i Wyjdź z Gry</str>
+		<str id="saveAndExitToMenu">Zapisz i Wyjdź do Menu</str>
+		<str id="cancel">Anuluj</str>
+
+		<str id="warningTitle">NIEZAPISANE ZMIANY!</str>
+		<str id="warningDesc">Twoje zmiany *znikną* jeśli nie zostaną zapisane. (Nie mogą być przywrócone)\n\n\nCzy chcesz anulować?</str>
+	</group>
+
+	<group name="SaveWarning" prefix="saveWarning.">
+		<str id="warningTitle">Niezapisane Zmiany!</str>
+		<str id="warningDesc">Twoje zmiany znikną jeśli nie zostaną zapisane. (Nie mogą być przywrócone)\n\n\nCzy chcesz anulować?</str>
+
+		<str id="exitGame">Wyjdź z Gry</str>
+		<str id="exitToMenu">Wyjdź do Menu</str>
+		<str id="saveAndExitGame">Zapisz i Wyjdź z Gry</str>
+		<str id="saveAndExitToMenu">Zapisz i Wyjdź do Menu</str>
+		<str id="cancel">Anuluj</str>
+	</group>
+
+	<group name="ModConfigWarning" prefix="modConfigWarning.">
+		<str id="warningTitle">Brakujący plik konfiguracyjny modu!</str>
+		<str id="warningDesc">Twój mod obecnie brakuje jego pliku konfiguracyjnego!\n\nCzy chcesz go automatycznie wygenerować?\n\n(PS: Jeżeli to nie twój mod, wyłącz Tryb Dewelopera, aby zapobiec wyskakiwaniu się tego okienka.)</str>
+
+		<str id="createdTitle">Utworzono konfigurację modu!</str>
+		<str id="createdDesc">Twój plik konfiguracyjny modu został utworzony w {0}!</str>
+	</group>
+</language>

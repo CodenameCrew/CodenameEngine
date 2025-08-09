@@ -16,7 +16,7 @@ public function lightningStrikeShit():Void
 	lightningStrikeBeat = curBeat;
 	lightningOffset = FlxG.random.int(8, 24);
 
-	boyfriend.playAnim('scared', true, "SING"); // SING so that they dont get indefinitely looped
+	boyfriend.playAnim('scared', true, "SING"); // SING so that they don't get indefinitely looped
 	gf.playAnim('scared', true, "SING");
 }
 

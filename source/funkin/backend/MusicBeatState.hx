@@ -1,19 +1,24 @@
 package funkin.backend;
 
-import funkin.backend.system.framerate.Framerate;
-import funkin.backend.system.GraphicCacheSprite;
-import funkin.backend.system.Controls;
-import funkin.backend.scripting.DummyScript;
 import flixel.FlxState;
 import flixel.FlxSubState;
-import funkin.backend.scripting.events.*;
+import funkin.backend.scripting.DummyScript;
 import funkin.backend.scripting.Script;
 import funkin.backend.scripting.ScriptPack;
-import funkin.backend.system.interfaces.IBeatReceiver;
+import funkin.backend.scripting.events.*;
 import funkin.backend.system.Conductor;
+import funkin.backend.system.Controls;
+import funkin.backend.system.GraphicCacheSprite;
+import funkin.backend.system.framerate.Framerate;
+import funkin.backend.system.interfaces.IBeatReceiver;
+import funkin.backend.system.interfaces.IBeatCancellableReceiver;
 import funkin.options.PlayerSettings;
 
-class MusicBeatState extends FlxState implements IBeatReceiver
+/**
+ * Base class for all the states.
+ * Handles the scripts, the transitions, and the beat and step events.
+**/
+class MusicBeatState extends FlxState implements IBeatCancellableReceiver
 {
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
@@ -101,6 +106,8 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 	public static var skipTransOut:Bool = false;
 	public static var skipTransIn:Bool = false;
 
+	public static var ALLOW_DEV_RELOAD:Bool = true;
+
 	inline function get_controls():Controls
 		return PlayerSettings.solo.controls;
 	inline function get_controlsP1():Controls
@@ -135,7 +142,9 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 					script.load();
 				}
 			}
+			#if EXPERMENTAL_SCRIPT_RELOADING
 			else stateScripts.reload();
+			#end
 		}
 	}
 
@@ -147,16 +156,20 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 			call("postUpdate", [elapsed]);
 		}
 
-		if (_requestSubStateReset)
-		{
+		if (_requestSubStateReset) {
 			_requestSubStateReset = false;
 			resetSubState();
 		}
-		if (subState != null)
-		{
-			subState.tryUpdate(elapsed);
+
+		if (/*subState == null && */(ALLOW_DEV_RELOAD && controls.DEV_RELOAD)) {
+			Logs.trace("Reloading Current State...", INFO, YELLOW);
+			FlxG.resetState();
 		}
+
+		if (subState != null)
+			subState.tryUpdate(elapsed);
 	}
+
 	override function create()
 	{
 		loadScript();
@@ -169,11 +182,39 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 		super.createPost();
 		persistentUpdate = true;
 		call("postCreate");
-		if (!skipTransIn)
-			openSubState(new MusicBeatTransition(null));
-		skipTransIn = false;
-		skipTransOut = false;
+		if(!Flags.DISABLE_TRANSITIONS) {
+			if (!skipTransIn)
+				startTransition(null);
+			skipTransIn = false;
+			skipTransOut = false;
+		}
 	}
+
+	public function startTransition(?newState:FlxState, skipSubStates:Bool = false):Bool {
+		if (!skipSubStates) {
+			var curCheckingSub:FlxSubState = subState;
+			var found:FlxSubState = null;  // always gets the last one  - Nex
+
+			while (curCheckingSub != null) {
+				if (curCheckingSub is MusicBeatTransition) {
+					found = null;  // avoiding infinite loops  - Nex
+					break;
+				}
+
+				if (curCheckingSub is MusicBeatSubstate && cast(curCheckingSub, MusicBeatSubstate).canOpenCustomTransition) found = curCheckingSub;
+				curCheckingSub = curCheckingSub.subState;
+			}
+
+			if (found != null) {
+				found.openSubState(new MusicBeatTransition(newState));
+				return true;  // "Started from a substate?"
+			}
+		}
+
+		openSubState(new MusicBeatTransition(newState));
+		return false;
+	}
+
 	public function call(name:String, ?args:Array<Dynamic>, ?defaultVal:Dynamic):Dynamic {
 		// calls the function on the assigned script
 		if(stateScripts != null)
@@ -189,10 +230,6 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 
 	override function update(elapsed:Float)
 	{
-		// TODO: DEBUG MODE!!
-		if (FlxG.keys.justPressed.F5) {
-			loadScript();
-		}
 		call("update", [elapsed]);
 
 		super.update(elapsed);
@@ -200,19 +237,19 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 
 	@:dox(hide) public function stepHit(curStep:Int):Void
 	{
-		for(e in members) if (e != null && e is IBeatReceiver) cast(e, IBeatReceiver).stepHit(curStep);
+		for(e in members) if (e != null && e is IBeatReceiver) ({var _:IBeatReceiver=cast e;_;}).stepHit(curStep);
 		call("stepHit", [curStep]);
 	}
 
 	@:dox(hide) public function beatHit(curBeat:Int):Void
 	{
-		for(e in members) if (e != null && e is IBeatReceiver) cast(e, IBeatReceiver).beatHit(curBeat);
+		for(e in members) if (e != null && e is IBeatReceiver) ({var _:IBeatReceiver=cast e;_;}).beatHit(curBeat);
 		call("beatHit", [curBeat]);
 	}
 
 	@:dox(hide) public function measureHit(curMeasure:Int):Void
 	{
-		for(e in members) if (e != null && e is IBeatReceiver) cast(e, IBeatReceiver).measureHit(curMeasure);
+		for(e in members) if (e != null && e is IBeatReceiver) ({var _:IBeatReceiver=cast e;_;}).measureHit(curMeasure);
 		call("measureHit", [curMeasure]);
 	}
 
@@ -236,7 +273,7 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 	public override function openSubState(subState:FlxSubState) {
 		var e = event("onOpenSubState", EventManager.get(StateEvent).recycle(subState));
 		if (!e.cancelled)
-			super.openSubState(subState);
+			super.openSubState(e.substate is FlxSubState ? cast e.substate : subState);
 	}
 
 	public override function onResize(w:Int, h:Int) {
@@ -264,11 +301,12 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 		if (e.cancelled)
 			return false;
 
-		if (skipTransOut)
+		if(Flags.DISABLE_TRANSITIONS)
 			return true;
-		if (subState is MusicBeatTransition && cast(subState, MusicBeatTransition).newState != null)
+
+		if (skipTransOut || (subState is MusicBeatTransition && cast(subState, MusicBeatTransition).newState != null))
 			return true;
-		openSubState(new MusicBeatTransition(nextState));
+		startTransition(e.substate);
 		persistentUpdate = false;
 		return false;
 	}
@@ -286,8 +324,9 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 	public override function resetSubState() {
 		super.resetSubState();
 		if (subState != null && subState is MusicBeatSubstate) {
-			cast(subState, MusicBeatSubstate).parent = this;
-			cast(subState, MusicBeatSubstate).onSubstateOpen();
+			var subState:MusicBeatSubstate = cast subState;
+			subState.parent = this;
+			subState.onSubstateOpen();
 		}
 	}
 }

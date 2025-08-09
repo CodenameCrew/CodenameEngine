@@ -1,7 +1,7 @@
 package funkin.editors.ui;
 
-import lime.ui.KeyModifier;
 import lime.ui.KeyCode;
+import lime.ui.KeyModifier;
 
 interface IUIFocusable {
 	public function onKeyDown(e:KeyCode, modifier:KeyModifier):Void;

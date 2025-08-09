@@ -1,6 +1,7 @@
 package funkin.backend.week;
 
 import flixel.math.FlxPoint;
+import flixel.util.FlxColor;
 import haxe.xml.Access;
 
 typedef WeekData = {
@@ -11,6 +12,7 @@ typedef WeekData = {
 	var chars:Array<WeekCharacter>;
 	var songs:Array<WeekSong>;
 	var difficulties:Array<String>;
+	var bgColor:FlxColor;
 }
 
 typedef WeekCharacter = {
@@ -24,6 +26,7 @@ typedef WeekCharacter = {
 
 typedef WeekSong = {
 	var name:String;
+	var ?variation:String;
 	var hide:Bool;
 	var ?displayName:String;
 }

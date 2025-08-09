@@ -1,0 +1,6 @@
+<!DOCTYPE codename-engine-week-character>
+<!-- Mainly just used in the official FNF Basegame port, but since we already have Pico Player in base CNE, who knows... (Yes I'm talking to y'all modders) -->
+<char x="20" y="-10" sprite="menus/storymenu/characters/pico">
+	<anim name="idle"    anim="idle"    fps="24" loop="false" forced="true"/>
+	<anim name="confirm" anim="confirm" fps="24" loop="false" x="28" y="2" type="none"/>
+</char>

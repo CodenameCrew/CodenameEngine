@@ -1,15 +1,13 @@
 package funkin.backend.system.modules;
 
-import lime.system.System;
 import funkin.backend.utils.NativeAPI;
-import openfl.Lib;
-import openfl.events.UncaughtErrorEvent;
-import openfl.events.ErrorEvent;
-import openfl.errors.Error;
-import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
+import openfl.Lib;
+import openfl.errors.Error;
+import openfl.events.ErrorEvent;
+import openfl.events.UncaughtErrorEvent;
 
-class CrashHandler {
+final class CrashHandler {
 	public static function init() {
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onUncaughtError);
 		#if cpp
@@ -22,10 +20,10 @@ class CrashHandler {
 	public static function onUncaughtError(e:UncaughtErrorEvent) {
 		var m:String = e.error;
 		if (Std.isOfType(e.error, Error)) {
-			var err = cast(e.error, Error);
+			var err:Error = cast e.error;
 			m = '${err.message}';
 		} else if (Std.isOfType(e.error, ErrorEvent)) {
-			var err = cast(e.error, ErrorEvent);
+			var err:ErrorEvent = cast e.error;
 			m = '${err.text}';
 		}
 		var stack = CallStack.exceptionStack();

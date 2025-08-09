@@ -2,6 +2,8 @@ import funkin.system.FunkinSprite;
 
 var tankman:FunkinSprite;
 var tankTalk1, tankTalk2, bfBeep, distorto:FlxSound;
+var timers:Array<FlxTimer> = [];
+var destroyDistorto:Bool = true;
 
 function create() {
 	FlxTween.tween(FlxG.camera, {zoom: 1}, 0.7, {ease: FlxEase.quadInOut});
@@ -33,35 +35,46 @@ function create() {
 	tankman.playAnim('1');
 	tankTalk1.play();
 
-	new FlxTimer().start(3, function(tmr:FlxTimer) {
+	timer(3, function() {
 		focusOn(game.boyfriend);
 
-		new FlxTimer().start(1.5, function(t) {
+		timer(1.5, function() {
 			game.boyfriend.playAnim("singUP");
 			bfBeep.play();
 
-			new FlxTimer().start(1.5, function(t) {
+			timer(1.5, function() {
 				focusOn(game.dad);
 				tankTalk2.play();
 				tankman.playAnim('2');
 
-				new FlxTimer().start(6.1, function(t) {
-					game.remove(tankman);
-					tankman.destroy();
-
-					game.camHUD.visible = true;
-					game.dad.visible = true;
+				timer(6.1, function() {
+					destroyDistorto = false;
 					distorto.fadeOut((Conductor.crochet / 1000) * 5, 0);
-
 					close();
-				}, 1);
-			}, 1);
-		}, 1);
-	}, 1);
+				});
+			});
+		});
+	});
+}
+
+function timer(duration:Float, callBack:Void->Void) {
+	timers.push(new FlxTimer().start(duration, function(timer) {
+		timers.remove(timer);
+		callBack();
+	}));
 }
 
 function focusOn(char) {
 	var camPos = char.getCameraPosition();
 	game.camFollow.setPosition(camPos.x, camPos.y);
 	camPos.put();
+}
+
+function destroy() {
+	game.remove(tankman);
+	game.camHUD.visible = true;
+	game.dad.visible = true;
+	for(timer in timers) timer.cancel();
+	for(thing in [tankTalk1, tankTalk2, bfBeep, tankman]) thing.destroy();
+	if(destroyDistorto) distorto.destroy();
 }

@@ -1,0 +1,19 @@
+<!-- Credits to ITALetsPlayer -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="options.png" width="581" height="808">
+	<SubTexture name="options basic0000" x="1" y="477" width="487" height="108" frameX="-0" frameY="-0" frameWidth="487" frameHeight="108"/>
+	<SubTexture name="options basic0001" x="1" y="477" width="487" height="108" frameX="-0" frameY="-0" frameWidth="487" frameHeight="108"/>
+	<SubTexture name="options basic0002" x="1" y="477" width="487" height="108" frameX="-0" frameY="-0" frameWidth="487" frameHeight="108"/>
+	<SubTexture name="options basic0003" x="1" y="588" width="487" height="108" frameX="-0" frameY="-0" frameWidth="487" frameHeight="108"/>
+	<SubTexture name="options basic0004" x="1" y="588" width="487" height="108" frameX="-0" frameY="-0" frameWidth="487" frameHeight="108"/>
+	<SubTexture name="options basic0005" x="1" y="588" width="487" height="108" frameX="-0" frameY="-0" frameWidth="487" frameHeight="108"/>
+	<SubTexture name="options basic0006" x="1" y="699" width="487" height="108" frameX="-0" frameY="-0" frameWidth="487" frameHeight="108"/>
+	<SubTexture name="options basic0007" x="1" y="699" width="487" height="108" frameX="-0" frameY="-0" frameWidth="487" frameHeight="108"/>
+	<SubTexture name="options basic0008" x="1" y="699" width="487" height="108" frameX="-0" frameY="-0" frameWidth="487" frameHeight="108"/>
+	<SubTexture name="options white0000" x="1" y="324" width="574" height="150" frameX="-0" frameY="-5" frameWidth="580" frameHeight="162"/>
+	<SubTexture name="options white0001" x="1" y="166" width="575" height="155" frameX="-1" frameY="-6" frameWidth="580" frameHeight="162"/>
+	<SubTexture name="options white0002" x="1" y="1" width="579" height="162" frameX="-1" frameY="-0" frameWidth="580" frameHeight="162"/>
+</TextureAtlas>

@@ -1,9 +1,11 @@
 package funkin.editors.charter;
 
+import funkin.backend.system.Conductor;
 import funkin.backend.chart.EventsData;
 
 class CharterEventTypeSelection extends UISubstateWindow {
 	var callback:String->Void;
+	var eventStepTime:Float;
 
 	var buttons:Array<UIButton> = [];
 
@@ -13,13 +15,14 @@ class CharterEventTypeSelection extends UISubstateWindow {
 	var upIndicator:UIText;
 	var downIndicator:UIText;
 
-	public function new(callback:String->Void) {
+	public function new(callback:String->Void, eventStepTime:Float) {
 		super();
 		this.callback = callback;
+		this.eventStepTime = eventStepTime;
 	}
 
 	public override function create() {
-		winTitle = "Choose an event type...";
+		winTitle = TU.translate("charterEventTypeSelection.title");
 		super.create();
 
 		var w:Int = winWidth - 20;
@@ -28,12 +31,25 @@ class CharterEventTypeSelection extends UISubstateWindow {
 		FlxG.cameras.add(buttonCameras, false);
 		buttonCameras.bgColor = 0;
 
-		buttonsBG = new UIWindow(10, 41, buttonCameras.width, buttonCameras.height, "");
+		buttonsBG = new UIWindow(10, 41, buttonCameras.width, buttonCameras.height, null);
 		buttonsBG.frames = Paths.getFrames('editors/ui/inputbox');
 		add(buttonsBG);
 
+		var disableConductorEvents:Bool = false;
+		var disableOnlyContinuousChanges:Bool = false;
+		for (change in Conductor.bpmChangeMap) {
+			if (change.continuous && MathUtil.greaterThanEqual(eventStepTime, change.stepTime) && MathUtil.lessThan(eventStepTime, change.endStepTime)) {
+				disableOnlyContinuousChanges = MathUtil.equal(eventStepTime, change.stepTime); //allow time sig and instant bpm changes on the same event
+				disableConductorEvents = !disableOnlyContinuousChanges;
+			}
+		}
+
 		for(k=>eventName in EventsData.eventsList) {
-			var button = new UIButton(0, (32 * k), eventName, function() {
+			var visualName = eventName;
+			var tuId = "charter.events." + TU.raw2Id(eventName);
+			if(TU.exists(tuId))
+				visualName = TU.translate(tuId);
+			var button = new UIButton(0, (32 * k), visualName, function() {
 				close();
 				callback(eventName);
 			}, w);
@@ -52,11 +68,16 @@ class CharterEventTypeSelection extends UISubstateWindow {
 			icon.x = button.x + 8;
 			icon.y = button.y + Math.abs(button.bHeight - icon.height) / 2;
 			add(icon);
+
+			if (disableConductorEvents && (eventName == "Time Signature Change" || eventName == "Continuous BPM Change" || eventName == "BPM Change") || (disableOnlyContinuousChanges && eventName == "Continuous BPM Change")) {
+				button.selectable = button.shouldPress = false;
+				button.autoAlpha = true;
+			}
 		}
 
 		windowSpr.bHeight = 61 + (32 * (17));
 
-		add(new UIButton(10, windowSpr.bHeight-42, "Cancel", function() {
+		add(new UIButton(10, windowSpr.bHeight-42, TU.translate("editor.cancel"), function() {
 			close();
 		}, w));
 
@@ -79,7 +100,7 @@ class CharterEventTypeSelection extends UISubstateWindow {
 		sinner += elapsed;
 
 		for (button in buttons)
-			button.selectable = buttonsBG.hovered;
+			if (button.shouldPress) button.selectable = buttonsBG.hovered;
 
 		buttonCameras.zoom = subCam.zoom;
 
@@ -87,7 +108,7 @@ class CharterEventTypeSelection extends UISubstateWindow {
 		buttonCameras.y = -subCam.scroll.y + Std.int(windowSpr.y+41);
 
 		if (buttons.length > 16)
-			buttonCameras.scroll.y = FlxMath.bound(buttonCameras.scroll.y - (buttonsBG.hovered ? FlxG.mouse.wheel : 0) * 12, 0,
+			buttonCameras.scroll.y = CoolUtil.bound(buttonCameras.scroll.y - (buttonsBG.hovered ? FlxG.mouse.wheel : 0) * 12, 0,
 				(buttons[buttons.length-1].y + buttons[buttons.length-1].bHeight) - buttonCameras.height);
 
 		upIndicator.setPosition((buttonsBG.bWidth/2) - (upIndicator.fieldWidth/2), 22 + (FlxMath.fastSin(sinner*2) * 4));

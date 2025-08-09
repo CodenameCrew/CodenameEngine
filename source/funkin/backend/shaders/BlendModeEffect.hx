@@ -3,11 +3,13 @@ package funkin.backend.shaders;
 import flixel.util.FlxColor;
 import openfl.display.ShaderParameter;
 
+@:dox(hide)
 typedef BlendModeShader =
 {
 	var uBlendColor:ShaderParameter<Float>;
 }
 
+@:dox(hide)
 class BlendModeEffect
 {
 	public var shader(default, null):BlendModeShader;

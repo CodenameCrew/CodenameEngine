@@ -1,7 +1,7 @@
 package funkin.backend.scripting.events.dialogue;
 
-import funkin.backend.utils.XMLUtil.TextFormat;
 import flixel.sound.FlxSound;
+import funkin.backend.utils.XMLUtil.TextFormat;
 
 final class DialogueBoxPlayBubbleEvent extends CancellableEvent
 {

@@ -1,0 +1,36 @@
+# You need to run the following command in your repository:
+#
+# git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# afterwards, revisions specified in this file will be ignored in git blame
+# any revision needs to be in a unabbreviated sha1 format
+# see https://git-scm.com/docs/git-blame#Documentation/git-blame.txt---ignore-revs-fileltfilegt for more information
+
+# A good format to use is:
+
+# # reason for ignoring the revisions
+# <rev>
+
+# Removed unused imports & reordered imports
+d17ea72c74bbbadac0bb00e11868dddf6aebd346
+
+# ScriptPack revert
+8a2ac9e1d4e51e688cd2339bdccd6b39ed7d52a3
+
+# Spaces to tabs
+a63e5f5958ed0643fab92e9d5708a4c26e5238a1
+
+# Removed useless indentation and more spaces to tabs
+f8b20774e3f035eeddb9211a28a391b20db74456
+
+# Revert a revert
+75f6bec8294e5b783368cfd7ae6e45698c326cb3
+4aa95838d7df9c307bcac6456e937081645a0f4a
+
+# Revert a revert (note types use int)
+17e177a69554f4d798f5acdd3799687dc9f01a93
+008ad05bf1407d9772805ed69985cfbcde79e495
+
+# Revert a revert (empty script)
+392416e00cbd82e1c49e82a9fafdcf2e069a654e
+159467de832a172681200c463d244a46e295c3c8

@@ -1,6 +1,5 @@
 package funkin.backend.system.github;
 
-
 typedef GitHubUser = {
 	/**
 	 * Username of the user.

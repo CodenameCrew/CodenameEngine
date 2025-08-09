@@ -5,12 +5,16 @@
 		title="Friday Night Funkin' - Codename Engine" main="funkin.backend.system.Main"
 		file="CodenameEngine" packageName="com.yoshman29.codenameengine"
 		package="com.yoshman29.codenameengine"
-		version="0.1.0" company="Yoshman29" />
+		version="1.0.1-rc2" company="Yoshman29" />
 
 	<!--
 		CHANGE THE SAVE PATH & NAME FOR YOUR MOD HERE!
 	-->
-	<app save-path="YoshiCrafter29/CodenameEngine" save-name="save-default" mod-saves="true" />
+	<haxedef name="SAVE_PATH" value="CodenameEngine"/>
+	<haxedef name="SAVE_NAME" value="save-default"/>
+
+	<haxedef name="SAVE_OPTIONS_PATH" value="CodenameEngine"/>
+	<haxedef name="SAVE_OPTIONS_NAME" value="options"/>
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -28,7 +32,7 @@
 	<!-- ____________________________ Window Settings ___________________________ -->
 
 	<!--These window settings apply to all targets-->
-	<window width="1280" height="720" fps="" background="#000000" hardware="true" vsync="false" />
+	<window width="1280" height="720" background="#000000" hardware="true" vsync="false" />
 
 	<!--HTML5-specific-->
 	<window if="html5" resizable="true" />
@@ -43,92 +47,41 @@
 	<!--Switch-specific-->
 	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
 
-	<!-- _____________________________ Path Settings ____________________________ -->
-
-	<set name="BUILD_DIR" value="export/debug" if="debug" />
-	<set name="BUILD_DIR" value="export/release" unless="debug" />
-	<set name="BUILD_DIR" value="export/debug-32bit" if="debug 32bit" />
-	<set name="BUILD_DIR" value="export/release-32bit" if="32bit" unless="debug" />
-	<set name="BUILD_DIR" value="latest/" if="beta" />
-
-	<source name="source" />
-
-	<define name="PRELOAD_ALL" unless="web" />
-	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
-
-	<library name="assets"    preload="true"  if="PRELOAD_ALL"/>
-	<library name="assets"    preload="false" if="NO_PRELOAD_ALL" />
-
-	<section unless="TEST_BUILD">
-		<assets path="assets/"    rename="assets"	exclude="*.ogg" if="web"/>
-		<assets path="assets/"    rename="assets"	exclude="*.mp3" unless="web"/>
-	</section>
-
-	<assets path='mods' rename='mods' embed='false'/>
-	<assets path='art/readme.txt' rename='do NOT readme.txt' />
-
-	<!-- OpenAL config -->
-	<section if="desktop">
-		<assets path="alsoft.txt" rename="plugins/alsoft.ini" type="text" if="windows"/>
-		<assets path="alsoft.txt" rename="plugins/alsoft.conf" type="text" unless="windows"/>
-	</section>
-
-	<!-- ______________________________ Haxedefines _____________________________ -->
-
-	<haxeflag name="--macro" value="funkin.backend.system.macros.NewHaxeWarning.warn()" />
-
-	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
-
-	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
-	<haxedef name="FLX_NO_DEBUG" unless="debug" />
-
-	<!-- _________________________________ Custom _______________________________ -->
-
-	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
-	<icon path="art/icon16.png" size='16'/>
-	<icon path="art/icon32.png" size='24'/>
-	<icon path="art/icon32.png" size='32'/>
-	<icon path="art/icon64.png" size='40'/>
-	<icon path="art/icon64.png" size='48'/>
-	<icon path="art/icon64.png" size='64'/>
-	<icon path="art/iconOG.png" size='96' />
-	<icon path="art/iconOG.png" size='128' />
-	<icon path="art/iconOG.png" size='196' />
-	<icon path="art/iconOG.png" size='256' />
-	<icon path="art/iconOG.png" size='512' />
-	<icon path="art/iconOG.png" size='768' />
-	<icon path="art/iconOG.png" size='1024' />
-
-
 	<!-- _________________________________ Engine Settings _______________________________ -->
 
 	<!-- Comment this out to disable updates !-->
-	<!-- <define name="UPDATE_CHECKING" unless="web || hl || neko"/> -->
+	<define name="UPDATE_CHECKING" unless="web || hl || neko"/>
 
 	<!-- Comment this out to disable Discord RPC !-->
 	<section if="cpp">
 		<define name="DISCORD_RPC" if="desktop"/>
 	</section>
 
+	<!-- Uncomment this to achive faster compile times, will strip extraneous and commonly unused features. -->
+	<!-- <define name="STRIPPED_COMPILE" unless="debug"/> -->
+
+	<!-- Comment this out to disable modcharting features -->
+	<define name="MODCHARTING_FEATURES" unless="STRIPPED_COMPILE" />
+
 	<!-- Comment this out to disable GitHub API integration !-->
 	<define name="GITHUB_API" unless="web || hl"/>
 
 	<!-- Comment this out to prevent unused classes from being compiled.
 		 Reduces compilation time at the cost of limited HScript flexibility. !-->
-	<define name="COMPILE_ALL_CLASSES" />
+	<define name="COMPILE_ALL_CLASSES" unless="STRIPPED_COMPILE" />
 
 	<!-- Comment this out to prevent extending classes in hscript.
 		 Reduces compilation time at the cost of limited HScript flexibility. !-->
-	<define name="CUSTOM_CLASSES" />
+	<define name="CUSTOM_CLASSES" unless="STRIPPED_COMPILE" />
 
 	<!-- Comment this out to disable multithreading !-->
 	<haxedef name="ALLOW_MULTITHREADING" unless="web || flash" />
 
-	<!-- Comment this out to disable titlescreen.xml !-->
-	<haxedef name="TITLESCREEN_XML" />
-
 	<!-- Comment this out to disable mods folder !-->
 	<haxedef name="MOD_SUPPORT" unless="web"/>
+
+	<!-- Comment this out to disable translations folders !-->
+	<haxedef name="TRANSLATIONS_SUPPORT"/>
 
 	<!-- Comment this out to disable global scripts !-->
 	<haxedef name="GLOBAL_SCRIPT" />
@@ -136,17 +89,17 @@
 	<!-- Comment this out to disable softcoded states and state scripting !-->
 	<haxedef name="SOFTCODED_STATES" />
 
-	<!-- Comment this out to use the default OpenFL assets system for the assets/ folder. !-->
-	<haxedef name="USE_ADAPTED_ASSETS" unless="web" />
-
 	<!-- Comment this out to disable support for custom ndlls. !-->
 	<haxedef name="NDLLS_SUPPORTED" unless="web || iphonesim || hl" />
 
-	<!-- Comment this out to disable support for Away3D Flixel Intergration (reduces compile times)-->
-	<define name="THREE_D_SUPPORT" />
+	<!-- Comment this out to use the default OpenFL assets system for the assets/ folder. !-->
+	<define name="USE_ADAPTED_ASSETS" unless="web" />
+
+	<!-- Comment this out to disable support for Away3D Flixel Integration (reduces compile times) !-->
+	<define name="THREE_D_SUPPORT" unless="STRIPPED_COMPILE" />
 
 	<!-- Comment this out to disable support for Nape integration (flixel.addons.nape) (reduces compile times) !-->
-	<define name="NAPE_ENABLED" />
+	<define name="NAPE_ENABLED" unless="STRIPPED_COMPILE" />
 
 	<!-- Comment this out to disable video cutscene support, in case of compilation errors. !-->
 	<section if="cpp">
@@ -161,15 +114,6 @@
 
 	<!-- Disable a optimization, to allow reflection to use more functions -->
 	<define name="FLX_NO_GENERIC" />
-
-	<haxedef name="VIDEO_CUTSCENES" if="VIDEO_CUTSCENES" />
-	<haxedef name="UPDATE_CHECKING" if="UPDATE_CHECKING" />
-	<haxedef name="DISCORD_RPC" if="DISCORD_RPC" />
-	<haxedef name="SHOW_BUILD_ON_FPS" if="SHOW_BUILD_ON_FPS" />
-	<haxedef name="SOFTCODED_CLASSES" if="SOFTCODED_CLASSES" />
-	<haxedef name="openfl_dpi_aware" if="openfl_dpi_aware" />
-
-	<haxedef name="EXPERIMENTAL_FLXGRAPHIC_DESTROY_FIX" />
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
@@ -192,8 +136,85 @@
 	<haxelib name="hscript-improved" />
 	<haxelib name="hxdiscord_rpc" if="DISCORD_RPC"/>
 	<haxelib name="markdown" />
+	<haxelib name="hxcpp-debug-server" if="TEST_BUILD debug" />
+
+	<!-- _____________________________ Path Settings ____________________________ -->
+
+	<set name="BUILD_DIR" value="export/debug" if="debug" />
+	<set name="BUILD_DIR" value="export/release" unless="debug" />
+	<set name="BUILD_DIR" value="export/debug-32bit" if="debug 32bit" />
+	<set name="BUILD_DIR" value="export/release-32bit" if="32bit" unless="debug" />
+	<set name="BUILD_DIR" value="latest/" if="beta" />
+
+	<source name="source" />
+
+	<define name="PRELOAD_ALL" unless="web" />
+	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
+
+	<library name="assets"    preload="true"  if="PRELOAD_ALL"/>
+	<library name="assets"    preload="false" if="NO_PRELOAD_ALL" />
+
+	<section unless="TEST_BUILD">
+		<assets path="assets/"    rename="assets"	exclude="*.ogg" if="web"/>
+		<assets path="assets/"    rename="assets"	exclude="*.mp3" unless="web"/>
+
+		<!-- TODO: make it copy this manually, instead of using assets node, so it doesn't manually check for fonts -->
+		<assets path='mods' rename='mods' embed='false' />
+	</section>
+
+	<assets path='art/readme.txt' rename='do NOT readme.txt' />
+
+	<!-- OpenAL config -->
+	<section if="desktop">
+		<assets path="alsoft.txt" rename="plugins/alsoft.ini" type="text" if="windows"/>
+		<assets path="alsoft.txt" rename="plugins/alsoft.conf" type="text" unless="windows"/>
+	</section>
+
+	<!-- ______________________________ Haxedefines _____________________________ -->
+
+	<haxeflag name="--macro" value="funkin.backend.system.macros.BuildInfo.printBuildInfo()" />
+
+	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
+
+	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
+	<haxedef name="FLX_NO_DEBUG" unless="debug" />
+
+	<haxedef name="analyzer-optimize" unless="debug" />
+
+	<haxedef name="VIDEO_CUTSCENES" if="VIDEO_CUTSCENES" />
+	<haxedef name="UPDATE_CHECKING" if="UPDATE_CHECKING" />
+	<haxedef name="DISCORD_RPC" if="DISCORD_RPC" />
+	<haxedef name="SHOW_BUILD_ON_FPS" if="SHOW_BUILD_ON_FPS" />
+	<haxedef name="SOFTCODED_CLASSES" if="SOFTCODED_CLASSES" />
+	<haxedef name="USE_ADAPTED_ASSETS" if="USE_ADAPTED_ASSETS" />
+	<haxedef name="openfl_dpi_aware" if="openfl_dpi_aware" />
+
+	<!-- _________________________________ Custom _______________________________ -->
+
+	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
+	<icon path="art/icon16.png" size='16'/>
+	<icon path="art/icon32.png" size='24'/>
+	<icon path="art/icon32.png" size='32'/>
+	<icon path="art/icon64.png" size='40'/>
+	<icon path="art/icon64.png" size='48'/>
+	<icon path="art/icon64.png" size='64'/>
+	<icon path="art/iconOG.png" size='96' />
+	<icon path="art/iconOG.png" size='128' />
+	<icon path="art/iconOG.png" size='196' />
+	<icon path="art/iconOG.png" size='256' />
+	<icon path="art/iconOG.png" size='512' />
+	<icon path="art/iconOG.png" size='768' />
+	<icon path="art/iconOG.png" size='1024' />
 
 	<!-- _________________________________ Additional stuff _______________________________ -->
+
+	<section if="MODCHARTING_FEATURES">
+		<haxedef name="FM_ENGINE" value="CODENAME"/>
+		<haxedef name="FM_ENGINE_VERSION" value="1.0"/>
+
+		<haxelib name="funkin-modchart" />
+		<haxeflag name="--macro" value="modchart.backend.macros.Macro.includeFiles()"/>
+	</section>
 
 	<section if="COMPILE_ALL_CLASSES">
 		<haxeflag name="-dce" value="no" />
@@ -205,10 +226,14 @@
 	<!-- Fix compiling issues -->
 	<setenv name="HAXEPATH" value="./"/>
 
+	<haxedef name="HXCPP_M32" if="32bit" />
 	<haxedef name="HXCPP_CHECK_POINTER" if="release" />
 	<haxedef name="HXCPP_STACK_LINE" if="release" />
-	<haxedef name="HXCPP_DEBUG_LINK" if="release" />
+	<haxedef name="HXCPP_DEBUG_LINK" if="debug" />
 	<haxedef name="HXCPP_CATCH_SEGV" />
 
 	<haxedef name="hscriptPos" /> <!-- for logging -->
+
+	<!-- EXPERMENTAL FEATURES -->
+	<haxedef name="EXPERIMENTAL_FLXGRAPHIC_DESTROY_FIX" />
 </project>

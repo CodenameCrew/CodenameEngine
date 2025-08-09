@@ -27,11 +27,6 @@ function create() {
 
 	stressCutscene.play();
 	stressCutscene.onComplete = function() {
-		for(spr in [gf, tankman, pico]) {
-			spr.destroy();
-			game.remove(spr);
-		}
-		game.camHUD.visible = game.dad.visible = game.gf.visible = true;
 		close();
 	};
 
@@ -59,8 +54,6 @@ function create() {
 }
 
 function update(elapsed) {
-	if (FlxG.keys.justPressed.F5)
-		FlxG.resetState();
 	switch(step) {
 		case 0:
 			lipSync(tankman, 0, 16750);
@@ -133,4 +126,14 @@ function focusOn(char, snap:Bool = false) {
 	game.camFollow.setPosition(camPos.x, camPos.y);
 	if(snap) FlxG.camera.snapToTarget();
 	camPos.put();
+}
+
+function destroy() {
+	game.boyfriend.animation.finishCallback = null;
+	game.camHUD.visible = game.boyfriend.visible = game.dad.visible = game.gf.visible = true;
+	for(thing in [bf, gf, tankman, pico, stressCutscene]) {
+		if(thing == null) continue;
+		if(thing != stressCutscene) game.remove(thing);
+		thing.destroy();
+	}
 }

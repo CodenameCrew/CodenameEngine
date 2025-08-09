@@ -1,15 +1,18 @@
 package funkin.game;
 
 import flixel.math.FlxPoint;
-import flixel.util.FlxSignal.FlxTypedSignal;
-
-import funkin.backend.scripting.events.*;
-import funkin.backend.system.Conductor;
-import funkin.backend.chart.ChartData;
-import funkin.backend.system.Controls;
-import flixel.tweens.FlxTween;
 import flixel.sound.FlxSound;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxSignal.FlxTypedSignal;
+import funkin.backend.chart.ChartData;
+import funkin.backend.scripting.events.note.*;
+import funkin.backend.system.Conductor;
+import funkin.backend.system.Controls;
 
+/**
+ * Group of strums, that contains the strums and notes.
+ * Used in PlayState.
+**/
 class StrumLine extends FlxTypedGroup<Strum> {
 	/**
 	 * Signal that triggers whenever a note is hit. Similar to onPlayerHit and onDadHit, except strumline specific.
@@ -72,14 +75,16 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	 */
 	public var animSuffix(default, set):String = "";
 	/**
-	 * TODO: Write documention about this being a variable that can help when making multi key
+	 * TODO: Write documentation about this being a variable that can help when making multi key
 	 */
 	public var strumAnimPrefix = ["left", "down", "up", "right"];
 	/**
 	 * Vocals sound (Vocals.ogg). Used for individual vocals per strumline.
 	 */
 	public var vocals:FlxSound;
-
+	/**
+	 * Extra data that can be added to the strum line.
+	**/
 	public var extra:Map<String, Dynamic> = [];
 
 	private function get_ghostTapping() {
@@ -91,8 +96,14 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	private inline function set_ghostTapping(b:Bool):Bool
 		return this.ghostTapping = b;
 
+
 	private var startingPos:FlxPoint = FlxPoint.get(0,0);
-	private var strumScale:Float = 1;
+	/**
+	 * The scale of the strums.
+	 * If called after generate, the strums wont be scaled.
+	 * You can only change it in the Charter.
+	**/
+	public var strumScale:Float = 1;
 
 	public function new(characters:Array<Character>, startingPos:FlxPoint, strumScale:Float, cpu:Bool = false, opponentSide:Bool = true, ?controls:Controls, ?vocalPrefix:String = "") {
 		super();
@@ -103,10 +114,15 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		this.opponentSide = opponentSide;
 		this.controls = controls;
 		this.notes = new NoteGroup();
-		vocals = vocalPrefix != "" ? FlxG.sound.load(Paths.voices(PlayState.SONG.meta.name, PlayState.difficulty, vocalPrefix)) : new FlxSound();
+
+		var v = Paths.voices(PlayState.SONG.meta.name, PlayState.difficulty, vocalPrefix);
+		vocals = vocalPrefix != "" ? FlxG.sound.load(Options.streamedVocals ? Assets.getMusic(v) : v) : new FlxSound();
 		vocals.persist = false;
 	}
 
+	/**
+	 * Generates the notes for the strumline.
+	**/
 	public function generate(strumLine:ChartStrumLine, ?startTime:Float) {
 		// TODO: implement double generate call support if needed
 
@@ -149,6 +165,16 @@ class StrumLine extends FlxTypedGroup<Strum> {
 			}
 		}
 		notes.sortNotes();
+
+		var scrollSpeed = strumLine.scrollSpeed;
+		if(scrollSpeed == null) if (PlayState.instance != null) scrollSpeed = PlayState.instance.scrollSpeed;
+		if(scrollSpeed == null) scrollSpeed = 1;
+
+		// TODO: Make this work by accounting zoom and scroll speed changes  - Nex
+		/*var limit = FlxG.height / 0.45;
+		notes.limit = limit / scrollSpeed;
+			OR
+		notes.limit = Flags.DEFAULT_NOTE_MS_LIMIT / scrollSpeed;*/
 	}
 
 	public override function update(elapsed:Float) {
@@ -162,6 +188,9 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		notes.draw();
 	}
 
+	/**
+	 * Updates the notes.
+	**/
 	public inline function updateNotes() {
 		__updateNote_songPos = Conductor.songPosition;
 		if(__updateNote_event == null) __updateNote_event = PlayState.instance.__updateNote_event;
@@ -171,6 +200,10 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	var __updateNote_strum:Strum;
 	var __updateNote_songPos:Float;
 	var __updateNote_event:NoteUpdateEvent;
+	/**
+	 * Updates a note.
+	 * This updates the position, state, and handles the input.
+	**/
 	public function updateNote(daNote:Note) {
 		__updateNote_strum = members[daNote.noteData];
 		if (__updateNote_strum == null) return;
@@ -180,16 +213,17 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		if (__updateNote_event.cancelled) return;
 
 		if (__updateNote_event.__updateHitWindow) {
-			daNote.canBeHit = (daNote.strumTime > __updateNote_songPos - (PlayState.instance.hitWindow * daNote.latePressWindow)
-				&& daNote.strumTime < __updateNote_songPos + (PlayState.instance.hitWindow * daNote.earlyPressWindow));
+			var hitWindow = PlayState.instance.hitWindow;
+			daNote.canBeHit = (daNote.strumTime > __updateNote_songPos - (hitWindow * daNote.latePressWindow)
+				&& daNote.strumTime < __updateNote_songPos + (hitWindow * daNote.earlyPressWindow));
 
-			if (daNote.strumTime < __updateNote_songPos - PlayState.instance.hitWindow && !daNote.wasGoodHit)
+			if (daNote.strumTime < __updateNote_songPos - hitWindow && !daNote.wasGoodHit)
 				daNote.tooLate = true;
 		}
 
 		if (cpu && __updateNote_event.__autoCPUHit && !daNote.avoid && !daNote.wasGoodHit && daNote.strumTime < __updateNote_songPos) PlayState.instance.goodNoteHit(this, daNote);
 
-		if (daNote.wasGoodHit && daNote.isSustainNote && daNote.strumTime + (daNote.sustainLength) < __updateNote_songPos) {
+		if (daNote.wasGoodHit && daNote.isSustainNote && daNote.strumTime + daNote.sustainLength < __updateNote_songPos) {
 			deleteNote(daNote);
 			return;
 		}
@@ -215,8 +249,9 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	var __notePerStrum:Array<Note> = [];
 
 	function __inputProcessPressed(note:Note) {
-		if (__pressed[note.strumID] && note.isSustainNote && note.canBeHit && !note.wasGoodHit) {
+		if (__pressed[note.strumID] && note.isSustainNote && note.strumTime < __updateNote_songPos && !note.wasGoodHit) {
 			PlayState.instance.goodNoteHit(this, note);
+			note.updateSustainClip();
 		}
 	}
 	function __inputProcessJustPressed(note:Note) {
@@ -226,6 +261,11 @@ class StrumLine extends FlxTypedGroup<Strum> {
 			else if (note.strumTime < __notePerStrum[note.strumID].strumTime)					__notePerStrum[note.strumID] = note;
 		}
 	}
+
+	/**
+	 * Updates the input for the strumline, and handles the input.
+	 * @param id The ID of the strum
+	**/
 	public function updateInput(id:Int = 0) {
 		updateNotes();
 
@@ -242,7 +282,8 @@ class StrumLine extends FlxTypedGroup<Strum> {
 			__justReleased.push(s.__getJustReleased(this));
 		}
 
-		var event = PlayState.instance.scripts.event("onInputUpdate", EventManager.get(InputSystemEvent).recycle(__pressed, __justPressed, __justReleased, this, id));
+		var event = EventManager.get(InputSystemEvent).recycle(__pressed, __justPressed, __justReleased, this, id);
+		if (PlayState.instance != null) PlayState.instance.gameAndCharsEvent("onInputUpdate", event);
 		if (event.cancelled) return;
 
 		__pressed = CoolUtil.getDefault(event.pressed, []);
@@ -277,13 +318,23 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		forEach(function(str:Strum) {
 			str.updatePlayerInput(str.__getPressed(this), str.__getJustPressed(this), str.__getJustReleased(this));
 		});
-		PlayState.instance.scripts.call("onPostInputUpdate");
+		PlayState.instance.gameAndCharsCall("onPostInputUpdate");
 	}
 
+	/**
+	 * Adds/removes health to/from the strumline.
+	 * If the strumline is an opponent strumline, it will subtract the health, otherwise it will add the health.
+	 * @param health The amount of health to add/remove
+	**/
 	public inline function addHealth(health:Float)
 		PlayState.instance.health += health * (opponentSide ? -1 : 1);
 
-	public inline function generateStrums(amount:Int = 4) {
+	/**
+	 * Generates strums, and adds them to the strumline.
+	 * @param amount The amount of strums to generate (-1 for the default amount)
+	**/
+	public inline function generateStrums(amount:Int = -1) {
+		if(amount == -1) amount = Flags.DEFAULT_STRUM_AMOUNT;
 		for (i in 0...amount)
 			add(createStrum(i));
 	}
@@ -305,8 +356,9 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	public function createStrum(i:Int, ?animPrefix:String, ?spritePath:String, ?playIntroAnimation:Bool) {
 		if (animPrefix == null)
 			animPrefix = strumAnimPrefix[i % strumAnimPrefix.length];
-		var babyArrow:Strum = new Strum(startingPos.x + ((Note.swagWidth * strumScale) * i), startingPos.y);
+		var babyArrow:Strum = new Strum(startingPos.x + (Note.swagWidth * strumScale * (data.strumSpacing != null ? data.strumSpacing : 1) * i), startingPos.y + (Note.swagWidth*0.5) - (Note.swagWidth * strumScale * 0.5));
 		babyArrow.ID = i;
+		babyArrow.strumLine = this;
 
 		if(data.scrollSpeed != null)
 			babyArrow.scrollSpeed = data.scrollSpeed;
@@ -314,7 +366,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		var event = EventManager.get(StrumCreationEvent).recycle(babyArrow, PlayState.instance.strumLines.members.indexOf(this), i, animPrefix);
 		event.__doAnimation = playIntroAnimation == null ? (!MusicBeatState.skipTransIn && (PlayState.instance != null ? PlayState.instance.introLength > 0 : true)) : playIntroAnimation;
 		if (spritePath != null) event.sprite = spritePath;
-		event = PlayState.instance.scripts.event("onStrumCreation", event);
+		if (PlayState.instance != null) event = PlayState.instance.gameAndCharsEvent("onStrumCreation", event);
 
 		if (!event.cancelled) {
 			babyArrow.frames = Paths.getFrames(event.sprite);
@@ -324,7 +376,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 			babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
 
 			babyArrow.antialiasing = true;
-			babyArrow.setGraphicSize(Std.int((babyArrow.width * 0.7) * strumScale));
+			babyArrow.setGraphicSize(Std.int((babyArrow.width * Flags.DEFAULT_NOTE_SCALE) * strumScale));
 
 			babyArrow.animation.addByPrefix('static', 'arrow${event.animPrefix.toUpperCase()}');
 			babyArrow.animation.addByPrefix('pressed', '${event.animPrefix} press', 24, false);
@@ -339,13 +391,13 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		{
 			babyArrow.y -= 10;
 			babyArrow.alpha = 0;
-			FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+			FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i * (4 / (data.keyCount != null ? data.keyCount : 4)))});
 		}
 		babyArrow.playAnim('static');
 
 		insert(i, babyArrow);
 
-		PlayState.instance.scripts.event("onPostStrumCreation", event);
+		if (PlayState.instance != null) PlayState.instance.gameAndCharsEvent("onPostStrumCreation", event);
 
 		return babyArrow;
 	}
@@ -363,6 +415,10 @@ class StrumLine extends FlxTypedGroup<Strum> {
 			notes.remove(note, true);
 			note.destroy();
 		}
+	}
+
+	public static inline function calculateStartingXPos(hudXRatio:Float, scale:Float, spacing:Float, keyCount:Int) {
+		return (FlxG.width * hudXRatio) - ((Note.swagWidth * scale * ((keyCount/2)-0.5) * spacing) + Note.swagWidth * 0.5 * scale);
 	}
 
 	/**

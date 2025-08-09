@@ -7,8 +7,8 @@ class UINumericStepper extends UITextBox {
 	public var max:Null<Float> = null;
 	public var step:Float = 1;
 
-	public function new(x:Float, y:Float, value:Float = 0, step:Float = 1, precision:Int = 0, ?min:Float, ?max:Float, w:Int = 180, h:Int = 32) {
-		super(x, y, "", w - h, h, false);
+	public function new(x:Float, y:Float, value:Float = 0, step:Float = 1, precision:Int = 0, ?min:Float, ?max:Float, w:Int = 180, h:Int = 32, small:Bool = false) {
+		super(x, y, "", w - h, h, false, small);
 
 		onChange = __onChange;
 
@@ -31,7 +31,7 @@ class UINumericStepper extends UITextBox {
 
 	private function set_value(v:Float) {
 		if (min != null && max != null) {
-			v = FlxMath.bound(v, min, max);
+			v = CoolUtil.bound(v, min, max);
 		} else if (min != null) {
 			v = Math.max(v, min);
 		} else if (max != null) {

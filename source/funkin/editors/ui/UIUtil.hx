@@ -1,12 +1,17 @@
 package funkin.editors.ui;
 
+import flixel.util.typeLimit.OneOfTwo;
+import flixel.input.FlxInput.FlxInputState;
 import flixel.input.keyboard.FlxKey;
 import funkin.editors.ui.UIContextMenu.UIContextMenuOption;
+import flixel.group.FlxGroup;
 
+@:access(flixel.FlxSprite)
 class UIUtil {
 	public static function follow(spr:FlxSprite, target:FlxSprite, x:Float = 0, y:Float = 0) {
-		spr.cameras = target is UISprite ? cast(target, UISprite).__lastDrawCameras : target.cameras;
-		spr.setPosition(target.x + x, target.y + y);
+		spr._cameras = target is UISprite ? ({var _:UISprite = cast target;_;}).__lastDrawCameras : target.cameras;
+		spr.x = target.x + x;
+		spr.y = target.y + y;
 		spr.scrollFactor.set(target.scrollFactor.x, target.scrollFactor.y);
 	}
 
@@ -14,8 +19,21 @@ class UIUtil {
 		return contextMenu != null && UIState.state.curContextMenu == contextMenu;
 	}
 
+	@:noUsing public static function fixKey(key:FlxKey):FlxKey {
+		return switch(key) {
+			#if mac
+			case CONTROL: WINDOWS; // Remap control to the meta key
+			#end
+			default: key;
+		}
+	}
+
+	public static function getKeyState(key:FlxKey, Status:FlxInputState):Bool {
+		return FlxG.keys.checkStatus(fixKey(key), Status);
+	}
+
 	/**
-	 * Process all options with shortcuts present in a `Array<UIContextMenuOption>`. Also checks childrens.
+	 * Process all options with shortcuts present in a `Array<UIContextMenuOption>`. Also checks children.
 	 * @param topMenuOptions
 	 */
 	public static function processShortcuts(topMenuOptions:Array<UIContextMenuOption>) {
@@ -41,14 +59,7 @@ class UIUtil {
 						var shouldPress = Std.int(key) > 0;
 						if(!shouldPress) key = -key;
 
-						var k = switch(key) {
-							#if mac
-							case CONTROL:
-								WINDOWS;
-							#end
-							default:
-								key;
-						}
+						var k = fixKey(key);
 						if (FlxG.keys.checkStatus(k, shouldPress ? JUST_PRESSED : JUST_RELEASED)) {
 							justPressed = true;
 						} else if (!FlxG.keys.checkStatus(k, shouldPress ? PRESSED : RELEASED)) {
@@ -115,5 +126,37 @@ class UIUtil {
 
 	public static inline function prettify(str:String) {
 		return [for(s in str.split(" ")) [for(k=>l in s.split("")) k == 0 ? l.toUpperCase() : l.toLowerCase()].join("")].join(" ");
+	}
+
+	/**
+	 * For when the user closes out before confriming all ui selections
+	 * @param ui the thingy you wanna check
+	 */
+	public static function confirmUISelections(ui:Dynamic) {
+		var members:Array<FlxBasic> = [];
+
+		if (Reflect.fields(ui).contains("members")) // hasField doesnt work >:(
+			members = Reflect.field(ui, "members");
+		else return;
+
+		for (member in members) {
+			if (member is UINumericStepper) @:privateAccess {
+				var stepper:UINumericStepper = cast member;
+				if (stepper.onChange != stepper.__onChange && stepper.__wasFocused) {
+					stepper.onChange(stepper.label.text);
+					stepper.__wasFocused = false;
+				} else stepper.__onChange(stepper.label.text);
+
+			} else if (member is UITextBox) @:privateAccess {
+				var textbox:UITextBox = cast member;
+				if (textbox.__wasFocused) {
+					if (textbox.onChange != null) textbox.onChange(textbox.label.text);
+					textbox.__wasFocused = false;
+				}
+			}
+
+			if (member is UISprite || ui is UIState)
+				confirmUISelections(cast member);
+		}
 	}
 }

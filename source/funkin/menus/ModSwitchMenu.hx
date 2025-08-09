@@ -1,18 +1,25 @@
 package funkin.menus;
 
 #if MOD_SUPPORT
-import haxe.io.Path;
-import funkin.backend.assets.ModsFolder;
-import sys.FileSystem;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import funkin.backend.assets.ModsFolder;
+import haxe.io.Path;
+import sys.FileSystem;
 
 class ModSwitchMenu extends MusicBeatSubstate {
 	var mods:Array<String> = [];
 	var alphabets:FlxTypedGroup<Alphabet>;
 	var curSelected:Int = 0;
 
+	var subCam:FlxCamera;
+
 	public override function create() {
 		super.create();
+
+		camera = subCam = new FlxCamera();
+		subCam.bgColor = 0;
+		FlxG.cameras.add(subCam, false);
 
 		var bg = new FlxSprite(0, 0).makeSolid(FlxG.width, FlxG.height, 0xFF000000);
 		bg.updateHitbox();
@@ -27,7 +34,9 @@ class ModSwitchMenu extends MusicBeatSubstate {
 
 		alphabets = new FlxTypedGroup<Alphabet>();
 		for(mod in mods) {
-			var a = new Alphabet(0, 0, mod == null ? "DISABLE MODS" : mod, true);
+			var a = new Alphabet(0, 0, mod == null ? TU.translate("mods.disableMods") : mod, "bold");
+			if(mod == ModsFolder.currentModFolder)
+				a.color = FlxColor.LIME;
 			a.isMenuItem = true;
 			a.scrollFactor.set();
 			alphabets.add(a);
@@ -62,6 +71,13 @@ class ModSwitchMenu extends MusicBeatSubstate {
 			alphabet.targetY = k - curSelected;
 		}
 		alphabets.members[curSelected].alpha = 1;
+	}
+
+	override function destroy() {
+		super.destroy();
+
+		if (FlxG.cameras.list.contains(subCam))
+			FlxG.cameras.remove(subCam);
 	}
 }
 #end

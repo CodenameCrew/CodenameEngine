@@ -3,6 +3,7 @@ package funkin.game;
 import flixel.graphics.FlxGraphic;
 import flixel.math.FlxPoint;
 import flixel.util.typeLimit.OneOfTwo;
+import funkin.backend.scripting.events.healthicon.HealthIconChangeEvent;
 
 class HealthIcon extends FunkinSprite
 {
@@ -101,7 +102,7 @@ class HealthIcon extends FunkinSprite
 		super();
 		health = 0.5;
 		this.isPlayer = isPlayer;
-		setIcon(char);
+		setIcon(char != null ? char : Flags.DEFAULT_CHARACTER);
 
 		scrollFactor.set();
 	}
@@ -110,7 +111,7 @@ class HealthIcon extends FunkinSprite
 	 * Called every beat, and causes the icon to become bigger
 	**/
 	public dynamic function bump():Void {
-		var iconScale = 1.2;
+		var iconScale = Flags.BOP_ICON_SCALE;
 		scale.set(defaultScale * iconScale, defaultScale * iconScale);
 		updateHitbox();
 	}
@@ -119,7 +120,7 @@ class HealthIcon extends FunkinSprite
 	 * Called every frame and causes the icon to become smaller
 	**/
 	public dynamic function updateBump():Void {
-		var iconLerp = 0.33;
+		var iconLerp = Flags.ICON_LERP;
 		scale.set(CoolUtil.fpsLerp(scale.x, defaultScale, iconLerp), CoolUtil.fpsLerp(scale.y, defaultScale, iconLerp));
 		updateHitbox();
 	}
@@ -221,8 +222,21 @@ class HealthIcon extends FunkinSprite
 						}
 
 						var animName = 'from-${node.get("from")}-to-${node.get("to")}';
-						if (node.exists("offsetX") || node.exists("offsetY"))
-							addOffset(animName, Std.parseFloat(node.get("offsetX")).getDefault(0), Std.parseFloat(node.get("offsetY")).getDefault(0));
+						
+						var offsetX:Float = 0;
+						var offsetY:Float = 0;
+						if (node.exists("offsetX"))
+							offsetX = Std.parseFloat(node.get("offsetX")).getDefault(0);
+						else if (node.exists("offsetx"))
+							offsetX = Std.parseFloat(node.get("offsetx")).getDefault(0);
+						
+						if (node.exists("offsetY"))
+							offsetY = Std.parseFloat(node.get("offsetY")).getDefault(0);
+						else if (node.exists("offsety"))
+							offsetY = Std.parseFloat(node.get("offsety")).getDefault(0);
+
+						addOffset(animName, offsetX, offsetY);
+
 						addAnim(animName, node.get("anim"), Std.parseInt(node.get("fps")).getDefault(24), false); // don't allow looping for transitions
 						if (animateAtlas == null && animation.exists(animName))
 							animation.getByName(animName).flipX = isPlayer != iconIsPlayer;
@@ -248,7 +262,7 @@ class HealthIcon extends FunkinSprite
 							offsetX = Std.parseFloat(node.get("offsetX")).getDefault(0);
 						else if (node.exists("offsetx"))
 							offsetX = Std.parseFloat(node.get("offsetx")).getDefault(0);
-						
+
 						if (node.exists("offsetY"))
 							offsetY = Std.parseFloat(node.get("offsetY")).getDefault(0);
 						else if (node.exists("offsety"))
@@ -256,7 +270,13 @@ class HealthIcon extends FunkinSprite
 
 						addOffset(animName, offsetX, offsetY);
 
-						addAnim(animName, node.get("anim"), Std.parseInt(node.get("fps")).getDefault(24), node.get("looped").getDefault("true").toLowerCase() == "true");
+						var looped:Bool = false;
+						if (node.exists("looped"))
+							looped = node.get("looped").toLowerCase() == "true";
+						else if (node.exists("loop"))
+							looped = node.get("loop").toLowerCase() == "true";
+
+						addAnim(animName, node.get("anim"), Std.parseInt(node.get("fps")).getDefault(24), looped);
 						if (animateAtlas == null && animation.exists(animName))
 							animation.getByName(animName).flipX = isPlayer != iconIsPlayer;
 					case "step":
@@ -368,17 +388,21 @@ class HealthIcon extends FunkinSprite
 			}) + sprTrackerOffset.x, sprTracker.y + sprTrackerOffset.y);
 		}
 
-		if (animation.curAnim != null || (this.animated && animateAtlas != null)) {
+		if (animation.curAnim != null || this.animated) {
 			var data = getIconAnim(health);
 			var localAnimState = data.animState;
 
 			if (data.isValid && curAnimState != localAnimState) {
-				if (this.animated) {
-					var transAnim = 'from-$curAnimState-to-$localAnimState';
-					playAnim(hasAnim(transAnim) ? transAnim : localAnimState);
-				} else {
-					if(animation.curAnim != null)
-						animation.curAnim.curFrame = localAnimState;
+				var event = EventManager.get(HealthIconChangeEvent).recycle(localAnimState, this);
+				funkin.backend.scripting.GlobalScript.event("onHealthIconAnimChange", event);
+				if (!event.cancelled) {
+					if (this.animated) {
+						var transAnim = 'from-$curAnimState-to-${event.anim}';
+						playAnim(hasAnim(transAnim) ? transAnim : event.anim);
+					} else {
+						if(animation.curAnim != null)
+							animation.curAnim.curFrame = event.anim;
+					}
 				}
 
 				curAnimState = localAnimState;

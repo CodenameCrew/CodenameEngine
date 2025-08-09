@@ -1,20 +1,16 @@
 package funkin.game.cutscenes.dialogue;
 
-import funkin.backend.scripting.events.dialogue.*;
-import funkin.backend.scripting.events.PlayAnimEvent;
-import funkin.backend.scripting.events.PlayAnimEvent.PlayAnimContext;
-import funkin.backend.scripting.events.CancellableEvent;
-import funkin.backend.scripting.Script;
-import flixel.sound.FlxSound;
 import flixel.addons.text.FlxTypeText;
-import flixel.math.FlxPoint;
-import flixel.util.FlxColor;
+import flixel.sound.FlxSound;
+import funkin.backend.scripting.Script;
+import funkin.backend.scripting.events.sprite.*;
+import funkin.backend.scripting.events.dialogue.*;
 import haxe.xml.Access;
 
 class DialogueBox extends FunkinSprite {
 	public var dialogueBoxData:Access;
 	public var positions:Map<String, CharPosDef> = [];
-	public var dialogueEnded:Bool = false;  // Using text._typing is also fair but it doesnt check for eventual opening anims!  - Nex
+	public var dialogueEnded:Bool = false;  // Using text._typing is also fair but it doesn't check for eventual opening anims!  - Nex
 
 	public var nextSFX:String = Paths.sound('dialogue/next');
 	public var defaultTextTypeSFX:Array<FlxSound>;
@@ -26,7 +22,7 @@ class DialogueBox extends FunkinSprite {
 
 	public function new(name:String) {
 		super();
-		var textTypeSFX:String = Paths.sound('dialogue/text');  // Default if xml doesnt have it  - Nex
+		var textTypeSFX:String = Paths.sound('dialogue/text');  // Default if xml doesn't have it  - Nex
 
 		dialogueBoxScript = Script.create(Paths.script('data/' + defPath + name));
 		dialogueBoxScript.setParent(this);
@@ -58,8 +54,8 @@ class DialogueBox extends FunkinSprite {
 			for(pos in dialogueBoxData.nodes.charpos) {
 				if (!pos.has.name) continue;
 				positions[pos.att.name] = {
-					x: pos.has.x ? Std.parseFloat(pos.att.x).getDefault(0) : 0,
-					y: pos.has.y ? Std.parseFloat(pos.att.y).getDefault(0) : 0,
+					x: pos.has.x ? Std.parseFloat(pos.att.x).getDefaultFloat(0) : 0,
+					y: pos.has.y ? Std.parseFloat(pos.att.y).getDefaultFloat(0) : 0,
 					flipBubble: pos.getAtt('flipBubble') == "true"
 				};
 			}
@@ -68,8 +64,8 @@ class DialogueBox extends FunkinSprite {
 			if (textNode == null)
 				throw "The dialog box XML requires one text element.";
 			text = new FlxTypeText(
-				textNode.has.x ? Std.parseFloat(textNode.att.x).getDefault(0) : 0,
-				FlxG.height - (textNode.has.y ? Std.parseFloat(textNode.att.y).getDefault(0) : 0),
+				textNode.has.x ? Std.parseFloat(textNode.att.x).getDefaultFloat(0) : 0,
+				FlxG.height - (textNode.has.y ? Std.parseFloat(textNode.att.y).getDefaultFloat(0) : 0),
 				textNode.has.width ? Std.parseInt(textNode.att.width).getDefault(FlxG.width) : FlxG.width, "");
 			text.color = textNode.getAtt("color").getColorFromDynamic().getDefault(0xFF000000);
 			text.size = Std.parseInt(textNode.att.size).getDefault(20);
@@ -82,16 +78,19 @@ class DialogueBox extends FunkinSprite {
 					case "outline_fast": OUTLINE_FAST;
 					default: OUTLINE;
 				}
-				text.borderQuality = Std.parseFloat(textNode.getAtt("borderQuality")).getDefault(1);
-				text.shadowOffset.x = Std.parseFloat(textNode.getAtt("shadowOffsetX")).getDefault(1);
-				text.shadowOffset.y = Std.parseFloat(textNode.getAtt("shadowOffsetY")).getDefault(1);
-				text.borderSize = Std.parseFloat(textNode.getAtt("borderSize")).getDefault(1);
+				text.borderQuality = Std.parseFloat(textNode.getAtt("borderQuality")).getDefaultFloat(1);
+				text.shadowOffset.x = Std.parseFloat(textNode.getAtt("shadowOffsetX")).getDefaultFloat(1);
+				text.shadowOffset.y = Std.parseFloat(textNode.getAtt("shadowOffsetY")).getDefaultFloat(1);
+				text.borderSize = Std.parseFloat(textNode.getAtt("borderSize")).getDefaultFloat(1);
 				text.borderColor = textNode.getAtt("borderColor").getColorFromDynamic().getDefault(0xFFFFFFFF);
 			}
 		} catch(e) {
 			active = false;
-			Logs.trace('Couldn\'t load dialogue box "$name": ${e.toString()}', ERROR);
+			var message:String = e.toString();
+			Logs.trace('Couldn\'t load dialogue box "$name": $message', ERROR, RED);
+			dialogueBoxScript.call("loadingError", [message]);
 		}
+
 		defaultTextTypeSFX = [FlxG.sound.load(textTypeSFX)];
 		FlxG.sound.cache(nextSFX);
 		dialogueBoxScript.call("postCreate");

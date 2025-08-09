@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml>
+	<pragma once="true" />
+
+	<files id="haxe">
+		<compilerflag value="-I${this_dir}/include/mac" if="macos" />
+	</files>
+
+	<files id="__main__">
+		<compilerflag value="-I${this_dir}/include/mac" if="macos" />
+	</files>
+
+	<files id="external-code">
+		<section if="macos">
+			<compilerflag value="-I${this_dir}/include/mac" />
+
+			<file name="${this_dir}/src/mac/CursorHelper.mm" />
+			<file name="${this_dir}/src/mac/Mac.mm" />
+		</section>
+	</files>
+
+	<target id="haxe">
+		<section if="macos">
+			<vflag name="-framework" value="IOKit" />
+			<vflag name="-framework" value="AppKit" />
+			<vflag name="-framework" value="Cocoa" />
+			<vflag name="-framework" value="Foundation" />
+		</section>
+
+		<files id="external-code" />
+	</target>
+</xml>

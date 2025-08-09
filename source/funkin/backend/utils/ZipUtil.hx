@@ -1,5 +1,8 @@
 package funkin.backend.utils;
 
+import haxe.zip.Entry;
+import haxe.zip.Reader;
+
 #if sys
 #if (!macro && sys)
 import openfl.display.BitmapData;
@@ -8,12 +11,10 @@ import openfl.display.BitmapData;
 import haxe.Exception;
 import haxe.Json;
 import haxe.crypto.Crc32;
-import haxe.zip.Writer;
-import haxe.zip.Tools;
-import haxe.zip.Entry;
-import haxe.zip.Uncompress;
-import haxe.zip.Reader;
 import haxe.zip.Compress;
+import haxe.zip.Tools;
+import haxe.zip.Uncompress;
+import haxe.zip.Writer;
 import sys.FileSystem;
 import sys.io.File;
 import sys.thread.Thread;
@@ -21,13 +22,13 @@ import sys.thread.Thread;
 using StringTools;
 
 // import ZipUtils; ZipUtils.uncompressZip(ZipUtils.openZip("E:\\Desktop\\test\\termination lua.ycemod"), "E:\\Desktop\\test\\uncompressed\\");
-// import ZipUtils; var e = ZipUtils.createZipFile("gjnsdghs.ycemod"); ZipUtils.writeFolderToZip(e, "./mods/Friday Night Funkin'/", "Friday Night Funkin'/"); e.flush(); e.close();
+// import ZipUtils; var e = ZipUtils.createZipFile("file.ycemod"); ZipUtils.writeFolderToZip(e, "./mods/Friday Night Funkin'/", "Friday Night Funkin'/"); e.flush(); e.close();
 
-class ZipUtil {
+final class ZipUtil {
 	public static var bannedNames:Array<String> = [".git", ".gitignore", ".github", ".vscode", ".gitattributes", "readme.txt"];
 
 	/**
-	 * [Description] Uncompresses `zip` into the `destFolder` folder
+	 * [Description] Decompresses a `zip` into the `destFolder` folder
 	 * @param zip
 	 * @param destFolder
 	 */
@@ -218,27 +219,13 @@ class ZipProgress {
 	public var curFile:Int = 0;
 	public var fileCount:Int = 0;
 	public var done:Bool = false;
-	public var percentage(get, null):Float;
+	public var percentage(get, never):Float;
 
 	private function get_percentage() {
 		return fileCount <= 0 ? 0 : curFile / fileCount;
 	}
 
 	public function new() {}
-}
-
-class ZipReader extends Reader {
-	public var files:List<Entry>;
-
-	public override function read() {
-		if (files != null) return files;
-		try {
-			var files = super.read();
-			return this.files = files;
-		} catch(e) {
-		}
-		return new List<Entry>();
-	}
 }
 
 class ZipWriter extends Writer {
@@ -266,3 +253,17 @@ class StrNameLabel {
 	}
 }
 #end
+
+class ZipReader extends Reader {
+	public var files:List<Entry>;
+
+	public override function read() {
+		if (files != null) return files;
+		try {
+			var files = super.read();
+			return this.files = files;
+		} catch(e) {
+		}
+		return new List<Entry>();
+	}
+}

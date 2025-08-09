@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="radioCrank.png" width="1328" height="117">
+	<SubTexture name="Radio Selected Static0000" x="514" y="1" width="102" height="102" frameX="-0" frameY="-0" frameWidth="102" frameHeight="102"/>
+	<SubTexture name="Radio deselect animation0000" x="954" y="1" width="86" height="108" frameX="-22" frameY="-0" frameWidth="138" frameHeight="127"/>
+	<SubTexture name="Radio deselect animation0001" x="954" y="1" width="86" height="108" frameX="-22" frameY="-0" frameWidth="138" frameHeight="127"/>
+	<SubTexture name="Radio deselect animation0002" x="619" y="1" width="114" height="102" frameX="-7" frameY="-25" frameWidth="138" frameHeight="127"/>
+	<SubTexture name="Radio deselect animation0003" x="619" y="1" width="114" height="102" frameX="-7" frameY="-25" frameWidth="138" frameHeight="127"/>
+	<SubTexture name="Radio deselect animation0004" x="141" y="1" width="138" height="65" frameX="-0" frameY="-56" frameWidth="138" frameHeight="127"/>
+	<SubTexture name="Radio deselect animation0005" x="141" y="1" width="138" height="65" frameX="-0" frameY="-56" frameWidth="138" frameHeight="127"/>
+	<SubTexture name="Radio deselect animation0006" x="400" y="1" width="111" height="101" frameX="-11" frameY="-21" frameWidth="138" frameHeight="127"/>
+	<SubTexture name="Radio deselect animation0007" x="736" y="1" width="110" height="102" frameX="-12" frameY="-10" frameWidth="138" frameHeight="127"/>
+	<SubTexture name="Radio deselect animation0008" x="736" y="1" width="110" height="102" frameX="-12" frameY="-10" frameWidth="138" frameHeight="127"/>
+	<SubTexture name="Radio deselect animation0009" x="849" y="1" width="102" height="102" frameX="-15" frameY="-10" frameWidth="138" frameHeight="127"/>
+	<SubTexture name="Radio deselect animation0010" x="849" y="1" width="102" height="102" frameX="-15" frameY="-10" frameWidth="138" frameHeight="127"/>
+	<SubTexture name="Radio selecting animation0000" x="1" y="1" width="137" height="64" frameX="-0" frameY="-55" frameWidth="137" frameHeight="132"/>
+	<SubTexture name="Radio selecting animation0001" x="1" y="1" width="137" height="64" frameX="-0" frameY="-55" frameWidth="137" frameHeight="132"/>
+	<SubTexture name="Radio selecting animation0002" x="1142" y="1" width="94" height="113" frameX="-21" frameY="-0" frameWidth="137" frameHeight="132"/>
+	<SubTexture name="Radio selecting animation0003" x="1239" y="1" width="88" height="115" frameX="-24" frameY="-4" frameWidth="137" frameHeight="132"/>
+	<SubTexture name="Radio selecting animation0004" x="1239" y="1" width="88" height="115" frameX="-24" frameY="-4" frameWidth="137" frameHeight="132"/>
+	<SubTexture name="Radio selecting animation0005" x="282" y="1" width="115" height="74" frameX="-11" frameY="-58" frameWidth="137" frameHeight="132"/>
+	<SubTexture name="Radio selecting animation0006" x="282" y="1" width="115" height="74" frameX="-11" frameY="-58" frameWidth="137" frameHeight="132"/>
+	<SubTexture name="Radio selecting animation0007" x="1043" y="1" width="96" height="108" frameX="-20" frameY="-22" frameWidth="137" frameHeight="132"/>
+	<SubTexture name="Radio selecting animation0008" x="1043" y="1" width="96" height="108" frameX="-20" frameY="-22" frameWidth="137" frameHeight="132"/>
+	<SubTexture name="Radio selecting animation0009" x="514" y="1" width="102" height="102" frameX="-17" frameY="-25" frameWidth="137" frameHeight="132"/>
+	<SubTexture name="Radio selecting animation0010" x="514" y="1" width="102" height="102" frameX="-17" frameY="-25" frameWidth="137" frameHeight="132"/>
+	<SubTexture name="Radio unselected0000" x="849" y="1" width="102" height="102" frameX="-0" frameY="-0" frameWidth="138" frameHeight="127"/>
+</TextureAtlas>

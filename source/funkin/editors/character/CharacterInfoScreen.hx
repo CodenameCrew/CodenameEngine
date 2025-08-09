@@ -1,46 +1,51 @@
 package funkin.editors.character;
 
-import flixel.math.FlxPoint;
-import haxe.xml.Access;
-import funkin.game.Character;
+import flixel.util.FlxColor;
+import funkin.editors.stage.StageEditor;
 import funkin.editors.extra.PropertyButton;
-import funkin.game.HealthIcon;
+import flixel.graphics.FlxGraphic;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.display.BitmapData;
+import funkin.game.Character;
+
+using funkin.backend.utils.BitmapUtil;
+
+typedef CharacterExtraInfo = {
+	var icon:String;
+	var iconColor:Null<FlxColor>;
+	var holdTime:Float;
+	var customProperties:Map<String, Dynamic>;
+}
 
 class CharacterInfoScreen extends UISubstateWindow {
 	public var character:Character;
 
-	public var spriteTextBox:UITextBox;
-	public var iconTextBox:UITextBox;
-	public var iconSprite:HealthIcon;
-	public var gameOverCharTextBox:UITextBox;
-	public var antialiasingCheckbox:UICheckbox;
-	public var flipXCheckbox:UICheckbox;
+	public var iconColorPicker:UIIconColorPicker;
 	public var iconColorWheel:UIColorwheel;
-	public var positionXStepper:UINumericStepper;
-	public var positionYStepper:UINumericStepper;
-	public var cameraXStepper:UINumericStepper;
-	public var cameraYStepper:UINumericStepper;
-	public var scaleStepper:UINumericStepper;
-	public var singTimeStepper:UINumericStepper;
+
+	public var useDurationCheckbox:UICheckbox;
+	public var durationStepper:UINumericStepper;
+
 	public var customPropertiesButtonList:UIButtonList<PropertyButton>;
-	public var isPlayerCheckbox:UICheckbox;
-	public var isGFCheckbox:UICheckbox;
 
 	public var saveButton:UIButton;
 	public var closeButton:UIButton;
 
-	public var onSave:(xml:Xml) -> Void = null;
+	public var onSave:(info:CharacterExtraInfo) -> Void = null;
 
-	public function new(character:Character, ?onSave:(xml:Xml) -> Void) {
+	public function new(character:Character, onSave:(info:CharacterExtraInfo) -> Void) {
 		this.character = character;
 		this.onSave = onSave;
 		super();
 	}
 
+	inline function translate(id:String, ?args:Array<Dynamic>)
+		return TU.translate("characterInfoScreen." + id, args);
+
 	public override function create() {
-		winTitle = "Editing Character";
-		winWidth = 1014;
-		winHeight = 600;
+		winTitle = translate("win-title");
+		winWidth = 824; winHeight = 400;
 
 		super.create();
 
@@ -48,155 +53,68 @@ class CharacterInfoScreen extends UISubstateWindow {
 			add(new UIText(ui.x, ui.y - 24, 0, text));
 
 		var title:UIText;
-		add(title = new UIText(windowSpr.x + 20, windowSpr.y + 30 + 16, 0, "Sprite Data", 28));
+		add(title = new UIText(windowSpr.x + 20, windowSpr.y + 30 + 16, 0, translate("title"), 28));
 
-		spriteTextBox = new UITextBox(title.x, title.y + title.height + 38, character.sprite, 200);
-		add(spriteTextBox);
-		addLabelOn(spriteTextBox, "Sprite");
+		iconColorPicker = new UIIconColorPicker(title.x, title.y + title.height + 38, character.getIcon(), character.antialiasing, null);
+		add(iconColorPicker);
+		addLabelOn(iconColorPicker, translate("icon"));
 
-		iconTextBox = new UITextBox(spriteTextBox.x + 200 + 26, spriteTextBox.y, character.getIcon(), 150);
-		iconTextBox.onChange = (newIcon:String) -> {updateIcon(newIcon);}
-		add(iconTextBox);
-		addLabelOn(iconTextBox, "Icon");
-
-		updateIcon(character.getIcon());
-
-		gameOverCharTextBox = new UITextBox(iconTextBox.x + 150 + (75 + 12), iconTextBox.y, character.gameOverCharacter, 200);
-		add(gameOverCharTextBox);
-		addLabelOn(gameOverCharTextBox, "Game Over Character");
-
-		antialiasingCheckbox = new UICheckbox(spriteTextBox.x, spriteTextBox.y + 10 + 32 + 28, "Antialiasing", character.antialiasing);
-		add(antialiasingCheckbox);
-		addLabelOn(antialiasingCheckbox, "Antialiased");
-
-		flipXCheckbox = new UICheckbox(antialiasingCheckbox.x + 172, spriteTextBox.y + 10 + 32 + 28, "FlipX", character.flipX);
-		add(flipXCheckbox);
-		addLabelOn(flipXCheckbox, "Flipped");
-
-		iconColorWheel = new UIColorwheel(gameOverCharTextBox.x + 200 + 20, gameOverCharTextBox.y, character.iconColor);
+		iconColorWheel = new UIColorwheel(iconColorPicker.x+12+125+12+22, iconColorPicker.y, character.iconColor);
 		add(iconColorWheel);
-		addLabelOn(iconColorWheel, "Icon Color");
+		addLabelOn(iconColorWheel, translate("iconColor"));
 
 		if (character.iconColor != null)
 			iconColorWheel.colorChanged = true;
+		iconColorPicker.colorWheel = iconColorWheel;
 
-		add(title = new UIText(spriteTextBox.x, spriteTextBox.y + 10 + 46 + 84, 0, "Character Data", 28));
+		durationStepper = new UINumericStepper(iconColorWheel.x, iconColorWheel.y + 125 + 36, character.holdTime == -1 ? 4 : character.holdTime, 0.001, 2, 0, 9999999, 74);
+		add(durationStepper);
+		addLabelOn(durationStepper, translate("singDuration"));
 
-		positionXStepper = new UINumericStepper(title.x, title.y + title.height + 36, character.globalOffset.x, 0.001, 2, null, null, 84);
-		add(positionXStepper);
-		addLabelOn(positionXStepper, "Position (X,Y)");
+		useDurationCheckbox = new UICheckbox(durationStepper.x + durationStepper.bWidth + 20, durationStepper.y+6, translate("useSingDuration"), character.holdTime != -1);
+		useDurationCheckbox.onChecked = (checked:Bool) -> {durationStepper.selectable = checked;};
+		add(useDurationCheckbox);
 
-		add(new UIText(positionXStepper.x + 84 - 32 + 0, positionXStepper.y + 9, 0, ",", 22));
+		durationStepper.selectable = useDurationCheckbox.checked;
 
-		positionYStepper = new UINumericStepper(positionXStepper.x + 84 - 32 + 26, positionXStepper.y, character.globalOffset.y, 0.001, 2, null, null, 84);
-		add(positionYStepper);
-
-		cameraXStepper = new UINumericStepper(positionYStepper.x + 36 + 84 - 32, positionYStepper.y, character.cameraOffset.x, 0.001, 2, null, null, 84);
-		add(cameraXStepper);
-		addLabelOn(cameraXStepper, "Camera Position (X,Y)");
-
-		add(new UIText(cameraXStepper.x + 84 - 32 + 0, cameraXStepper.y + 9, 0, ",", 22));
-
-		cameraYStepper = new UINumericStepper(cameraXStepper.x + 84 - 32 + 26, cameraXStepper.y, character.cameraOffset.y, 0.001, 2, null, null, 84);
-		add(cameraYStepper);
-
-		scaleStepper = new UINumericStepper(cameraYStepper.x + 84 - 32 + 90, cameraYStepper.y, character.scale.x, 0.001, 2, null, null, 74);
-		add(scaleStepper);
-		addLabelOn(scaleStepper, "Scale");
-
-		singTimeStepper = new UINumericStepper(scaleStepper.x + 74 - 32 + 36, scaleStepper.y, character.holdTime, 0.001, 2, null, null, 74);
-		add(singTimeStepper);
-		addLabelOn(singTimeStepper, "Sing Duration (Steps)");
-
-		customPropertiesButtonList = new UIButtonList<PropertyButton>(singTimeStepper.x + singTimeStepper.width + 200, singTimeStepper.y, 290, 200, '', FlxPoint.get(280, 35), null, 5);
+		customPropertiesButtonList = new UIButtonList<PropertyButton>(iconColorWheel.x+iconColorWheel.bWidth+22, iconColorWheel.y, 290, 200, '', FlxPoint.get(280, 35), null, 5);
 		customPropertiesButtonList.frames = Paths.getFrames('editors/ui/inputbox');
 		customPropertiesButtonList.cameraSpacing = 0;
 		customPropertiesButtonList.addButton.callback = function() {
 			customPropertiesButtonList.add(new PropertyButton("newProperty", "valueHere", customPropertiesButtonList));
 		}
+
 		for (prop=>val in character.extra)
-			customPropertiesButtonList.add(new PropertyButton(prop, val, customPropertiesButtonList));
+			if (prop != StageEditor.exID("bounds"))
+				customPropertiesButtonList.add(new PropertyButton(prop, val, customPropertiesButtonList));
+
 		add(customPropertiesButtonList);
-		addLabelOn(customPropertiesButtonList, "Custom Values (Advanced)");
+		addLabelOn(customPropertiesButtonList, translate("customValues"));
 
-		isPlayerCheckbox = new UICheckbox(positionXStepper.x, positionXStepper.y + 10 + 32 + 28, "isPlayer", character.playerOffsets);
-		add(isPlayerCheckbox);
-		addLabelOn(isPlayerCheckbox, "Is Player");
-
-		isGFCheckbox = new UICheckbox(isPlayerCheckbox.x + 128, positionXStepper.y + 10 + 32 + 28, "isGF", false);
-		add(isGFCheckbox);
-		addLabelOn(isGFCheckbox, "Is GF");
-
-		for (checkbox in [isPlayerCheckbox, isGFCheckbox, antialiasingCheckbox, flipXCheckbox])
-			{checkbox.y += 4; checkbox.x += 6;}
-
-		saveButton = new UIButton(windowSpr.x + windowSpr.bWidth - 20, windowSpr.y + windowSpr.bHeight- 20, "Save & Close", function() {
+		saveButton = new UIButton(windowSpr.x + windowSpr.bWidth - 20 - 125, windowSpr.y + windowSpr.bHeight - 16 - 32, TU.translate("editor.saveClose"), function() {
 			saveCharacterInfo();
 			close();
 		}, 125);
-		saveButton.x -= saveButton.bWidth;
-		saveButton.y -= saveButton.bHeight;
+		add(saveButton);
 
-		closeButton = new UIButton(saveButton.x - 20, saveButton.y, "Close", function() {
-			if (onSave != null) onSave(null);
+		closeButton = new UIButton(saveButton.x - 20 - saveButton.bWidth, saveButton.y, TU.translate("editor.close"), function() {
 			close();
 		}, 125);
-		closeButton.x -= closeButton.bWidth;
-		closeButton.color = 0xFFFF0000;
 		add(closeButton);
-		add(saveButton);
+		closeButton.color = 0xFFFF0000;
 	}
 
-	function updateIcon(icon:String) {
-		if (iconSprite == null) add(iconSprite = new HealthIcon());
+	public function saveCharacterInfo() {
+		UIUtil.confirmUISelections(this);
 
-		iconSprite.setIcon(icon);
-		var size = Std.int(150 * 0.5);
-		iconSprite.setUnstretchedGraphicSize(size, size, true);
-		iconSprite.updateHitbox();
-		iconSprite.setPosition(iconTextBox.x + iconTextBox.bWidth + 8, iconTextBox.y + (iconTextBox.bHeight / 2) - (iconSprite.height / 2));
-		iconSprite.scrollFactor.set(1, 1);
-	}
-
-	function saveCharacterInfo() {
-		for (stepper in [positionXStepper, positionYStepper, cameraXStepper, cameraYStepper, singTimeStepper, scaleStepper])
-			@:privateAccess stepper.__onChange(stepper.label.text);
-
-		var xml = Xml.createElement("character");
-		xml.set("isPlayer", isPlayerCheckbox.checked ? "true" : "false");
-		xml.set("x", Std.string(positionXStepper.value));
-		xml.set("y", Std.string(positionYStepper.value));
-		xml.set("gameOverChar", gameOverCharTextBox.label.text);
-		xml.set("camx", Std.string(cameraXStepper.value));
-		xml.set("camy", Std.string(cameraYStepper.value));
-		xml.set("holdTime", Std.string(singTimeStepper.value));
-		xml.set("flipX", Std.string(flipXCheckbox.checked));
-		xml.set("icon", iconTextBox.label.text);
-		xml.set("scale", Std.string(scaleStepper.value));
-		xml.set("antialiasing", antialiasingCheckbox.checked ? "true" : "false");
-		xml.set("sprite", spriteTextBox.label.text);
-		if (iconColorWheel.colorChanged)
-			xml.set("color", iconColorWheel.curColor.toWebString());
-		for (val in customPropertiesButtonList.buttons.members)
-			xml.set(val.propertyText.label.text, val.valueText.label.text);
-
-		for (anim in character.animDatas)
-		{
-			var animXml:Xml = Xml.createElement('anim');
-			animXml.set("name", anim.name);
-			animXml.set("anim", anim.anim);
-			animXml.set("loop", Std.string(anim.loop));
-			animXml.set("fps", Std.string(anim.fps));
-			var offset:FlxPoint = character.getAnimOffset(anim.name);
-			animXml.set("x", Std.string(offset.x));
-			animXml.set("y", Std.string(offset.y));
-			offset.put();
-
-			if (anim.indices.length > 0)
-				animXml.set("indices", CoolUtil.formatNumberRange(anim.indices));
-			xml.addChild(animXml);
-		}
-
-		if (onSave != null) onSave(xml);
+		if (onSave != null) onSave({
+			icon: iconColorPicker.iconTextBox.label.text,
+			iconColor: iconColorWheel.curColor,
+			holdTime: useDurationCheckbox.checked ? durationStepper.value : -1,
+			customProperties: [
+				for (val in customPropertiesButtonList.buttons.members)
+					val.propertyText.label.text => val.valueText.label.text
+			]
+		});
 	}
 }

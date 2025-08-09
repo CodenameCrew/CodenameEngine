@@ -13,5 +13,5 @@ void main()
 	vec2 pixel = gl_FragCoord.xy;
 
 	if (boxCollision(pixel, clipRect)) gl_FragColor = flixel_texture2D(bitmap, openfl_TextureCoordv.xy);
-	else gl_FragColor = vec4(0.);
+	else gl_FragColor = vec4(0.0);
 }

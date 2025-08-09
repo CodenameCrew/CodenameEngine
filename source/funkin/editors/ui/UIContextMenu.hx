@@ -1,13 +1,13 @@
 package funkin.editors.ui;
 
-import flixel.util.FlxColor;
-import flixel.util.typeLimit.OneOfTwo;
 import flixel.input.keyboard.FlxKey;
+import flixel.util.FlxColor;
 
 class UIContextMenu extends MusicBeatSubstate {
 	public var options:Array<UIContextMenuOption>;
 	var x:Float;
 	var y:Float;
+	var w:Int = 100;
 	var contextCam:FlxCamera;
 
 	var bg:UISliceSprite;
@@ -16,17 +16,21 @@ class UIContextMenu extends MusicBeatSubstate {
 	public var contextMenuOptions:Array<UIContextMenuOptionSpr> = [];
 	public var separators:Array<FlxSprite> = [];
 
+	var scroll:Float = 0.0;
+	var flipped:Bool = false;
+
 	private var __oobDeletion:Bool = true;
 
 	public inline function preventOutOfBoxClickDeletion() {
 		__oobDeletion = false;
 	}
 
-	public function new(options:Array<UIContextMenuOption>, callback:UIContextMenuCallback, x:Float, y:Float) {
+	public function new(options:Array<UIContextMenuOption>, callback:UIContextMenuCallback, x:Float, y:Float, ?w:Int = 100) {
 		super();
 		this.options = options.getDefault([]);
 		this.x = x;
 		this.y = y;
+		this.w = w;
 		this.callback = callback;
 	}
 
@@ -38,7 +42,7 @@ class UIContextMenu extends MusicBeatSubstate {
 		contextCam.scroll.set(0, 7.5);
 		FlxG.cameras.add(contextCam, false);
 
-		bg = new UISliceSprite(x, y, 100, 100, 'editors/ui/context-bg');
+		bg = new UISliceSprite(x, y, w, 100, 'editors/ui/context-bg');
 		bg.cameras = [contextCam];
 		add(bg);
 
@@ -76,12 +80,21 @@ class UIContextMenu extends MusicBeatSubstate {
 		bg.bWidth = maxW + 8;
 		bg.bHeight = Std.int(lastY - bg.y + 4);
 
-		if (bg.y + bg.bHeight > FlxG.height) {
+		if (bg.y + bg.bHeight > FlxG.height && bg.y > FlxG.height*0.5) {
+			flipped = true;
 			bg.y -= bg.bHeight;
 			for(o in contextMenuOptions)
 				o.y -= bg.bHeight;
 			for(o in separators)
 				o.y -= bg.bHeight;
+		}
+
+		if (bg.x + bg.bWidth > FlxG.width && bg.x > FlxG.width*0.5) {
+			bg.x -= bg.bWidth;
+			for(o in contextMenuOptions)
+				o.x -= bg.bWidth;
+			for(o in separators)
+				o.x -= bg.bWidth;
 		}
 	}
 
@@ -103,7 +116,10 @@ class UIContextMenu extends MusicBeatSubstate {
 
 		super.update(elapsed);
 
-		contextCam.scroll.y = CoolUtil.fpsLerp(contextCam.scroll.y, 0, 0.5);
+		if (FlxG.mouse.wheel != 0.0)
+			scroll = FlxMath.bound(scroll + (FlxG.mouse.wheel * -20.0), !flipped ? 0.0 : -Math.max(bg.bHeight - FlxG.height*0.5, 0.0), flipped ? 0.0 : Math.max(bg.bHeight - FlxG.height*0.5, 0.0));
+
+		contextCam.scroll.y = CoolUtil.fpsLerp(contextCam.scroll.y, scroll, 0.5);
 		contextCam.alpha = CoolUtil.fpsLerp(contextCam.alpha, 1, 0.25);
 	}
 

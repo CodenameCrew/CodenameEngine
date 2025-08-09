@@ -1,0 +1,18 @@
+﻿<!-- Credits to ITALetsPlayer -->
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="story mode.png">
+	<!-- Created with Adobe Animate version 21.0.6.41649 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="story mode basic0000" x="100" y="100" width="407" height="134"/>
+	<SubTexture name="story mode basic0001" x="100" y="100" width="407" height="134"/>
+	<SubTexture name="story mode basic0002" x="100" y="100" width="407" height="134"/>
+	<SubTexture name="story mode basic0003" x="607" y="100" width="407" height="134"/>
+	<SubTexture name="story mode basic0004" x="607" y="100" width="407" height="134"/>
+	<SubTexture name="story mode basic0005" x="607" y="100" width="407" height="134"/>
+	<SubTexture name="story mode basic0006" x="1114" y="100" width="407" height="134"/>
+	<SubTexture name="story mode basic0007" x="1114" y="100" width="407" height="134"/>
+	<SubTexture name="story mode basic0008" x="1114" y="100" width="407" height="134"/>
+	<SubTexture name="story mode white0000" x="100" y="334" width="472" height="181" frameX="-4" frameY="26" frameWidth="480" frameHeight="187"/>
+	<SubTexture name="story mode white0001" x="672" y="334" width="479" height="175" frameX="0" frameY="23" frameWidth="480" frameHeight="187"/>
+	<SubTexture name="story mode white0002" x="1251" y="334" width="479" height="187" frameX="-1" frameY="30" frameWidth="480" frameHeight="187"/>
+</TextureAtlas>

@@ -15,32 +15,33 @@ class CharterNoteTypesList extends UISubstateWindow {
 		Charter.instance.vocals.pause();
 		for (strumLine in Charter.instance.strumLines.members) strumLine.vocals.pause();
 
-		winTitle = 'Note Types List Editor';
+		winTitle = TU.translate("charterNoteTypesList.title");
 		winWidth = 380; winHeight = 390;
 
 		super.create();
 
 		var title:UIText;
-		add(title = new UIText(windowSpr.x + 20, windowSpr.y + 30 + 16, 0, "Edit Note Types", 28));
+		add(title = new UIText(windowSpr.x + 20, windowSpr.y + 30 + 16, 0, TU.translate("charterNoteTypesList.editNoteTypes"), 28));
 
 		var noteTypesFileList = getNoteTypesList(true);
 		if (noteTypesFileList.length == 0) noteTypesFileList = getNoteTypesList(false);
 
-		noteTypesList = new UIButtonList<NoteTypeButton>(20, title.y + title.height + 10, winWidth - 40, 342 - 85 - 16, "", FlxPoint.get(winWidth - 40, (342 - 85 - 16)/4), null, 0);
-		noteTypesList.addButton.callback = () -> noteTypesList.add(new NoteTypeButton(0, 0, 'Note Type ${noteTypesList.buttons.members.length}', noteTypesList.buttons.members.length, noteTypesFileList, noteTypesList));
+		noteTypesList = new UIButtonList<NoteTypeButton>(20, title.y + title.height + 10, winWidth - 40, 342 - 85 - 16, null, FlxPoint.get(winWidth - 40, (342 - 85 - 16)/4), null, 0);
+		noteTypesList.addButton.callback = () -> noteTypesList.add(new NoteTypeButton(0, 0, TU.translate("charterNoteTypesList.editType", [noteTypesList.buttons.members.length]), noteTypesList.buttons.members.length, noteTypesFileList, noteTypesList));
 		noteTypesList.cameraSpacing = 0; noteTypesList.dragCallback = (object:NoteTypeButton, oldIndex:Int, newIndex:Int) -> {object.IDText.text = '${newIndex}.';};
 		for (i=>noteType in Charter.instance.noteTypes)
+			// TODO: make this translatable
 			noteTypesList.add(new NoteTypeButton(0, 0, noteType, i, noteTypesFileList, noteTypesList));
 		add(noteTypesList);
 		noteTypesList.frames = Paths.getFrames('editors/ui/inputbox');
 
-		saveButton = new UIButton(windowSpr.x + windowSpr.bWidth - 20 - 125, windowSpr.y + windowSpr.bHeight - 16 - 32, "Save & Close", function() {
+		saveButton = new UIButton(windowSpr.x + windowSpr.bWidth - 20 - 125, windowSpr.y + windowSpr.bHeight - 16 - 32, TU.translate("editor.saveClose"), function() {
 			saveList();
 			close();
 		}, 125);
 		add(saveButton);
 
-		closeButton = new UIButton(saveButton.x - 20, saveButton.y, "Close", function() {
+		closeButton = new UIButton(saveButton.x - 20, saveButton.y, TU.translate("editor.close"), function() {
 			close();
 		}, 125);
 		add(closeButton);
@@ -52,7 +53,7 @@ class CharterNoteTypesList extends UISubstateWindow {
 		var list:Array<String> = [];
 		for (path in Paths.getFolderContent(pathString, true, mods ? MODS : BOTH)) if(Path.extension(path) == "hx") {
 				var file:String = Path.withoutDirectory(path);
-				if (!list.contains(file)) list.push(file);
+				list.pushOnce(file);
 			}
 
 		return list;
@@ -91,7 +92,7 @@ class NoteTypeButton extends UIButton {
 		};
 		textBox.antialiasing = true;
 
-		deleteButton = new UIButton(textBox.x + textBox.label.width + 10, textBox.y, "", function () {
+		deleteButton = new UIButton(textBox.x + textBox.label.width + 10, textBox.y, null, function () {
 			parent.remove(this);
 		}, 32);
 		deleteButton.color = 0xFFFF0000;
