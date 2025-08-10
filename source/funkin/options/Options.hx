@@ -73,6 +73,7 @@ class Options
 	 */
 	public static var freeplayLastSong:String = null;
 	public static var freeplayLastDifficulty:String = "normal";
+	public static var freeplayLastVariation:String = null;
 	public static var contributors:Array<funkin.backend.system.github.GitHubContributor.CreditsGitHubContributor> = [];
 	public static var mainDevs:Array<Int> = [];  // IDs
 	public static var lastUpdated:Null<Float>;
@@ -117,6 +118,7 @@ class Options
 	public static var P1_ACCEPT:Array<FlxKey> = [ENTER];
 	public static var P1_BACK:Array<FlxKey> = [BACKSPACE];
 	public static var P1_PAUSE:Array<FlxKey> = [ENTER];
+	public static var P1_CHANGE_MODE:Array<FlxKey> = [TAB];
 
 	// Misc
 	public static var P1_RESET:Array<FlxKey> = [R];
@@ -148,6 +150,7 @@ class Options
 	public static var P2_ACCEPT:Array<FlxKey> = [SPACE];
 	public static var P2_BACK:Array<FlxKey> = [ESCAPE];
 	public static var P2_PAUSE:Array<FlxKey> = [ESCAPE];
+	public static var P2_CHANGE_MODE:Array<FlxKey> = [];
 
 	// Misc
 	public static var P2_RESET:Array<FlxKey> = [];
@@ -179,6 +182,7 @@ class Options
 	public static var SOLO_ACCEPT(get, null):Array<FlxKey>;
 	public static var SOLO_BACK(get, null):Array<FlxKey>;
 	public static var SOLO_PAUSE(get, null):Array<FlxKey>;
+	public static var SOLO_CHANGE_MODE(get, null):Array<FlxKey>;
 
 	// Misc
 	public static var SOLO_RESET(get, null):Array<FlxKey>;

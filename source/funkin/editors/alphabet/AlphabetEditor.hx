@@ -209,6 +209,9 @@ class AlphabetEditor extends UIState {
 				scaleX: 1,
 				scaleY: 1,
 
+				flipX: false,
+				flipY: false,
+
 				hasColorMode: false,
 				colorMode: bigLetter.colorMode
 			};

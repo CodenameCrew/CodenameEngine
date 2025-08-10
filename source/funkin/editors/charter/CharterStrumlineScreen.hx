@@ -171,7 +171,7 @@ class CharterStrumlineScreen extends UISubstateWindow {
 			}
 		}
 
-		vocalsSuffixDropDown = new UIDropDown(typeDropdown.x, hudScaleStepper.y + 128, 200, 32, suffixList, strumLine.vocalsSuffix != null && strumLine.vocalsSuffix != "" ? suffixList.indexOf(strumLine.vocalsSuffix) : 0);
+		vocalsSuffixDropDown = new UIDropDown(typeDropdown.x, hudScaleStepper.y + 128, 200, 32, suffixList, strumLine.vocalsSuffix != null && strumLine.vocalsSuffix != "" && Assets.exists(Paths.voices(Charter.__song.toLowerCase(), "", strumLine.vocalsSuffix)) ? suffixList.indexOf(strumLine.vocalsSuffix) : 0);
 		add(vocalsSuffixDropDown);
 		addLabelOn(vocalsSuffixDropDown, TU.translate("charterStrumLine.vocalSuffix"));
 

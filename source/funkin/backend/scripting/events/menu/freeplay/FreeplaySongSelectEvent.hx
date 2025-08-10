@@ -10,6 +10,10 @@ final class FreeplaySongSelectEvent extends CancellableEvent {
 	 */
 	public var difficulty:String;
 	/**
+	 * Variation Name
+	 */
+	public var variant:String;
+	/**
 	 * Whenever opponent mode is enabled or not.
 	 */
 	public var opponentMode:Bool;

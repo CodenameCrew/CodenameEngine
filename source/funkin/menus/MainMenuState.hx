@@ -25,6 +25,8 @@ class MainMenuState extends MusicBeatState
 	var camFollow:FlxObject;
 	var versionText:FunkinText;
 
+	var devModeWarning:FunkinText;
+
 	public var canAccessDebugMenus:Bool = !Flags.DISABLE_EDITORS;
 
 	override function create()
@@ -85,10 +87,17 @@ class MainMenuState extends MusicBeatState
 		add(versionText);
 
 		changeItem();
+
+		devModeWarning = new FunkinText(0, FlxG.height - 50, 1280, "You have to enable DEVELOPER MODE in the miscellaneous settings!", 24);
+		devModeWarning.alignment = CENTER;
+		add(devModeWarning);
+		devModeWarning.scrollFactor.set();
+		devModeWarning.alpha = 0;
 	}
 
 	var selectedSomethin:Bool = false;
 	var forceCenterX:Bool = true;
+	var devModeCount:Int = 0;
 
 	override function update(elapsed:Float)
 	{
@@ -110,6 +119,17 @@ class MainMenuState extends MusicBeatState
 					CoolUtil.safeSaveFile("chart.json", Json.stringify(funkin.backend.chart.Chart.parse("dadbattle", "hard")));
 				}
 				*/
+			}
+			if (!Options.devMode && FlxG.keys.justPressed.SEVEN) {
+				FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_DELETE_SOUND));
+				if (devModeCount++ == 2) {
+					FlxTween.tween(devModeWarning, {alpha: 1}, 0.4);
+				}
+				FlxTween.completeTweensOf(devModeWarning);
+				FlxTween.color(devModeWarning, 0.2, 0xFFFF0000, 0xFFFFFFFF);
+				FlxTween.shake(devModeWarning, 0.005, 0.3);
+				devModeWarning.y = FlxG.height - 75;
+				FlxTween.tween(devModeWarning, {y: FlxG.height - 50}, 0.4);
 			}
 
 			var upP = controls.UP_P;

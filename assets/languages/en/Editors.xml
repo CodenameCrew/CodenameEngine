@@ -9,6 +9,8 @@
 		<str id="save">Save</str>
 		<str id="saveClose">Save &amp; Close</str>
 		<str id="close">Close</str>
+		<str id="notNow">Not Now</str>
+		<str id="yes">Yes</str>
 	</group>
 
 	<group name="UIImageExplorer" prefix="uiImageExplorer.">
@@ -43,12 +45,15 @@
 		<group name="CharterSelection" prefix="charterSelection.">
 			<str id="desc">Select a song to modify the charts from.</str>
 			<str id="acceptSong">Press ACCEPT to choose a difficulty to edit.</str>
+			<str id="acceptVariation">Press ACCEPT to choose a song variation to edit.</str>
 			<str id="acceptDifficulty">Press ACCEPT to edit the chart for the selected difficulty.</str>
 			<str id="selectDifficulty">Select a difficulty to continue.</str>
 			<str id="newDifficulty">New Difficulty</str>
 			<str id="newDifficultyDesc">Press ACCEPT to create a new chart difficulty.</str>
 			<str id="newSong">New Song</str>
 			<str id="newSongDesc">Press ACCEPT to create a new song.</str>
+			<str id="newVariation">New Variation</str>
+			<str id="newVariationDesc">Press ACCEPT to create a new song variation.</str>
 		</group>
 
 		<group name="ChartCreationScreen" prefix="chartCreation.">
@@ -102,6 +107,7 @@
 
 			<str id="songData">Song Data</str>
 			<str id="songName">Song Name</str>
+			<str id="variation">Song Variation</str>
 			<str id="bpm">BPM</str>
 			<str id="timeSignature">Time Signature</str>
 			<str id="menusData">Menus Data (Freeplay/Story)</str>
@@ -111,6 +117,7 @@
 			<str id="color">Color</str>
 			<str id="difficulties">Difficulties</str>
 			<str id="customValues">Custom Values (Advanced)</str>
+			<str id="needsVoices">Needs Voices</str>
 
 			<str id="opponentMode">Opponent Mode</str>
 			<str id="coopAllowed">Co-op Mode</str>
@@ -236,7 +243,7 @@
 				<group name="BookmarkMenu" prefix="bookmarks.">
 					<str id="addBookmarkHere">Add Bookmark Here</str>
 					<str id="editBookmarkList">Edit Bookmark List</str>
-					<str id="goto">Go to "{0}"</str>
+					<str id="goTo">Go to "{0}"</str>
 					<str id="createBookmarkTitle">Creating New Bookmark...</str>
 					<str id="createBookmarkName">Bookmark Name:</str>
 					<str id="createBookmarkColor">Bookmark Color:</str>
@@ -571,7 +578,7 @@
 			</group>
 		</group>
 
-		<group name="StageInfoScreen" prefix="stageInfoScreen">
+		<group name="StageInfoScreen" prefix="stageInfoScreen.">
 			<str id="win-title">Editing Stage "{0}" Infos</str>
 			<str id="title">Stage Info</str>
 			<str id="stageName">Stage Name</str>
@@ -664,5 +671,13 @@
 		<str id="saveAndExitGame">Save &amp; Exit Game</str>
 		<str id="saveAndExitToMenu">Save &amp; Exit To Menu</str>
 		<str id="cancel">Cancel</str>
+	</group>
+
+	<group name="ModConfigWarning" prefix="modConfigWarning.">
+		<str id="warningTitle">Missing mod folder configuration!</str>
+		<str id="warningDesc">Your mod is currently missing a mod config file!\n\nWould you like to automatically generate one?\n\n(PS: If this is not your mod please disable Developer mode to stop this popup from appearing.)</str>
+
+		<str id="createdTitle">Created mod config!</str>
+		<str id="createdDesc">Your mod config file has been created at {0}!</str>
 	</group>
 </language>

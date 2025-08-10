@@ -26,6 +26,7 @@ typedef WeekCharacter = {
 
 typedef WeekSong = {
 	var name:String;
-	var hide:Bool;
+	var ?hide:Bool;
+	var ?variation:String;
 	var ?displayName:String;
 }

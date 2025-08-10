@@ -54,6 +54,13 @@ class Note extends FlxSprite
 	public var nextSustain:Note;
 
 	/**
+	 * The parent of the sustain.
+	 * 
+	 * If this note is not sustain, this will be null.
+	 */
+	public var sustainParent:Null<Note>;
+
+	/**
 	 * Name of the splash.
 	 */
 	public var splash:String = "default";
@@ -124,6 +131,10 @@ class Note extends FlxSprite
 		this.strumLine = strumLine;
 		for(field in Reflect.fields(noteData)) if(!DEFAULT_FIELDS.contains(field))
 			this.extra.set(field, Reflect.field(noteData, field));
+
+		// work around to set the `sustainParent`
+		if (isSustainNote)
+			sustainParent = prevNote.isSustainNote ? prevNote.sustainParent : prevNote;
 
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?

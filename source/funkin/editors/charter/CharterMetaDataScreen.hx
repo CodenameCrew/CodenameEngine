@@ -23,6 +23,7 @@ class CharterMetaDataScreen extends UISubstateWindow {
 	public var iconSprite:HealthIcon;
 	public var opponentModeCheckbox:UICheckbox;
 	public var coopAllowedCheckbox:UICheckbox;
+	public var needsVoicesCheckbox:UICheckbox;
 	public var colorWheel:UIColorwheel;
 	public var difficultiesTextBox:UITextBox;
 
@@ -67,6 +68,9 @@ class CharterMetaDataScreen extends UISubstateWindow {
 
 		denominatorStepper = new UINumericStepper(beatsPerMeasureStepper.x + 30 + 24, beatsPerMeasureStepper.y, Math.floor(16 / metadata.stepsPerBeat), 1, 0, 1, null, 54);
 		add(denominatorStepper);
+
+		needsVoicesCheckbox = new UICheckbox(beatsPerMeasureStepper.x + 100, beatsPerMeasureStepper.y + 6, translate("needsVoices"), metadata.needsVoices);
+		add(needsVoicesCheckbox);
 
 		add(title = new UIText(songNameTextBox.x, songNameTextBox.y + 10 + 46, 0, translate("menusData"), 28));
 
@@ -146,20 +150,23 @@ class CharterMetaDataScreen extends UISubstateWindow {
 			Reflect.setProperty(customVals, vals.propertyText.label.text, vals.valueText.label.text);
 		}
 
-		PlayState.SONG.meta = {
-			name: songNameTextBox.label.text,
-			bpm: bpmStepper.value,
-			beatsPerMeasure: Std.int(beatsPerMeasureStepper.value),
-			stepsPerBeat: Std.int(16 / denominatorStepper.value),
-			displayName: displayNameTextBox.label.text,
-			icon: iconTextBox.label.text,
-			color: colorWheel.curColor,
-			opponentModeAllowed: opponentModeCheckbox.checked,
-			coopAllowed: coopAllowedCheckbox.checked,
-			difficulties: [for (diff in difficultiesTextBox.label.text.split(",")) diff.trim()],
-			customValues: customVals,
-		};
+		var meta = PlayState.SONG.meta;
+		if (meta == null) meta = {name: songNameTextBox.label.text};
+		else meta.name = songNameTextBox.label.text;
+
+		meta.bpm = bpmStepper.value;
+		meta.needsVoices = needsVoicesCheckbox.checked;
+		meta.beatsPerMeasure = Std.int(beatsPerMeasureStepper.value);
+		meta.stepsPerBeat = Std.int(16 / denominatorStepper.value);
+		meta.displayName = displayNameTextBox.label.text;
+		meta.icon = iconTextBox.label.text;
+		meta.color = colorWheel.curColor;
+		meta.opponentModeAllowed = opponentModeCheckbox.checked;
+		meta.coopAllowed = coopAllowedCheckbox.checked;
+		meta.difficulties = [for (diff in difficultiesTextBox.label.text.split(",")) diff.trim()];
+		meta.customValues = customVals;
 
 		Charter.instance.updateBPMEvents();
+		Charter.instance.vocals.muted = !needsVoicesCheckbox.checked;
 	}
 }

@@ -62,9 +62,17 @@ class PlayState extends MusicBeatState
 	 */
 	public static var storyPlaylist:Array<String> = [];
 	/**
+	 * The remaining variations to play with the Story Mode
+	 */
+	public static var storyVariations:Array<String> = [];
+	/**
 	 * The selected difficulty name.
 	 */
 	public static var difficulty:String = Flags.DEFAULT_DIFFICULTY;
+	/**
+	 * The selected variation name. (It can be null)
+	 */
+	public static var variation:Null<String>;
 	/**
 	 * Whenever the week is coming from the mods folder or not.
 	 */
@@ -552,7 +560,7 @@ class PlayState extends MusicBeatState
 	@:noCompletion @:dox(hide) private var _endSongCalled:Bool = false;
 
 	@:dox(hide)
-	var __vocalSyncTimer:Float = 0;
+	var __vocalSyncTimer:Float = 1;
 
 	private function get_accuracy():Float {
 		if (accuracyPressedNotes <= 0) return -1;
@@ -657,7 +665,7 @@ class PlayState extends MusicBeatState
 		persistentDraw = true;
 
 		if (SONG == null)
-			SONG = Chart.parse('tutorial', 'normal');
+			SONG = Chart.parse('tutorial', difficulty = 'normal', variation = null);
 
 		scrollSpeed = SONG.scrollSpeed;
 
@@ -1113,9 +1121,11 @@ class PlayState extends MusicBeatState
 		curSong = songData.meta.name.toLowerCase();
 		curSongID = curSong.replace(" ", "-");
 
-		FlxG.sound.setMusic(inst = FlxG.sound.load(Assets.getMusic(Paths.inst(SONG.meta.name, difficulty))));
-		if (SONG.meta.needsVoices != false && Assets.exists(Paths.voices(SONG.meta.name, difficulty))) // null or true
-			vocals = FlxG.sound.load(Options.streamedVocals ? Assets.getMusic(Paths.voices(SONG.meta.name, difficulty)) : Paths.voices(SONG.meta.name, difficulty));
+		FlxG.sound.setMusic(inst = FlxG.sound.load(Assets.getMusic(Paths.inst(SONG.meta.name, difficulty, SONG.meta.instSuffix))));
+
+		var vocalsPath = Paths.voices(SONG.meta.name, difficulty, SONG.meta.vocalsSuffix);
+		if (SONG.meta.needsVoices && Assets.exists(vocalsPath))
+			vocals = FlxG.sound.load(Options.streamedVocals ? Assets.getMusic(vocalsPath) : vocalsPath);
 		else
 			vocals = new FlxSound();
 
@@ -1224,7 +1234,7 @@ class PlayState extends MusicBeatState
 		var time = Conductor.songPosition + Conductor.songOffset;
 		for (strumLine in strumLines.members) strumLine.vocals.play(true, time);
 		vocals.play(true, time);
-		inst.play(true, time);
+		if (!inst.playing) inst.play(true, time);
 
 		gameAndCharsCall("onVocalsResync");
 	}
@@ -1350,7 +1360,7 @@ class PlayState extends MusicBeatState
 			updateRatingStuff();
 
 		if (canAccessDebugMenus && chartingMode && controls.DEV_ACCESS)
-			FlxG.switchState(new funkin.editors.charter.Charter(SONG.meta.name, difficulty, false));
+			FlxG.switchState(new funkin.editors.charter.Charter(SONG.meta.name, difficulty, variation, false));
 
 		if (Options.camZoomOnBeat && camZooming) {
 			var beat = Conductor.getBeats(camZoomingEvery, camZoomingInterval, camZoomingOffset);
@@ -1375,20 +1385,19 @@ class PlayState extends MusicBeatState
 			updateIconPositions();
 
 		if (startingSong) {
-			if (startedCountdown) {
-				Conductor.songPosition += Conductor.songOffset + elapsed * 1000;
-				if (Conductor.songPosition >= 0)
-					startSong();
+			if (startedCountdown && (Conductor.songPosition += Conductor.songOffset + elapsed * 1000) >= 0) {
+				Conductor.songPosition = Conductor.songOffset;
+				startSong();
 			}
 		}
 		else if (FlxG.sound.music != null && (__vocalSyncTimer -= elapsed) < 0) {
 			__vocalSyncTimer = 1;
 
 			var instTime = FlxG.sound.music.getActualTime();
-			var isOffsync:Bool = vocals.loaded && Math.abs(instTime - vocals.getActualTime()) > 30;
+			var isOffsync:Bool = vocals.loaded && Math.abs(instTime - vocals.getActualTime()) > 100;
 			if (!isOffsync) {
 				for (strumLine in strumLines.members) {
-					if ((isOffsync = strumLine.vocals.loaded && Math.abs(instTime - strumLine.vocals.getActualTime()) > 30)) break;
+					if ((isOffsync = strumLine.vocals.loaded && Math.abs(instTime - strumLine.vocals.getActualTime()) > 100)) break;
 				}
 			}
 
@@ -1686,22 +1695,17 @@ class PlayState extends MusicBeatState
 	 */
 	public function endSong():Void
 	{
+		if (gameAndCharsEvent("onSongEnd", new CancellableEvent()).cancelled) return;
 		endingSong = true;
-		gameAndCharsCall("onSongEnd");
 		canPause = false;
-		inst.volume = 0;
-		vocals.volume = 0;
-		for (strumLine in strumLines.members) {
-			strumLine.vocals.volume = 0;
-			strumLine.vocals.pause();
-		}
-		inst.pause();
-		vocals.pause();
 
-		if (validScore)
-		{
+		for (strumLine in strumLines.members) strumLine.vocals.stop();
+		inst.stop();
+		vocals.stop();
+
+		if (validScore) {
 			#if !switch
-			FunkinSave.setSongHighscore(SONG.meta.name, difficulty, {
+			FunkinSave.setSongHighscore(SONG.meta.name, difficulty, variation, {
 				score: songScore,
 				misses: misses,
 				accuracy: accuracy,
@@ -1727,20 +1731,19 @@ class PlayState extends MusicBeatState
 	 * Immediately switches to the next song, or goes back to the Story/Freeplay menu.
 	 */
 	public function nextSong() {
-		if (isStoryMode)
-		{
+		if (isStoryMode) {
 			campaignScore += songScore;
 			campaignMisses += misses;
 			campaignAccuracyTotal += accuracy;
 			campaignAccuracyCount++;
 			storyPlaylist.shift();
+			storyVariations.shift();
 
-			if (storyPlaylist.length <= 0)
-			{
+			if (storyPlaylist.length <= 0) {
 				FlxG.switchState(new StoryMenuState());
 
-				if (validScore)
-				{
+				if (validScore) {
+					#if !switch
 					// TODO: more week info saving
 					FunkinSave.setWeekHighscore(storyWeek.id, difficulty, {
 						score: campaignScore,
@@ -1749,29 +1752,23 @@ class PlayState extends MusicBeatState
 						hits: [],
 						date: Date.now().toString()
 					});
+					#end
 				}
 				FlxG.save.flush();
 			}
-			else
-			{
-				Logs.infos('Loading next song (${storyPlaylist[0].toLowerCase()}/$difficulty)', "PlayState");
+			else {
+				Logs.infos('Loading next song (${storyPlaylist[0].toLowerCase()}/$difficulty/${storyVariations[0]})', "PlayState");
 
 				registerSmoothTransition();
 
-				FlxG.sound.music.stop();
-
-				__loadSong(storyPlaylist[0], difficulty);
-
+				__loadSong(storyPlaylist[0], difficulty, storyVariations[0]);
 				FlxG.switchState(new PlayState());
 			}
 		}
+		else if (chartingMode)
+			FlxG.switchState(new funkin.editors.charter.Charter(SONG.meta.name, difficulty, variation, false));
 		else
-		{
-			if (chartingMode)
-				FlxG.switchState(new funkin.editors.charter.Charter(SONG.meta.name, difficulty, false));
-			else
-				FlxG.switchState(new FreeplayState());
-		}
+			FlxG.switchState(new FreeplayState());
 	}
 
 	public function registerSmoothTransition() {
@@ -1943,6 +1940,8 @@ class PlayState extends MusicBeatState
 		}
 
 		if (event.deleteNote) strumLine.deleteNote(note);
+
+		gameAndCharsEvent("onPostNoteHit", event);
 	}
 
 	public function displayRating(myRating:String, ?evt:NoteHitEvent = null):Void {
@@ -2142,43 +2141,51 @@ class PlayState extends MusicBeatState
 		if (difficulty == null) difficulty = Flags.DEFAULT_DIFFICULTY;
 		storyWeek = weekData;
 		storyPlaylist = [for (e in weekData.songs) e.name];
+		storyVariations = [for (e in weekData.songs) e.variation];
 		isStoryMode = true;
 		campaignScore = 0;
 		campaignMisses = 0;
 		campaignAccuracyTotal = 0;
 		campaignAccuracyCount = 0;
-		chartingMode = false;
-		opponentMode = coopMode = false;
-		__loadSong(storyPlaylist[0], difficulty);
+		chartingMode = coopMode = opponentMode = false;
+		__loadSong(storyPlaylist[0], difficulty, storyVariations[0]);
 	}
 
 	/**
 	 * Loads a song into PlayState
 	 * @param name Song name
 	 * @param difficulty Chart difficulty (if invalid, will load an empty chart)
+	 * @param variation Song Variation
 	 * @param opponentMode Whenever opponent mode is on
 	 * @param coopMode Whenever co-op mode is on.
 	 */
-	public static function loadSong(_name:String, ?_difficulty:String, _opponentMode:Bool = false, _coopMode:Bool = false) {
+	public static function loadSong(_name:String, ?_difficulty:String, ?_variation:Dynamic, _opponentMode:Bool = false, _coopMode:Bool = false) {
 		if (_difficulty == null) difficulty = Flags.DEFAULT_DIFFICULTY;
-		isStoryMode = false;
+		if (_variation is Bool) { // vackward cumpatibshit
+			_coopMode = _opponentMode;
+			_opponentMode = cast _variation;
+			_variation = null;
+		}
+		else if (!(_variation is String)) _variation = null;
 		opponentMode = _opponentMode;
-		chartingMode = false;
 		coopMode = _coopMode;
-		__loadSong(_name, _difficulty);
+		isStoryMode = chartingMode = false;
+		__loadSong(_name, _difficulty, cast _variation);
 	}
 
 	/**
 	 * (INTERNAL) Loads a song without resetting story mode/opponent mode/coop mode values.
 	 * @param name Song name
-	 * @param difficulty Song difficulty
+	 * @param difficulty Chart difficulty
+	 * @param variation Song Variation
 	 */
-	public static function __loadSong(_name:String, _difficulty:String) {
+	public static function __loadSong(_name:String, _difficulty:String, _variation:String) {
 		difficulty = _difficulty;
+		variation = _variation;
 		seenCutscene = false;
 		deathCounter = 0;
 
-		SONG = Chart.parse(_name, _difficulty);
+		SONG = Chart.parse(_name, _difficulty, _variation);
 		fromMods = SONG.fromMods;
 	}
 }

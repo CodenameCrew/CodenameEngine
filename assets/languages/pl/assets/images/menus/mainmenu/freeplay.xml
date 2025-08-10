@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="freeplay.png" width="1027" height="927">
+	<SubTexture name="freeplay basic0000" x="1" y="556" width="701" height="122" frameX="-0" frameY="-0" frameWidth="701" frameHeight="122"/>
+	<SubTexture name="freeplay basic0001" x="1" y="556" width="701" height="122" frameX="-0" frameY="-0" frameWidth="701" frameHeight="122"/>
+	<SubTexture name="freeplay basic0002" x="1" y="556" width="701" height="122" frameX="-0" frameY="-0" frameWidth="701" frameHeight="122"/>
+	<SubTexture name="freeplay basic0003" x="1" y="680" width="701" height="122" frameX="-0" frameY="-0" frameWidth="701" frameHeight="122"/>
+	<SubTexture name="freeplay basic0004" x="1" y="680" width="701" height="122" frameX="-0" frameY="-0" frameWidth="701" frameHeight="122"/>
+	<SubTexture name="freeplay basic0005" x="1" y="680" width="701" height="122" frameX="-0" frameY="-0" frameWidth="701" frameHeight="122"/>
+	<SubTexture name="freeplay basic0006" x="1" y="804" width="701" height="122" frameX="-0" frameY="-0" frameWidth="701" frameHeight="122"/>
+	<SubTexture name="freeplay basic0007" x="1" y="804" width="701" height="122" frameX="-0" frameY="-0" frameWidth="701" frameHeight="122"/>
+	<SubTexture name="freeplay basic0008" x="1" y="804" width="701" height="122" frameX="-0" frameY="-0" frameWidth="701" frameHeight="122"/>
+	<SubTexture name="freeplay white0000" x="1" y="373" width="1020" height="181" frameX="-7" frameY="30" frameWidth="1027" frameHeight="188"/>
+	<SubTexture name="freeplay white0001" x="1" y="187" width="1021" height="184" frameX="-4" frameY="30" frameWidth="1027" frameHeight="188"/>
+	<SubTexture name="freeplay white0002" x="1" y="1" width="1025" height="184" frameX="-0" frameY="26" frameWidth="1027" frameHeight="188"/>
+</TextureAtlas>

@@ -12,13 +12,13 @@ import haxe.Exception;
  * Requires the `GITHUB_API` macro to be defined.
  * This has no authentication, so it's limited to unauthenticated requests, and rate limits.
 **/
-class GitHub {
+final class GitHub {
 	/**
 	 * Gets all the releases from a specific GitHub repository using the GitHub API.
-	 * @param user The user/organization that owns the repository
-	 * @param repository The repository name
-	 * @param onError Error Callback
-	 * @return Releases
+	 * @param user The user/organization that owns the repository.
+	 * @param repository The repository name.
+	 * @param onError Error Callback.
+	 * @return Releases in Array.
 	 */
 	public static function getReleases(user:String, repository:String, ?onError:Exception->Void):Array<GitHubRelease> {
 		#if GITHUB_API
@@ -38,17 +38,16 @@ class GitHub {
 
 	/**
 	 * Gets the contributors list from a specific GitHub repository using the GitHub API.
-	 * @param user The user/organization that owns the repository
-	 * @param repository The repository name
-	 * @param onError Error Callback
-	 * @return Contributors List
+	 * @param user The user/organization that owns the repository.
+	 * @param repository The repository name.
+	 * @param onError Error Callback.
+	 * @return Contributors List as Array.
 	 */
 	public static function getContributors(user:String, repository:String, ?onError:Exception->Void):Array<GitHubContributor> {
 		#if GITHUB_API
 		try {
 			var data = Json.parse(HttpUtil.requestText('https://api.github.com/repos/${user}/${repository}/contributors'));
-			if (!(data is Array))
-				throw __parseGitHubException(data);
+			if (!(data is Array)) throw __parseGitHubException(data);
 
 			return data;
 		} catch(e) {
@@ -61,16 +60,15 @@ class GitHub {
 
 	/**
 	 * Gets a specific GitHub organization using the GitHub API.
-	 * @param org The organization to get
-	 * @param onError Error Callback
-	 * @return Organization
+	 * @param org The organization to get.
+	 * @param onError Error Callback.
+	 * @return Organization.
 	 */
 	public static function getOrganization(org:String, ?onError:Exception->Void):GitHubOrganization {
 		#if GITHUB_API
 		try {
 			var data = Json.parse(HttpUtil.requestText('https://api.github.com/orgs/$org'));
-			if (Reflect.hasField(data, "documentation_url"))
-				throw __parseGitHubException(data);
+			if (Reflect.hasField(data, "documentation_url")) throw __parseGitHubException(data);
 
 			return data;
 		} catch(e) {
@@ -84,16 +82,15 @@ class GitHub {
 	/**
 	 * Gets the members list from a specific GitHub organization using the GitHub API.
 	 * NOTE: Members use Contributors' structure!
-	 * @param org The organization to get the members from
-	 * @param onError Error Callback
-	 * @return Members List
+	 * @param org The organization to get the members from.
+	 * @param onError Error Callback.
+	 * @return Members List as Array
 	 */
 	public static function getOrganizationMembers(org:String, ?onError:Exception->Void):Array<GitHubContributor> {
 		#if GITHUB_API
 		try {
 			var data = Json.parse(HttpUtil.requestText('https://api.github.com/orgs/$org/members'));
-			if (Reflect.hasField(data, "documentation_url"))
-				throw __parseGitHubException(data);
+			if (Reflect.hasField(data, "documentation_url")) throw __parseGitHubException(data);
 
 			return data;
 		} catch(e) {
@@ -107,18 +104,15 @@ class GitHub {
 	/**
 	 * Gets a specific GitHub user/organization using the GitHub API.
 	 * NOTE: If organization, it will be returned with the structure of a normal user; use `getOrganization` if you specifically want an organization!
-	 * @param user The user/organization to get
-	 * @param onError Error Callback
-	 * @return User/Organization
+	 * @param user The user/organization to get.
+	 * @param onError Error Callback.
+	 * @return User/Organization.
 	 */
 	public static function getUser(user:String, ?onError:Exception->Void):GitHubUser {
 		#if GITHUB_API
 		try {
-			var url = 'https://api.github.com/users/$user';
-
-			var data = Json.parse(HttpUtil.requestText(url));
-			if (Reflect.hasField(data, "documentation_url"))
-				throw __parseGitHubException(data);
+			var data = Json.parse(HttpUtil.requestText('https://api.github.com/users/$user'));
+			if (Reflect.hasField(data, "documentation_url")) throw __parseGitHubException(data);
 
 			return data;
 		} catch(e) {

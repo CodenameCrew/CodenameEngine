@@ -129,7 +129,7 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && transitioning && skippedIntro) {
 			FlxG.camera.stopFX();// FlxG.camera.visible = false;
-			goToMainMenu();
+			goToMainMenu(false);
 		}
 
 		if (pressedEnter && !transitioning && skippedIntro)
@@ -152,22 +152,24 @@ class TitleState extends MusicBeatState
 		transitioning = true;
 		// FlxG.sound.music.stop();
 
-		new FlxTimer().start(2, (_) -> goToMainMenu());
+		new FlxTimer().start(2, (_) -> goToMainMenu(false));
 	}
 
-	function goToMainMenu() {
+	function goToMainMenu(force = true) {
 		#if UPDATE_CHECKING
-		var report = hasCheckedUpdates ? null : funkin.backend.system.updating.UpdateUtil.checkForUpdates();
-		hasCheckedUpdates = true;
+		if (!force && !Flags.DISABLE_AUTOUPDATER) {
+			funkin.backend.system.updating.UpdateUtil.waitForUpdates(false, (report) -> {
+				hasCheckedUpdates = true;
+				if (FlxG.state != this) return;
 
-		if (report != null && report.newUpdate) {
-			FlxG.switchState(new funkin.backend.system.updating.UpdateAvailableScreen(report));
-		} else {
+				if (!report.newUpdate) goToMainMenu(true);
+				else FlxG.switchState(new funkin.backend.system.updating.UpdateAvailableScreen(report));
+			}, true);
+		}
+		else
+		#end {
 			FlxG.switchState(new MainMenuState());
 		}
-		#else
-		FlxG.switchState(new MainMenuState());
-		#end
 	}
 
 	public function createCoolText(textArray:Array<String>)

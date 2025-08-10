@@ -38,6 +38,6 @@ class FlxInterpolateColor {
 		alpha = (color.alphaFloat - alpha) * ratio + alpha;
 	}
 
-	public inline function fpsLerpTo(color:FlxColor, ratio:Float)
-		lerpTo(color, ratio * 60 * FlxG.elapsed);
+	public inline function fpsLerpTo(color:FlxColor, ratio:Float, ?delta:Float)
+		lerpTo(color, CoolUtil.getFPSRatio(ratio, delta));
 }

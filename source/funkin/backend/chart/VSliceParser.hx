@@ -26,12 +26,12 @@ class VSliceParser {
 				stage: Flags.DEFAULT_STAGE,
 				codenameChart: true
 			};
-			parseChart(Reflect.field(chartData.notes, diff), metaData, chartData.events, base);
+			parseChart(Reflect.field(chartData.notes, diff), metaData, chartData.events, base, resultMeta);
 			resultCharts.push({diffName: diff, chart: base});
 		}
 	}
 
-	public static function parseChart(data:Dynamic, metaData:Dynamic, events:Dynamic, result:ChartData) {
+	public static function parseChart(data:Dynamic, metaData:Dynamic, events:Dynamic, result:ChartData, resultMeta:ChartMetaData) {
 		// vslice chart parsing
 		var data:Array<SwagNote> = data;
 		var metadata:SwagMetadata = metaData;
@@ -45,14 +45,14 @@ class VSliceParser {
 			type: 0,
 			position: (p2isGF = metadata.playData.characters.opponent.startsWith("gf")) ? "girlfriend" : "dad",
 			notes: [],
-			vocalsSuffix: "-Opponent"
+			vocalsSuffix: '-${metadata.playData.characters.opponent}${resultMeta.vocalsSuffix != null ? resultMeta.vocalsSuffix : ""}'
 		});
 		result.strumLines.push({
 			characters: [metadata.playData.characters.player],
 			type: 1,
 			position: "boyfriend",
 			notes: [],
-			vocalsSuffix: "-Player"
+			vocalsSuffix: '-${metadata.playData.characters.player}${resultMeta.vocalsSuffix != null ? resultMeta.vocalsSuffix : ""}'
 		});
 		var gfName = metadata.playData.characters.girlfriend;
 		if (!p2isGF && gfName != "none") {
@@ -67,7 +67,7 @@ class VSliceParser {
 
 		var timeChanges = metadata.timeChanges;
 		result.meta.bpm = timeChanges[0].bpm;
-		result.meta.needsVoices = true;
+		result.meta.needsVoices = false;
 
 		for (note in data)
 		{
@@ -108,7 +108,7 @@ class VSliceParser {
 			{
 				case "FocusCamera":
 					var isPosOnly = false;
-					var arr:Array<Dynamic> = [switch(values.char) {
+					var arr:Array<Dynamic> = [switch(values is Int ? values : values.char) {
 						// more cases here in the future if they add em? (i hope not)  - Nex
 						case 0: 1;
 						case 1: 0;
@@ -177,16 +177,12 @@ class VSliceParser {
 		var songID:String = songID == null ? songName.toLowerCase().replace(" ", "-") : songID;
 		var firstTimeChange:SwagTimeChange = data.timeChanges[0];
 
-		result.name = songID;
 		result.bpm = firstTimeChange.bpm.getDefault(Flags.DEFAULT_BPM);
 		result.beatsPerMeasure = firstTimeChange.n.getDefault(Flags.DEFAULT_BEATS_PER_MEASURE);
 		result.stepsPerBeat = firstTimeChange.d.getDefault(Flags.DEFAULT_STEPS_PER_BEAT);
 		result.displayName = songName;
-		result.icon = Flags.DEFAULT_HEALTH_ICON;
-		result.color = 0xFFFFFF;
-		result.opponentModeAllowed = true;
-		result.coopAllowed = true;
-		result.difficulties = data.playData.difficulties.concat(data.playData.songVariations.getDefault([]));
+		result.difficulties = data.playData.difficulties.copy();
+		if (data.playData.songVariations != null) result.variants = data.playData.songVariations.copy();
 
 		if (result.customValues == null) result.customValues = {};
 		result.customValues.artist = data.artist;

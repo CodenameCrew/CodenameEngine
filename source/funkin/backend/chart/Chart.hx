@@ -71,8 +71,9 @@ class Chart {
 		return LEGACY;
 	}
 
-	public static function loadEventsJson(songName:String) {
-		var path = Paths.file('songs/${songName}/events.json');
+	public static function loadEventsJson(songName:String, ?variant:String) {
+		var variantSuffix = variant != null && variant != "" ? '-$variant' : "";
+		var path = Paths.file('songs/${songName}/events$variantSuffix.json');
 		var data:Array<ChartEvent> = null;
 		if (Assets.exists(path)) {
 			try {
@@ -83,62 +84,91 @@ class Chart {
 		return data;
 	}
 
-	public static function loadChartMeta(songName:String, ?difficulty:String, fromMods:Bool = true):ChartMetaData {
-		if (difficulty == null) difficulty = Flags.DEFAULT_DIFFICULTY;
+	inline public static function defaultChartMetaFields(data:ChartMetaData):ChartMetaData {
+		data.setFieldDefault("displayName", data.name);
 
-		var metaPath = Paths.file('songs/${songName}/meta.json');
-		var metaDiffPath = Paths.file('songs/${songName}/meta-${difficulty}.json');
+		data.setFieldDefault("bpm", Flags.DEFAULT_BPM);
+		data.setFieldDefault("beatsPerMeasure", Flags.DEFAULT_BEATS_PER_MEASURE);
+		data.setFieldDefault("stepsPerBeat", Flags.DEFAULT_STEPS_PER_BEAT);
+		data.setFieldDefault("icon", Flags.DEFAULT_HEALTH_ICON);
+		data.setFieldDefault("coopAllowed", Flags.DEFAULT_COOP_ALLOWED);
+		data.setFieldDefault("opponentModeAllowed", Flags.DEFAULT_OPPONENT_MODE_ALLOWED);
+		data.setFieldDefault("instSuffix", "");
+		data.setFieldDefault("vocalsSuffix", "");
+		data.setFieldDefault("needsVoices", true);
+		data.setFieldDefault("difficulties", []);
+		data.setFieldDefault("variants", []);
+		data.setFieldDefault("metas", []);
 
-		var data:ChartMetaData = null;
-		var fromMods:Bool = fromMods;
-		for (path in [metaDiffPath, metaPath]) if (Assets.exists(path)) {
+		return data;
+	}
+
+	public static function loadChartMeta(songName:String, ?variant:String, ?difficulty:String, fromMods:Bool = true, includeMetaVariations = true):ChartMetaData {
+		var folder = 'songs/$songName', isVariant = false, data:ChartMetaData = null;
+		var defaultPaths = [Paths.file('$folder/meta-$difficulty.json'), Paths.file('$folder/meta.json')], variantPaths = [];
+		if (difficulty != null) defaultPaths.unshift(Paths.file('$folder/meta-$difficulty.json'));
+
+		if (variant != null && variant != '') {
+			variantPaths.push(Paths.file('$folder/meta-$variant.json'));
+			if (difficulty != null) variantPaths.unshift(Paths.file('$folder/meta-$variant-$difficulty.json'));
+		}
+
+		for (path in variantPaths.concat(defaultPaths)) if (Assets.exists(path)) {
 			fromMods = Paths.assetsTree.existsSpecific(path, "TEXT", MODS);
 			try {
 				var tempData = Json.parse(Assets.getText(path));
 				tempData.color = CoolUtil.getColorFromDynamic(tempData.color).getDefault(Flags.DEFAULT_COLOR);
 				data = tempData;
-			} catch(e) Logs.trace('Failed to load song metadata for ${songName} ($path): ${Std.string(e)}', ERROR);
-			if (data != null) break;
+			} catch(e) Logs.trace('Failed to load song metadata for $songName ($path): ${Std.string(e)}', ERROR);
+
+			if (data != null) {
+				isVariant = variantPaths.contains(path);
+				break;
+			}
 		}
 
-		if (data == null) data = {
+		if (data != null) data.name = songName;
+		else data = {
 			name: songName,
-			bpm: 100
+			color: Flags.DEFAULT_COLOR
 		};
 
-		data.name = songName;
-		data.setFieldDefault("bpm", Flags.DEFAULT_BPM);
-		data.setFieldDefault("beatsPerMeasure", Flags.DEFAULT_BEATS_PER_MEASURE);
-		data.setFieldDefault("stepsPerBeat", Flags.DEFAULT_STEPS_PER_BEAT);
-		data.setFieldDefault("needsVoices", true);
-		data.setFieldDefault("icon", Flags.DEFAULT_HEALTH_ICON);
-		data.setFieldDefault("difficulties", []);
-		data.setFieldDefault("coopAllowed", Flags.DEFAULT_COOP_ALLOWED);
-		data.setFieldDefault("opponentModeAllowed", Flags.DEFAULT_OPPONENT_MODE_ALLOWED);
-		data.setFieldDefault("displayName", data.name);
+		if (isVariant) data.variant = variant;
+		else data.variant = null;
+
+		defaultChartMetaFields(data);
 
 		if (data.difficulties.length <= 0) {
-			data.difficulties = [for(f in Paths.getFolderContent('songs/${songName}/charts/', false, fromMods ? MODS : SOURCE)) if (Path.extension(f.toUpperCase()) == "JSON") Path.withoutExtension(f)];
-			var tempDiffs = [];
+			var path = 'songs/$songName/charts/';
+			if (isVariant) path += '$variant/';
+
+			data.difficulties = [for(f in Paths.getFolderContent(path, false, fromMods ? MODS : SOURCE)) if (Path.extension(f.toUpperCase()) == "JSON") Path.withoutExtension(f)];
 			if (data.difficulties.length == 3) {
-				for(d in data.difficulties) {
-					switch(d.toLowerCase()) {
-						case "easy":	tempDiffs.insert(0, d);
-						case "normal":	tempDiffs.insert(1, d);
-						case "hard":	tempDiffs.insert(2, d);
-					}
+				var tempDiffs = [];
+				for (d in data.difficulties) switch(d.toLowerCase()) {
+					case "easy":   tempDiffs.insert(0, d);
+					case "normal": tempDiffs.insert(1, d);
+					case "hard":   tempDiffs.insert(2, d);
 				}
-				data.difficulties = tempDiffs;
+				if (tempDiffs.length == 3) data.difficulties = tempDiffs;
+			}
+		}
+
+		data.metas = [];
+		if (includeMetaVariations && data.variants.length > 0) for (variant in data.variants) {
+			if (!data.metas.exists(variant) && Assets.exists(Paths.file('songs/$songName/meta-$variant.json'))) {
+				var meta = loadChartMeta(songName, variant, fromMods);
+				if (meta.variant != null) data.metas.set(variant, meta);
 			}
 		}
 
 		return data;
 	}
 
-	public static function parse(songName:String, ?difficulty:String):ChartData {
+	public static function parse(songName:String, ?difficulty:String, ?variant:String):ChartData {
 		if (difficulty == null) difficulty = Flags.DEFAULT_DIFFICULTY;
 
-		var chartPath = Paths.chart(songName, difficulty);
+		var chartPath = Paths.chart(songName, difficulty, variant);
 		var base:ChartData = {
 			strumLines: [],
 			noteTypes: [],
@@ -152,15 +182,15 @@ class Chart {
 			fromMods: Paths.assetsTree.existsSpecific(chartPath, "TEXT", MODS)
 		};
 
-		var valid:Bool = true;
+		var valid:Bool = true, namePrint = '$songName $difficulty' + ((variant != null && variant != '') ? ' ($variant)' : '');
 		if (!Assets.exists(chartPath)) {
-			Logs.error('Chart for song ${songName} ($difficulty) at "$chartPath" was not found.');
+			Logs.error('Chart for song $namePrint at "$chartPath" was not found.');
 			valid = false;
 		}
 		var data:Dynamic = null;
 		if (valid) {
 			try data = Json.parse(Assets.getText(chartPath))
-			catch(e) Logs.trace('Could not parse chart for song ${songName} ($difficulty): ${Std.string(e)}', ERROR, RED);
+			catch(e) Logs.trace('Could not parse chart for song $namePrint: ${Std.string(e)}', ERROR, RED);
 		}
 
 		/**
@@ -192,13 +222,12 @@ class Chart {
 		}
 		#end
 
-		var loadedMeta = loadChartMeta(songName, difficulty, base.fromMods);
+		var loadedMeta = loadChartMeta(songName, variant, base.fromMods, false);
 		if (base.meta == null) base.meta = loadedMeta;
 		else {
 			for (field in Reflect.fields(base.meta)) {
 				var f = Reflect.field(base.meta, field);
-				if (f != null)
-					Reflect.setField(loadedMeta, field, f);
+				if (f != null) Reflect.setField(loadedMeta, field, f);
 			}
 			base.meta = loadedMeta;
 		}
@@ -207,9 +236,8 @@ class Chart {
 		 * events.json LOADING
 		 */
 		#if REGION
-		var extraEvents:Array<ChartEvent> = loadEventsJson(songName);
-		if (extraEvents != null)
-			base.events = base.events.concat(extraEvents);
+		var extraEvents:Array<ChartEvent> = loadEventsJson(songName, variant);
+		if (extraEvents != null) base.events = base.events.concat(extraEvents);
 		#end
 
 		/**
@@ -237,61 +265,59 @@ class Chart {
 
 	/**
 	 * Saves the chart to the specific song folder path.
-	 * @param songFolderPath Path to the song folder (ex: `mods/your mod/songs/song/`)
-	 * @param chart Chart to save
-	 * @param difficulty Name of the difficulty
-	 * @param saveSettings
+	 * @param chart Chart to save.
+	 * @param difficulty Name of the difficulty (Optional).
+	 * @param variant Name of the Variant (Optional).
+	 * @param saveSettings (Optional).
 	 * @return Filtered chart used for saving.
 	 */
-	public static function save(songFolderPath:String, chart:ChartData, ?difficulty:String, ?saveSettings:ChartSaveSettings):ChartData {
+	public static function save(chart:ChartData, ?difficulty:String, ?variant:String, ?saveSettings:ChartSaveSettings):ChartData {
 		if (difficulty == null) difficulty = Flags.DEFAULT_DIFFICULTY;
 		if (saveSettings == null) saveSettings = {};
 
-		if (saveSettings.saveMetaInChart == null) saveSettings.saveMetaInChart = true;
-		if (saveSettings.saveLocalEvents == null) saveSettings.saveLocalEvents = true;
-		if (saveSettings.saveGlobalEvents == null) saveSettings.saveGlobalEvents = false;
-
-		var filteredChart = filterChartForSaving(chart, saveSettings.saveMetaInChart, saveSettings.saveLocalEvents, saveSettings.saveGlobalEvents);
-		var meta = filteredChart.meta;
+		var filteredChart = filterChartForSaving(chart, saveSettings.saveMetaInChart, saveSettings.saveLocalEvents, saveSettings.saveGlobalEvents && saveSettings.seperateGlobalEvents != true);
 
 		#if sys
-		var saveFolder:String = saveSettings.folder == null ? "charts" : saveSettings.folder;
+		var songPath = saveSettings.songFolder == null ? 'songs/${chart.meta.name}' : saveSettings.songFolder, variantSuffix = variant != null && variant != "" ? '-$variant' : "";
+		var metaPath = 'meta$variantSuffix.json', prettyPrint = saveSettings.prettyPrint == true ? Flags.JSON_PRETTY_PRINT : null, temp:String;
+		if ((temp = Paths.assetsTree.getPath('assets/$songPath/$metaPath')) != null) {
+			songPath = temp.substr(0, temp.length - metaPath.length - 1);
+			metaPath = temp;
+		}
+		else if (saveSettings.songFolder == null)
+			metaPath = (songPath = '${Paths.getAssetsRoot()}/$songPath') + '/$metaPath';
 
-		if (!FileSystem.exists('${songFolderPath}/$saveFolder/'))
-			FileSystem.createDirectory('${songFolderPath}/$saveFolder/');
+		var chartFolder = saveSettings.folder == null ? ((variant == null || variant == '') ? 'charts' : 'charts/$variant') : saveSettings.folder;
+		var chartPath = '$songPath/$chartFolder/${difficulty.trim()}.json';
 
-		var chartPath = '${songFolderPath}/$saveFolder/${difficulty.trim()}.json';
-		var metaPath = '${songFolderPath}/meta.json';
+		if (saveSettings.saveChart == null || saveSettings.saveChart == true)
+			CoolUtil.safeSaveFile(chartPath, Json.stringify(filteredChart, null, prettyPrint));
 
-		CoolUtil.safeSaveFile(chartPath, Json.stringify(filteredChart, null, saveSettings.prettyPrint == true ? Flags.JSON_PRETTY_PRINT : null));
+		if (saveSettings.overrideExistingMeta || !FileSystem.exists(metaPath))
+			CoolUtil.safeSaveFile(metaPath, Json.stringify(filterMetaForSaving(chart.meta), null, prettyPrint));
 
-		if (saveSettings.overrideExistingMeta == true || !FileSystem.exists(metaPath))
-			CoolUtil.safeSaveFile(metaPath, makeMetaSaveable(meta));
+		if (saveSettings.seperateGlobalEvents == true) {
+			var eventsPath = '$songPath/events$variantSuffix.json', events = filterEventsForSaving(chart.events, false, true);
+
+			if (events.length != 0) CoolUtil.safeSaveFile(eventsPath, Json.stringify({events: events}, null, prettyPrint));
+		}
 		#end
+
 		return filteredChart;
 	}
 
-	public static function filterChartForSaving(chart:ChartData, ?saveMetaInChart:Bool, ?saveLocalEvents:Bool, ?saveGlobalEvents:Bool):ChartData {
+	public static function filterChartForSaving(chart:ChartData, saveMetaInChart = true, ?saveLocalEvents:Bool, ?saveGlobalEvents:Bool):ChartData {
+		var meta = chart.meta, events = chart.events;
+		chart.meta = null;
+		chart.events = null;
+
 		var data = Reflect.copy(chart); // make a copy of the chart to leave the OG intact
-		if (saveMetaInChart != true) {
-			data.meta = null;
-		} else {
-			data.meta = Reflect.copy(chart.meta); // also make a copy of the metadata to leave the OG intact.
-			if (data.meta != null && Reflect.hasField(data.meta, "parsedColor")) Reflect.deleteField(data.meta, "parsedColor");
-		}
 
-		// in this part abt the events, i gotta account that these booleans can be null  - Nex
-		if (saveLocalEvents != true && saveGlobalEvents != true) data.events = null;
-		else {
-			data.events = [];
-			for (event in chart.events) if ((saveLocalEvents == true && event.global != true) || (saveGlobalEvents == true && event.global == true)) {
-				var copy = Reflect.copy(event);
-				if (saveLocalEvents == true ? event.global != true : event.global == true) Reflect.deleteField(copy, "global");  // should NOT delete the field when saving with the local events and the event should have been global  - Nex
-				data.events.push(copy);
-			}
-			if (data.events.length == 0) data.events = null;
-		}
+		chart.meta = meta;
+		chart.events = events;
 
+		data.meta = saveMetaInChart ? filterMetaForSaving(meta) : null;
+		data.events = filterEventsForSaving(events, saveLocalEvents, saveGlobalEvents);
 		data.fromMods = null;
 
 		var sortedData:Dynamic = {};
@@ -303,18 +329,47 @@ class Chart {
 		return sortedData;
 	}
 
-	public static inline function makeMetaSaveable(meta:ChartMetaData, prettyPrint:Bool = true):String {
+	public static function filterEventsForSaving(events:Array<ChartEvent>, saveLocalEvents = true, saveGlobalEvents = false):Array<ChartEvent> {
+		var data = [];
+		if (!saveLocalEvents && !saveGlobalEvents) return data;
+
+		for (event in events) if ((saveLocalEvents && event.global != true) || (saveGlobalEvents && event.global == true)) {
+			var copy = Reflect.copy(event);
+			if (saveLocalEvents ? event.global != true : event.global == true) Reflect.deleteField(copy, "global"); // should NOT delete the field when saving with the local events and the event should have been global  - Nex
+			data.push(copy);
+		}
+
+		return data;
+	}
+
+	public static inline function makeMetaSaveable(meta:ChartMetaData, prettyPrint:Bool = true):String
+		return Json.stringify(filterMetaForSaving(meta), null, prettyPrint ? Flags.JSON_PRETTY_PRINT : null);
+
+	public static inline function filterMetaForSaving(meta:ChartMetaData):ChartMetaData {
 		var data:Dynamic = Reflect.copy(meta);
-		if (data.color != null) data.color = new FlxColor(data.color).toWebString();  // dont even ask me  - Nex
-		return Json.stringify(data, null, prettyPrint ? Flags.JSON_PRETTY_PRINT : null);
+		if (data.color != null) data.color = FlxColor.fromInt(data.color).toWebString(); // dont even ask me  - Nex
+		Reflect.deleteField(data, "name");
+		Reflect.deleteField(data, 'parsedColor');
+		Reflect.deleteField(data, 'metas');
+		Reflect.deleteField(data, "variant");
+		if (data.instSuffix != null && data.instSuffix == "") Reflect.deleteField(data, "instSuffix");
+		if (data.vocalsSuffix != null && data.vocalsSuffix == "") Reflect.deleteField(data, "vocalsSuffix");
+		if (data.variants != null && data.variants.length == 0) Reflect.deleteField(data, "variants");
+		return data;
 	}
 }
 
 typedef ChartSaveSettings = {
-	var ?overrideExistingMeta:Bool;
+	var ?prettyPrint:Bool;
+
 	var ?saveMetaInChart:Bool;
 	var ?saveLocalEvents:Bool;
 	var ?saveGlobalEvents:Bool;
-	var ?prettyPrint:Bool;
+
+	var ?saveChart:Bool;
+	var ?overrideExistingMeta:Bool;
+	var ?seperateGlobalEvents:Bool;
+
 	var ?folder:String;
+	var ?songFolder:String;
 }

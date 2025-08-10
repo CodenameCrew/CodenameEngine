@@ -5,7 +5,7 @@
 		title="Friday Night Funkin' - Codename Engine" main="funkin.backend.system.Main"
 		file="CodenameEngine" packageName="com.yoshman29.codenameengine"
 		package="com.yoshman29.codenameengine"
-		version="1.0.0" company="Yoshman29" />
+		version="1.0.1-rc2" company="Yoshman29" />
 
 	<!--
 		CHANGE THE SAVE PATH & NAME FOR YOUR MOD HERE!
@@ -50,7 +50,7 @@
 	<!-- _________________________________ Engine Settings _______________________________ -->
 
 	<!-- Comment this out to disable updates !-->
-	<!-- <define name="UPDATE_CHECKING" unless="web || hl || neko"/> -->
+	<define name="UPDATE_CHECKING" unless="web || hl || neko"/>
 
 	<!-- Comment this out to disable Discord RPC !-->
 	<section if="cpp">
@@ -227,9 +227,9 @@
 	<setenv name="HAXEPATH" value="./"/>
 
 	<haxedef name="HXCPP_M32" if="32bit" />
-	<haxedef name="HXCPP_CHECK_POINTER" if="release" />
-	<haxedef name="HXCPP_STACK_LINE" if="release" />
 	<haxedef name="HXCPP_DEBUG_LINK" if="debug" />
+	<haxedef name="HXCPP_CHECK_POINTER" />
+	<haxedef name="HXCPP_STACK_LINE" />
 	<haxedef name="HXCPP_CATCH_SEGV" />
 
 	<haxedef name="hscriptPos" /> <!-- for logging -->

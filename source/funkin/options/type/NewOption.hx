@@ -10,7 +10,7 @@ class NewOption extends TextOption {
 
 	public function new(name:String, desc:String, callback:Void->Void) {
 		super(name, desc, callback);
-		itemHeight = 160;
+		itemHeight = 150;
 
 		__text.color = FlxColor.LIME;
 		__text.x = 100;

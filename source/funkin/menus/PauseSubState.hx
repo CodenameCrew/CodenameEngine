@@ -167,7 +167,7 @@ class PauseSubState extends MusicBeatSubstate
 			case "Change Options":
 				FlxG.switchState(new OptionsMenu((_) -> FlxG.switchState(new PlayState())));
 			case "Exit to charter":
-				FlxG.switchState(new Charter(PlayState.SONG.meta.name, PlayState.difficulty, false));
+				FlxG.switchState(new Charter(PlayState.SONG.meta.name, PlayState.difficulty, PlayState.variation, false));
 			case "Exit to menu":
 				if (PlayState.chartingMode && Charter.undos.unsaved)
 					game.saveWarn(false);

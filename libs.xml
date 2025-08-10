@@ -16,7 +16,7 @@
 		<git name="hscript-improved" url="https://github.com/CodenameCrew/hscript-improved" ref="codename-dev" />
 		<git name="flxanimate" url="https://github.com/CodenameCrew/cne-flxanimate" />
 		<git name="hxdiscord_rpc" url="https://github.com/CodenameCrew/cne-hxdiscord_rpc" skipDeps="true" />
-		<git name="funkin-modchart" url="https://github.com/CodenameCrew/FunkinModchart" skipDeps="true" />
+		<lib name="funkin-modchart" skipDeps="true" />
 		<lib name="hxvlc" version="1.9.3" skipDeps="true" />
 
 		<!-- Documentation and other features -->

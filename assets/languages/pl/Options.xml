@@ -38,6 +38,7 @@
 			<str id="back">Wstecz</str>
 			<str id="reset">Reset</str>
 			<str id="pause">Pauza</str>
+			<str id="changeMode">Zmień Tryb</str>
 		</group>
 
 		<str id="category.engine">Silnik</str>
@@ -46,6 +47,8 @@
 		</group>
 		
 		<str id="category.volume">Głośność</str>
+		<str id="volume.up">Głóśniej</str>
+		<str id="volume.down">Ciszej</str>
 		<str id="volume.mute">Wycisz</str>
 
 		<str id="category.developer">Deweloper</str>

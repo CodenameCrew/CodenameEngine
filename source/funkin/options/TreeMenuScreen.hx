@@ -128,11 +128,12 @@ class TreeMenuScreen extends FlxSpriteGroup {
 		var i = curSelected, y = initY, object:FlxSprite = null, itemHeight:Float = 0;
 
 		inline function updateItem() {
-			object.y = CoolUtil.fpsLerp(object.y, y - (itemHeight = object.height) * 0.5, r);
+			object.y = CoolUtil.fpsLerp(object.y, y - itemHeight * 0.5, r);
 			object.x = x + 100 - Math.pow(Math.abs((object.y - (FlxG.height - itemHeight) * 0.5) / itemHeight / FlxG.height * FlxG.initialHeight), 1.6) * 15;
 		}
 
 		while (i < length) if ((object = members[i++]) != null) {
+			itemHeight = object.height;
 			updateItem();
 			y += itemHeight;
 		}
@@ -140,7 +141,7 @@ class TreeMenuScreen extends FlxSpriteGroup {
 		y = initY;
 		i = curSelected;
 		while (i-- > 0) if ((object = members[i]) != null) {
-			y -= itemHeight;
+			y -= (itemHeight = object.height);
 			updateItem();
 		}
 	}

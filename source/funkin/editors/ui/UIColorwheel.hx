@@ -31,7 +31,6 @@ class UIColorwheel extends UISliceSprite {
 		hue = curColor.hue; saturation = curColor.saturation; brightness = curColor.brightness;
 
 		colorPickerShader = new CustomShader("engine/colorPicker");
-		colorPickerShader.hset("hue", hue);
 
 		colorPicker = new FlxSprite(x + 12.5, (y + 125/2) - (100/2)).makeGraphic(100, 100, FlxColor.TRANSPARENT);
 		colorPicker.drawRoundRect(0, 0, 100, 100, 10, 10, FlxColor.WHITE);
@@ -88,6 +87,11 @@ class UIColorwheel extends UISliceSprite {
 		for (item in [colorPicker, colorPickerSelector, colorSlider, colorSliderSelector, colorHexTextBox, hexLabel, rgbLabel])
 			members.push(item);
 
+		updateWheel(false);
+	}
+
+	public function setColor(color:FlxColor) {
+		hue = curColor.hue; saturation = curColor.saturation; brightness = curColor.brightness;
 		updateWheel(false);
 	}
 

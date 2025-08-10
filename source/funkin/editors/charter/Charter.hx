@@ -28,6 +28,7 @@ import flixel.util.FlxColor;
 class Charter extends UIState {
 	public static var __song:String;
 	static var __diff:String;
+	static var __variant:String;
 	static var __reload:Bool;
 
 	var chart(get, never):ChartData;
@@ -114,11 +115,12 @@ class Charter extends UIState {
 	private var SONGPOSINFO_BPM = TU.getRaw("songPosInfo.bpm");
 	private var SONGPOSINFO_TIMESIGNATURE = TU.getRaw("songPosInfo.timeSignature");
 
-	public function new(song:String, diff:String, reload:Bool = true) {
+	public function new(song:String, diff:String, variant:String, reload:Bool = true) {
 		super();
 		if (song != null) {
 			__song = song;
 			__diff = diff;
+			__variant = variant;
 			__reload = reload;
 		}
 	}
@@ -578,7 +580,7 @@ class Charter extends UIState {
 		dataDisplay.screenCenter(Y);
 		dataDisplay.cameras = [charterCamera]; dataDisplay.x = -dataDisplay.width; add(dataDisplay);*/
 
-		DiscordUtil.call("onEditorLoaded", ["Chart Editor", __song + " (" + __diff + ")"]);
+		DiscordUtil.call("onEditorLoaded", ["Chart Editor", __song + " (" + __diff + ")" + (__variant != null && __variant != "" ? " (" + __variant + ")" : "")]);
 	}
 
 	override function destroy() {
@@ -595,29 +597,32 @@ class Charter extends UIState {
 	public function loadSong() {
 		if (__reload) {
 			EventsData.reloadEvents();
-			PlayState.loadSong(__song, __diff, false, false);
+			PlayState.loadSong(__song, __diff, __variant, false, false);
 			__resetStatics();
 		}
+
 		Conductor.setupSong(PlayState.SONG);
 		noteTypes = PlayState.SONG.noteTypes;
 
-		FlxG.sound.setMusic(FlxG.sound.load(Paths.inst(__song, __diff)));
-		if (PlayState.SONG.meta.needsVoices != false && Assets.exists(Paths.voices(__song, __diff))) // null or true
-			vocals = FlxG.sound.load(Paths.voices(__song, __diff));
+		FlxG.sound.setMusic(FlxG.sound.load(Paths.inst(__song, __diff, PlayState.SONG.meta.instSuffix)));
+		if (Assets.exists(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix)))
+			vocals = FlxG.sound.load(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix));
 		else
 			vocals = new FlxSound();
+
+		vocals.muted = !PlayState.SONG.meta.needsVoices;
 		vocals.group = FlxG.sound.defaultMusicGroup;
 
 		gridBackdrops.createGrids(PlayState.SONG.strumLines.length);
 
-		for(strL in PlayState.SONG.strumLines)
+		var noteCount:Int = 0;
+		for (strL in PlayState.SONG.strumLines) {
 			createStrumline(strumLines.members.length, strL, false, false);
+			noteCount += strL.notes.length;
+		}
 
 		// create notes
 		notesGroup.autoSort = false;
-		var noteCount:Int = 0;
-		for (strL in PlayState.SONG.strumLines)
-			noteCount += strL.notes.length;
 		notesGroup.preallocate(noteCount);
 
 		var notesCreated:Int = 0;
@@ -681,10 +686,10 @@ class Charter extends UIState {
 		var wavesToGenerate:Array<{name:String, sound:FlxSound}> = [];
 
 		if (FlxG.sound.music.loaded)
-			wavesToGenerate.push({name: "Inst.ogg", sound: FlxG.sound.music});
+			wavesToGenerate.push({name: 'Inst${PlayState.SONG.meta.instSuffix}.ogg', sound: FlxG.sound.music});
 
-		if (PlayState.SONG.meta.needsVoices != false && vocals.loaded)
-			wavesToGenerate.push({name: "Voices.ogg", sound: vocals});
+		if (vocals.loaded)
+			wavesToGenerate.push({name: 'Voices${PlayState.SONG.meta.vocalsSuffix}.ogg', sound: vocals});
 
 		for (strumLine in strumLines)
 			if (strumLine.vocals != null && strumLine.strumLine.vocalsSuffix != null && strumLine.strumLine.vocalsSuffix != "" && strumLine.vocals.loaded)
@@ -786,12 +791,13 @@ class Charter extends UIState {
 			autoSaveTimer = Options.charterAutoSaveTime;
 			if (!autoSaveNotif.cancelled) {
 				buildChart();
-				var songPath:String = '${Paths.getAssetsRoot()}/songs/${__song.toLowerCase()}';
 
 				if (Options.charterAutoSavesSeparateFolder)
-					Chart.save(songPath, PlayState.SONG, __autoSaveLocation, {saveMetaInChart: true, saveLocalEvents: true, saveGlobalEvents: true, folder: "autosaves", prettyPrint: Options.editorCharterPrettyPrint});
-				else  // These two chart saves are particular, to avoid any kind of loss, stuff like meta, global and local events will be save all together  - Nex
-					Chart.save(songPath, PlayState.SONG, __diff.toLowerCase(), {saveMetaInChart: true, saveLocalEvents: true, saveGlobalEvents: true, prettyPrint: Options.editorCharterPrettyPrint});
+					Chart.save(PlayState.SONG, __diff.toLowerCase(), __autoSaveLocation, {saveMetaInChart: true, saveLocalEvents: true, seperateGlobalEvents: true, folder: 'autosaves', prettyPrint: Options.editorCharterPrettyPrint});
+				else
+					Chart.save(PlayState.SONG, __diff.toLowerCase(), __variant, {saveMetaInChart: true, saveLocalEvents: true, seperateGlobalEvents: true, prettyPrint: Options.editorCharterPrettyPrint});
+
+				FlxG.sound.play(Paths.sound('editors/save'));
 				undos.save();
 			}
 			autoSaveNotif.cancelled = false;
@@ -1204,7 +1210,9 @@ class Charter extends UIState {
 
 		var strL = strumLines.members[strumLineID].strumLine;
 		strumLines.members[strumLineID].destroy();
-		strumLines.members.remove(strumLines.members[strumLineID]);
+		strumLines.members[strumLineID] = strumLines.members[strumLines.members.length - 1];
+		strumLines.members.pop();
+		@:privateAccess strumLines.length--;
 		strumLines.refreshStrumlineIDs();
 		strumLines.snapStrums();
 
@@ -1474,8 +1482,8 @@ class Charter extends UIState {
 
 	public static function saveChart(shouldBuild:Bool = true, withEvents:Bool = true) {
 		#if sys
-		FlxG.sound.play(Paths.sound('editors/save'));
-		saveTo('${Paths.getAssetsRoot()}/songs/${__song.toLowerCase()}', !withEvents, shouldBuild);
+		if (shouldBuild && instance != null) instance.buildChart();
+		Chart.save(PlayState.SONG, __diff.toLowerCase(), __variant, {saveMetaInChart: false, saveLocalEvents: withEvents, prettyPrint: Options.editorCharterPrettyPrint});
 		if (undos != null) undos.save();
 		#else
 		saveChartAs(shouldBuild, withEvents);
@@ -1491,13 +1499,9 @@ class Charter extends UIState {
 
 	public static function saveEvents(shouldBuild:Bool = true) {
 		#if sys
-		FlxG.sound.play(Paths.sound('editors/save'));
 		if (shouldBuild && instance != null) instance.buildChart();
-		var data = {events: Chart.filterChartForSaving(PlayState.SONG, false, false, true).events};
-
-		var path = '${Paths.getAssetsRoot()}/songs/${__song.toLowerCase()}/events.json';
-		if (data.events != null && data.events.length > 0) CoolUtil.safeSaveFile(path, Json.stringify(data, null, Options.editorCharterPrettyPrint ? Flags.JSON_PRETTY_PRINT : null));
-		else if (FileSystem.exists(path)) FileSystem.deleteFile(path);  // Instead of replacing with a useless empty file, deletes the file directly  - Nex
+		Chart.save(PlayState.SONG, __diff.toLowerCase(), __variant, {saveChart: false, seperateGlobalEvents: true, prettyPrint: Options.editorCharterPrettyPrint});
+		if (undos != null) undos.save();
 		#else
 		saveEventsAs(shouldBuild);
 		#end
@@ -1505,7 +1509,7 @@ class Charter extends UIState {
 
 	public static function saveEventsAs(shouldBuild:Bool = true) {
 		if (shouldBuild && instance != null) instance.buildChart();
-		var data = {events: Chart.filterChartForSaving(PlayState.SONG, false, false, true).events};
+		var data = {events: Chart.filterEventsForSaving(PlayState.SONG.events, false, true)};
 
 		saveAs(data, null, Options.editorCharterPrettyPrint ? Flags.JSON_PRETTY_PRINT : null, {
 			defaultSaveFile: 'events.json'
@@ -1514,12 +1518,8 @@ class Charter extends UIState {
 
 	public static function saveMeta(shouldBuild:Bool = true) {
 		#if sys
-		FlxG.sound.play(Paths.sound('editors/save'));
 		if (shouldBuild && instance != null) instance.buildChart();
-		CoolUtil.safeSaveFile(
-			'${Paths.getAssetsRoot()}/songs/${__song.toLowerCase()}/meta.json',
-			Json.stringify(PlayState.SONG.meta == null ? {} : Chart.filterChartForSaving(PlayState.SONG, true, false, false).meta, null, Flags.JSON_PRETTY_PRINT)
-		);
+		Chart.save(PlayState.SONG, __diff.toLowerCase(), __variant, {saveChart: false, overrideExistingMeta: true, prettyPrint: true});
 		#else
 		saveMetaAs(shouldBuild);
 		#end
@@ -1543,9 +1543,7 @@ class Charter extends UIState {
 		}, null, shouldBuild);
 	}
 
-	public static function saveAs(data:Dynamic, ?replacer:(key:Dynamic, value:Dynamic) -> Dynamic, ?space:String, ?options:SaveSubstate.SaveSubstateData, ?saveOptions:Map<String, Bool>, shouldBuild:Bool = true) {
-		FlxG.sound.play(Paths.sound('editors/save'));
-		if (shouldBuild && instance != null) instance.buildChart();
+	public static function saveAs(data:Dynamic, ?replacer:(key:Dynamic, value:Dynamic) -> Dynamic, ?space:String, ?options:SaveSubstate.SaveSubstateData, ?saveOptions:Map<String, Bool>, shouldBuild:Bool = true) {		if (shouldBuild && instance != null) instance.buildChart();
 		var cur = FlxG.state;
 		while(true) {
 			if (instance != null || cur.subState == null) return cur.openSubState(new SaveSubstate(Json.stringify(data, replacer, space), options, saveOptions));
@@ -1556,7 +1554,7 @@ class Charter extends UIState {
 	#if sys
 	public static function saveTo(path:String, separateEvents:Bool = false, shouldBuild:Bool = true) {
 		if (shouldBuild && instance != null) instance.buildChart();
-		Chart.save(path, PlayState.SONG, __diff.toLowerCase(), {saveMetaInChart: false, saveLocalEvents: !separateEvents, prettyPrint: Options.editorCharterPrettyPrint});
+		Chart.save(PlayState.SONG, __diff.toLowerCase(), __variant, {saveMetaInChart: false, saveLocalEvents: !separateEvents, songFolder: path, prettyPrint: Options.editorCharterPrettyPrint});
 	}
 	#end
 	#end
@@ -1568,17 +1566,17 @@ class Charter extends UIState {
 		else {undos = null; FlxG.switchState(new CharterSelection()); Charter.instance.__clearStatics();}
 	}
 
-	function _file_save_all(_) saveEverything();
-	function _file_save(_) saveChart();
-	function _file_saveas(_) saveChartAs();
-	function _file_events_save(_) saveEvents();
-	function _file_events_saveas(_) saveEventsAs();
-	function _file_save_no_events(_) saveChart(true, false);
-	function _file_saveas_no_events(_) saveChartAs(true, false);
-	function _file_meta_save(_) saveMeta();
-	function _file_meta_saveas(_) saveMetaAs();
-	function _file_saveas_fnflegacy(_) saveLegacyChartAs();
-	function _file_saveas_psych(_) savePsychChartAs();
+	function _file_save_all(_) {saveEverything(); FlxG.sound.play(Paths.sound('editors/save'));}
+	function _file_save(_) {saveChart(); FlxG.sound.play(Paths.sound('editors/save'));}
+	function _file_saveas(_) {saveChartAs(); FlxG.sound.play(Paths.sound('editors/save'));}
+	function _file_events_save(_) {saveEvents(); FlxG.sound.play(Paths.sound('editors/save'));}
+	function _file_events_saveas(_) {saveEventsAs(); FlxG.sound.play(Paths.sound('editors/save'));}
+	function _file_save_no_events(_) {saveChart(true, false); FlxG.sound.play(Paths.sound('editors/save'));}
+	function _file_saveas_no_events(_) {saveChartAs(true, false); FlxG.sound.play(Paths.sound('editors/save'));}
+	function _file_meta_save(_) {saveMeta(); FlxG.sound.play(Paths.sound('editors/save'));}
+	function _file_meta_saveas(_) {saveMetaAs(); FlxG.sound.play(Paths.sound('editors/save'));}
+	function _file_saveas_fnflegacy(_) {saveLegacyChartAs(); FlxG.sound.play(Paths.sound('editors/save'));}
+	function _file_saveas_psych(_) {savePsychChartAs(); FlxG.sound.play(Paths.sound('editors/save'));}
 
 	function _edit_copy(_, playSFX=true) {
 		if (playSFX) FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_COPY_SOUND));

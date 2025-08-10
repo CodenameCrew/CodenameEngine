@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="options.png" width="2449" height="159">
+	<SubTexture name="options basic0000" x="1" y="1" width="343" height="113" frameX="-0" frameY="-0" frameWidth="343" frameHeight="113"/>
+	<SubTexture name="options basic0001" x="1" y="1" width="343" height="113" frameX="-0" frameY="-0" frameWidth="343" frameHeight="113"/>
+	<SubTexture name="options basic0002" x="1" y="1" width="343" height="113" frameX="-0" frameY="-0" frameWidth="343" frameHeight="113"/>
+	<SubTexture name="options basic0003" x="346" y="1" width="343" height="113" frameX="-0" frameY="-0" frameWidth="343" frameHeight="113"/>
+	<SubTexture name="options basic0004" x="346" y="1" width="343" height="113" frameX="-0" frameY="-0" frameWidth="343" frameHeight="113"/>
+	<SubTexture name="options basic0005" x="346" y="1" width="343" height="113" frameX="-0" frameY="-0" frameWidth="343" frameHeight="113"/>
+	<SubTexture name="options basic0006" x="691" y="1" width="343" height="113" frameX="-0" frameY="-0" frameWidth="343" frameHeight="113"/>
+	<SubTexture name="options basic0007" x="691" y="1" width="343" height="113" frameX="-0" frameY="-0" frameWidth="343" frameHeight="113"/>
+	<SubTexture name="options basic0008" x="691" y="1" width="343" height="113" frameX="-0" frameY="-0" frameWidth="343" frameHeight="113"/>
+	<SubTexture name="options white0000" x="1036" y="1" width="474" height="156" frameX="-0" frameY="15" frameWidth="474" frameHeight="157"/>
+	<SubTexture name="options white0001" x="1512" y="1" width="465" height="156" frameX="-6" frameY="14" frameWidth="474" frameHeight="157"/>
+	<SubTexture name="options white0002" x="1979" y="1" width="469" height="157" frameX="-4" frameY="15" frameWidth="474" frameHeight="157"/>
+</TextureAtlas>

@@ -51,7 +51,7 @@
 		<stepper name="alphaStepper" label="${translate('alpha')}" value="char.alpha / 0.75" x="col(0)" y="curY" precision="2" step="0.01" width="100" />
 		<stepper name="angleStepper" label="${translate('angle')}" value="char.angle" x="last.x + last.bWidth + XOFFSET - 20" y="curY" precision="2" step="0.01" width="100" />
 
-		<stepper name="zoomFactorStepper" label="${translate('zoomFactor')" value="char.zoomFactor" x="col(1)" y="curY" precision="2" step="0.01" width="100" />
+		<stepper name="zoomFactorStepper" label="${translate('zoomFactor')}" value="char.zoomFactor" x="col(1)" y="curY" precision="2" step="0.01" width="100" />
 
 		<section if="!StringTools.startsWith(char.name, 'NO_DELETE_')">
 			<textbox name="charName" label="${translate('positionName')}" value="char.name" x="col(2)" y="curY" width="100"/>

@@ -11,6 +11,9 @@ class GlyphInfoWindow extends UIWindow {
 	public var angleBox:UINumericStepper;
 	public var colorModeDrop:UIDropDown;
 
+	public var flipXBox:UICheckbox;
+	public var flipYBox:UICheckbox;
+
 	public var outlineTitle:UIText;
 	public var outlineSep:UISprite;
 	public var outlineCheck:UICheckbox;
@@ -145,6 +148,9 @@ class GlyphInfoWindow extends UIWindow {
 					cos: compon.cos,
 					sin: compon.sin,
 
+					flipX: compon.flipX,
+					flipY: compon.flipY,
+
 					hasColorMode: compon.hasColorMode,
 					colorMode: compon.colorMode
 				};
@@ -158,6 +164,22 @@ class GlyphInfoWindow extends UIWindow {
 			}
 		}
 		members.push(outlineCheck);
+
+		flipXBox = new UICheckbox(outlineCheck.x, outlineCheck.y - outlineCheck.height - 8, "Flip X?");
+		flipXBox.onChecked = function(check:Bool) {
+			compon.flipX = check;
+			if (outlineCheck.checked)
+				data.components[compon.outIndex].flipX = check;
+		}
+		members.push(flipXBox);
+
+		flipYBox = new UICheckbox(flipXBox.x + flipXBox.width + itemMargin * 5, flipXBox.y, "Flip Y?");
+		flipYBox.onChecked = function(check:Bool) {
+			compon.flipY = check;
+			if (outlineCheck.checked)
+				data.components[compon.outIndex].flipY = check;
+		}
+		members.push(flipYBox);
 
 		outlineTitle = new UIText(colorModeDrop.x, colorModeDrop.y + colorModeDrop.bHeight + itemMargin, 0, "Outline Data");
 		members.push(outlineTitle);
@@ -239,6 +261,8 @@ class GlyphInfoWindow extends UIWindow {
 		angleBox.value = com.angle;
 		@:privateAccess colorModeDrop.index = com.hasColorMode ? com.colorMode : AlphabetEditor.instance.tape.colorMode;
 		@:privateAccess colorModeDrop.label.text = colorModeDrop.options[colorModeDrop.index];
+		flipXBox.checked = com.flipX;
+		flipYBox.checked = com.flipY;
 
 		outlineCheck.checked = com.outIndex != null;
 		outlineBox.label.text = "";

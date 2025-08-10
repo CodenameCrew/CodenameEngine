@@ -25,55 +25,72 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 	public var songList:Array<String> = [];
 	public var curSong:ChartMetaData;
 
-	inline public function makeChartOption(d:String, name:String):TextOption {
-		return new TextOption(d, getID('acceptDifficulty'), () -> FlxG.switchState(new Charter(name, d)));
+	inline public function makeChartOption(d:String, v:String, name:String):TextOption {
+		return new TextOption(d, getID('acceptDifficulty'), () -> FlxG.switchState(new Charter(name, d, v)));
+	}
+
+	inline public function makeVariationOption(s:ChartMetaData):TextOption {
+		return new TextOption(s.variant, getID('acceptVariation'), " >", () -> openSongOption(s, false));
+	}
+
+	public function openSongOption(s:ChartMetaData, first = true) {
+		curSong = s;
+
+		var isVariant = s.variant != null && s.variant != '';
+		var screen = new EditorTreeMenuScreen((first || !isVariant) ? (s.name + (isVariant ? ' (${s.variant})' : '')) : s.variant, getID('selectDifficulty'));
+
+		for (d in s.difficulties) if (d != '') screen.add(makeChartOption(d, isVariant ? s.variant : null, s.name));
+		screen.add(new Separator());
+		for (v in s.variants) if (s.metas.get(v) != null) screen.add(makeVariationOption(s.metas.get(v)));
+
+		#if sys
+		screen.insert(0, new NewOption(getID('newDifficulty'), getID('newDifficultyDesc'), () -> {
+			parent.openSubState(new ChartCreationScreen(saveChart));
+		}));
+
+		if (!first) screen.curSelected = 1;
+		else {
+			cast(screen.members[0], NewOption).itemHeight = 120;
+			screen.insert(1, new NewOption(getID('newVariation'), getID('newVariationDesc'), () -> {
+				parent.openSubState(new VariationCreationScreen(s, saveSong));
+			}));
+			screen.curSelected = 2;
+		}
+		#end
+
+		parent.addMenu(screen);
 	}
 
 	public function makeSongOption(s:ChartMetaData):IconOption {
 		songList.push(s.name.toLowerCase());
 
-		var opt = new IconOption(s.name, getID('acceptSong'), s.icon, () -> {
-			curSong = s;
-
-			var screen = new EditorTreeMenuScreen(s.name, getID('selectDifficulty'), [
-				for (d in s.difficulties) if (d != '') makeChartOption(d, s.name)
-			]);
-
-			#if sys
-			screen.insert(0, new NewOption(getID('newDifficulty'), getID('newDifficultyDesc'), () -> {
-				parent.openSubState(new ChartCreationScreen(saveChart));
-			}));
-			screen.curSelected = 1;
-			#end
-
-			parent.addMenu(screen);
-		});
-		opt.suffix = ' >';
+		var opt = new IconOption(s.name, getID('acceptSong'), s.icon, () -> openSongOption(s, true));
+		opt.suffix = " >";
 		opt.editorFlashColor = s.color.getDefault(FlxColor.WHITE);
 
 		return opt;
 	}
 
 	public function new() {
-		super('editor.chart.name', 'charterSelection.desc', 'charterSelection.', 'newSong', 'newSongDesc', () -> {
+		super('editor.chart.name', 'charterSelection.desc', 'charterSelection.', 'newSong', 'newSongDesc', #if sys () -> {
 			parent.openSubState(new SongCreationScreen(saveSong));
-		});
+		} #end);
 		freeplayList = FreeplaySonglist.get(false);
 
 		for (i => s in freeplayList.songs) add(makeSongOption(s));
 	}
 
 	#if sys
-	public function saveSong(creation:SongCreationData, ?callback:String -> SongCreationData -> Void) {
-		var songAlreadyExists:Bool = songList.contains(creation.meta.name.toLowerCase());
-		if (songAlreadyExists) {
+	public function saveSong(creation:SongCreationData, ?callback:String -> Void) {
+		var variant = creation.meta.variant != null && creation.meta.variant != "" ? creation.meta.variant : null;
+		if (variant != null && curSong != null ? curSong.metas.exists(variant) : songList.contains(creation.meta.name.toLowerCase())) {
 			parent.openSubState(new UIWarningSubstate(TU.translate("chartCreation.warnings.song-exists-title"), TU.translate("chartCreation.warnings.song-exists-body"), [
 				{label: TU.translate("editor.ok"), color: 0xFFFF0000, onClick: (t) -> {}},
 			]));
 			return;
 		}
 
-		var songFolder:String = '${Paths.getAssetsRoot()}/songs/${creation.meta.name}';
+		var songFolder:String = '${Paths.getAssetsRoot()}/songs/${variant != null && curSong != null ? curSong.name : creation.meta.name}';
 
 		#if sys
 		// Make Directories
@@ -82,24 +99,37 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 		sys.FileSystem.createDirectory('$songFolder/charts');
 
 		// Save Files
-		CoolUtil.safeSaveFile('$songFolder/meta.json', Chart.makeMetaSaveable(creation.meta));
-		if (creation.instBytes != null) sys.io.File.saveBytes('$songFolder/song/Inst.${Flags.SOUND_EXT}', creation.instBytes);
-		if (creation.voicesBytes != null) sys.io.File.saveBytes('$songFolder/song/Voices.${Flags.SOUND_EXT}', creation.voicesBytes);
+		var instSuffix = creation.meta.instSuffix != null ? creation.meta.instSuffix : '', vocalsSuffix = creation.meta.vocalsSuffix != null ? creation.meta.vocalsSuffix : '';
+		CoolUtil.safeSaveFile('$songFolder/meta${variant != null ? "-" + variant : ""}.json', Json.stringify(Chart.filterMetaForSaving(creation.meta), null, Flags.JSON_PRETTY_PRINT));
+		if (creation.instBytes != null) sys.io.File.saveBytes('$songFolder/song/Inst$instSuffix.${Flags.SOUND_EXT}', creation.instBytes);
+		if (creation.voicesBytes != null) sys.io.File.saveBytes('$songFolder/song/Voices$vocalsSuffix.${Flags.SOUND_EXT}', creation.voicesBytes);
 
-		if (creation.playerVocals != null) sys.io.File.saveBytes('$songFolder/song/Voices-Player.${Flags.SOUND_EXT}', creation.playerVocals);
-		if (creation.oppVocals != null) sys.io.File.saveBytes('$songFolder/song/Voices-Opponent.${Flags.SOUND_EXT}', creation.oppVocals);
+		if (creation.playerVocals != null) sys.io.File.saveBytes('$songFolder/song/Voices-Player$vocalsSuffix.${Flags.SOUND_EXT}', creation.playerVocals);
+		if (creation.oppVocals != null) sys.io.File.saveBytes('$songFolder/song/Voices-Opponent$vocalsSuffix.${Flags.SOUND_EXT}', creation.oppVocals);
 		#end
 
-		if (callback != null) callback(songFolder, creation);
+		if (callback != null) callback(songFolder);
 
 		// Add to List
-		freeplayList.songs.insert(0, creation.meta);
-		insert(1, makeSongOption(creation.meta));
+		if (variant != null && curSong != null) {
+			if (curSong.variants == null) curSong.variants = [];
+			if (!curSong.variants.contains(variant)) curSong.variants.push(variant);
+
+			curSong.metas.set(variant, creation.meta);
+
+			parent.tree.last().add(makeVariationOption(creation.meta));
+
+			var metaPath = '$songFolder/meta${curSong.variant != null && curSong.variant == "" ? "-" + curSong.variant : ""}.json';
+			CoolUtil.safeSaveFile(metaPath, Chart.makeMetaSaveable(curSong));
+		}
+		else {
+			freeplayList.songs.insert(0, creation.meta);
+			insert(1, makeSongOption(creation.meta));
+		}
 	}
 
 	public function saveChart(name:String, data:ChartData) {
-		var difficultyAlreadyExists:Bool = curSong.difficulties.contains(name);
-		if (difficultyAlreadyExists) {
+		if (curSong.difficulties.contains(name)) {
 			parent.openSubState(new UIWarningSubstate(TU.translate("chartCreation.warnings.chart-exists-title"), TU.translate("chartCreation.warnings.chart-exists-body"), [
 				{label: TU.translate("editor.ok"), color: 0xFFFF0000, onClick: (t) -> {}},
 			]));
@@ -113,14 +143,15 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 
 		// Add to List
 		curSong.difficulties.push(name);
-		parent.tree.last().insert(parent.tree.last().length - 1, makeChartOption(name, curSong.name));
+
+		var screen = parent.tree.last();
+		var idx = 0;
+		while (!(screen.members[idx] is Separator)) idx++;
+		screen.insert(idx, makeChartOption(name, curSong.variant != null && curSong.variant != "" ? curSong.variant : null, curSong.name));
 
 		// Add to Meta
-		var meta = Json.parse(sys.io.File.getContent('$songFolder/meta.json'));
-		if (meta.difficulties != null && !meta.difficulties.contains(name)) {
-			meta.difficulties.push(name);
-			CoolUtil.safeSaveFile('$songFolder/meta.json', Chart.makeMetaSaveable(meta));
-		}
+		var metaPath = '$songFolder/meta${curSong.variant != null && curSong.variant == "" ? "-" + curSong.variant : ""}.json';
+		CoolUtil.safeSaveFile(metaPath, Chart.makeMetaSaveable(curSong));
 	}
 	#end
 }

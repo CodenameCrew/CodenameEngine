@@ -204,6 +204,9 @@ UPPERLETTER and LOWERLETTTER can be used in any backup prefix.";
 				cos: 1.0,
 				sin: 0.0,
 
+				flipX: false,
+				flipY: false,
+
 				hasColorMode: false,
 				colorMode: 0
 			}],

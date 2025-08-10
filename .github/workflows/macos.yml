@@ -38,7 +38,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Codename Engine (Executable Only)
-          path: export/release/macos/bin/CodenameEngine
+          path: export/release/macos/bin/CodenameEngine.app/Contents/MacOS/CodenameEngine
       - name: Uploading artifact (entire build)
         uses: actions/upload-artifact@v4
         with:
