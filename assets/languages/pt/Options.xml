@@ -119,7 +119,7 @@
 		<str id="volumeSFX-name">Volume dos SFX</str>
 		<str id="volumeSFX-desc">Muda apenas o volume dos efeitos sonoros em vez de tudo.</str>
 
-		<str id="songOffset-name">"Offset" da Música</str>
+		<str id="songOffset-name">Atraso da Música</str>
 		<str id="songOffset-desc">Muda a posição da música relativamente às notas.</str>
 
 		<group name="GameplayOptionsAdvanced" prefix="Advanced.">
@@ -200,8 +200,8 @@
 		<str id="charterAutoSavesSeparateFolder-name">Pasta de Gravações</str>
 		<str id="charterAutoSavesSeparateFolder-desc">Se marcado, irá guardar os ficheiros numa pasta separada com a data em vez de substituir o ficheiro atual. (song/autosaves/)</str>
 
-		<str id="songOffsetAffectEditors-name">"Offset" no Mapeador</str>
-		<str id="songOffsetAffectEditors-desc">Se marcado, irá ativar o "Offset" da Música no Editor de Mapas, também.</str>
+		<str id="songOffsetAffectEditors-name">Atraso no Mapeador</str>
+		<str id="songOffsetAffectEditors-desc">Se marcado, irá ativar o Atraso da Música no Editor de Mapas, também.</str>
 	</group>
 
 </language>

@@ -109,7 +109,7 @@
 	</composite>
 	<composite char="ç">
 		<component anim="character-c0" x="0" y="0"/>
-		<component anim="diacritic-ogonek-fill" x="23" y="-14" outline="diacritic-ogonek-outline" outlineX="2" outlineY="-2" hasOutline="true"/>
+		<component anim="diacritic-cadilla-fill" x="20" y="-15" outline="diacritic-cadilla-outline" outlineX="3" outlineY="-1" hasOutline="true"/>
 	</composite>
 	<composite char="ć">
 		<component anim="character-c0" x="0" y="0"/>
