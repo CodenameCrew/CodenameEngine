@@ -8,7 +8,8 @@ class Config {
 
 		"funkin",
 		#if MODCHARTING_FEATURES
-		"modchart",
+		"modchart.engine",
+		"modchart.backend.standalone",
 		#end
 		#end
 	];
