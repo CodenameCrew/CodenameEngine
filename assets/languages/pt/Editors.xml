@@ -485,11 +485,12 @@
 					<str id="redo">Refazer</str>
 				</group>
 
-				<str id="topBar.glyph">Caráter</str>
+				<str id="topBar.glyph">Glifo</str>
 				<group name="GlyphMenu" prefix="glyph.">
-					<str id="newGlyph">Novo Caráter</str>
-					<str id="editGlyph">Editar Caráter</str>
-					<str id="deleteGlyph">Apagar Caráter</str>
+					<str id="newGlyph">Novo Glifo</str>
+					<str id="editGlyph">Editar Glifo</str>
+					<str id="deleteGlyph">Apagar Glifo</str>
+					<str id="deleteCurGlyph">Apagar Glifo Atual</str>
 				</group>
 
 				<str id="topBar.offset">Posição</str>
