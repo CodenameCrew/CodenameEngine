@@ -16,6 +16,7 @@
 	<group name="UIImageExplorer" prefix="uiImageExplorer.">
 		<str id="symbol">Simbolo</str>
 		<str id="animation">Animação</str>
+		<str id="atlas">Atlas</str>
 		<str id="spritemap">Mapa de Sprites</str>
 
 		<str id="directory">Diretório ({0}/)</str>
@@ -167,8 +168,8 @@
 			<str id="scrollSpeed">Velocidade das Notas</str>
 			<str id="stagePos">Posição no Cenário</str>
 			<str id="scale">Tamanho</str>
-			<str id="spacing">Espaçamento</str>
-			<str id="hudPos">Posição na Interface (X [Rácio 0-1],Y)</str>
+			<str id="spacing">Espaço</str>
+			<str id="hudPos">Posição HUD (X [Rácio 0-1],Y)</str>
 			<str id="visible">Visível?</str>
 			<str id="useChartScrollSpeed">Usa velocidade global?</str>
 			<str id="vocalSuffix">Sufixo Vocal</str>
@@ -402,7 +403,7 @@
 					<str id="zoomIn">Ampliar</str>
 					<str id="zoomOut">Diminuir</str>
 					<str id="resetZoom">Zoom Padrão</str>
-					<str id="charHitbox">Hitbox da Personagem?</str>
+					<str id="charHitbox">"Hitbox" da Personagem?</str>
 					<str id="charCam">Câmara da Personagem?</str>
 					<str id="axis">Eixo XY?</str>
 				</group>
@@ -424,8 +425,8 @@
 					<str id="camPosition">Posição da Câmara (X, Y)</str>
 					<str id="charFlipped">Espelhado?</str>
 					<str id="antialiased">Suavizado?</str>
-					<str id="testCharAs">Testar Personagem Como...</str>
-					<str id="charDesign">Personagem Desenhada Como...</str>
+					<str id="testCharAs">Testar Como...</str>
+					<str id="charDesign">Desenhada Como...</str>
 				</group>
 
 				<group name="CharacterAnimButton" prefix="characterAnim.">
@@ -588,6 +589,7 @@
 			<str id="spritePath">Caminho do Sprite\n(Requer Recarregamento)</str>
 			<str id="startCamPos">Posição inicial da Câmara (X, Y)</str>
 			<str id="zoom">Zoom</str>
+			<str id="customAttributes">Atributos Especiais</str>
 		</group>
 
 		<group name="StageElementEditScreen" prefix="stageElementEditScreen.">
@@ -625,7 +627,7 @@
 				<str id="beat">EM BATIDA</str>
 				<str id="loop">REPETIR</str>
 			</group>
-			<str id="tipCustomProperties">Dica: Para aceder a propriedades especiais,\nSegure em Shift ao carregar em Editar</str>
+			<str id="tipCustomProperties">Dica: Para aceder a mais dados,\nSegure em Shift quando Editar</str>
 		</group>
 
 		<group name="StageXMLEditScreen" prefix="stageXMLEditScreen.">

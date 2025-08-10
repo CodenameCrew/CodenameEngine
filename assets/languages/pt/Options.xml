@@ -101,7 +101,7 @@
 		<str id="downscroll-name">"Downscroll"</str>
 		<str id="downscroll-desc">Se marcado, notas irão de cima para baixo em vez de baixo para cima, como se estivessem a cair.</str>
 
-		<str id="ghostTapping-name">"Ghost Tapping"</str>
+		<str id="ghostTapping-name">Toques Fantasma</str>
 		<str id="ghostTapping-desc">Se desmarcado, bater em teclas que não tem uma nota conta como erro.</str>
 
 		<str id="naughtyness-name">Indecência</str>
