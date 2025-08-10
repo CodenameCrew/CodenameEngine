@@ -7,6 +7,9 @@ class Config {
 		"flixel",
 
 		"funkin",
+		#if MODCHARTING_FEATURES
+		"modchart",
+		#end
 		#end
 	];
 
