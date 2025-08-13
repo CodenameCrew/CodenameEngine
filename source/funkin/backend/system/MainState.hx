@@ -91,6 +91,7 @@ class MainState extends FlxState {
 			}
 		}
 
+		funkin.backend.scripting.Script.staticVariables = [];
 		for (addon in _lowPriorityAddons)
 			loadLib(addon.path, ltrim(addon.name, "[LOW]"));
 
