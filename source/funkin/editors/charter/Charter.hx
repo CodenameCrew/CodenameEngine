@@ -1841,6 +1841,25 @@ class Charter extends UIState {
 		Conductor.songPosition = FlxG.sound.music.length;
 	}
 
+	
+	function _add_event_at_current_step(name:String, params:Array<Dynamic>, ?shouldGlobal:Bool = true) {
+		var __event:CharterEvent = null;
+
+			__event = new CharterEvent(quantStep(curStepFloat), [{
+				name: name,
+				params: params,
+				time: Conductor.getTimeForStep(quantStep(curStepFloat))
+			}], shouldGlobal);
+			__event.refreshEventIcons();
+			(__event.global ? rightEventsGroup : leftEventsGroup).add(__event);
+			undos.addToUndo(CEditEvent(__event, [], __event.events));
+	}
+
+	function _opponent_camera_add(_) _add_event_at_current_step("Camera Movement", [0]);
+	function _player_camera_add(_) _add_event_at_current_step("Camera Movement", [1]);
+	function _opponent_camera_add_local(_) _add_event_at_current_step("Camera Movement", [0], false);
+	function _player_camera_add_local(_) _add_event_at_current_step("Camera Movement", [1], false);
+
 	public function getBookmarkList():Array<ChartBookmark> {
 		var bookmarks:Array<ChartBookmark> = [];
 		try {
@@ -1849,34 +1868,6 @@ class Charter extends UIState {
 		} catch (e) {}
 		
 		return bookmarks;
-	}
-
-		function _opponent_camera_add(_) {
-		var __event:CharterEvent = null;
-
-				__event = new CharterEvent(curStepFloat, [{
-				name: "Camera Movement",
-				params:[0],
-				time: Conductor.getTimeForStep(curStepFloat)
-			}], true);
-				__event.refreshEventIcons();
-				__event.global = true;
-				rightEventsGroup.add(__event);
-				undos.addToUndo(CEditEvent(__event, [], __event.events));
-			
-	}
-		function _player_camera_add(_) {
-		var __event:CharterEvent = null;
-
-				__event = new CharterEvent(curStepFloat, [{
-				name: "Camera Movement",
-				params:[1],
-				time: Conductor.getTimeForStep(curStepFloat)
-			}], true);
-				__event.refreshEventIcons();
-				rightEventsGroup.add(__event);
-				undos.addToUndo(CEditEvent(__event, [], __event.events));
-			
 	}
 
 	function _bookmarks_add(_) {
@@ -1997,9 +1988,19 @@ class Charter extends UIState {
 				onSelect: _opponent_camera_add
 			},
 			{
+				label: translate("song.addOpponentCameraLocal"),
+				keybind: [SHIFT, O],
+				onSelect: _opponent_camera_add_local
+			},
+			{
 				label: translate("song.addPlayerCamera"),
 				keybind: [P],
 				onSelect: _player_camera_add
+			},
+			{
+				label: translate("song.addPlayerCameraLocal"),
+				keybind: [SHIFT, P],
+				onSelect: _player_camera_add_local
 			},
 			null,
 			{
