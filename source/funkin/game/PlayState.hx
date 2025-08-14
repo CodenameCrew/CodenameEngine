@@ -1805,7 +1805,10 @@ class PlayState extends MusicBeatState
 
 		var event:NoteMissEvent = gameAndCharsEvent("onPlayerMiss", EventManager.get(NoteMissEvent).recycle(note, -10, 1, muteVocalsOnMiss, note != null ? -0.0475 : -0.04, Paths.sound(FlxG.random.getObject(Flags.DEFAULT_MISS_SOUNDS)), FlxG.random.float(0.1, 0.2), note == null, combo > 5, "sad", true, true, "miss", strumLines.members[playerID].characters, playerID, note != null ? note.noteType : null, directionID, 0));
 		strumLine.onMiss.dispatch(event);
-		if (event.cancelled) return;
+		if (event.cancelled) {
+			gameAndCharsEvent("onPostPlayerMiss", event);
+			return;
+		}
 
 		if (strumLine != null) strumLine.addHealth(event.healthGain);
 		if (gf != null && event.gfSad && gf.hasAnimation(event.gfSadAnim))
@@ -1841,6 +1844,8 @@ class PlayState extends MusicBeatState
 
 		if (event.deleteNote && strumLine != null && note != null)
 			strumLine.deleteNote(note);
+
+		gameAndCharsEvent("onPostPlayerMiss", event);
 	}
 
 	@:dox(hide)
