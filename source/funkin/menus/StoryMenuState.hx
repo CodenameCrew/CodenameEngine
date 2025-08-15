@@ -152,6 +152,17 @@ class StoryMenuState extends MusicBeatState {
 
 			changeDifficulty((controls.LEFT_P ? -1 : 0) + (controls.RIGHT_P ? 1 : 0));
 			changeWeek((controls.UP_P ? -1 : 0) + (controls.DOWN_P ? 1 : 0) - FlxG.mouse.wheel);
+			if(FlxG.mouse.justPressed){
+				if(leftArrow.exists && FlxG.mouse.overlaps(leftArrow)){
+					leftArrow.animation.play('press');
+					changeDifficulty(-1);
+				}else if(rightArrow.exists && FlxG.mouse.overlaps(rightArrow)){
+					rightArrow.animation.play('press');
+					changeDifficulty(1);
+				}else if(FlxG.mouse.overlaps(weekSprites.members[curWeek])){
+					selectWeek();
+				}
+			}
 
 			if (controls.ACCEPT)
 				selectWeek();
