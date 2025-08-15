@@ -1,5 +1,6 @@
 package funkin.editors.charter;
 
+import flixel.util.FlxColor;
 import flixel.group.FlxSpriteGroup;
 import flixel.sound.FlxSound;
 import funkin.backend.chart.ChartData.ChartStrumLine;
@@ -15,6 +16,7 @@ class CharterStrumline extends UISprite {
 	public var draggingSprite:UISprite;
 	public var healthIcons:FlxSpriteGroup;
 	public var button:CharterStrumlineOptions;
+	public var highlightColor:FlxColor;
 
 	public var draggable:Bool = false;
 	public var dragging:Bool = false;
@@ -146,6 +148,15 @@ class CharterStrumline extends UISprite {
 			vocals.destroy();
 		}
 		vocals.group = FlxG.sound.defaultMusicGroup;
+
+		highlightColor = 0xFFFFFFFF;
+		if (icons[0] != null) {
+			var characterXML = Character.getXMLFromCharName(icons[0]);
+			if (characterXML != null && characterXML.x.exists("color")) highlightColor = FlxColor.fromString(characterXML.x.get("color"));
+
+			//make darker colors more visible for the highlight
+			highlightColor.brightness = Math.max(highlightColor.brightness, 0.65);
+		}
 	}
 }
 

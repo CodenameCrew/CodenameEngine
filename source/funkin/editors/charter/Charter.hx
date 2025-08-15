@@ -94,6 +94,7 @@ class Charter extends UIState {
 	public var rightEventRowText:UIText;
 	public var leftEventsGroup:CharterEventGroup = new CharterEventGroup();
 	public var rightEventsGroup:CharterEventGroup = new CharterEventGroup();
+	public var cameraMovementChanges:Array<CameraChange> = [];
 
 	public var charterCamera:FlxCamera;
 	public var uiCamera:FlxCamera;
@@ -305,6 +306,11 @@ class Charter extends UIState {
 						label: translate("view.showBeatsSeparator"),
 						onSelect: _view_showeventBeatSeparator,
 						icon: Options.charterShowBeats ? 1 : 0
+					},
+					{
+						label: 'Show Camera Highlights',
+						onSelect: _view_showeventCameraHighlights,
+						icon: Options.charterShowCameraHighlights ? 1 : 0
 					},
 					null,
 					{
@@ -680,6 +686,7 @@ class Charter extends UIState {
 		CharterGridSeperatorBase.lastConductorSprY = Math.NEGATIVE_INFINITY;
 
 		updateWaveforms();
+		updateCameraChanges();
 	}
 
 	public function getWavesToGenerate():Array<{name:String, sound:FlxSound}> {
@@ -732,6 +739,40 @@ class Charter extends UIState {
 
 			var oldName:String = oldWaveformList[strumLine.selectedWaveform];
 			strumLine.selectedWaveform = waveformHandler.waveformList.indexOf(oldName);
+		}
+	}
+
+	public function updateCameraChanges() {
+		if (!Options.charterShowCameraHighlights) return;
+
+		trace("updating cam changes");
+
+		cameraMovementChanges = [];
+		for (grp in [leftEventsGroup, rightEventsGroup]) {
+			grp.filterEvents();
+			grp.sortEvents();
+			for(e in grp.members) {
+				for(event in e.events) {
+					if (event.name == "Camera Movement") {
+						cameraMovementChanges.push({
+							strumLineID: event.params[0],
+							step: e.step,
+							endStep: __endStep
+						});
+					}
+				}
+			}
+		}
+
+		//need to sort again for both local and global events to be used
+		cameraMovementChanges.sort(function(e1, e2) {
+			return FlxSort.byValues(FlxSort.ASCENDING, e1.step, e2.step);
+		});
+		//update previous change
+		if (cameraMovementChanges.length > 0) {
+			for (i in 1...cameraMovementChanges.length) {
+				cameraMovementChanges[i-1].endStep = cameraMovementChanges[i].step;
+			}
 		}
 	}
 
@@ -1863,6 +1904,7 @@ class Charter extends UIState {
 				__event.global = true;
 				rightEventsGroup.add(__event);
 				undos.addToUndo(CEditEvent(__event, [], __event.events));
+				updateCameraChanges();
 			
 	}
 		function _player_camera_add(_) {
@@ -1876,6 +1918,7 @@ class Charter extends UIState {
 				__event.refreshEventIcons();
 				rightEventsGroup.add(__event);
 				undos.addToUndo(CEditEvent(__event, [], __event.events));
+				updateCameraChanges();
 			
 	}
 
@@ -2062,6 +2105,10 @@ class Charter extends UIState {
 	}
 	function _view_showeventBeatSeparator(t) {
 		t.icon = (Options.charterShowBeats = !Options.charterShowBeats) ? 1 : 0;
+	}
+	function _view_showeventCameraHighlights(t) {
+		t.icon = (Options.charterShowCameraHighlights = !Options.charterShowCameraHighlights) ? 1 : 0;
+		updateCameraChanges();
 	}
 	function _view_switchWaveformRainbow(t) {
 		t.icon = (Options.charterRainbowWaveforms = !Options.charterRainbowWaveforms) ? 1 : 0;
@@ -2521,4 +2568,10 @@ typedef PlaytestInfo = {
 	var hitSounds:Array<Bool>;
 	var mutedVocals:Array<Bool>;
 	var waveforms:Array<Int>;
+}
+
+typedef CameraChange = {
+	var strumLineID:Int;
+	var step:Float;
+	var endStep:Float;
 }
