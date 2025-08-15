@@ -507,7 +507,7 @@ class FreeplayState extends MusicBeatState
 
 			if (item.targetY == 0)
 				item.alpha = selectedAlpha;
-			item.visible = (item.targetY > -20 && item.targetY < 20)
+			item.visible = (item.targetY > -20 && item.targetY < 20);
 		}
 	}
 
