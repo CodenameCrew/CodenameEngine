@@ -295,7 +295,7 @@ class FreeplayState extends MusicBeatState
 		#end
 
 
-		if (controls.BACK)
+		if (controls.BACK || FlxG.mouse.justPressedRight)
 		{
 			CoolUtil.playMenuSFX(CANCEL, 0.7);
 			FlxG.switchState(new MainMenuState());
@@ -306,6 +306,19 @@ class FreeplayState extends MusicBeatState
 			convertChart();
 		#end
 
+		if(FlxG.mouse.justPressed){
+			if(#if PRELOAD_ALL !dontPlaySongThisFrame && #end FlxG.mouse.overlaps(grpSongs.members[curSelected])){
+				select();
+			}else if(canSelect){
+				for(index => sprite in grpSongs.members){
+					if(curSelected != index && FlxG.mouse.overlaps(sprite)){
+						changeSelection(index-curSelected);
+						updateOptionsAlpha();
+						break;
+					}
+				}
+			}
+		}
 		if (controls.ACCEPT #if PRELOAD_ALL && !dontPlaySongThisFrame #end)
 			select();
 	}
@@ -481,19 +494,21 @@ class FreeplayState extends MusicBeatState
 		final idleAlpha = #if PRELOAD_ALL songInstPlaying ? event.idlePlayingAlpha : #end event.idleAlpha;
 		final selectedAlpha = #if PRELOAD_ALL songInstPlaying ? event.selectedPlayingAlpha : #end event.selectedAlpha;
 
-		for (i in 0...iconArray.length)
+		for (i in 0...iconArray.length){
 			iconArray[i].alpha = lerp(iconArray[i].alpha, idleAlpha, event.lerp);
+		}
 
 		iconArray[curSelected].alpha = selectedAlpha;
 
-		for (i=>item in grpSongs.members)
-		{
+		for (i=>item in grpSongs.members) {
 			item.targetY = i - curSelected;
 
 			item.alpha = lerp(item.alpha, idleAlpha, event.lerp);
 
 			if (item.targetY == 0)
 				item.alpha = selectedAlpha;
+			if (item.targetY > 20 || item.targetY < -20)
+				item.visible = false;
 		}
 	}
 
