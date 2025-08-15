@@ -493,21 +493,19 @@ class FreeplayState extends MusicBeatState
 
 		final idleAlpha = #if PRELOAD_ALL songInstPlaying ? event.idlePlayingAlpha : #end event.idleAlpha;
 		final selectedAlpha = #if PRELOAD_ALL songInstPlaying ? event.selectedPlayingAlpha : #end event.selectedAlpha;
-
-		for (i in 0...iconArray.length){
-			iconArray[i].alpha = lerp(iconArray[i].alpha, idleAlpha, event.lerp);
-		}
-
-		iconArray[curSelected].alpha = selectedAlpha;
-
+		
 		for (i=>item in grpSongs.members) {
 			item.targetY = i - curSelected;
+			final icon = iconArray[i];
 
-			item.alpha = lerp(item.alpha, idleAlpha, event.lerp);
 
-			if (item.targetY == 0)
-				item.alpha = selectedAlpha;
-			item.visible = (item.targetY > -20 && item.targetY < 20);
+			if (item.targetY == 0){
+				item.alpha = icon.alpha = selectedAlpha;
+			}else{
+				item.alpha = lerp(item.alpha, idleAlpha, event.lerp);
+				icon.alpha = lerp(icon.alpha, idleAlpha, event.lerp);
+			}
+			icon.visible = item.visible = (item.targetY > -20 && item.targetY < 20);
 		}
 	}
 
