@@ -161,6 +161,8 @@ class StoryMenuState extends MusicBeatState {
 					changeDifficulty(1);
 				}else if(FlxG.mouse.overlaps(weekSprites.members[curWeek])){
 					selectWeek();
+				}else if(weekSprites.members[curWeek+1] != null && FlxG.mouse.overlaps(weekSprites.members[curWeek+1])){
+					changeWeek(1);
 				}
 			}
 
