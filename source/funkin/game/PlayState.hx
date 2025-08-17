@@ -1950,7 +1950,7 @@ class PlayState extends MusicBeatState
 		var suf:String = hasEvent ? evt.ratingSuffix : "";
 
 		var rating:FlxSprite = comboGroup.recycleLoop(FlxSprite);
-		rating.resetSprite(comboGroup.x + -40, comboGroup.y + -60);
+		CoolUtil.resetSprite(rating, comboGroup.x + -40, comboGroup.y + -60);
 		rating.loadAnimatedGraphic(Paths.image('${pre}${myRating}${suf}'));
 		rating.acceleration.y = 550;
 		rating.velocity.y -= FlxG.random.int(140, 175);
@@ -1977,7 +1977,7 @@ class PlayState extends MusicBeatState
 
 			if (evt.displayCombo) {
 				var comboSpr:FlxSprite = comboGroup.recycleLoop(FlxSprite).loadAnimatedGraphic(Paths.image('${pre}combo${suf}'));
-				comboSpr.resetSprite(comboGroup.x, comboGroup.y);
+				CoolUtil.resetSprite(comboSpr, comboGroup.x, comboGroup.y);
 				comboSpr.acceleration.y = 600;
 				comboSpr.velocity.y -= 150;
 				comboSpr.velocity.x += FlxG.random.int(1, 10);
@@ -2001,7 +2001,7 @@ class PlayState extends MusicBeatState
 			for (i in 0...separatedScore.length)
 			{
 				var numScore:FlxSprite = comboGroup.recycleLoop(FlxSprite).loadAnimatedGraphic(Paths.image('${pre}num${separatedScore.charAt(i)}${suf}'));
-				numScore.resetSprite(comboGroup.x + (43 * i) - 90, comboGroup.y + 80);
+				CoolUtil.resetSprite(numScore, comboGroup.x + (43 * i) - 90, comboGroup.y + 80);
 				if (hasEvent) {
 					numScore.antialiasing = evt.numAntialiasing;
 					numScore.scale.set(evt.numScale, evt.numScale);
