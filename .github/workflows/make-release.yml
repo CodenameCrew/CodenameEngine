@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download Windows Full Build
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@v6
         with:
           workflow: windows.yml
           name: Codename Engine
@@ -29,7 +29,7 @@ jobs:
           allow_forks: false
 
       - name: Download Windows Executable
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@v6
         with:
           workflow: windows.yml
           name: Codename Engine (Executable Only)
@@ -37,7 +37,7 @@ jobs:
           allow_forks: false
 
       - name: Download macOS Full Build
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@v6
         with:
           workflow: macos.yml
           name: Codename Engine
@@ -45,7 +45,7 @@ jobs:
           allow_forks: false
 
       - name: Download macOS Executable
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@v6
         with:
           workflow: macos.yml
           name: Codename Engine (Executable Only)
@@ -53,7 +53,7 @@ jobs:
           allow_forks: false
 
       - name: Download Linux Full Build
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@v6
         with:
           workflow: linux.yml
           name: Codename Engine
@@ -61,7 +61,7 @@ jobs:
           allow_forks: false
 
       - name: Download Linux Executable
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@v6
         with:
           workflow: linux.yml
           name: Codename Engine (Executable Only)
