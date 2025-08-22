@@ -1842,7 +1842,7 @@ class Charter extends UIState {
 	}
 
 	
-	function _add_event_at_current_step(name:String, params:Array<Dynamic>, ?shouldGlobal:Bool = true) {
+	function addEventAtCurrentStep(name:String, params:Array<Dynamic>, ?shouldGlobal:Bool = true) {
 		var __event:CharterEvent = null;
 
 			__event = new CharterEvent(quantStep(curStepFloat), [{
@@ -1855,10 +1855,10 @@ class Charter extends UIState {
 			undos.addToUndo(CEditEvent(__event, [], __event.events));
 	}
 
-	function _opponent_camera_add(_) _add_event_at_current_step("Camera Movement", [0]);
-	function _player_camera_add(_) _add_event_at_current_step("Camera Movement", [1]);
-	function _opponent_camera_add_local(_) _add_event_at_current_step("Camera Movement", [0], false);
-	function _player_camera_add_local(_) _add_event_at_current_step("Camera Movement", [1], false);
+	function _opponent_camera_add(_) addEventAtCurrentStep("Camera Movement", [0]);
+	function _player_camera_add(_) addEventAtCurrentStep("Camera Movement", [1]);
+	function _opponent_camera_add_local(_) addEventAtCurrentStep("Camera Movement", [0], false);
+	function _player_camera_add_local(_) addEventAtCurrentStep("Camera Movement", [1], false);
 
 	public function getBookmarkList():Array<ChartBookmark> {
 		var bookmarks:Array<ChartBookmark> = [];
