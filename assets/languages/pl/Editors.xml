@@ -230,8 +230,6 @@
 				<str id="goEnd">Idź do końca</str> <!-- used to be "Go to the end" -->
 				<str id="addOpponentCamera">Dodaj kamerę na Oponenta</str>
 				<str id="addPlayerCamera">Dodaj kamerę na Gracza</str>
-				<str id="addOpponentCameraLocal">Dodaj lokalnie kamerę na Oponenta</str>
-				<str id="addPlayerCameraLocal">Dodaj lokalnie kamerę na Gracza</str>
 				<str id="muteInst">Wycisz Instrumental</str>
 				<str id="muteVoices">Wycisz Wokale</str>
 			</group>

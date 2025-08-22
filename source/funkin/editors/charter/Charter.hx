@@ -1842,23 +1842,23 @@ class Charter extends UIState {
 	}
 
 	
-	function addEventAtCurrentStep(name:String, params:Array<Dynamic>, ?shouldGlobal:Bool = true) {
+	function addEventAtCurrentStep(name:String, params:Array<Dynamic>, ?shouldGlobal:Bool = true, ?shouldntQuant:Bool = true) {
 		var __event:CharterEvent = null;
 
-			__event = new CharterEvent(quantStep(curStepFloat), [{
+		var step:Float = (shouldntQuant ? curStepFloat : quantStep(curStepFloat));
+
+			__event = new CharterEvent(step, [{
 				name: name,
 				params: params,
-				time: Conductor.getTimeForStep(quantStep(curStepFloat))
+				time: Conductor.getTimeForStep(step)
 			}], shouldGlobal);
 			__event.refreshEventIcons();
 			(__event.global ? rightEventsGroup : leftEventsGroup).add(__event);
 			undos.addToUndo(CEditEvent(__event, [], __event.events));
 	}
 
-	function _opponent_camera_add(_) addEventAtCurrentStep("Camera Movement", [0]);
-	function _player_camera_add(_) addEventAtCurrentStep("Camera Movement", [1]);
-	function _opponent_camera_add_local(_) addEventAtCurrentStep("Camera Movement", [0], false);
-	function _player_camera_add_local(_) addEventAtCurrentStep("Camera Movement", [1], false);
+	function _opponent_camera_add(_) addEventAtCurrentStep("Camera Movement", [0], !FlxG.keys.pressed.ALT, FlxG.keys.pressed.SHIFT);
+	function _player_camera_add(_) addEventAtCurrentStep("Camera Movement", [1], !FlxG.keys.pressed.ALT, FlxG.keys.pressed.SHIFT);
 
 	public function getBookmarkList():Array<ChartBookmark> {
 		var bookmarks:Array<ChartBookmark> = [];
@@ -1984,23 +1984,13 @@ class Charter extends UIState {
 			null,
 			{
 				label: translate("song.addOpponentCamera"),
-				keybind: [O],
+				keybinds: [[O], [O, SHIFT], [O, ALT]],
 				onSelect: _opponent_camera_add
 			},
 			{
-				label: translate("song.addOpponentCameraLocal"),
-				keybind: [SHIFT, O],
-				onSelect: _opponent_camera_add_local
-			},
-			{
 				label: translate("song.addPlayerCamera"),
-				keybind: [P],
+				keybinds: [[P], [P, SHIFT], [P, ALT]],
 				onSelect: _player_camera_add
-			},
-			{
-				label: translate("song.addPlayerCameraLocal"),
-				keybind: [SHIFT, P],
-				onSelect: _player_camera_add_local
 			},
 			null,
 			{
