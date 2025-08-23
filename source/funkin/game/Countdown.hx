@@ -69,7 +69,7 @@ class Countdown extends FlxTypedSpriteGroup<FlxSprite> {
 				// Add 1.0 to defaultSize if animationPreset is BEATING.
 				var defaultSize:Float = this.event.scale;
 				var isBeatingPreset:Bool = (this.animationPreset == BEATING);
-				var targetSize:Float = defaultSize + ((!isBeatingPreset) ? 0.0 : 0.25);
+				var targetSize:Float = defaultSize + ((!isBeatingPreset) ? 0.0 : 0.15);
 
 				var spr = this.event.spritePath;
 
@@ -87,11 +87,11 @@ class Countdown extends FlxTypedSpriteGroup<FlxSprite> {
 
 				switch(this.animationPreset) {
 					case CLASSIC:
-						tween = __createTween(sprite, {alpha: 0});
+						tween = __createTween(sprite, {alpha: 0}, FlxEase.cubeInOut);
 					case BEATING:
-						tween = __createTween(sprite, {alpha: 0, "scale.x": defaultSize, "scale.y": defaultSize});
+						tween = __createTween(sprite, {alpha: 0, "scale.x": defaultSize, "scale.y": defaultSize}, FlxEase.expoOut);
 					default: // DEFAULT
-						tween = __createTween(sprite, {y: sprite.y + 100, alpha: 0});
+						tween = __createTween(sprite, {y: sprite.y + 100, alpha: 0}, FlxEase.cubeInOut);
 				}
 			}
 
@@ -112,9 +112,9 @@ class Countdown extends FlxTypedSpriteGroup<FlxSprite> {
 	}
 
 	@:noPrivateAccess
-	private function __createTween(sprite:FlxSprite, values:Dynamic):VarTween {
+	private function __createTween(sprite:FlxSprite, values:Dynamic, easing:EaseFunction):VarTween {
 		return FlxTween.tween(sprite, values, (this.duration / this.speed), {
-			ease: FlxEase.cubeInOut,
+			ease: easing,
 			onComplete: function(twn:FlxTween) {
 				sprite.destroy();
 				remove(sprite, true);
