@@ -41,8 +41,8 @@ class UpdateUtil {
 	{
 		// Only add the suffix of the platform we need to get.
 		var target:String = #if windows "windows.exe" #end
-		#if mac "mac" #end
-		#if linux "linux" #end;
+							#if mac "mac" #end
+							#if linux "linux" #end;
 		return 'update-${target}';
 	}
 
