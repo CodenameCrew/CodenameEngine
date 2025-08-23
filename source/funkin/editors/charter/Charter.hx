@@ -1841,24 +1841,21 @@ class Charter extends UIState {
 		Conductor.songPosition = FlxG.sound.music.length;
 	}
 
-	
-	function addEventAtCurrentStep(name:String, params:Array<Dynamic>, ?shouldGlobal:Bool = true, ?shouldntQuant:Bool = true) {
-		var __event:CharterEvent = null;
-
-		var step:Float = (shouldntQuant ? curStepFloat : quantStep(curStepFloat));
-
-			__event = new CharterEvent(step, [{
-				name: name,
-				params: params,
-				time: Conductor.getTimeForStep(step)
-			}], shouldGlobal);
-			__event.refreshEventIcons();
-			(__event.global ? rightEventsGroup : leftEventsGroup).add(__event);
-			undos.addToUndo(CEditEvent(__event, [], __event.events));
-	}
-
 	function _opponent_camera_add(_) addEventAtCurrentStep("Camera Movement", [0], !FlxG.keys.pressed.ALT, FlxG.keys.pressed.SHIFT);
 	function _player_camera_add(_) addEventAtCurrentStep("Camera Movement", [1], !FlxG.keys.pressed.ALT, FlxG.keys.pressed.SHIFT);
+
+	function addEventAtCurrentStep(name:String, params:Array<Dynamic>, shouldGlobal:Bool = true, shouldntQuant:Bool = true) {
+		var step:Float = (shouldntQuant ? curStepFloat : quantStep(curStepFloat));
+		var __event:CharterEvent = new CharterEvent(step, [{
+			name: name,
+			params: params,
+			time: Conductor.getTimeForStep(step)
+		}], shouldGlobal);
+
+		__event.refreshEventIcons();
+		(__event.global ? rightEventsGroup : leftEventsGroup).add(__event);
+		undos.addToUndo(CEditEvent(__event, [], __event.events));
+	}
 
 	public function getBookmarkList():Array<ChartBookmark> {
 		var bookmarks:Array<ChartBookmark> = [];
@@ -1891,6 +1888,7 @@ class Charter extends UIState {
 			}));
 		}
 	}
+
 	function _bookmarks_edit_list(_)
 		FlxG.state.openSubState(new CharterBookmarkList()); //idk why its FlxG.state but it looks so off lmfao
 
