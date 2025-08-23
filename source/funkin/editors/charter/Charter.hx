@@ -1841,11 +1841,11 @@ class Charter extends UIState {
 		Conductor.songPosition = FlxG.sound.music.length;
 	}
 
-	function _opponent_camera_add(_) addEventAtCurrentStep("Camera Movement", [0], !FlxG.keys.pressed.ALT, FlxG.keys.pressed.SHIFT);
-	function _player_camera_add(_) addEventAtCurrentStep("Camera Movement", [1], !FlxG.keys.pressed.ALT, FlxG.keys.pressed.SHIFT);
+	function _opponent_camera_add(_) addEventAtCurrentStep("Camera Movement", [0], !FlxG.keys.pressed.ALT, !FlxG.keys.pressed.SHIFT);
+	function _player_camera_add(_) addEventAtCurrentStep("Camera Movement", [1], !FlxG.keys.pressed.ALT, !FlxG.keys.pressed.SHIFT);
 
-	function addEventAtCurrentStep(name:String, params:Array<Dynamic>, shouldGlobal:Bool = true, shouldntQuant:Bool = true) {
-		var step:Float = (shouldntQuant ? curStepFloat : quantStep(curStepFloat));
+	function addEventAtCurrentStep(name:String, params:Array<Dynamic>, shouldGlobal:Bool = true, shouldQuant:Bool = false) {
+		var step:Float = (shouldQuant ? quantStep(curStepFloat) : curStepFloat);
 		var __event:CharterEvent = new CharterEvent(step, [{
 			name: name,
 			params: params,
