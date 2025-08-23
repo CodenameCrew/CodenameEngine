@@ -25,19 +25,8 @@ class AsyncUpdater {
 	}
 	#end
 
-
-	#if windows
-	public static var executableGitHubName:String = "update-windows.exe";
-	public static var executableName:String = "CodenameEngine.exe";
-	#end
-	#if linux
-	public static var executableGitHubName:String = "update-linux";
-	public static var executableName:String = "CodenameEngine";
-	#end
-	#if mac
-	public static var executableGitHubName:String = "update-mac";
-	public static var executableName:String = "CodenameEngine";
-	#end
+	public static var executableName:String = UpdateUtil.getExecName();
+	public static var executableGitHubName:String = UpdateUtil.getGitExecName();
 
 	public var releases:Array<GitHubRelease>;
 	public var progress:UpdaterProgress = new UpdaterProgress();
