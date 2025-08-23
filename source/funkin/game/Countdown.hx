@@ -7,28 +7,53 @@ import funkin.backend.scripting.events.gameplay.CountdownEvent;
 
 enum CountdownAnimationPreset {
 
-	// TODO: Documentation
-
+	/**
+	 * The default animation for Codename Engine's countdown.
+	 */
 	DEFAULT;
+
+	/**
+	 * The classic animation, similar to Funkin's countdown.
+	 */
 	CLASSIC;
+
+	/**
+	 * A more enhanced version of Funkin's countdown animation.
+	 */
 	BEATING;
 
 }
 
 typedef CountdownParams = {
 
-	// TODO: Documentation
-
+	/**
+	 * The CountdownEvent to be used.
+	 */
 	var event:CountdownEvent;
 
+	/**
+	 * Whether the countdown should be visible or not.
+	 */
 	var enabled:Bool;
 
+	/**
+	 * Whether each tick from the countdown should play a sound.
+	 */
 	var playSound:Bool;
 
+	/**
+	 * The animation preset to be used for the countdown.
+	 */
 	var animationPreset:CountdownAnimationPreset;
 
+	/**
+	 * The duration of the countdown's animation.
+	 */
 	var duration:Float;
 
+	/**
+	 * The speed of the countdown's animation. The lower it is, the slower it goes and vice-versa.
+	 */
 	var speed:Float;
 
 }
@@ -41,6 +66,10 @@ class Countdown extends FlxTypedSpriteGroup<FlxSprite> {
 	public var duration:Float;
 	public var speed:Float;
 
+	/**
+	 * Create a new Countdown component.
+	 * @param params
+	 */
 	public function new(params:CountdownParams) {
 		super();
 

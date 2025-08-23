@@ -996,7 +996,6 @@ class PlayState extends MusicBeatState
 	 * Creates a fake countdown.
 	 */
 	public function countdown(swagCounter:Int) {
-
 		var countdown:Countdown = new Countdown({
 			event: gameAndCharsEvent("onCountdown", EventManager.get(CountdownEvent).recycle(
 				swagCounter,
@@ -1010,7 +1009,6 @@ class PlayState extends MusicBeatState
 			duration: (Conductor.crochet / 1000),
 			speed: 1.0
 		});
-
 		countdown.cameras = [camHUD];
 
 		add(countdown);
