@@ -12,7 +12,8 @@ final class CommandLineHandler {
 			"",
 			"-help                | Show this help",
 			#if MOD_SUPPORT
-			"-mod [mod name]      | Load a specific mod", "-modfolder [path]    | Sets the mod folder path",
+			"-mod [mod name]      | Load a specific mod",
+			"-modfolder [path]    | Sets the mod folder path",
 			"-addonsfolder [path] | Sets the addons folder path",
 			#end
 			"-nocolor             | Disables colors in the terminal",
@@ -24,7 +25,7 @@ final class CommandLineHandler {
 			Sys.println(s);
 		}
 	}
-	
+
 	public static function parseCommandLine(cmd:Array<String>) {
 		var i:Int = 0;
 		while(i < cmd.length) {

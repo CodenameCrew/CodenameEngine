@@ -1010,7 +1010,6 @@ class PlayState extends MusicBeatState
 			speed: 1.0
 		});
 		countdown.cameras = [camHUD];
-
 		add(countdown);
 
 		gameAndCharsEvent("onPostCountdown", countdown.event);

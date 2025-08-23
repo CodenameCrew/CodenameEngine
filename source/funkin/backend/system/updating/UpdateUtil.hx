@@ -30,10 +30,10 @@ class UpdateUtil {
 		__mutex = new Mutex();
 		Thread.create(checkForUpdates.bind(true, false));
 	}
-	
+
 	public static function getExecName():String
 	{
-		// Since previously, both linux and mac don't have the .exe extension. We might as well just compress this to a '#else' clause.
+		// Since previously, both linux and mac don't have the .exe extension, we might as well just compress this to a '#else' clause.
 		return #if windows "CodenameEngine.exe" #else "CodenameEngine" #end; // weird syntax??? :skull: haxe is just full of surprises
 	}
 

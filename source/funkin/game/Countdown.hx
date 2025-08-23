@@ -137,7 +137,6 @@ class Countdown extends FlxTypedSpriteGroup<FlxSprite> {
 			this.event.spriteTween = tween;
 			this.event.cancelled = false;
 		}
-
 	}
 
 	@:noPrivateAccess
