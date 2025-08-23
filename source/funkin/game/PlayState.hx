@@ -1007,7 +1007,8 @@ class PlayState extends MusicBeatState
 			enabled: true,
 			playSound: true,
 			animationPreset: DEFAULT,
-			speed: (Conductor.crochet / 1000)
+			duration: (Conductor.crochet / 1000),
+			speed: 1.0
 		});
 
 		countdown.cameras = [camHUD];
