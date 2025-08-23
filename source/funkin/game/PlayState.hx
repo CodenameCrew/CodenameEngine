@@ -996,50 +996,25 @@ class PlayState extends MusicBeatState
 	 * Creates a fake countdown.
 	 */
 	public function countdown(swagCounter:Int) {
-		var event:CountdownEvent = gameAndCharsEvent("onCountdown", EventManager.get(CountdownEvent).recycle(
-			swagCounter,
-			1,
-			introSounds[swagCounter],
-			introSprites[swagCounter],
-			0.6, true, null, null, null));
 
-		var sprite:FlxSprite = null;
-		var sound:FlxSound = null;
-		var tween:FlxTween = null;
+		var countdown:Countdown = new Countdown({
+			event: gameAndCharsEvent("onCountdown", EventManager.get(CountdownEvent).recycle(
+				swagCounter,
+				1,
+				introSounds[swagCounter],
+				introSprites[swagCounter],
+				0.6, true, null, null, null)),
+			enabled: true,
+			playSound: true,
+			animationPreset: DEFAULT,
+			speed: (Conductor.crochet / 1000)
+		});
 
-		if (!event.cancelled) {
-			if (event.spritePath != null) {
-				var spr = event.spritePath;
-				if (!Assets.exists(spr)) spr = Paths.image('$spr');
+		countdown.cameras = [camHUD];
 
-				sprite = new FunkinSprite().loadAnimatedGraphic(spr);
-				sprite.scrollFactor.set();
-				sprite.scale.set(event.scale, event.scale);
-				sprite.updateHitbox();
-				sprite.screenCenter();
-				sprite.antialiasing = event.antialiasing;
-				add(sprite);
-				tween = FlxTween.tween(sprite, {y: sprite.y + 100, alpha: 0}, Conductor.crochet / 1000, {
-					ease: FlxEase.cubeInOut,
-					onComplete: function(twn:FlxTween)
-					{
-						sprite.destroy();
-						remove(sprite, true);
-					}
-				});
-			}
-			if (event.soundPath != null) {
-				var sfx = event.soundPath;
-				if (!Assets.exists(sfx)) sfx = Paths.sound(sfx);
-				sound = FlxG.sound.play(sfx, event.volume);
-			}
-		}
-		event.sprite = sprite;
-		event.sound = sound;
-		event.spriteTween = tween;
-		event.cancelled = false;
+		add(countdown);
 
-		gameAndCharsEvent("onPostCountdown", event);
+		gameAndCharsEvent("onPostCountdown", countdown.event);
 	}
 
 	@:dox(hide) function startSong():Void
