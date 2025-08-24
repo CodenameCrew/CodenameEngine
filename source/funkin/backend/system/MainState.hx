@@ -66,12 +66,12 @@ class MainState extends FlxState {
 			)
 		];
 
-		for(path in addonPaths) {
+		for (path in addonPaths) {
 			if (path == null) continue;
 			if (!isDirectory(path)) continue;
 
-			for(addon in FileSystem.readDirectory(path)) {
-				if(!FileSystem.isDirectory(path + addon)) {
+			for (addon in FileSystem.readDirectory(path)) {
+				if (!FileSystem.isDirectory(path + addon)) {
 					switch(Path.extension(addon).toLowerCase()) {
 						case 'zip':
 							addon = Path.withoutExtension(addon);
@@ -90,7 +90,11 @@ class MainState extends FlxState {
 				else _noPriorityAddons.insert(0, data);
 			}
 		}
+		#end
 
+		funkin.backend.scripting.Script.staticVariables.clear();
+
+		#if MOD_SUPPORT
 		for (addon in _lowPriorityAddons)
 			loadLib(addon.path, ltrim(addon.name, "[LOW]"));
 

@@ -1845,6 +1845,22 @@ class Charter extends UIState {
 		Conductor.songPosition = FlxG.sound.music.length;
 	}
 
+	function _opponent_camera_add(_) addEventAtCurrentStep("Camera Movement", [0], !FlxG.keys.pressed.ALT, !FlxG.keys.pressed.SHIFT);
+	function _player_camera_add(_) addEventAtCurrentStep("Camera Movement", [1], !FlxG.keys.pressed.ALT, !FlxG.keys.pressed.SHIFT);
+
+	function addEventAtCurrentStep(name:String, params:Array<Dynamic>, shouldGlobal:Bool = true, shouldQuant:Bool = false) {
+		var step:Float = (shouldQuant ? quantStep(curStepFloat) : curStepFloat);
+		var __event:CharterEvent = new CharterEvent(step, [{
+			name: name,
+			params: params,
+			time: Conductor.getTimeForStep(step)
+		}], shouldGlobal);
+
+		__event.refreshEventIcons();
+		(__event.global ? rightEventsGroup : leftEventsGroup).add(__event);
+		undos.addToUndo(CEditEvent(__event, [], __event.events));
+	}
+
 	public function getBookmarkList():Array<ChartBookmark> {
 		var bookmarks:Array<ChartBookmark> = [];
 		try {
@@ -1853,34 +1869,6 @@ class Charter extends UIState {
 		} catch (e) {}
 		
 		return bookmarks;
-	}
-
-		function _opponent_camera_add(_) {
-		var __event:CharterEvent = null;
-
-				__event = new CharterEvent(curStepFloat, [{
-				name: "Camera Movement",
-				params:[0],
-				time: Conductor.getTimeForStep(curStepFloat)
-			}], true);
-				__event.refreshEventIcons();
-				__event.global = true;
-				rightEventsGroup.add(__event);
-				undos.addToUndo(CEditEvent(__event, [], __event.events));
-			
-	}
-		function _player_camera_add(_) {
-		var __event:CharterEvent = null;
-
-				__event = new CharterEvent(curStepFloat, [{
-				name: "Camera Movement",
-				params:[1],
-				time: Conductor.getTimeForStep(curStepFloat)
-			}], true);
-				__event.refreshEventIcons();
-				rightEventsGroup.add(__event);
-				undos.addToUndo(CEditEvent(__event, [], __event.events));
-			
 	}
 
 	function _bookmarks_add(_) {
@@ -1904,6 +1892,7 @@ class Charter extends UIState {
 			}));
 		}
 	}
+
 	function _bookmarks_edit_list(_)
 		FlxG.state.openSubState(new CharterBookmarkList()); //idk why its FlxG.state but it looks so off lmfao
 
@@ -1995,12 +1984,12 @@ class Charter extends UIState {
 			null,
 			{
 				label: translate("song.addOpponentCamera"),
-				keybind: [O],
+				keybinds: [[O], [O, SHIFT], [O, ALT]],
 				onSelect: _opponent_camera_add
 			},
 			{
 				label: translate("song.addPlayerCamera"),
-				keybind: [P],
+				keybinds: [[P], [P, SHIFT], [P, ALT]],
 				onSelect: _player_camera_add
 			},
 			null,
