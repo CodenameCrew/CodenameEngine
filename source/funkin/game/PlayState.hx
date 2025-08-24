@@ -996,13 +996,15 @@ class PlayState extends MusicBeatState
 	 * Creates a fake countdown.
 	 */
 	public function countdown(swagCounter:Int) {
+		var event:CountdownEvent = gameAndCharsEvent("onCountdown", EventManager.get(CountdownEvent).recycle(
+			swagCounter,
+			1,
+			introSounds[swagCounter],
+			introSprites[swagCounter],
+			0.6, true, null, null, null));
+
 		var countdown:Countdown = new Countdown({
-			event: gameAndCharsEvent("onCountdown", EventManager.get(CountdownEvent).recycle(
-				swagCounter,
-				1,
-				introSounds[swagCounter],
-				introSprites[swagCounter],
-				0.6, true, null, null, null)),
+			event: event,
 			enabled: true,
 			playSound: true,
 			animationPreset: DEFAULT,
@@ -1010,9 +1012,10 @@ class PlayState extends MusicBeatState
 			speed: 1.0
 		});
 		countdown.cameras = [camHUD];
+
 		add(countdown);
 
-		gameAndCharsEvent("onPostCountdown", countdown.event);
+		gameAndCharsEvent("onPostCountdown", event);
 	}
 
 	@:dox(hide) function startSong():Void
