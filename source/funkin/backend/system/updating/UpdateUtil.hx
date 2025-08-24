@@ -31,6 +31,21 @@ class UpdateUtil {
 		Thread.create(checkForUpdates.bind(true, false));
 	}
 
+	public static function getExecName():String
+	{
+		// Since previously, both linux and mac don't have the .exe extension, we might as well just compress this to a '#else' clause.
+		return #if windows "CodenameEngine.exe" #else "CodenameEngine" #end; // weird syntax??? :skull: haxe is just full of surprises
+	}
+
+	public static function getGitExecName():String
+	{
+		// Only add the suffix of the platform we need to get.
+		var target:String = #if windows "windows.exe" #end
+							#if mac "mac" #end
+							#if linux "linux" #end;
+		return 'update-${target}';
+	}
+
 	public static function waitForUpdates(force = false, callback:UpdateCheckCallback->Void, lazy = false) {
 		if (__mutex.tryAcquire()) {
 			__mutex.release();
