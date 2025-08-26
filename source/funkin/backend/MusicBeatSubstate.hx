@@ -11,6 +11,7 @@ import funkin.backend.system.Controls;
 import funkin.backend.system.interfaces.IBeatReceiver;
 import funkin.backend.system.interfaces.IBeatCancellableReceiver;
 import funkin.options.PlayerSettings;
+import funkin.menus.MainMenuState;
 
 /**
  * Base class for all the sub states.
@@ -151,6 +152,13 @@ class MusicBeatSubstate extends FlxSubState implements IBeatCancellableReceiver
 		if (_requestSubStateReset) {
 			_requestSubStateReset = false;
 			resetSubState();
+		}
+
+
+		if (FlxG.keys.justPressed.F1 && FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT) {
+			Logs.trace("Returning to Main Menu...", INFO, YELLOW);
+			FlxG.switchState(new MainMenuState());
+			return;
 		}
 
 		if (subState != null)
