@@ -170,6 +170,7 @@ class MusicBeatState extends FlxState implements IBeatCancellableReceiver
 		if (FlxG.keys.justPressed.F1 && FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT) {
 			Logs.trace("Returning to Main Menu...", INFO, YELLOW);
 			FlxG.switchState(new MainMenuState());
+			return;
 		}
 
 		if (subState != null)
