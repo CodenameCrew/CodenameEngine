@@ -260,7 +260,7 @@ class CharacterAnimButton extends UIButton {
 
 		var animButton = parent.animButtons.get(this.anim);
 		parent.animButtons.remove(this.anim);
-		parent.animButtons.set(newName, copy);
+		parent.animButtons.set(newName, animButton);
 
 		this.anim = newName;
 		nameTextBox.label.text = newName;
