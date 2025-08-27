@@ -32,7 +32,7 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			"Type"				=> Type,
 			"Date"				=> Date,
 			"Lambda"			=> Lambda,
-			"Sys"				=> Sys,
+			#if sys "Sys"		=> Sys, #end
 
 			// OpenFL & Lime related stuff
 			"Assets"			=> openfl.utils.Assets,
