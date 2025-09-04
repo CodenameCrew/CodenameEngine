@@ -24,6 +24,8 @@ let
     ]);
 in
 pkgs.mkShell {
+  name = "CodenameEngine";
+
   packages = with pkgs; [
     haxe
     neko
