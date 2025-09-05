@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<str id="optionsMenu.desc-missing">Sem Descrição</str>
+
+	<group name="OptionsMenu">
+		<str id="optionsMenu.advanced">Avancado</str>
+		<str id="optionsMenu.header.title">Menu De Opções</str>
+		<str id="optionsMenu.header.desc">Selecione uma categoria para continuar.</str>
+
+		<str id="optionsTree.controls-name">Controles</str>
+		<str id="optionsTree.controls-desc">Troque os controles do jogador 1 e 2!</str>
+
+		<str id="optionsTree.gameplay-name">Gameplay</str>
+		<str id="optionsTree.gameplay-desc">Troque algumas opções da gameplay como "downscroll", "Velociadade do scroll" etc...</str>
+		<str id="optionsTree.gameplay.advanced-desc">Troque opções mais avancadas...</str>
+
+		<str id="optionsTree.appearance-name">Aparencia</str>
+		<str id="optionsTree.appearance-desc">Troque a aparencia como "menus piscantes"...</str>
+		<str id="optionsTree.appearance.advanced-desc">Troque opções avancadas como "Sprites em V-RAM", "Antialiasing", "Shaders"</str>
+
+		<str id="optionsTree.language-name">Linguagem</str>
+		<str id="optionsTree.language-desc">Troque a linguagem da engine.</str>
+
+		<str id="optionsTree.miscellaneous-name">Outros</str>
+		<str id="optionsTree.miscellaneous-desc">Use esse menu para resetar seu save ou suas opções.</str>
+
+		<str id="optionsTree.debug-name">Opcoes DEBUG</str>
+		<str id="optionsTree.debug-desc">Troque opções DEBUG para o modo desenvolvedor.</str>
+	</group>
+
+	<group name="KeybindOptions" prefix="KeybindsOptions.">
+		<str id="left">Esquerda</str>
+		<str id="down">Baixo</str>
+		<str id="up">Cima</str>
+		<str id="right">Direita</str>
+
+		<str id="category.notes">Notas</str>
+
+		<str id="category.ui">UI</str>
+		<group name="ui" prefix="ui.">
+			<str id="accept">Accept</str>
+			<str id="back">Back</str>
+			<str id="reset">Reset</str>
+			<str id="pause">Pause</str>
+		</group>
+
+		<str id="category.engine">Engine</str>
+		<group name="engine" prefix="engine.">
+			<str id="switchMod">Trocar Mod</str>
+		</group>
+
+		<str id="category.volume">Volume</str>
+		<str id="volume.mute">Mutar</str>
+
+		<str id="category.developer">Desenvolvedor</str>
+		<group name="developer" prefix="developer.">
+			<str id="devMenus">Menu de Dev</str>
+			<str id="openConsole">Abrir CMD</str>
+			<str id="reloadState">Recarregar State</str>
+		</group>
+	</group>
+
+	<group name="AppearanceOptions" prefix="AppearanceOptions.">
+		<str id="framerate-name">Framerate</str>
+		<str id="framerate-desc">A quantidade de frames por segundos</str>
+
+		<str id="flashingMenu-name">Menu Piscante</str>
+		<str id="flashingMenu-desc">Se desmarcado, deixa flashs mais lentos e desativa-o de menus.</str>
+
+		<str id="colorHealthBar-name">Barra de Vida Colorida</str>
+		<str id="colorHealthBar-desc">Se desmarcado, a barra de vida será vermelha no oponente e verde no player.</str>
+
+		<str id="week6PixelPerfect-name">Efeito de Pixel Perfeito</str>
+		<str id="week6PixelPerfect-desc">Se marcado, a WEEK 6 terá um efeito (feio) onde meio que arredonda o valor para que todos pixeis sejam inteiros (meio complicado explicar).</str>
+
+		<group name="AppearanceOptionsAdvanced" prefix="Advanced.">
+			<str id="quality-name">Qualidade</str>
+			<str id="quality-desc">"BAIXA" = Desabilita os efeitos pesados. "ALTA" = Abilita todos os efeitos visuais, "CUSTOMIZADO" = Te concede a permissão para ativar e desativar as opções que quiser.</str>
+			<str id="quality-low">BAIXA</str>
+			<str id="quality-high">ALTA</str>
+			<str id="quality-custom">CUSTOMIZADA</str>
+
+			<str id="antialiasing-name">Antialiasing</str>
+			<str id="antialiasing-desc">Se marcado, sprites ficaram mais lisos, mas pesará mais na memória.</str>
+
+			<str id="lowMemoryMode-name">Modo de memória baixa</str>
+			<str id="lowMemoryMode-desc">Se marcado, alguns cenários terão menos coisa, deixando seu jogo mais leve.</str>
+
+			<str id="gameplayShaders-name">Shaders na gameplay</str>
+			<str id="gameplayShaders-desc">Se marcado, você ativará shaders (acho meio auto explicativo).</str>
+
+			<str id="gpuOnlyBitmaps-name">Sprites em V-RAM</str>
+			<str id="gpuOnlyBitmaps-desc">Se marcado, vai apenas guardar sprites pela GPU, liberando bastante memória (EXPERIMENTAL). Desabilitar isso vai consumir muito mais memória, especialmente em sprites maiores, se você não sabe o que fazer, abilite.</str>
+		</group>
+	</group>
+
+	<group name="GameplayOptions" prefix="GameplayOptions.">
+		<str id="downscroll-name">Downscroll</str>
+		<str id="downscroll-desc">Se marcado, as notas ficaram em baixo.</str>
+
+		<str id="ghostTapping-name">Toque Fantasma</str>
+		<str id="ghostTapping-desc">Se desmarcado, ao clicar em uma nota sem nenhuma a cima, você levará dano e contará como erro.</str>
+
+		<str id="naughtyness-name">SAFADEZA</str>
+		<str id="naughtyness-desc">ELE PARA COM ESSAS BRINCADEIRAS GOSTOSAS AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n(censura o tankman na week 7 e mais).</str>
+
+		<str id="camZoomOnBeat-name">Zoom Camera Beat</str>
+		<str id="camZoomOnBeat-desc">Se desmarcado, a câmera não dara um zoom a cada 4 batidas.</str>
+
+		<str id="autoPause-name">Auto Pause</str>
+		<str id="autoPause-desc">Se marcado, seu jogo pausará ao trocar de janela.</str>
+
+		<str id="volumeMusic-name">Volume da Musica</str>
+		<str id="volumeMusic-desc">Troca o volume da musica ao invés de tudo.</str>
+
+		<str id="volumeSFX-name">Volume de SFX</str>
+		<str id="volumeSFX-desc">Troca os volume dos efeitos sonoros ao invés de tudo.</str>
+
+		<str id="songOffset-name">Offset da Musica</str>
+		<str id="songOffset-desc">Troca offset de onde a música comeca.</str>
+
+		<group name="GameplayOptionsAdvanced" prefix="Advanced.">
+			<str id="windowSize-name">Tamanho da JANEKLSOJ ASIFDHJOHJIUFHASOF</str>
+			<str id="windowSize-desc">hello neighbor</str>
+
+			<str id="streamedMusic-name">Streamed Music</str>
+			<str id="streamedMusic-desc">If checked, only musics will have streamed audio, ALSO freeing a LOT of memory with the downside of higher cpu usage if more audio are being streamed at once (EXPERIMENTAL). Turning this off will consume a lot of memory, especially on longer songs. If you aren't sure, leave this on.</str>
+
+			<str id="streamedVocals-name">Streamed Vocals</str>
+			<str id="streamedVocals-desc">If checked, vocals will also be streamed if Streamed Music is checked, will impact the performance if the song uses alot of vocals (EXPERIMENTAL). If you aren't sure, leave this off.</str>
+		</group>
+	</group>
+
+	<group name="LanguageOptions" prefix="LanguageOptions.">
+		<str id="language-name">Linguagem</str>
+		<str id="language-desc">Linguagem por {0} (Versao: {1})</str>
+	</group>
+
+	<group name="MiscOptions" prefix="MiscOptions.">
+		<str id="forceCrash-name">Crash Forcado</str>
+		<str id="forceCrash-desc">Selecionar isso força o jogo a crashar.</str>
+
+		<str id="betaUpdates-name">Atualizacoes Nightly</str>
+		<str id="betaUpdates-desc">Se marcado, isso tambem incluira builds nightly (as commits no repositorio da engine basicamente, usando Actions' builds) quando procurar por updates.</str>
+
+		<str id="checkForUpdates-name">Procurar atualizacoes</str>
+		<str id="checkForUpdates-desc">Selecione isso para procurar por updates na engine.</str>
+		<str id="checkForUpdates-noUpdateFound">Nenhum update foi encontrado.</str>
+
+		<str id="devMode-name">Modo Dev</str>
+		<str id="devMode-desc">Se marcado, voce terá as opções e funcionalidades de desenvolvedor (como um reload state e os editores).</str>
+
+		<str id="allowConfigWarning-name">Mostrar Avisos de Modpacks</str>
+		<str id="allowConfigWarning-desc">Se marcado, ao carregar um mod, a engine irá te avisar sobre possiveis erros nesse mod</str>
+
+		<str id="resetSaveData-name">Resetar Save</str>
+		<str id="resetSaveData-desc">Selecione essa opção para apagar seu save, removendo todoas suas pontuações.</str>
+	</group>
+
+	<group name="DebugOptions" prefix="DebugOptions.">
+		<str id="title">Opções DEBUG</str>
+		<str id="desc">Use esse menu para desabilitar ou abilitar opcoes debugs</str>
+
+		<str id="showConsole-name">Abrir CMD (console)</str>
+		<str id="showConsole-desc">Abre o CMD (console) onde te mostra informações sobre o que acontece.</str>
+
+		<str id="editorsResizable-name">Editores Re-escalaveis</str>
+		<str id="editorsResizable-desc">Se marcado, isso abilita os editores de renderizarem além da escala de 1280x720 comum FNF (para mais detalhes e espaco)</str>
+
+		<str id="bypassEditorsResize-name">Edit re-escala +</str>
+		<str id="bypassEditorsResize-desc">Desabilita o minimo da re-escala nos editores (requer o "Editores Re-escalaveis").</str>
+
+		<str id="editorSFX-name">SFX no Editor</str>
+		<str id="editorSFX-desc">Se marcado, os editores teram sons (ex: tocar som ao confirma uma caixa...)</str>
+
+		<str id="editorCharterPrettyPrint-name">Save de chart bom</str>
+		<str id="editorCharterPrettyPrint-desc">Faz o arquivo do chart ser salvo de forma legivel</str>
+
+		<str id="editorCharacterPrettyPrint-name">Save de Personagem bom</str>
+		<str id="editorCharacterPrettyPrint-desc">Faz o arquivo do personagem ser salvo de forma legivel</str>
+
+		<str id="editorStagePrettyPrint-name">Save de Cenario bom</str>
+		<str id="editorStagePrettyPrint-desc">Faz o arquivo do cenário ser salvo de forma legivel</str>
+
+		<str id="intensiveBlur-name">Blur Intenso</str>
+		<str id="intensiveBlur-desc">Se marcado, o blur que aparece ao abrir uma janela será mais forte (o que é mais pesado, mas é mais bonito).</str>
+
+		<str id="charterAutoSaves-name">Save Automatico no Editor</str>
+		<str id="charterAutoSaves-desc">Se marcado, o editor fara um save automatico seguindo as opções abaixo.</str>
+
+		<str id="charterAutoSaveTime-name">Tempo entre os saves</str>
+		<str id="charterAutoSaveTime-desc">A janela de tempo entre esses saves (em segundos)</str>
+
+		<str id="charterAutoSaveWarningTime-name">Aviso de Save</str>
+		<str id="charterAutoSaveWarningTime-desc">Quanto tempo antes o editor vai te avisar que irá ocorrer um save (coloque 0 para não ter aviso)</str>
+
+		<str id="charterAutoSavesSeparateFolder-name">Pasta de Save Automatico</str>
+		<str id="charterAutoSavesSeparateFolder-desc">Se marcado, a chart será salva numa pasta diferente ao invés de substituir a atual (song/autosaves/)</str>
+
+		<str id="songOffsetAffectEditors-name">Offset no Charter</str>
+		<str id="songOffsetAffectEditors-desc">Se marcado, isso abilita o offset de música no charter.</str>
+	</group>
+
+</language>

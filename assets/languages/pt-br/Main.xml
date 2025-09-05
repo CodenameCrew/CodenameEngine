@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<group name="PlayState">
+		<str id="game.score">Pontuação:{0}</str>
+		<str id="game.misses">Erros:{0}</str>
+		<str id="game.comboBreaks">Combos Quebrados:{0}</str>
+		<str id="game.accuracy">Precisão:{0} - {1}</str>
+		<str id="game.combo">Combo:{0}</str>
+
+		<str id="game.rating.[N/A]">[N/A]</str>
+		<str id="game.rating.F">F</str>
+		<str id="game.rating.E">E</str>
+		<str id="game.rating.D">D</str>
+		<str id="game.rating.C">C</str>
+		<str id="game.rating.B">B</str>
+		<str id="game.rating.A">A</str>
+		<str id="game.rating.S">S</str>
+		<str id="game.rating.S++">S++</str>
+	</group>
+
+	<group name="StoryMenu">
+		<str id="story.score">PONTUAÇÃO DA WEEK:{0}</str>
+		<str id="story.tracks">MÚSICAS</str>
+	</group>
+
+	<group name="Freeplay">
+		<str id="freeplay.score">MELHOR PONTUAÇÃO:{0}</str>
+		<str id="freeplay.solo">Solo</str>
+		<str id="freeplay.opponentMode">Modo Oponente</str>
+		<str id="freeplay.coopMode">Modo Co-Op</str>
+		<str id="freeplay.coopModeSwitched">Modo Co-Op (controles invertidos)</str>
+	</group>
+
+	<group name="Pause">
+		<group name="PauseOptions">
+			<str id="pause.resume">Despausar</str>
+			<str id="pause.restartSong">Reniciar Musica</str>
+			<str id="pause.changeControls">Trocar Controles</str>
+			<str id="pause.changeOptions">Trocar Opcoes</str>
+			<str id="pause.exitToMenu">Sair para menu</str>
+			<str id="pause.exitToCharter">Sair para charter</str>
+			<str id="pause.resumeCutscene">Despausar Cutscene</str>
+			<str id="pause.skipCutscene">Pular Cutscene</str>
+			<str id="pause.restartCutscene">Recomecar Cutscene</str>
+		</group>
+
+		<str id="pause.deathCounter">Torções testiculares: {0}</str>
+		<str id="pause.coopMode">MODO CO-OP</str>
+		<str id="pause.opponentMode">MODO OPONENTE</str>
+	</group>
+
+	<group name="Credits">
+		<group name="CreditsCodename">
+			<str id="credits.mainDev" notrim="true"> *- Principais Desenvolvedores Publicos!*</str>
+			<str id="credits.totalContributions">Total de contribuidores: ~{0}~ / *{1}* (~{2}%~) - Selecione para abrir sua conta no github</str>
+			<str id="credits.downloadingList">Baixando lista...</str>
+			<str id="credits.allContributors">TODOS Contribuidores Da Engine! - Pressione RESET Para Atualizar a Lista (Um resete a cada 2 minutos).</str>
+		</group>
+		<group name="CreditsMain">
+			<str id="credits.name">Creditos</str>
+			<str id="credits.madePossible">As pessoas que fizeram tudo isso possivel!</str>
+			<str id="credits.selectCodename">Selecione para ver todos contribuidores da Engine!</str>
+			<str id="credits.selectBase">Selecione isso para abrir a pagina Itch.io (do FNF) para fazer uma doação!</str>
+		</group>
+	</group>
+
+	<group name="Mods">
+		<str id="mods.disableMods">Disabilitar Mods</str>
+	</group>
+
+	<group name="MainMenu">
+		<str id="mainMenu.commit">Commit: {0} ({1})</str>
+		<str id="mainMenu.openMods">[{0}] Menu de Mod</str>
+	</group>
+
+	<group name="Updater">
+		<group name="UpdateAvailable">
+			<str id="updateAvailable.title">NOVO UPDATE</str>
+			<str id="updateAvailable.install">INSTALAR</str>
+			<str id="updateAvailable.skip">PULAR</str>
+		</group>
+		<group name="UpdateScreen">
+			<str id="updateScreen.general-1">Preparando a instalacao da atualizacao...</str>
+			<str id="updateScreen.part-1">Criando novas pastas da atualizacao e apagando as antigas...</str>
+
+			<str id="updateScreen.general-2">Baixando assets atualizados...</str>
+			<str id="updateScreen.part-2">baixando arquivo {0}</str>
+
+			<str id="updateScreen.general-3">Baixando o novo executavel da engine...</str>
+			<str id="updateScreen.part-3">Baixando {0}</str>
+
+			<str id="updateScreen.general-4">Instalando novos arquivos...</str>
+			<str id="updateScreen.part-4">Instalando {0}</str>
+		</group>
+	</group>
+
+	<group name="Difficulties">
+		<str id="diff.easy">Facil</str>
+		<str id="diff.normal">Normal</str>
+		<str id="diff.hard">Duro</str>  <!-- hehe -->
+		<str id="diff.erect">Ereto</str>
+		<str id="diff.nightmare">Pesadelo</str>
+	</group>
+</language>
