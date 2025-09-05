@@ -148,6 +148,10 @@ class Flags {
 	public static var DEFAULT_HUD_ZOOM_MULT:Float = 0.03;
 	public static var DEFAULT_CAM_ZOOM_LERP:Float = 0.05;
 	public static var DEFAULT_HUD_ZOOM_LERP:Float = 0.05;
+	
+	// Font configuration
+	public static var DEFAULT_FONT:String = "vcr.ttf";
+	public static var DEFAULT_FONT_SIZE:Int = 16;
 
 	// to translate these you need to convert them into ids
 	// Resume -> pause.resume
