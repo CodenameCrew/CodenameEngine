@@ -92,6 +92,9 @@ class MainState extends FlxState {
 		}
 		#end
 
+		#if GLOBAL_SCRIPT
+		funkin.backend.scripting.GlobalScript.destroy();
+		#end
 		funkin.backend.scripting.Script.staticVariables.clear();
 
 		#if MOD_SUPPORT
