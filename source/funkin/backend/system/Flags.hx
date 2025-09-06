@@ -18,6 +18,9 @@ class Flags {
 	// -- Codename's Addon Config --
 	@:bypass public static var addonFlags:Map<String, Dynamic> = [];
 
+	// -- Codename's ZipFolderLibrary Config --
+	public static var ALLOWED_ZIP_EXTENSIONS:Array<String> = ["zip"];
+
 	// -- Codename's Mod Config --
 	public static var MOD_NAME:String = "";
 	public static var MOD_DESCRIPTION:String = "";

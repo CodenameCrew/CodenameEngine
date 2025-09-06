@@ -7,7 +7,15 @@ import funkin.backend.assets.IModsAssetLibrary;
 import lime.utils.AssetLibrary;
 
 class AssetsLibraryList extends AssetLibrary {
+
 	public var libraries:Array<AssetLibrary> = [];
+	
+	// is true if any library in `libraries` contains some kind of compressed library. 
+	public var hasCompressedLibrary(get, never):Bool;
+	function get_hasCompressedLibrary():Bool {
+		for (l in libraries) if (getCleanLibrary(l).isCompressed) return true;
+		return false;
+	}
 
 	@:allow(funkin.backend.system.Main)
 	@:allow(funkin.backend.system.MainState)
@@ -141,9 +149,7 @@ class AssetsLibraryList extends AssetLibrary {
 	public override inline function getAsset(id:String, type:String):Dynamic
 		return getSpecificAsset(id, type, BOTH);
 
-	public override function isLocal(id:String, type:String) {
-		return true;
-	}
+	public override function isLocal(id:String, type:String) return true;
 
 	public function new(?base:AssetLibrary) {
 		super();
