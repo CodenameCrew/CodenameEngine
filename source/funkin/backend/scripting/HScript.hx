@@ -63,7 +63,7 @@ class HScript extends Script {
 		return this;
 	}
 
-	private function importFailedCallback(cl:Array<String>):Bool {
+	private function importFailedCallback(cl:Array<String>, ?asName:String):Bool {
 		if(_importFailedCallback(cl, "source/") || _importFailedCallback(cl, "")) {
 			return true;
 		}
