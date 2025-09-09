@@ -559,8 +559,8 @@ class PlayState extends MusicBeatState
 	@:noCompletion @:dox(hide) private var _startCountdownCalled:Bool = false;
 	@:noCompletion @:dox(hide) private var _endSongCalled:Bool = false;
 
-	@:dox(hide)
-	var __vocalSyncTimer:Float = 1;
+	@:dox(hide) var __vocalSyncTimer:Float = 0;
+	@:dox(hide) var __vocalOffsetTimer:Float = 0;
 
 	private function get_accuracy():Float {
 		if (accuracyPressedNotes <= 0) return -1;
@@ -1391,17 +1391,39 @@ class PlayState extends MusicBeatState
 			}
 		}
 		else if (FlxG.sound.music != null && (__vocalSyncTimer -= elapsed) < 0) {
-			__vocalSyncTimer = 1;
+			__vocalSyncTimer = 1 / 30;
 
 			var instTime = FlxG.sound.music.getActualTime();
-			var isOffsync:Bool = vocals.loaded && Math.abs(instTime - vocals.getActualTime()) > 100;
-			if (!isOffsync) {
-				for (strumLine in strumLines.members) {
-					if ((isOffsync = strumLine.vocals.loaded && Math.abs(instTime - strumLine.vocals.getActualTime()) > 100)) break;
+
+			var vocalsLoaded = vocals.loaded;
+			var vocalTime = vocalsLoaded ? vocals.getActualTime() : instTime;
+			var offsetTime = instTime - vocalTime;
+
+			for (i in 0...strumLines.members.length)
+			{
+				var strumLine = strumLines.members[i];
+				var strumVocals = strumLine.vocals;
+
+				if (strumVocals.loaded)
+				{
+					var strumVocalTime = strumVocals.getActualTime();
+					var currentOffset = instTime - strumVocalTime;
+
+					if (currentOffset * currentOffset > offsetTime * offsetTime)
+						offsetTime = currentOffset;
 				}
 			}
 
-			if (isOffsync) resyncVocals();
+			__vocalOffsetTimer += (offsetTime - __vocalOffsetTimer) * __vocalSyncTimer * 60 * 0.1;
+
+
+			// abs
+			if (__vocalOffsetTimer * __vocalOffsetTimer > 100) // +-10ms
+			{
+				// trace('ResyncVocals - OffsetTimer: ' + __vocalOffsetTimer);
+				__vocalOffsetTimer = 0;
+				resyncVocals();
+			}
 		}
 
 		while(events.length > 0 && events.last().time <= Conductor.songPosition)
