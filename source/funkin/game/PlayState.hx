@@ -1391,7 +1391,8 @@ class PlayState extends MusicBeatState
 			}
 		}
 		else if (FlxG.sound.music != null && (__vocalSyncTimer -= elapsed) < 0) {
-			__vocalSyncTimer = 1 / 30;
+			__vocalSyncTimer += 1 / 30;
+			if (__vocalSyncTimer < -1 / 30) __vocalSyncTimer = -1 / 30;
 
 			var instTime = FlxG.sound.music.getActualTime();
 
@@ -1414,13 +1415,15 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			__vocalOffsetTimer += (offsetTime - __vocalOffsetTimer) * __vocalSyncTimer * 60 * 0.1;
+			__vocalOffsetTimer += (offsetTime - __vocalOffsetTimer) * (1 / 30) * 60 * 0.04;
 
+			// trace('OffsetTimer: ' + __vocalOffsetTimer + ' - Timer: ' + __vocalSyncTimer);
 
 			// abs
-			if (__vocalOffsetTimer * __vocalOffsetTimer > 64) // +-8ms
+			if (__vocalOffsetTimer * __vocalOffsetTimer > 50) // +-7.071ms
 			{
 				// trace('ResyncVocals - OffsetTimer: ' + __vocalOffsetTimer);
+				__vocalSyncTimer += 1;
 				__vocalOffsetTimer = 0;
 				resyncVocals();
 			}
