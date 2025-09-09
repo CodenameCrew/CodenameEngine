@@ -1417,13 +1417,8 @@ class PlayState extends MusicBeatState
 
 			__vocalOffsetTimer += (offsetTime - __vocalOffsetTimer) * (1 / 30) * 60 * 0.04;
 
-			// trace('OffsetTimer: ' + __vocalOffsetTimer + ' - Timer: ' + __vocalSyncTimer);
-
-			// abs
-			if (__vocalOffsetTimer * __vocalOffsetTimer > 50) // +-7.071ms
+			if (__vocalOffsetTimer * __vocalOffsetTimer > 50) // ±7.071ms
 			{
-				// trace('ResyncVocals - OffsetTimer: ' + __vocalOffsetTimer);
-				__vocalSyncTimer += 1;
 				__vocalOffsetTimer = 0;
 				resyncVocals();
 			}
