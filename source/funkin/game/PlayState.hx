@@ -1418,7 +1418,7 @@ class PlayState extends MusicBeatState
 
 
 			// abs
-			if (__vocalOffsetTimer * __vocalOffsetTimer > 100) // +-10ms
+			if (__vocalOffsetTimer * __vocalOffsetTimer > 64) // +-8ms
 			{
 				// trace('ResyncVocals - OffsetTimer: ' + __vocalOffsetTimer);
 				__vocalOffsetTimer = 0;
