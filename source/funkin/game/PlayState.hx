@@ -561,7 +561,7 @@ class PlayState extends MusicBeatState
 
 	@:dox(hide) var __vocalSyncTimer:Float = 0;
 	@:dox(hide) var __vocalOffsetTimer:Float = 0;
-	@:dox(hide) var __vocalSmoothFactor:Float = 0.05; // (1 / 30) * 60 * 0.025
+	@:dox(hide) final __vocalSmoothFactor:Float = 0.05; // (1 / 30) * 60 * 0.025
 
 	private function get_accuracy():Float {
 		if (accuracyPressedNotes <= 0) return -1;
