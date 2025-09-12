@@ -561,6 +561,7 @@ class PlayState extends MusicBeatState
 
 	@:dox(hide) var __vocalSyncTimer:Float = 0;
 	@:dox(hide) var __vocalOffsetTimer:Float = 0;
+	@:dox(hide) var __vocalSmoothFactor:Float = 0.05; // (1 / 30) * 60 * 0.025
 
 	private function get_accuracy():Float {
 		if (accuracyPressedNotes <= 0) return -1;
@@ -1398,7 +1399,7 @@ class PlayState extends MusicBeatState
 
 			var vocalsLoaded = vocals.loaded;
 			var vocalTime = vocalsLoaded ? vocals.getActualTime() : instTime;
-			var offsetTime = instTime - vocalTime;
+			var maxOffset = instTime - vocalTime;
 
 			for (i in 0...strumLines.members.length)
 			{
@@ -1410,12 +1411,14 @@ class PlayState extends MusicBeatState
 					var strumVocalTime = strumVocals.getActualTime();
 					var currentOffset = instTime - strumVocalTime;
 
-					if (currentOffset * currentOffset > offsetTime * offsetTime)
-						offsetTime = currentOffset;
+					if (currentOffset * currentOffset > maxOffset * maxOffset)
+						maxOffset = currentOffset;
 				}
 			}
 
-			__vocalOffsetTimer += (offsetTime - __vocalOffsetTimer) * (1 / 30) * 60 * 0.04;
+			maxOffset = Math.min(Math.max(maxOffset, -40), 40);
+
+			__vocalOffsetTimer += (maxOffset - __vocalOffsetTimer) * __vocalSmoothFactor;
 
 			if (__vocalOffsetTimer * __vocalOffsetTimer > 50) // ±7.071ms
 			{
