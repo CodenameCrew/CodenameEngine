@@ -1029,7 +1029,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				}
 				else
 				{
-					// 回退实现：使用乘法混合近似暗化效果
+					// Utilize the effect of multiplying to achieve a blending of approximations for darkening.
 					__context3D.setBlendFactors(DESTINATION_COLOR, ONE_MINUS_SOURCE_ALPHA);
 				}
 
@@ -1037,7 +1037,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				__context3D.setBlendFactors(ZERO, ONE_MINUS_SOURCE_ALPHA);
 
 			case HARDLIGHT, OVERLAY:
-				// 这些模式需要更复杂的计算，回退到正常混合
+				// These patterns require more complex calculations and revert to the normal mixture.
 				__context3D.setBlendFactors(ONE, ONE_MINUS_SOURCE_ALPHA);
 
 			case INVERT:
@@ -1051,7 +1051,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				}
 				else
 				{
-					// 回退实现：使用加法混合近似亮化效果
+					// Backward implementation: Utilizing additive blending for approximate brightening effect
 					__context3D.setBlendFactors(ONE, ONE);
 				}
 
