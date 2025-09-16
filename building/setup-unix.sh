@@ -1,2 +1,3 @@
-cd "$(dirname "$(cd "$(dirname "$0")" && pwd)")"
+#!/usr/bin/env sh
+cd ..
 haxe -cp commandline -D analyzer-optimize --run Main setup
