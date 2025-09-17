@@ -1,9 +1,27 @@
-{ }:
+{
+  pkgs ? import <nixpkgs> {
+    overlays = [
+      (final: prev: {
+        # Haxe does not compile properly using the overlay
+        # below, due to an OCaml error. Do note that the patches
+        # have been removed as a result of an outdated patch.
+        #
+        # haxe = prev.haxe.overrideAttrs (old: {
+        #   version = "4.3.7";
+        #   src = prev.fetchgit {
+        #     url = "https://github.com/HaxeFoundation/haxe.git";
+        #     tag = "4.3.7";
+        #     hash = "sha256-sQb7MCoH2dZOvNmDQ9P0yFYrSXYOMn4FS/jlyjth39Y=";
+        #     fetchSubmodules = true;
+        #   };
+        #   patches = [ ];
+        # });
+      })
+    ];
+    config = { };
+  },
+}:
 let
-  pkgs = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/c407032be28ca2236f45c49cfb2b8b3885294f7f.tar.gz";
-  }) { };
-
   libs =
     with pkgs;
     [
@@ -37,6 +55,9 @@ pkgs.mkShell {
   LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath libs;
 
   shellHook = ''
-    source update.sh
+    cd building/
+    # The shell script does not work properly with
+    # Nix shells!
+    # source setup-unix.sh
   '';
 }
