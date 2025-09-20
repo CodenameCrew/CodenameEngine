@@ -96,6 +96,7 @@ class MainState extends FlxState {
 		funkin.backend.scripting.GlobalScript.destroy();
 		#end
 		funkin.backend.scripting.Script.staticVariables.clear();
+		funkin.backend.scripting.HScript.customClasses.clear();
 
 		#if MOD_SUPPORT
 		for (addon in _lowPriorityAddons)
