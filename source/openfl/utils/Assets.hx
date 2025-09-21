@@ -22,6 +22,9 @@ import lime.utils.Assets as LimeAssets;
 import lime.media.AudioBuffer;
 import lime.media.vorbis.VorbisFile;
 #end
+#if OPUS_AUDIO_PLAYBACK
+import hxopus.Opus;
+#end
 
 /**
 	The Assets class provides a cross-platform interface to access
@@ -310,6 +313,24 @@ class Assets
 
 			return sound;
 		}
+
+		#if OPUS_AUDIO_PLAYBACK
+		// Try to load as Opus if normal loading failed
+		var bytes = getBytes(id);
+
+		if (bytes != null)
+		{
+			var sound = Opus.toOpenFL(bytes);
+
+			if (useCache && cache.enabled)
+			{
+				cache.setSound(id, sound);
+			}
+
+			return sound;
+		}
+		#end
+
 		#end
 
 		return null;

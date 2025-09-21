@@ -39,6 +39,8 @@ typedef ChartMetaData = {
 	public var ?instSuffix:String;
 	public var ?vocalsSuffix:String;
 	public var ?needsVoices:Bool;
+
+	public var ?musicExt:String;
 }
 
 typedef ChartStrumLine = {
