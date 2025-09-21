@@ -446,9 +446,15 @@ class Alphabet extends FlxSprite {
 
 		if (data == null) {
 			var charCode:Int = char.charCodeAt(0);
+			// Latin
 			if (charCode >= 'A'.code && charCode <= 'Z'.code && defaults[CaseMode.UPPER] != null)
 				data = defaults[CaseMode.UPPER];
 			else if (charCode >= 'a'.code && charCode <= 'z'.code && defaults[CaseMode.LOWER] != null)
+				data = defaults[CaseMode.LOWER];
+			// Cyrillic
+			else if (charCode >= 'А'.code && charCode <= 'Я'.code && defaults[CaseMode.UPPER] != null)
+				data = defaults[CaseMode.UPPER];
+			else if (charCode >= 'а'.code && charCode <= 'я'.code && defaults[CaseMode.LOWER] != null)
 				data = defaults[CaseMode.LOWER];
 			else
 				data = defaults[CaseMode.NONE];

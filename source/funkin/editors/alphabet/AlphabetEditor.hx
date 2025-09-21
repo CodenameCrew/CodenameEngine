@@ -59,7 +59,7 @@ class AlphabetEditor extends UIState {
 	public override function create() {
 		super.create();
 
-		WindowUtils.suffix = " (" + translate("name") + ")";
+		WindowUtils.suffix = " (" + TU.translate("editor.alphabet.name", true) + ")";
 		SaveWarning.selectionClass = AlphabetSelection;
 		SaveWarning.saveFunc = () -> {_file_save(null);};
 

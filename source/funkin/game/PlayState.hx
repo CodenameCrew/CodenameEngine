@@ -888,7 +888,7 @@ class PlayState extends MusicBeatState
 
 		if (chartingMode) {
 			WindowUtils.prefix = Charter.undos.unsaved ? Flags.UNDO_PREFIX : "";
-			WindowUtils.suffix = TU.translate("playtesting.chartPlaytesting");
+			WindowUtils.suffix = TU.translate("playtesting.chartPlaytesting", true);
 
 			SaveWarning.showWarning = Charter.undos.unsaved;
 			SaveWarning.selectionClass = CharterSelection;
