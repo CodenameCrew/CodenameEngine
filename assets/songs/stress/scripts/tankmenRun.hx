@@ -1,20 +1,14 @@
 import flixel.FlxSprite;
 
+var spawnTimes = []; // [[time, direction]]
 var tankmanGroup:TankmenGroup = {
-	run: [], 
+	run: [],
 	pool: [],
 	group: new FlxTypedGroup<FlxSprite>()
 }
 
-var spawnTimes = []; // [[time, direction]]
-
-function recycleTankman() {
-	if(tankmanGroup.pool.length == 0) {
-		return new TankmenBG(tankmanGroup);
-	} else {
-		return tankmanGroup.pool.shift(); // can be pop but it causes it to be less random
-	}
-}
+function recycleTankman()
+	return tankmanGroup.pool.length == 0 ? new TankmenBG(tankmanGroup) : tankmanGroup.pool.shift(); // can be pop but it causes it to be less random
 
 function getTankman(data:Array<Float>) {
 	var tankman:TankmenBG = recycleTankman();
@@ -25,7 +19,7 @@ function getTankman(data:Array<Float>) {
 
 function postCreate() {
 	insert(members.indexOf(gf) - 1, tankmanGroup.group);
-	if(inCutscene) tankmanGroup.group.visible = false;
+	if (inCutscene) tankmanGroup.group.visible = false;
 
 	/*var tempTankman:TankmenBG = recycleTankman();
 	tempTankman.strumTime = 10;
@@ -43,9 +37,8 @@ function postCreate() {
 	//spawnTimes.reverse(); // no need to reverse it since the notes are already reversed
 }
 
-function onStartCountdown() {
-	if(PlayState.instance.seenCutscene) tankmanGroup.group.visible = true;
-}
+function onStartCountdown()
+	if (PlayState.instance.seenCutscene) tankmanGroup.group.visible = true;
 
 function spawnTankmen() {
 	var time = Conductor.songPosition;
@@ -64,7 +57,7 @@ function update(elapsed) {
 	spawnTankmen();
 
 	var length = tankmanGroup.run.length;
-	for(i in 0...length) {
+	for (i in 0...length) {
 		var reverseIndex = length - i - 1;
 		var tankmen = tankmanGroup.run[reverseIndex];
 		tankmen.update(elapsed);
@@ -72,7 +65,6 @@ function update(elapsed) {
 }
 
 class TankmenBG {
-
 	public var sprite:FlxSprite;
 
 	var strumTime = 0;
@@ -121,8 +113,7 @@ class TankmenBG {
 			if (goingRight) {
 				endDirection = (FlxG.width * 0.02) - endingOffset;
 				sprite.x = (endDirection + (Conductor.songPosition - strumTime) * tankSpeed);
-			}
-			else sprite.x = (endDirection - (Conductor.songPosition - strumTime) * tankSpeed);
+			} else sprite.x = (endDirection - (Conductor.songPosition - strumTime) * tankSpeed);
 		}
 
 		if (Conductor.songPosition > strumTime)
