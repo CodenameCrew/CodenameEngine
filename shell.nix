@@ -55,9 +55,6 @@ pkgs.mkShell {
   LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath libs;
 
   shellHook = ''
-    cd building/
-    # The shell script does not work properly with
-    # Nix shells!
-    # source setup-unix.sh
+    ./building/setup-unix.sh
   '';
 }
