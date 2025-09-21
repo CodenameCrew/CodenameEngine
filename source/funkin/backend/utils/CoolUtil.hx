@@ -36,6 +36,7 @@ import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
 
 using StringTools;
+
 /**
  * Various utilities, that have no specific Util class.
 **/
