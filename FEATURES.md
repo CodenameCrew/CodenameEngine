@@ -1,5 +1,5 @@
 # Codename Engine features
-This markdown file contains every single feature Codename has, separated into multiple categories. List may be incomplete.
+This markdown file contains most of the main features Codename has, separated into multiple categories.
 
 _**QOL = Quality of Life**_
 

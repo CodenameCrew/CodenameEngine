@@ -12,9 +12,9 @@ jobs:
       - name: Pulling the source
         uses: actions/checkout@v2
       - name: Setting up Haxe
-        uses: krdlab/setup-haxe@v1
+        uses: krdlab/setup-haxe@v2
         with:
-          haxe-version: 4.2.5
+          haxe-version: 4.3.7
       - name: Restore existing build cache for faster compilation
         uses: actions/cache@v3
         with:
