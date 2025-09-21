@@ -47,7 +47,7 @@ pkgs.mkShell {
   packages = with pkgs; [
     haxe
     neko
-    libsForQt5.qttools
+    kdePackages.qttools
   ];
 
   buildInputs = libs;
