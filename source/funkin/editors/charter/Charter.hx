@@ -608,9 +608,9 @@ class Charter extends UIState {
 		Conductor.setupSong(PlayState.SONG);
 		noteTypes = PlayState.SONG.noteTypes;
 
-		FlxG.sound.setMusic(FlxG.sound.load(Paths.inst(__song, __diff, PlayState.SONG.meta.instSuffix)));
-		if (Assets.exists(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix)))
-			vocals = FlxG.sound.load(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix));
+		FlxG.sound.setMusic(FlxG.sound.load(Paths.inst(__song, __diff, PlayState.SONG.meta.instSuffix, PlayState.SONG.meta.musicExt)));
+		if (Assets.exists(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix, PlayState.SONG.meta.musicExt)))
+			vocals = FlxG.sound.load(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix, PlayState.SONG.meta.musicExt));
 		else
 			vocals = new FlxSound();
 

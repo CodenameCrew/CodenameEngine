@@ -81,25 +81,72 @@ class Paths
 		return getPath('data/$key.ps1', library);
 
 	static public function sound(key:String, ?library:String, ?ext:String)
+	{
+		for (path in Flags.SOUND_EXTENSIONS) {
+			var path = 'sounds/$key.$path';
+			if (OpenFlAssets.exists(path))
+				return getPath(path, library);
+		}
+	
 		return getPath('sounds/$key.${ext != null ? ext : Flags.SOUND_EXT}', library);
+	}
 
 	public static inline function soundRandom(key:String, min:Int, max:Int, ?library:String)
 		return sound(key + FlxG.random.int(min, max), library);
 
-	inline static public function music(key:String, ?library:String, ?ext:String)
+	static public function music(key:String, ?library:String, ?ext:String)
+	{
+		for (path in Flags.SOUND_EXTENSIONS)
+		{
+			var path = 'music/$key.$path';
+			if (OpenFlAssets.exists(getPath(path, library)))
+				return getPath(path, library);
+		}
+	
 		return getPath('music/$key.${ext != null ? ext : Flags.SOUND_EXT}', library);
+	}
 
-	inline static public function voices(song:String, ?difficulty:String, ?suffix:String = "", ?ext:String) {
+	static public function voices(song:String, ?difficulty:String, ?suffix:String = "", ?ext:String) {
 		if (difficulty == null) difficulty = Flags.DEFAULT_DIFFICULTY;
 		if (ext == null) ext = Flags.SOUND_EXT;
+
+		for (e in Flags.SOUND_EXTENSIONS)
+		{
+			var path = 'songs/$song/song/Voices$suffix-${difficulty}.$e';
+			trace(path + " | " + OpenFlAssets.exists(getPath(path, null)));
+			if (OpenFlAssets.exists(getPath(path, null)))
+				return getPath(path, null);
+
+			path = 'songs/$song/song/Voices$suffix.$e';
+			trace(path + " | " + OpenFlAssets.exists(getPath(path, null)));
+			if (OpenFlAssets.exists(getPath(path, null)))
+				return getPath(path, null);
+		}
+
 		var diff = getPath('songs/$song/song/Voices$suffix-${difficulty}.${ext}', null);
+		trace(diff);
 		return OpenFlAssets.exists(diff) ? diff : getPath('songs/$song/song/Voices$suffix.${ext}', null);
 	}
 
-	inline static public function inst(song:String, ?difficulty:String, ?suffix:String = "", ?ext:String) {
+	static public function inst(song:String, ?difficulty:String, ?suffix:String = "", ?ext:String) {
 		if (difficulty == null) difficulty = Flags.DEFAULT_DIFFICULTY;
 		if (ext == null) ext = Flags.SOUND_EXT;
+
+		for (e in Flags.SOUND_EXTENSIONS)
+		{
+			var path = 'songs/$song/song/Inst$suffix-${difficulty}.$e';
+			trace(path + " | " + OpenFlAssets.exists(getPath(path, null)));
+			if (OpenFlAssets.exists(getPath(path, null)))
+				return getPath(path, null);
+
+			path = 'songs/$song/song/Inst$suffix.$e';
+			trace(path + " | " + OpenFlAssets.exists(getPath(path, null)));
+			if (OpenFlAssets.exists(getPath(path, null)))
+				return getPath(path, null);
+		}
+
 		var diff = getPath('songs/$song/song/Inst$suffix-${difficulty}.${ext}', null);
+		trace(diff);
 		return OpenFlAssets.exists(diff) ? diff : getPath('songs/$song/song/Inst$suffix.${ext}', null);
 	}
 

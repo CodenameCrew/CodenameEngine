@@ -259,7 +259,7 @@ class FreeplayState extends MusicBeatState
 		var dontPlaySongThisFrame = false;
 		autoplayElapsed += elapsed;
 		if (!disableAutoPlay && !songInstPlaying && (autoplayElapsed > timeUntilAutoplay)) {
-			if (curPlayingInst != (curPlayingInst = Paths.inst(curSong.name, curDifficulties[curDifficulty], curSong.instSuffix))) {
+			if (curPlayingInst != (curPlayingInst = Paths.inst(curSong.name, curDifficulties[curDifficulty], curSong.instSuffix, curSong.musicExt))) {
 				var streamed = false;
 				if (Options.streamedMusic) {
 					var sound = Assets.getMusic(curPlayingInst, true, false);
