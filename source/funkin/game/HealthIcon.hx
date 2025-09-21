@@ -55,7 +55,7 @@ class HealthIcon extends FunkinSprite
 	 *
 	 * This is what scale the icon should return to when its bump animation is finished
 	 */
-	public var defaultScale:Float = 1;
+	public var defaultScale:Float = Flags.ICON_DEFAULT_SCALE;
 
 	/**
 	 * Whenever or not the icon is animated or not

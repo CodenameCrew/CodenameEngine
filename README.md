@@ -76,7 +76,7 @@ The engine uses [HaxeFlixel](https://haxeflixel.com/) and it mainly features:
 <details>
   <summary><h2>Usage Info</h2></summary>
 
-  ### You can:
+  ### Feel free to:
   - Download and play the engine with its mods and modpacks
   - Mod and fork the engine (without using it for illicit purposes)
   - Contribute to the engine (for example through *Pull Requests*, *Issues*, etc.)
@@ -84,7 +84,7 @@ The engine uses [HaxeFlixel](https://haxeflixel.com/) and it mainly features:
   - Release excutable mods that use Codename Engine as source (specifing that uses Codename Engine by for example the same way written above this)
   - Release Codename Engine modpacks
 
-  ### You can't:
+  ### Please do not:
   - Create a *side/new/etc* engine (or mod that doesn't use Codename Engine) using Codename Engine's code
   - Steal code from Codename Engine for another different project that is not Codename Engine related (Codename Engine mods excluded) without properly crediting
   - Release the entirety of Codename Engine on platforms (mods that use Codename Engine as source are fine)

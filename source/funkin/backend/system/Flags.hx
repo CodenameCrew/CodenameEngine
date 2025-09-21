@@ -148,6 +148,10 @@ class Flags {
 	public static var DEFAULT_HUD_ZOOM_MULT:Float = 0.03;
 	public static var DEFAULT_CAM_ZOOM_LERP:Float = 0.05;
 	public static var DEFAULT_HUD_ZOOM_LERP:Float = 0.05;
+	
+	// Font configuration
+	public static var DEFAULT_FONT:String = "vcr.ttf";
+	public static var DEFAULT_FONT_SIZE:Int = 16;
 
 	// to translate these you need to convert them into ids
 	// Resume -> pause.resume
@@ -169,6 +173,7 @@ class Flags {
 	public static var DEFAULT_HEALTH:Null<Float> = null;//DEFAULT_MAX_HEALTH / 2.0;
 	public static var DEFAULT_ICONBOP:Bool = true;
 	public static var BOP_ICON_SCALE:Float = 1.2;
+	public static var ICON_DEFAULT_SCALE:Float = 1;
 	public static var ICON_OFFSET:Float = 26;
 	public static var ICON_LERP:Float = 0.33;
 
