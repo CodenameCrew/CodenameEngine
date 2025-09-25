@@ -307,7 +307,7 @@ class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements I
 
 	public function playAnim(AnimName:String, ?Force:Null<Bool>, Context:PlayAnimContext = NONE, Reversed:Bool = false, Frame:Int = 0):Void
 	{
-		if (AnimName == null)
+		if (AnimName == null || !hasAnim(AnimName))
 			return;
 
 		if (Force == null) {
