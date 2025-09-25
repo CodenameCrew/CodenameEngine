@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<str id="optionsMenu.desc-missing">Нет описания</str>
+
+	<group name="OptionsMenu">
+		<str id="optionsMenu.advanced">Дополнительно</str>
+		<str id="optionsMenu.header.title">Меню настроек</str>
+		<str id="optionsMenu.header.desc">Выберите категорию для продолжения.</str>
+
+		<str id="optionsTree.controls-name">Управление</str>
+		<str id="optionsTree.controls-desc">Изменить управление для Игрока 1 и Игрока 2!</str>
+
+		<str id="optionsTree.gameplay-name">Игровой процесс</str>
+		<str id="optionsTree.gameplay-desc">Изменить параметры игрового процесса, такие как Downscroll, скорость прокрутки, цензура...</str>
+		<str id="optionsTree.gameplay.advanced-desc">Изменить дополнительные параметры, такие как потоковое воспроизведение аудио...</str>
+
+		<str id="optionsTree.appearance-name">Внешний вид</str>
+		<str id="optionsTree.appearance-desc">Изменить параметры внешнего вида, например мигание меню...</str>
+		<str id="optionsTree.appearance.advanced-desc">Изменить дополнительные параметры, такие как спрайты только в видеопамяти, сглаживание, шейдеры</str>
+
+		<str id="optionsTree.language-name">Язык</str>
+		<str id="optionsTree.language-desc">Изменить язык, который использует движок.</str>
+
+		<str id="optionsTree.miscellaneous-name">Разное</str>
+		<str id="optionsTree.miscellaneous-desc">В этом меню можно сбросить сохранения или настройки движка.</str>
+
+		<str id="optionsTree.debug-name">Отладка</str>
+		<str id="optionsTree.debug-desc">Параметры отладки для режима разработчика.</str>
+	</group>
+
+	<group name="KeybindOptions" prefix="KeybindsOptions.">
+		<str id="left">Влево</str>
+		<str id="down">Вниз</str>
+		<str id="up">Вверх</str>
+		<str id="right">Вправо</str>
+
+		<str id="category.notes">Ноты</str>
+
+		<str id="category.ui">Интерфейс</str>
+		<group name="ui" prefix="ui.">
+			<str id="accept">Выбрать</str>
+			<str id="back">Назад</str>
+			<str id="reset">Сброс</str>
+			<str id="pause">Пауза</str>
+			<str id="changeMode">Режим изминений</str>
+		</group>
+
+		<str id="category.engine">Движок</str>
+		<group name="engine" prefix="engine.">
+			<str id="switchMod">Сменить мод</str>
+		</group>
+
+		<str id="category.volume">Громкость</str>
+		<str id="volume.up">Вверх</str>
+		<str id="volume.down">Вниз</str>
+		<str id="volume.mute">Выключить звук</str>
+
+		<str id="category.developer">Разработчик</str>
+		<group name="developer" prefix="developer.">
+			<str id="devMenus">Меню разработчика</str>
+			<str id="openConsole">Открыть консоль</str>
+			<str id="reloadState">Перезагрузить состояние</str>
+		</group>
+	</group>
+
+	<group name="AppearanceOptions" prefix="AppearanceOptions.">
+		<str id="framerate-name">Частота кадров</str>
+		<str id="framerate-desc">Думаю, и так понятно, да?</str>
+
+		<str id="flashingMenu-name">Мигание меню</str>
+		<str id="flashingMenu-desc">Если выключено, мигание при выборе пунктов меню будет отключено, а прочие вспышки станут медленнее.</str>
+
+		<str id="colorHealthBar-name">Цветная шкала здоровья</str>
+		<str id="colorHealthBar-desc">Если выключено, будет использоваться оригинальная красно-зелёная шкала из 6-й недели FNF.</str>
+
+		<str id="week6PixelPerfect-name">Пиксельная точность</str>
+		<str id="week6PixelPerfect-desc">Если включено, в 6-й неделе и других пиксельных сценах будет включён режим пиксельной точности с выравниванием каждого пикселя на экране.</str>
+
+		<group name="AppearanceOptionsAdvanced" prefix="Advanced.">
+			<str id="quality-name">Качество</str>
+			<str id="quality-desc">Режимы качества: "НИЗКОЕ" — отключает все тяжёлые визуальные эффекты для повышения производительности; "ВЫСОКОЕ" — включает все эффекты (снижается производительность); "ПОЛЬЗОВАТЕЛЬСКОЕ" — позволяет настроить всё вручную в дополнительных параметрах.</str>
+			<str id="quality-low">НИЗКОЕ</str>
+			<str id="quality-high">ВЫСОКОЕ</str>
+			<str id="quality-custom">ПОЛЬЗОВАТ.</str>
+
+			<str id="antialiasing-name">Сглаживание</str>
+			<str id="antialiasing-desc">Если выключено, сглаживание на всех спрайтах будет отключено. Это повысит производительность, но спрайты станут более "рваными".</str>
+
+			<str id="lowMemoryMode-name">Режим экономии памяти</str>
+			<str id="lowMemoryMode-desc">Если включено, отключает некоторые фоновые элементы сцен для снижения потребления памяти.</str>
+
+			<str id="gameplayShaders-name">Шейдеры в игре</str>
+			<str id="gameplayShaders-desc">Если выключено, шейдеры (например, хроматическая аберрация в Thorns) не будут загружаться; полезно для слабых устройств.</str>
+
+			<str id="gpuOnlyBitmaps-name">Спрайты только в видеопамяти</str>
+			<str id="gpuOnlyBitmaps-desc">Если включено, битмапы будут храниться только в видеопамяти, освобождая много ОЗУ (экспериментально). Выключение потребует много памяти, особенно для больших спрайтов. Если не уверены, оставьте включенным.</str>
+		</group>
+	</group>
+
+	<group name="GameplayOptions" prefix="GameplayOptions.">
+		<str id="downscroll-name">Downscroll</str>
+		<str id="downscroll-desc">Если включено, ноты будут двигаться сверху вниз, будто падают.</str>
+
+		<str id="ghostTapping-name">Ghost Tapping</str>
+		<str id="ghostTapping-desc">Если выключено, то любое нажатие НЕ по стрелкам будет защитываться как промах.</str>
+
+		<str id="naughtyness-name">Цензура</str>
+		<str id="naughtyness-desc">Если выключено, катсцены 7-й недели и другие будут зацензурены.</str>
+
+		<str id="camZoomOnBeat-name">Зум камеры в такт(beat)</str>
+		<str id="camZoomOnBeat-desc">Если выключено, камера перестанет увеличиваться каждые 4 такта(beat).</str>
+
+		<str id="autoPause-name">Автопауза</str>
+		<str id="autoPause-desc">Если включено, при переключении окон игра будет ставиться на паузу.</str>
+
+		<str id="volumeMusic-name">Громкость музыки</str>
+		<str id="volumeMusic-desc">Изменяет громкость только музыки.</str>
+
+		<str id="volumeSFX-name">Громкость эффектов</str>
+		<str id="volumeSFX-desc">Изменяет громкость только звуковых эффектов.</str>
+
+		<str id="songOffset-name">Смещение песни</str>
+		<str id="songOffset-desc">Изменяет задержку, с которой должна начинаться песня.</str>
+
+		<group name="GameplayOptionsAdvanced" prefix="Advanced.">
+			<str id="windowSize-name">Размер окна</str>
+			<str id="windowSize-desc">...</str>
+
+			<str id="streamedMusic-name">Потоковая музыка</str>
+			<str id="streamedMusic-desc">Если включено, музыка будет воспроизводиться в потоковом режиме, что экономит память, но может увеличить нагрузку на процессор при одновременном воспроизведении нескольких треков (экспериментально). Если не уверены, оставьте включенным.</str>
+
+			<str id="streamedVocals-name">Потоковые вокалы</str>
+			<str id="streamedVocals-desc">Если включено и потоковая музыка тоже включена, вокалы также будут воспроизводиться в потоковом режиме, что может снизить производительность при большом количестве вокальных дорожек (экспериментально), Если не уверены, оставьте включенным.</str>
+		</group>
+	</group>
+
+	<group name="LanguageOptions" prefix="LanguageOptions.">
+		<str id="language-name">Язык</str>
+		<str id="language-desc">Перевод: {0} (Версия: {1})</str>
+	</group>
+
+	<group name="MiscOptions" prefix="MiscOptions.">
+		<str id="forceCrash-name">Принудительное завершение</str>
+		<str id="forceCrash-desc">Выберите, чтобы специально вызвать сбой игры.</str>
+
+		<str id="betaUpdates-name">Ночные сборки</str>
+		<str id="betaUpdates-desc">Если включено, проверка обновлений будет учитывать ночные сборки (собранные с последнего коммита движка через Actions).</str>
+
+		<str id="checkForUpdates-name">Проверить обновления</str>
+		<str id="checkForUpdates-desc">Выберите, чтобы проверить наличие обновлений движка.</str>
+		<str id="checkForUpdates-noUpdateFound">Обновлений не найдено.</str>
+
+		<str id="devMode-name">Режим разработчика</str>
+		<str id="devMode-desc">Если включено, будут доступны функции разработчика: особые сочетания клавиш, редакторы, опции отладки, перезагрузка состояний, консоль и др.</str>
+
+		<str id="allowConfigWarning-name">Показывать предупреждения о модпаках</str>
+		<str id="allowConfigWarning-desc">Если включено, при запуске игры появится предупреждение, если в модпаке есть проблемы (отсутствуют конфиги, несовместимая версия и т.д.)</str>
+
+		<str id="resetSaveData-name">Сбросить сохранения</str>
+		<str id="resetSaveData-desc">Выберите, чтобы удалить сохранения. Все рекорды будут потеряны.</str>
+	</group>
+
+	<group name="DebugOptions" prefix="DebugOptions.">
+		<str id="title">Параметры отладки</str>
+		<str id="desc">Используйте это меню, чтобы включать и выключать параметры отладки.</str>
+
+		<str id="showConsole-name">Показать консоль</str>
+		<str id="showConsole-desc">Выберите, чтобы показать консоль отладки с логами игры.</str>
+
+		<str id="editorsResizable-name">Изменяемый размер редакторов</str>
+		<str id="editorsResizable-desc">Если включено, редакторы смогут отображаться в разрешении выше базового 1280x720 (появится больше места и деталей).</str>
+
+		<str id="bypassEditorsResize-name">Игнорировать ограничение размера</str>
+		<str id="bypassEditorsResize-desc">Отключает минимальное разрешение для изменения размера редакторов (нужно включить изменяемый размер редакторов).</str>
+
+		<str id="editorSFX-name">Звуки в редакторах</str>
+		<str id="editorSFX-desc">Если включено, в редакторах будут воспроизводиться звуки (например, при установке галочек).</str>
+
+		<str id="editorCharterPrettyPrint-name">Форматирование чарта</str>
+		<str id="editorCharterPrettyPrint-desc">Если включено, сохранённые в редакторе чарта файлы будут отформатированы для удобного чтения.</str>
+
+		<str id="editorCharacterPrettyPrint-name">Форматирование персонажей</str>
+		<str id="editorCharacterPrettyPrint-desc">Если включено, сохранённые в редакторе персонажей файлы будут отформатированы для удобного чтения.</str>
+
+		<str id="editorStagePrettyPrint-name">Форматирование сцен</str>
+		<str id="editorStagePrettyPrint-desc">Если включено, сохранённые в редакторе сцен файлы будут отформатированы для удобного чтения.</str>
+
+		<str id="intensiveBlur-name">Интенсивное размытие</str>
+		<str id="intensiveBlur-desc">Если включено, используется более сильное размытие, которое может замедлить игру, но выглядит лучше.</str>
+
+		<str id="charterAutoSaves-name">Автосохранение в редакторе</str>
+		<str id="charterAutoSaves-desc">Если включено, редактор будет автоматически сохранять файлы с настройками ниже.</str>
+
+		<str id="charterAutoSaveTime-name">Интервал автосохранения</str>
+		<str id="charterAutoSaveTime-desc">Определяет, как часто редактор будет автосохранять файл (в секундах...)</str>
+
+		<str id="charterAutoSaveWarningTime-name">Время предупреждения о сохранении</str>
+		<str id="charterAutoSaveWarningTime-desc">За сколько секунд редактор предупредит перед автосохранением (0 — отключить)</str>
+
+		<str id="charterAutoSavesSeparateFolder-name">Папка автосохранений</str>
+		<str id="charterAutoSavesSeparateFolder-desc">Если включено, автосохранения будут храниться в отдельной папке с меткой времени, а не перезаписывать текущий файл. (song/autosaves/)</str>
+
+		<str id="songOffsetAffectEditors-name">Смещение в редакторе чарта</str>
+		<str id="songOffsetAffectEditors-desc">Если включено, параметр смещения песни будет работать и в редакторе чарта.</str>
+	</group>
+
+</language>

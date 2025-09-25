@@ -129,7 +129,7 @@ class Charter extends UIState {
 	public override function create() {
 		super.create();
 
-		WindowUtils.suffix = " (" + TU.translate("editor.chart.name") + ")";
+		WindowUtils.suffix = " (" + TU.translate("editor.chart.name", true) + ")";
 		SaveWarning.selectionClass = CharterSelection;
 		SaveWarning.saveFunc = () -> saveEverything();
 
