@@ -94,6 +94,7 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			"FlxAnimate"		=> funkin.backend.FlxAnimate,
 			"FunkinSprite"		=> funkin.backend.FunkinSprite,
 			"Alphabet"			=> funkin.menus.ui.Alphabet,
+			"Flags"				=> funkin.backend.system.Flags,
 
 			"CoolUtil"			=> funkin.backend.utils.CoolUtil,
 			"IniUtil"			=> funkin.backend.utils.IniUtil,

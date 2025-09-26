@@ -1060,14 +1060,22 @@ class PlayState extends MusicBeatState
 	}
 
 	public override function destroy() {
+		var notNull = stage != null;
+		if (notNull) PlayState.instance.gameAndCharsCall("onStageDestroy", [stage]);
 		scripts.call("destroy");
-		for(g in __cachedGraphics)
-			g.useCount--;
+
+		for (g in __cachedGraphics) g.useCount--;
 		@:privateAccess {
 			for (strumLine in strumLines.members) FlxG.sound.destroySound(strumLine.vocals);
 			if (FlxG.sound.music != inst) FlxG.sound.destroySound(inst);
 			FlxG.sound.destroySound(vocals);
 		}
+
+		if (notNull) {
+			stage.destroySilently();
+			remove(stage, true);
+		}
+
 		scripts = FlxDestroyUtil.destroy(scripts);
 
 		super.destroy();
@@ -1640,7 +1648,7 @@ class PlayState extends MusicBeatState
 			case "Play Animation":
 				if (strumLines.members[event.params[0]] != null && strumLines.members[event.params[0]].characters != null)
 					for (char in strumLines.members[event.params[0]].characters)
-						if (char != null) char.playAnim(event.params[1], event.params[2], event.params[3] == "NONE" ? null : event.params[3]);
+						if (char != null && char.hasAnim(event.params[1])) char.playAnim(event.params[1], event.params[2], event.params[3] == "NONE" ? null : event.params[3]);
 			case "Unknown": // nothing
 		}
 	}
@@ -1955,7 +1963,7 @@ class PlayState extends MusicBeatState
 		var suf:String = hasEvent ? evt.ratingSuffix : "";
 
 		var rating:FlxSprite = comboGroup.recycleLoop(FlxSprite);
-		rating.resetSprite(comboGroup.x + -40, comboGroup.y + -60);
+		CoolUtil.resetSprite(rating, comboGroup.x + -40, comboGroup.y + -60);
 		rating.loadAnimatedGraphic(Paths.image('${pre}${myRating}${suf}'));
 		rating.acceleration.y = 550;
 		rating.velocity.y -= FlxG.random.int(140, 175);
@@ -1982,7 +1990,7 @@ class PlayState extends MusicBeatState
 
 			if (evt.displayCombo) {
 				var comboSpr:FlxSprite = comboGroup.recycleLoop(FlxSprite).loadAnimatedGraphic(Paths.image('${pre}combo${suf}'));
-				comboSpr.resetSprite(comboGroup.x, comboGroup.y);
+				CoolUtil.resetSprite(comboSpr, comboGroup.x, comboGroup.y);
 				comboSpr.acceleration.y = 600;
 				comboSpr.velocity.y -= 150;
 				comboSpr.velocity.x += FlxG.random.int(1, 10);
@@ -2006,7 +2014,7 @@ class PlayState extends MusicBeatState
 			for (i in 0...separatedScore.length)
 			{
 				var numScore:FlxSprite = comboGroup.recycleLoop(FlxSprite).loadAnimatedGraphic(Paths.image('${pre}num${separatedScore.charAt(i)}${suf}'));
-				numScore.resetSprite(comboGroup.x + (43 * i) - 90, comboGroup.y + 80);
+				CoolUtil.resetSprite(numScore, comboGroup.x + (43 * i) - 90, comboGroup.y + 80);
 				if (hasEvent) {
 					numScore.antialiasing = evt.numAntialiasing;
 					numScore.scale.set(evt.numScale, evt.numScale);

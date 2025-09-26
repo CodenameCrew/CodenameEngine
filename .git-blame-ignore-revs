@@ -34,3 +34,7 @@ f8b20774e3f035eeddb9211a28a391b20db74456
 # Revert a revert (empty script)
 392416e00cbd82e1c49e82a9fafdcf2e069a654e
 159467de832a172681200c463d244a46e295c3c8
+
+# Revert a revert (scripted cutscene path)
+d73f86d26ec2dbf031c01f588ba4be11842db09c
+fe0ab0aa454f4ae12ced9502db8a01e7bca3e04c
