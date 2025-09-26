@@ -1060,14 +1060,22 @@ class PlayState extends MusicBeatState
 	}
 
 	public override function destroy() {
+		var notNull = stage != null;
+		if (notNull) PlayState.instance.gameAndCharsCall("onStageDestroy", [stage]);
 		scripts.call("destroy");
-		for(g in __cachedGraphics)
-			g.useCount--;
+
+		for (g in __cachedGraphics) g.useCount--;
 		@:privateAccess {
 			for (strumLine in strumLines.members) FlxG.sound.destroySound(strumLine.vocals);
 			if (FlxG.sound.music != inst) FlxG.sound.destroySound(inst);
 			FlxG.sound.destroySound(vocals);
 		}
+
+		if (notNull) {
+			stage.destroySilently();
+			remove(stage, true);
+		}
+
 		scripts = FlxDestroyUtil.destroy(scripts);
 
 		super.destroy();
