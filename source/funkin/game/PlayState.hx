@@ -1455,7 +1455,6 @@ class PlayState extends MusicBeatState
 							sd[1] += (diff - sd[1]) * sm; // smooth the difference
 
 							if (usePitchCorrection) s.pitch = 1 + sd[1] * pf; // pitch adjustment
-							trace('Sound ' + i + ': music=' + mt + ', sound=' + ct + ', diff=' + diff + ', smoothDiff=' + sd[1] + ', pitch=' + s.pitch);
 
 							final os = sd[1];
 							if (os * os > vs)
