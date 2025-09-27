@@ -1256,10 +1256,11 @@ class PlayState extends MusicBeatState
 		if (vocals.loaded) sounds[idx++] = [vocals, 0];
 
 		// also add strumline vocals
-		var sl = strumLines.members;
-		var sln = sl.length;
-		for (i in 0...sln) {
-			var sv = sl[i].vocals;
+		final sl = strumLines.members;
+		final sln = sl.length;
+		for (i in 0...sln)
+		{
+			final sv = sl[i].vocals;
 			if (sv.loaded) sounds[idx++] = [sv, 0]; // [sound, offset]
 		}
 
@@ -1269,10 +1270,16 @@ class PlayState extends MusicBeatState
 	@:dox(hide)
 	function resyncVocals():Void
 	{
-		var time = Conductor.songPosition + Conductor.songOffset;
+		final time = Conductor.songPosition + Conductor.songOffset;
 		for (strumLine in strumLines.members) strumLine.vocals.play(true, time);
 		vocals.play(true, time);
 		if (!inst.playing) inst.play(true, time);
+
+		var sounds = __sounds;
+		var sln = sounds.length;
+		for (i in 0...sln)
+			sounds[i][1] = 0;
+
 
 		gameAndCharsCall("onVocalsResync");
 	}
@@ -1439,7 +1446,7 @@ class PlayState extends MusicBeatState
 					if (soundCount > 0)
 					{
 						final mt = FlxG.sound.music.getActualTime(); // in ms
-						final vs = usePitchCorrection ? 625 : 144; // 12ms for no pitch correction, 25ms for pitch correction
+						final vs = usePitchCorrection ? 256 : 100; // 10ms for no pitch correction, 16ms for pitch correction
 						final pf = 0.00025; // pitch factor
 						final sm = 0.1; // smoothing
 
@@ -1462,6 +1469,7 @@ class PlayState extends MusicBeatState
 								sd[1] = 0;
 								s.play(true, Conductor.songPosition); // restart sound at music position
 							}
+							trace('Sound ' + i + ': music=' + mt + ', sound=' + ct + ', diff=' + diff + ', smoothDiff=' + sd[1] + ', pitch=' + s.pitch);
 						}
 					}
 				} else {
