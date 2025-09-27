@@ -1439,7 +1439,7 @@ class PlayState extends MusicBeatState
 					if (soundCount > 0)
 					{
 						final mt = FlxG.sound.music.getActualTime(); // in ms
-						final vs = usePitchCorrection ? 2500 : 225; // 15ms for no pitch correction, 50ms for pitch correction
+						final vs = usePitchCorrection ? 625 : 144; // 12ms for no pitch correction, 25ms for pitch correction
 						final pf = 0.00025; // pitch factor
 						final sm = 0.1; // smoothing
 
