@@ -556,12 +556,18 @@ class PlayState extends MusicBeatState
 	 */
 	public var hitWindow:Float = Options.hitWindow; // is calculated in create(), is safeFrames in milliseconds.
 
+	/**
+		* Whether or not to use pitch correction when resyncing vocals.
+	  * Without using pitch adjustment, the audio may occasionally exhibit subtle sync drift.
+	 */
+	public var usePitchCorrection:Bool = true;
+
 	@:noCompletion @:dox(hide) private var _startCountdownCalled:Bool = false;
 	@:noCompletion @:dox(hide) private var _endSongCalled:Bool = false;
 
 	@:dox(hide) var __vocalSyncTimer:Float = 0;
 	@:dox(hide) var __vocalOffsetTimer:Float = 0;
-	@:dox(hide) final __vocalSmoothFactor:Float = 0.05; // (1 / 30) * 60 * 0.025
+	@:dox(hide) var __sounds:Array<Array<Dynamic>>;
 
 	private function get_accuracy():Float {
 		if (accuracyPressedNotes <= 0) return -1;
@@ -1237,6 +1243,29 @@ class PlayState extends MusicBeatState
 		super.onFocusLost();
 	}
 
+	/**
+	 * Call this function whenever you load new sounds
+	 * to make sure the sound list is up to date
+	 */
+	public function soundUpdate():Void
+	{
+		var sounds:Array<Array<Dynamic>> = [];
+		var idx:Int = 0;
+
+		// add main vocals
+		if (vocals.loaded) sounds[idx++] = [vocals, 0];
+
+		// also add strumline vocals
+		var sl = strumLines.members;
+		var sln = sl.length;
+		for (i in 0...sln) {
+			var sv = sl[i].vocals;
+			if (sv.loaded) sounds[idx++] = [sv, 0]; // [sound, offset]
+		}
+
+		__sounds = sounds; // update sound list
+	}
+
 	@:dox(hide)
 	function resyncVocals():Void
 	{
@@ -1399,39 +1428,46 @@ class PlayState extends MusicBeatState
 				startSong();
 			}
 		}
-		else if (FlxG.sound.music != null && (__vocalSyncTimer -= elapsed) < 0) {
-			__vocalSyncTimer += 1 / 30;
-			if (__vocalSyncTimer < -1 / 30) __vocalSyncTimer = -1 / 30;
-
-			var instTime = FlxG.sound.music.getActualTime();
-
-			var vocalsLoaded = vocals.loaded;
-			var vocalTime = vocalsLoaded ? vocals.getActualTime() : instTime;
-			var maxOffset = instTime - vocalTime;
-
-			for (i in 0...strumLines.members.length)
+		else if (FlxG.sound.music != null)
+		{
+			if ((__vocalSyncTimer -= elapsed) <= 0)
 			{
-				var strumLine = strumLines.members[i];
-				var strumVocals = strumLine.vocals;
+				__vocalSyncTimer = (__vocalSyncTimer < -0.1) ? -0.1 : __vocalSyncTimer + 0.1; // max 10fps
 
-				if (strumVocals.loaded)
-				{
-					var strumVocalTime = strumVocals.getActualTime();
-					var currentOffset = instTime - strumVocalTime;
+				if (__sounds != null) {
+					final soundCount = __sounds.length;
+					if (soundCount > 0)
+					{
+						final mt = FlxG.sound.music.getActualTime(); // in ms
+						final vs = usePitchCorrection ? 2500 : 225; // 15ms for no pitch correction, 50ms for pitch correction
+						final pf = 0.00025; // pitch factor
+						final sm = 0.1; // smoothing
 
-					if (currentOffset * currentOffset > maxOffset * maxOffset)
-						maxOffset = currentOffset;
+						// account for offset changes
+						var i = soundCount;
+						while (i-- > 0)
+						{
+							var sd:Array<Dynamic> = __sounds[i];
+							var s:FlxSound = sd[0];
+							final ct = s.getActualTime();
+
+							final diff = mt - ct;
+							sd[1] += (diff - sd[1]) * sm; // smooth the difference
+
+							if (usePitchCorrection) s.pitch = 1 + sd[1] * pf; // pitch adjustment
+							trace('Sound ' + i + ': music=' + mt + ', sound=' + ct + ', diff=' + diff + ', smoothDiff=' + sd[1] + ', pitch=' + s.pitch);
+
+							final os = sd[1];
+							if (os * os > vs)
+							{
+								sd[1] = 0;
+								s.play(true, Conductor.songPosition); // restart sound at music position
+							}
+						}
+					}
+				} else {
+					soundUpdate();
 				}
-			}
-
-			maxOffset = Math.min(Math.max(maxOffset, -40), 40);
-
-			__vocalOffsetTimer += (maxOffset - __vocalOffsetTimer) * __vocalSmoothFactor;
-
-			if (__vocalOffsetTimer * __vocalOffsetTimer > 50) // ±7.071ms
-			{
-				__vocalOffsetTimer = 0;
-				resyncVocals();
 			}
 		}
 
