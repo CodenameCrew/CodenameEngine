@@ -1435,7 +1435,7 @@ class PlayState extends MusicBeatState
 				startSong();
 			}
 		}
-		else if (FlxG.sound.music != null)
+		else if (FlxG.sound.music != null && FlxG.sound.music.playing)
 		{
 			if ((__vocalSyncTimer -= elapsed) <= 0)
 			{
@@ -1456,6 +1456,8 @@ class PlayState extends MusicBeatState
 						{
 							var sd:Array<Dynamic> = __sounds[i];
 							var s:FlxSound = sd[0];
+							if (!s.playing) continue;
+
 							final ct = s.getActualTime();
 
 							final diff = mt - ct;
@@ -1468,6 +1470,7 @@ class PlayState extends MusicBeatState
 							{
 								sd[1] = 0;
 								s.play(true, Conductor.songPosition); // restart sound at music position
+								trace('Sound ' + i + ': music=' + mt + ', sound=' + ct + ', diff=' + diff + ', smoothDiff=' + sd[1] + ', pitch=' + s.pitch);
 							}
 						}
 					}
