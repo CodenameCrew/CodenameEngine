@@ -291,13 +291,10 @@ class Assets
 			var sound = cache.getSound(id);
 
 			if (isValidSound(sound))
-			{
 				return sound;
-			}
 		}
 
 		var buffer = LimeAssets.getAudioBuffer(id, false);
-
 		if (buffer != null)
 		{
 			#if flash
@@ -307,9 +304,7 @@ class Assets
 			#end
 
 			if (useCache && cache.enabled)
-			{
 				cache.setSound(id, sound);
-			}
 
 			return sound;
 		}
@@ -317,15 +312,12 @@ class Assets
 		#if OPUS_AUDIO_PLAYBACK
 		// Try to load as Opus if normal loading failed
 		var bytes = getBytes(id);
-
 		if (bytes != null)
 		{
 			var sound = Opus.toOpenFL(bytes);
 
 			if (useCache && cache.enabled)
-			{
 				cache.setSound(id, sound);
-			}
 
 			return sound;
 		}
