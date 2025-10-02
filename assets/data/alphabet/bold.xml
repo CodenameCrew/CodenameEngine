@@ -135,4 +135,19 @@
 		<component anim="character-l0" x="0" y="0"/>
 		<component anim="diacritic-stroke0-short-fill" x="-2" y="30" outline="diacritic-stroke0-short-outline" outlineX="-1" hasOutline="true"/>
 	</composite>
+
+	<!-- Cyrillic Addon -->
+	<anim char="и" flipX="true" flipY="false">character-n0</anim>
+	<composite char="й">
+		<component anim="character-n0" flipX="true" flipY="false"/>
+		<component anim="diacritic-breve-outline" x="4" y="57" scaleX="0.9" scaleY="0.73"/>
+		<component anim="diacritic-breve-fill" x="8" y="62" scaleX="0.81" scaleY="0.65"/>
+	</composite>
+	<composite char="ё">
+		<component anim="character-e0"/>
+		<component anim="diacritic-dot-outline" x="1" y="59" scaleX="0.72" scaleY="0.72"/>
+		<component anim="diacritic-dot-fill" x="6" y="65" scaleX="0.72" scaleY="0.72"/>
+		<component anim="diacritic-dot-outline" x="18" y="59" scaleX="0.72" scaleY="0.72"/>
+		<component anim="diacritic-dot-fill" x="23" y="65" scaleX="0.72" scaleY="0.72"/>
+	</composite>
 </alphabetFont>

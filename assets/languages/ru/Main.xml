@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<group name="PlayState">
+		<str id="game.score">Очки: {0}</str>
+		<str id="game.misses">Промахи: {0}</str>
+		<str id="game.comboBreaks">Срывы комбо: {0}</str>
+		<str id="game.accuracy">Точность: {0} - {1}</str>
+		<str id="game.combo">Комбо: {0}</str>
+
+		<str id="game.rating.[N/A]">[Н/Д]</str>
+		<str id="game.rating.F">F</str>
+		<str id="game.rating.E">E</str>
+		<str id="game.rating.D">D</str>
+		<str id="game.rating.C">C</str>
+		<str id="game.rating.B">B</str>
+		<str id="game.rating.A">A</str>
+		<str id="game.rating.S">S</str>
+		<str id="game.rating.S++">S++</str>
+	</group>
+
+	<group name="StoryMenu">
+		<str id="story.score">ОЧКИ ЗА НЕДЕЛЮ: {0}</str>
+		<str id="story.tracks">ТРЕКИ</str>
+	</group>
+
+	<group name="Freeplay">
+		<str id="freeplay.score">ЛУЧШИЙ РЕЗУЛЬТАТ: {0}</str>
+		<str id="freeplay.solo">Соло</str>
+		<str id="freeplay.opponentMode">Режим оппонента</str>
+		<str id="freeplay.coopMode">Кооператив</str>
+		<str id="freeplay.coopModeSwitched">Кооператив (перекл.)</str>
+	</group>
+
+	<group name="Pause">
+		<group name="PauseOptions">
+			<str id="pause.resume">Продолжить</str>
+			<str id="pause.restartSong">Перезапустить песню</str>
+			<str id="pause.changeControls">Изменить управление</str>
+			<str id="pause.changeOptions">Настройки</str>
+			<str id="pause.exitToMenu">Выйти в меню</str>
+			<str id="pause.exitToCharter">Выйти в редактор</str>
+			<str id="pause.resumeCutscene">Продолжить катсцену</str>
+			<str id="pause.skipCutscene">Пропустить катсцену</str>
+			<str id="pause.restartCutscene">Перезапустить катсцену</str>
+		</group>
+
+		<str id="pause.deathCounter">Отсинил яйца: {0}</str>
+		<str id="pause.coopMode">КОOПЕРАТИВ</str>
+		<str id="pause.opponentMode">РЕЖИМ ОППОНЕНТА</str>
+	</group>
+
+	<group name="Credits">
+		<group name="CreditsCodename">
+			<str id="credits.mainDev" notrim="true"> *- Публичный участник команды разработчиков!*</str>
+			<str id="credits.totalContributions">Всего вкладов: ~{0}~ / *{1}* (~{2}%~) — выберите, чтобы открыть аккаунт на GitHub</str>
+			<str id="credits.downloadingList">Загрузка списка...</str>
+			<str id="credits.allContributors">Все участники разработки движка! — Нажмите СБРОС, чтобы обновить список (не чаще одного раза в 2 минуты).</str>
+		</group>
+		<group name="CreditsMain">
+			<str id="credits.name">Авторы</str>
+			<str id="credits.madePossible">Люди, которые сделали это возможным!</str>
+			<str id="credits.selectCodename">Выберите, чтобы увидеть всех участников разработки движка!</str>
+			<str id="credits.selectBase">Выберите, чтобы открыть страницу оригинальной игры на itch.io и поддержать его!</str>
+		</group>
+	</group>
+
+	<group name="Mods">
+		<str id="mods.disableMods">Отключить моды</str>
+	</group>
+
+	<group name="MainMenu">
+		<str id="mainMenu.commit">Коммит: {0} ({1})</str>
+		<str id="mainMenu.openMods">[{0}] Открыть меню модов</str>
+	</group>
+
+	<group name="Updater">
+		<group name="UpdateAvailable">
+			<str id="updateAvailable.title">НОВОЕ ОБНОВЛЕНИЕ</str>
+			<str id="updateAvailable.install">УСТАНОВИТЬ</str>
+			<str id="updateAvailable.skip">ПРОПУСТИТЬ</str>
+		</group>
+		<group name="UpdateScreen">
+			<str id="updateScreen.general-1">Подготовка к установке обновления...</str>
+			<str id="updateScreen.part-1">Создание папки установки и очистка старых файлов обновлений...</str>
+
+			<str id="updateScreen.general-2">Загрузка ресурсов обновления...</str>
+			<str id="updateScreen.part-2">Загрузка файла {0}</str>
+
+			<str id="updateScreen.general-3">Загрузка нового исполняемого файла движка...</str>
+			<str id="updateScreen.part-3">Загрузка {0}</str>
+
+			<str id="updateScreen.general-4">Установка новых файлов...</str>
+			<str id="updateScreen.part-4">Установка {0}</str>
+		</group>
+	</group>
+
+	<group name="Difficulties">
+		<str id="diff.easy">Лёгкий</str>
+		<str id="diff.normal">Нормальный</str>
+		<str id="diff.hard">Сложный</str>
+		<str id="diff.erect">Erect</str>
+		<str id="diff.nightmare">Кошмарная</str>
+	</group>
+</language>
