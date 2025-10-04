@@ -168,24 +168,24 @@ class EventsData {
 			{
 				eventsList.push(eventName);
 				eventsParams.set(eventName, []);
+
+				try {
+					var data:EventInfoFile = cast Json.parse(fileTxt);
+					if (data == null || data.params == null) continue;
+
+					var finalParams:Array<EventParamInfo> = [];
+					for (paramData in data.params) {
+						try {
+							finalParams.push({
+								name: paramData.name,
+								type: hscriptInterp.expr(hscriptParser.parseString(paramData.type)),
+								defValue: paramData.defaultValue
+							});
+						} catch (e) {trace('Error parsing event param ${paramData.name} - ${eventName}: $e'); finalParams.push(null);}
+					}
+					eventsParams.set(eventName, finalParams);
+				} catch (e) {trace('Error parsing file $file: $e');}
 			}
-
-			try {
-				var data:EventInfoFile = cast Json.parse(fileTxt);
-				if (data == null || data.params == null) continue;
-
-				var finalParams:Array<EventParamInfo> = [];
-				for (paramData in data.params) {
-					try {
-						finalParams.push({
-							name: paramData.name,
-							type: hscriptInterp.expr(hscriptParser.parseString(paramData.type)),
-							defValue: paramData.defaultValue
-						});
-					} catch (e) {trace('Error parsing event param ${paramData.name} - ${eventName}: $e'); finalParams.push(null);}
-				}
-				eventsParams.set(eventName, finalParams);
-			} catch (e) {trace('Error parsing file $file: $e');}
 		}
 
 		hscriptInterp = null; hscriptParser = null;
