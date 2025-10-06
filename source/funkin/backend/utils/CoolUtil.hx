@@ -3,31 +3,15 @@ package funkin.backend.utils;
 #if cpp
 import cpp.Float64;
 #end
-import flxanimate.data.AnimationData.AnimAtlas;
-import flixel.graphics.FlxGraphic;
-import openfl.display.BitmapData;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.graphics.frames.FlxFramesCollection;
 #if sys
 import sys.FileSystem;
 #end
-import flixel.text.FlxText;
-import funkin.backend.utils.XMLUtil.TextFormat;
-import flixel.util.typeLimit.OneOfTwo;
-import flixel.util.typeLimit.OneOfThree;
-import flixel.tweens.FlxTween;
-import flixel.system.frontEnds.SoundFrontEnd;
-import flixel.sound.FlxSound;
-import funkin.backend.system.Conductor;
-import flixel.sound.FlxSoundGroup;
-import haxe.Json;
-import haxe.io.Path;
-import haxe.io.Bytes;
-import haxe.xml.Access;
-import flixel.input.keyboard.FlxKey;
-import lime.utils.Assets;
 import flixel.animation.FlxAnimation;
+import flixel.graphics.FlxGraphic;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFramesCollection;
 import flixel.input.keyboard.FlxKey;
+import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
 import flixel.sound.FlxSoundGroup;
 import flixel.system.frontEnds.SoundFrontEnd;
@@ -35,19 +19,21 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxAxes;
 import flixel.util.FlxColor;
+import flixel.util.typeLimit.OneOfThree;
 import flixel.util.typeLimit.OneOfTwo;
+import flxanimate.data.AnimationData.AnimAtlas;
 import funkin.backend.system.Conductor;
 import funkin.backend.utils.XMLUtil.TextFormat;
 import haxe.CallStack;
+import haxe.Constraints.IMap;
+import haxe.EnumTools.EnumValueTools;
 import haxe.Json;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.xml.Access;
 import lime.utils.Assets;
+import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
-import flixel.math.FlxPoint;
-import haxe.Constraints.IMap;
-import haxe.EnumTools.EnumValueTools;
 
 using StringTools;
 

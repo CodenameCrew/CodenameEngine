@@ -106,20 +106,8 @@ class GlobalScript {
 		});
 	}
 
-	public static function event<T:CancellableEvent>(name:String, event:T):T {
-		if (scripts != null)
-			scripts.event(name, event);
-		return event;
-	}
-
-	public static function call(name:String, ?args:Array<Dynamic>) {
-		if (scripts != null)
-			scripts.call(name, args);
-	}
-
 	public static function onModSwitch(newMod:String) {
-		call("destroy");
-		scripts = FlxDestroyUtil.destroy(scripts);
+		destroy();
 		scripts = new ScriptPack("GlobalScript");
 		for (i in funkin.backend.assets.ModsFolder.getLoadedMods()) {
 			var path = Paths.script('data/global/LIB_$i');
@@ -132,12 +120,24 @@ class GlobalScript {
 		}
 	}
 
-	public static function beatHit(curBeat:Int) {
-		call("beatHit", [curBeat]);
+	public static inline function event<T:CancellableEvent>(name:String, event:T):T {
+		if (scripts != null)
+			scripts.event(name, event);
+		return event;
 	}
 
-	public static function stepHit(curStep:Int) {
+	public static inline function call(name:String, ?args:Array<Dynamic>)
+		if (scripts != null) scripts.call(name, args);
+
+	public static inline function beatHit(curBeat:Int)
+		call("beatHit", [curBeat]);
+
+	public static inline function stepHit(curStep:Int)
 		call("stepHit", [curStep]);
+
+	public static inline function destroy() if (scripts != null) {
+		call("destroy");
+		scripts = FlxDestroyUtil.destroy(scripts);
 	}
 }
 #end

@@ -16,5 +16,5 @@ version="version based on the English config.ini version"
 
 4. Translate the texts in the copied xml files. The {0} and {1}, and so on are placeholders are used for variables, and should be left as is.
 
-5. Make a pull request with your changes.
+5. **If you wanna help us with the language(s) you added in the engine**: Make a pull request with your changes.
 Make sure the pull request is labeled as `[LANG] Add <language name>` or `[LANG] Update <language name>` or `[LANG] Fix typo in <language name>`, generally anything is allowed but it has to contain the language name.

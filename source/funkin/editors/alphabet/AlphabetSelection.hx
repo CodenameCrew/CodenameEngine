@@ -43,13 +43,10 @@ class AlphabetIconOption extends TextOption {
 		var spritesheet = null;
 		for (node in xml.elements()) {
 			if (node.nodeName == "spritesheet") {
-				spritesheet = node.firstChild().nodeValue;
+				spritesheet = node.firstChild().nodeValue.trim();
 				break;
 			}
 		}
-
-		var useColorOffsets = xml.get("useColorOffsets").getDefault("false") == "true";
-
 
 		// todo fix crash if invalid spritesheet;
 
@@ -64,7 +61,7 @@ class AlphabetIconOption extends TextOption {
 			}
 		}
 		iconSpr.frame = frameToUse;
-		if (useColorOffsets) {
+		if (xml.get("colorMode") == "offsets") {
 			iconSpr.colorTransform.color = -1;
 		}
 		iconSpr.setPosition(90 - iconSpr.width - 20, (__text.height - iconSpr.height) / 2);

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<str id="optionsMenu.desc-missing">Sem descrição</str>
+
+	<group name="OptionsMenu">
+		<str id="optionsMenu.advanced">Avançado</str>
+		<str id="optionsMenu.header.title">Opções</str>
+		<str id="optionsMenu.header.desc">Selecione uma categoria para continuar.</str>
+
+		<str id="optionsTree.controls-name">Controlos</str>
+		<str id="optionsTree.controls-desc">Mude os Controlos para Jogador 1 e Jogador 2!</str>
+
+		<str id="optionsTree.gameplay-name">Jogo</str>
+		<str id="optionsTree.gameplay-desc">Mude as opções como "Downscroll", Velocidade das notas, Indecência...</str>
+		<str id="optionsTree.gameplay.advanced-desc">Mude as opções mais avançadas como Transmissão de áudio...</str>
+
+		<str id="optionsTree.appearance-name">Aparência</str>
+		<str id="optionsTree.appearance-desc">Mude as opções de aparência como Luzes intermitentes...</str>
+		<str id="optionsTree.appearance.advanced-desc">Mude as opções mais avançadas como Sprites apenas em VRAM, "Antialiasing", "Shaders"</str>
+
+		<str id="optionsTree.language-name">Idioma</str>
+		<str id="optionsTree.language-desc">Mude o idioma que o jogo usa.</str>
+
+		<str id="optionsTree.miscellaneous-name">Outras</str>
+		<str id="optionsTree.miscellaneous-desc">Use este menu para apagar dados ou definições.</str>
+
+		<str id="optionsTree.debug-name">Opções de Depuração</str>
+		<str id="optionsTree.debug-desc">Opções de Depuração para o Modo de Desenvolvedor.</str>
+	</group>
+
+	<group name="KeybindOptions" prefix="KeybindsOptions.">
+		<str id="left">Esquerda</str>
+		<str id="down">Baixo</str>
+		<str id="up">Cima</str>
+		<str id="right">Direita</str>
+
+		<str id="category.notes">Notas</str>
+
+		<str id="category.ui">Interface</str>
+		<group name="ui" prefix="ui.">
+			<str id="accept">Aceitar</str>
+			<str id="back">Cancelar</str>
+			<str id="reset">Reiniciar</str>
+			<str id="pause">Pausa</str>
+			<str id="changeMode">Mudar Modo</str>
+		</group>
+
+		<str id="category.engine">Codename Engine</str>
+		<group name="engine" prefix="engine.">
+			<str id="switchMod">Trocar Mod</str>
+		</group>
+
+		<str id="category.volume">Volume</str>
+		<str id="volume.up">Subir</str>
+		<str id="volume.down">Baixar</str>
+		<str id="volume.mute">Silenciar</str>
+
+		<str id="category.developer">Desenvolvedor</str>
+		<group name="developer" prefix="developer.">
+			<str id="devMenus">Menus Dev.</str>
+			<str id="openConsole">Consola</str>
+			<str id="reloadState">Recarregar</str>
+		</group>
+	</group>
+
+	<group name="AppearanceOptions" prefix="AppearanceOptions.">
+		<str id="framerate-name">FPS</str>
+		<str id="framerate-desc">Quadros Por Segundo, se quiser. Explica-se a sí próprio, certo?</str>
+
+		<str id="flashingMenu-name">Luzes Intermitentes</str>
+		<str id="flashingMenu-desc">Se desmarcado, irá desativar as luzes intermitentes quando seleciona algo no Menu Principal, e outras serão abrandadas.</str>
+
+		<str id="colorHealthBar-name">Barra de Vida Colorida</str>
+		<str id="colorHealthBar-desc">Se desmarcado, o jogo irá usar a barra vermelha/verde de versões FNF pré-semana 7.</str>
+
+		<str id="week6PixelPerfect-name">Efeito "Pixel Perfect"</str>
+		<str id="week6PixelPerfect-desc">se marcado, a Semana 6 ou outros cenários "pixel" terão um efeito "pixel perfect", alinhando todos os pixeis ao ecrã.</str>
+
+		<group name="AppearanceOptionsAdvanced" prefix="Advanced.">
+			<str id="quality-name">Qualidade</str>
+			<str id="quality-desc">Modos de qualidade para escolher, "BAIXA" = Desativa todos os efeitos visuais pesados para um jogo mais suave, "ALTA" = Ativa todos os efeitos visuais, ao custo do desempenho, "CUSTOMIZADA" = Permite opções especiais, disponíveis em "Advançado".</str>
+			<str id="quality-low">BAIXA</str>
+			<str id="quality-high">ALTA</str>
+			<str id="quality-custom">CUSTOMIZADA</str>
+
+			<str id="antialiasing-name">"Antialiasing"</str>
+			<str id="antialiasing-desc">Se desmarcado, irá remover "antialiasing" a todos os sprites. Poderá aumentar o desempenho ao custo de sprites menos suaves.</str>
+
+			<str id="lowMemoryMode-name">Memória baixa</str>
+			<str id="lowMemoryMode-desc">Se marcado, irá remover certos elementos de fundo para reduzir o uso de memória.</str>
+
+			<str id="gameplayShaders-name">"Shaders"</str>
+			<str id="gameplayShaders-desc">If desmarcado, "Shaders" (efeitos visuais como a Aberração cromática de "Thorns") não serão carregadas; poderá ser útil em dispositivos fracos.</str>
+
+			<str id="gpuOnlyBitmaps-name">Sprites só em VRAM</str>
+			<str id="gpuOnlyBitmaps-desc">Se marcado, irá apenas guardar os bitmaps na GPU, libertando IMENSA memória (EXPERIMENTAL). Desmarcar isto irá consumir muita memória, especialmente em sprites maiores. Se não tiver a certeza, deixe isto marcado.</str>
+		</group>
+	</group>
+
+	<group name="GameplayOptions" prefix="GameplayOptions.">
+		<str id="downscroll-name">"Downscroll"</str>
+		<str id="downscroll-desc">Se marcado, notas irão de cima para baixo em vez de baixo para cima, como se estivessem a cair.</str>
+
+		<str id="ghostTapping-name">Toques Fantasma</str>
+		<str id="ghostTapping-desc">Se desmarcado, bater em teclas que não tem uma nota conta como erro.</str>
+
+		<str id="naughtyness-name">Indecência</str>
+		<str id="naughtyness-desc">Se desmarcado, irá censurar as cenas da Semana 7, ou mais.</str>
+
+		<str id="camZoomOnBeat-name">Zoom na Batida</str>
+		<str id="camZoomOnBeat-desc">Se desmarcado. irá parar a câmara de ampliar a cada 4 batidas.</str>
+
+		<str id="autoPause-name">Auto Pausa</str>
+		<str id="autoPause-desc">Se marcado, mudar de janela pausará o jogo.</str>
+
+		<str id="volumeMusic-name">Volume da Música</str>
+		<str id="volumeMusic-desc">Muda apenas o volume da música em vez de tudo.</str>
+
+		<str id="volumeSFX-name">Volume dos SFX</str>
+		<str id="volumeSFX-desc">Muda apenas o volume dos efeitos sonoros em vez de tudo.</str>
+
+		<str id="songOffset-name">Atraso da Música</str>
+		<str id="songOffset-desc">Muda a posição da música relativamente às notas.</str>
+
+		<group name="GameplayOptionsAdvanced" prefix="Advanced.">
+			<str id="windowSize-name">Tamanho da Janela</str>
+			<str id="windowSize-desc">...</str>
+
+			<str id="streamedMusic-name">Transmissão de Música</str>
+			<str id="streamedMusic-desc">Se marcado, músicas serão transmitidas enquanto tocam, libertando IMENSA memória com o custo de maior uso de CPU se mais sons estiverem a ser transmitidos ao mesmo tempo (EXPERIMENTAL). Desmarcar isto irá consumir muita memória, especialmente em músicas maiores. Se não tiver a certeza, deixe marcado.</str>
+
+			<str id="streamedVocals-name">Transmissão de Vozes</str>
+			<str id="streamedVocals-desc">Se marcado, vozes também serão transmitidas enquanto tocam se "Transmissão de Música" estiver ativada. Irá impactar o desempenho se a canção usar muitas vozes (EXPERIMENTAL). Se não tiver a certeza, deixe marcado.</str>
+		</group>
+	</group>
+
+	<group name="LanguageOptions" prefix="LanguageOptions.">
+		<str id="language-name">Idioma</str>
+		<str id="language-desc">Idioma por {0} (Versão: {1})</str>
+	</group>
+
+	<group name="MiscOptions" prefix="MiscOptions.">
+		<str id="forceCrash-name">Forçar "Crash"</str>
+		<str id="forceCrash-desc">Selecione esta opção para forçar o jogo a encravar e travar.</str>
+
+		<str id="betaUpdates-name">Atualizações "Nightly"</str>
+		<str id="betaUpdates-desc">Se marcado, também irá incluir versões "nightly" (a versão mais recente disponível no repositório de GitHub) na verificação de atualizações.</str>
+
+		<str id="checkForUpdates-name">Verificar Atualizações</str>
+		<str id="checkForUpdates-desc">Selecione esta opção para verificar se existem atualizações novas.</str>
+		<str id="checkForUpdates-noUpdateFound">Nenhuma atualização encontrada.</str>
+
+		<str id="devMode-name">Modo Desenvolvedor</str>
+		<str id="devMode-desc">Se marcado, irá poder aceder funções de desenvolvedor como certas teclas, editores, opções de desenvolvedor, recarregamento de estados, consola e mais.</str>
+
+		<str id="allowConfigWarning-name">Aviso de Modpacks</str>
+		<str id="allowConfigWarning-desc">Se marcado, um aviso no início do jogo aparecerá se houver problemas com o modpack, como configurações em falta, versões incompatíveis e mais.</str>
+
+		<str id="resetSaveData-name">Apagar Dados</str>
+		<str id="resetSaveData-desc">Selecione esta opção para apagar todos os dados. Isto irá remover todos os seus recordes.</str>
+	</group>
+
+	<group name="DebugOptions" prefix="DebugOptions.">
+		<str id="title">Opções de Depuração</str>
+		<str id="desc">Use este menu para ativar ou desativar opções de depuração.</str>
+
+		<str id="showConsole-name">Mostrar Consola</str>
+		<str id="showConsole-desc">Selecione isto para mostrar a consola, que contém registos acerca do jogo.</str>
+
+		<str id="editorsResizable-name">Editores Adaptáveis</str>
+		<str id="editorsResizable-desc">Se marcado, irá permitir que os editores utilizem resoluções acima da base 1280x720 de FNF (permitindo mais detalhe e espaço...)</str>
+
+		<str id="bypassEditorsResize-name">Sem Tamanho Mínimo</str>
+		<str id="bypassEditorsResize-desc">Desativa o limite de resolução minimo dos editores (Requer que "Editores Adaptáveis" esteja marcado).</str>
+
+		<str id="editorSFX-name">Sons de Editor</str>
+		<str id="editorSFX-desc">Se marcado, tocará efeitos sonoros nos editores (ex: ao carregar em caixas...)</str>
+
+		<str id="editorCharterPrettyPrint-name">Mapas Legíveis</str>
+		<str id="editorCharterPrettyPrint-desc">Se marcado, os ficheiros guardados no editor de mapas serão formatados para serem fácilmente legíveis.</str>
+
+		<str id="editorCharacterPrettyPrint-name">Personagens Legíveis</str>
+		<str id="editorCharacterPrettyPrint-desc">Se marcado, os ficheiros guardados no editor de personagens serão formatados para serem fácilmente legíveis.</str>
+
+		<str id="editorStagePrettyPrint-name">Cenários Legíveis</str>
+		<str id="editorStagePrettyPrint-desc">Se marcado, os ficheiros guardados no editor de cenários serão formatados para serem fácilmente legíveis.</str>
+
+		<str id="intensiveBlur-name">Desfoque Intensivo</str>
+		<str id="intensiveBlur-desc">Se marcado, irá usar um desfoque mais intensivo. Parece melhor, mas poderá ser mais lento.</str>
+
+		<str id="charterAutoSaves-name">Gravação Automática</str>
+		<str id="charterAutoSaves-desc">Se marcado, irá guardar ficheiros de editor automáticamente, com as definições listadas abaixo.</str>
+
+		<str id="charterAutoSaveTime-name">Tempo de Gravação</str>
+		<str id="charterAutoSaveTime-desc">Isto controla com que frequência o editor gravará o ficheiro (em segundos...)</str>
+
+		<str id="charterAutoSaveWarningTime-name">Tempo de Aviso</str>
+		<str id="charterAutoSaveWarningTime-desc">Isto controla com que antecedência o editor irá avisá-lo antes de guardar (em segundos..., 0 para desativar)</str>
+
+		<str id="charterAutoSavesSeparateFolder-name">Pasta de Gravações</str>
+		<str id="charterAutoSavesSeparateFolder-desc">Se marcado, irá guardar os ficheiros numa pasta separada com a data em vez de substituir o ficheiro atual. (song/autosaves/)</str>
+
+		<str id="songOffsetAffectEditors-name">Atraso no Mapeador</str>
+		<str id="songOffsetAffectEditors-desc">Se marcado, irá ativar o Atraso da Música no Editor de Mapas, também.</str>
+	</group>
+
+</language>

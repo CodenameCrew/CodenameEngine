@@ -28,6 +28,11 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			"Reflect"			=> Reflect,
 			"StringTools"		=> StringTools,
 			"Json"				=> haxe.Json,
+			"Xml"				=> Xml,
+			"Type"				=> Type,
+			"Date"				=> Date,
+			"Lambda"			=> Lambda,
+			#if sys "Sys"		=> Sys, #end
 
 			// OpenFL & Lime related stuff
 			"Assets"			=> openfl.utils.Assets,
@@ -89,6 +94,7 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			"FlxAnimate"		=> funkin.backend.FlxAnimate,
 			"FunkinSprite"		=> funkin.backend.FunkinSprite,
 			"Alphabet"			=> funkin.menus.ui.Alphabet,
+			"Flags"				=> funkin.backend.system.Flags,
 
 			"CoolUtil"			=> funkin.backend.utils.CoolUtil,
 			"IniUtil"			=> funkin.backend.utils.IniUtil,

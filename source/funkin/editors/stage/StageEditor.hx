@@ -359,10 +359,10 @@ class StageEditor extends UIState {
 		var parent = new Access(node.x.parent);
 
 		var charName = switch(node.name) {
-			case "dad" | "opponent": "dad";
-			case "gf" | "girlfriend": "gf";
-			case "bf" | "boyfriend" | "player": "bf";
-			default: (charPos.flipX) ? "bf" : "dad";
+			case "dad" | "opponent": Flags.DEFAULT_OPPONENT;
+			case "gf" | "girlfriend": Flags.DEFAULT_GIRLFRIEND;
+			case "bf" | "boyfriend" | "player": Flags.DEFAULT_CHARACTER;
+			default: (charPos.flipX) ? Flags.DEFAULT_CHARACTER : Flags.DEFAULT_OPPONENT;
 		}
 
 		var char = new Character(0,0, charName, charPos.flipX, true);

@@ -488,6 +488,7 @@
 					<str id="newGlyph">New Glyph</str>
 					<str id="editGlyph">Edit Glyph</str>
 					<str id="deleteGlyph">Delete Glyph</str>
+					<str id="deleteCurGlyph">Delete Current Glyph</str>
 				</group>
 
 				<str id="topBar.offset">Offsets</str>

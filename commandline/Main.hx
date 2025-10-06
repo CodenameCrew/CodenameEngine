@@ -16,7 +16,7 @@ class Main {
 				dDoc: [
 					"Usage: setup",
 					"",
-					"This command runs through all libraries in libs.xml, and install them.",
+					"This command runs through all libraries in building/libs.xml, and install them.",
 					"If they're already installed, they will be updated.",
 					"",
 					"--all : Reinstall all libraries.",
@@ -173,6 +173,7 @@ class Main {
 		Sys.println("Codename Engine Command Line utility");
 		Sys.println('Available commands (${commands.length}):\n');
 		for(line in commands) {
+			if(line.names.contains(null)) line.names.remove(null);
 			Sys.println('${line.names.join(", ")} - ${line.doc}');
 		}
 	}
