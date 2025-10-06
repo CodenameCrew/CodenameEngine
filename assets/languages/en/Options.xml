@@ -16,7 +16,7 @@
 
 		<str id="optionsTree.appearance-name">Appearance</str>
 		<str id="optionsTree.appearance-desc">Change Appearance options such as Flashing menus...</str>
-		<str id="optionsTree.appearance.advanced-desc">Change more advanced options such as VRAM-Only Sprites, Antialiasing, Shaders</str>
+		<str id="optionsTree.appearance.advanced-desc">Change more advanced options such as VRAM-Only Sprites, Antialiasing, Shaders...</str>
 
 		<str id="optionsTree.language-name">Language</str>
 		<str id="optionsTree.language-desc">Change the language that the engine uses.</str>

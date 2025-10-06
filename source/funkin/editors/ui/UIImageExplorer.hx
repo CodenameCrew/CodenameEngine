@@ -50,7 +50,7 @@ class UIImageExplorer extends UIFileExplorer {
 		directoryButton = new UIButton(x + bWidth - (bHeight - 16) - 8, y + 8, null, () -> {directoryBG.visible = !directoryBG.visible;}, 26, 26);
 		members.push(directoryButton);
 
-	 	directoryIcon = new UIText(directoryButton.x, directoryButton.y, 0, "/", 14);
+		directoryIcon = new UIText(directoryButton.x, directoryButton.y, 0, "/", 14);
 		members.push(directoryIcon);
 
 		directoryBG = new UISliceSprite(0, 0, 210+16, 8+12+4+22+8, 'editors/ui/inputbox');
@@ -248,9 +248,12 @@ class UIImageExplorer extends UIFileExplorer {
 		message.add('${imagePath.file}.${imagePath.ext}');
 		message.add(' (${CoolUtil.getSizeString(size)}');
 
-		var typeOfFrame = isAtlas ? translate("symbol") : translate("animation");
+		final spriteOAtlas = isAtlas ? "symbol" : "animation";
+		var typeOfFrame = translate(spriteOAtlas);
 		var shouldUsePlural = animationList.length != 1;
 		if (animationList.length > 0) {
+			if (translate('$spriteOAtlas-ending') != '{uiImageExplorer.$spriteOAtlas-ending}')
+				typeOfFrame += translate('$spriteOAtlas-ending');
 			message.add(', ${TU.getRaw("uiImageExplorer." + (shouldUsePlural ? "foundplural" : "found")).format([animationList.length, typeOfFrame])}');
 		} else message.add(', ${TU.getRaw("uiImageExplorer.notFound").format([typeOfFrame])}');
 
