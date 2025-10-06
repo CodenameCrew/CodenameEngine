@@ -309,7 +309,7 @@ class Charter extends UIState {
 						icon: Options.charterShowBeats ? 1 : 0
 					},
 					{
-						label: 'Show Camera Highlights',
+						label: translate("view.showCameraHighlights"),
 						onSelect: _view_showeventCameraHighlights,
 						icon: Options.charterShowCameraHighlights ? 1 : 0
 					},
@@ -748,8 +748,6 @@ class Charter extends UIState {
 
 	public function updateCameraChanges() {
 		if (!Options.charterShowCameraHighlights) return;
-
-		trace("updating cam changes");
 
 		cameraMovementChanges = [];
 		for (grp in [leftEventsGroup, rightEventsGroup]) {
@@ -1857,6 +1855,12 @@ class Charter extends UIState {
 		for (strumLine in strumLines.members) strumLine.vocals.volume = strumLine.vocals.volume > 0 ? 0 : 1;
 		t.icon = 1 - Std.int(Math.ceil(vocals.volume));
 	}
+	var _hitsoundsEnabled = true;
+	function _song_mutehitsounds(t) {
+		_hitsoundsEnabled = !_hitsoundsEnabled;
+		for (strumLine in strumLines.members) strumLine.hitsounds = !strumLine.hitsounds;
+		t.icon = _hitsoundsEnabled ? 0 : 1;
+	}
 	function _playback_back(_) {
 		if (FlxG.sound.music.playing) return;
 		Conductor.songPosition -= (Conductor.beatsPerMeasure * __crochet);
@@ -2072,6 +2076,11 @@ class Charter extends UIState {
 		newChilds.push({
 			label: translate("song.muteVoices"),
 			onSelect: _song_mutevoices
+		});
+
+		newChilds.push({
+			label: translate("song.muteHitsounds"),
+			onSelect: _song_mutehitsounds
 		});
 
 		if (songTopButton != null) songTopButton.contextMenu = newChilds;
