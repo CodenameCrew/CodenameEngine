@@ -237,9 +237,9 @@
 					<str id="goEnd">Go forward to the end</str> <!-- used to be "Go to the end" -->
 					<str id="addOpponentCamera">Add camera on Opponent</str>
 					<str id="addPlayerCamera">Add camera on Player</str>
-					<str id="muteInst">Mute instrumental</str>
-					<str id="muteVoices">Mute voices</str>
-					<str id="muteHitsounds">Mute hitsounds</str>
+					<str id="instVolume">Instrumental volume</str>
+					<str id="voicesVolume">Voices volume</str>
+					<str id="hitsoundsVolume">Hitsounds volume</str>
 				</group>
 
 				<group name="BookmarkMenu" prefix="bookmarks.">

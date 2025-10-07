@@ -1861,6 +1861,9 @@ class Charter extends UIState {
 		for (strumLine in strumLines.members) strumLine.hitsounds = !strumLine.hitsounds;
 		t.icon = _hitsoundsEnabled ? 0 : 1;
 	}
+	function _song_hitsoundvolume(t) {
+		hitsound.volume = t.slider.value;
+	}
 	function _playback_back(_) {
 		if (FlxG.sound.music.playing) return;
 		Conductor.songPosition -= (Conductor.beatsPerMeasure * __crochet);
@@ -2069,18 +2072,34 @@ class Charter extends UIState {
 
 		
 		newChilds.push({
-			label: translate("song.muteInst"),
-			onSelect: _song_muteinst
+			label: translate("song.instVolume"),
+			onSelect: _song_muteinst,
+			slider: {
+				min: 0,
+				max: 1,
+				value: 1
+			}
 		});
 
 		newChilds.push({
-			label: translate("song.muteVoices"),
-			onSelect: _song_mutevoices
+			label: translate("song.voicesVolume"),
+			onSelect: _song_mutevoices,
+			slider: {
+				min: 0,
+				max: 1,
+				value: 1
+			}
 		});
 
 		newChilds.push({
-			label: translate("song.muteHitsounds"),
-			onSelect: _song_mutehitsounds
+			label: translate("song.hitsoundsVolume"),
+			onSelect: _song_mutehitsounds,
+			slider: {
+				min: 0,
+				max: 1,
+				value: 1,
+				onChange: _song_hitsoundvolume
+			}
 		});
 
 		if (songTopButton != null) songTopButton.contextMenu = newChilds;

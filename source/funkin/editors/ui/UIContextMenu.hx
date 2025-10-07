@@ -16,6 +16,12 @@ class UIContextMenu extends MusicBeatSubstate {
 	public var contextMenuOptions:Array<UIContextMenuOptionSpr> = [];
 	public var separators:Array<FlxSprite> = [];
 
+	public var childContextMenu:UIContextMenu = null;
+	public var parentContextMenu:UIContextMenu = null;
+	private var childContextMenuOptionIndex:Int = -1;
+	@:allow(funkin.editors.ui.UIContextMenu)
+	private var lastHoveredOptionIndex:Int = -1;
+
 	var scroll:Float = 0.0;
 	var flipped:Bool = false;
 
@@ -105,12 +111,12 @@ class UIContextMenu extends MusicBeatSubstate {
 		if (callback != null)
 			callback(this, index, option);
 		if (option.closeOnSelect == null ? true : option.closeOnSelect)
-			close();
+			closeWithParents();
 	}
 
 	public override function update(elapsed:Float) {
-		if (__oobDeletion && FlxG.mouse.justPressed && !bg.hoveredByChild)
-			close();
+		if (__oobDeletion && FlxG.mouse.justPressed && !bg.hoveredByChild && !hoveringAnyChildren())
+			closeWithParents();
 
 		__oobDeletion = true;
 
@@ -121,6 +127,14 @@ class UIContextMenu extends MusicBeatSubstate {
 
 		contextCam.scroll.y = CoolUtil.fpsLerp(contextCam.scroll.y, scroll, 0.5);
 		contextCam.alpha = CoolUtil.fpsLerp(contextCam.alpha, 1, 0.25);
+
+		if (parentContextMenu != null) {
+			if (hoveringAnyParents() && parentContextMenu.lastHoveredOptionIndex != parentContextMenu.childContextMenuOptionIndex) {
+				closeWithChildren();
+				parentContextMenu.childContextMenuOptionIndex = -1;
+			}
+		}
+
 	}
 
 	public override function destroy() {
@@ -129,6 +143,51 @@ class UIContextMenu extends MusicBeatSubstate {
 		if (UIState.state.curContextMenu == this)
 			UIState.state.curContextMenu = null;
 	}
+
+	public function openChildContextMenu(optionSpr:UIContextMenuOptionSpr) {
+		var index = contextMenuOptions.indexOf(optionSpr);
+		if (index != childContextMenuOptionIndex) {
+			childContextMenuOptionIndex = index;
+			var child = new UIContextMenu(optionSpr.option.childs, null, optionSpr.x + optionSpr.bWidth, optionSpr.y);
+			persistentDraw = true;
+			persistentUpdate = true;
+			child.parentContextMenu = this;
+			childContextMenu = child;
+			openSubState(child);
+		}
+	}
+	public function closeWithParents() {
+		close();
+		if (parentContextMenu != null) {
+			parentContextMenu.closeWithParents();
+		}
+	}
+	public function closeWithChildren() {
+		if (childContextMenu != null) {
+			childContextMenu.closeWithChildren();
+		}
+		close();
+	}
+	public function hoveringAnyParents() {
+		if (parentContextMenu != null) {
+			return parentContextMenu.bg.hoveredByChild || parentContextMenu.hoveringAnyParents();
+		}
+		return false;
+	}
+	public function hoveringAnyChildren() {
+		if (childContextMenu != null) {
+			return childContextMenu.bg.hoveredByChild || childContextMenu.hoveringAnyChildren();
+		}
+		return false;
+	}
+}
+
+typedef UIContextMenuSliderOptionData = {
+	var min:Float;
+	var max:Float;
+	var value:Float;
+	var ?width:Float;
+	var ?onChange:UIContextMenuOption->Void;
 }
 
 typedef UIContextMenuCallback = UIContextMenu->Int->UIContextMenuOption->Void;
@@ -144,6 +203,7 @@ typedef UIContextMenuOption = {
 	var ?button:UIContextMenuOptionSpr;
 	var ?onCreate:UIContextMenuOptionSpr->Void;
 	var ?childs:Array<UIContextMenuOption>;
+	var ?slider:UIContextMenuSliderOptionData;
 }
 
 class UIContextMenuOptionSpr extends UISliceSprite {
@@ -151,6 +211,7 @@ class UIContextMenuOptionSpr extends UISliceSprite {
 	public var labelKeybind:UIText;
 	public var icon:FlxSprite;
 	public var option:UIContextMenuOption;
+	public var slider:UISlider = null;
 
 	var parent:UIContextMenu;
 
@@ -188,12 +249,33 @@ class UIContextMenuOptionSpr extends UISliceSprite {
 			labelKeybind.alpha = 0.75;
 		}
 
-		super(x, y, labelKeybind != null ? Std.int(labelKeybind.x + labelKeybind.frameWidth + 10) : (label.frameWidth + 22), label.frameHeight, 'editors/ui/menu-item');
+		if (option.childs != null) {
+			labelKeybind = new UIText(label.x + label.frameWidth + 10, 2, 0, ">");
+		}
+
+		if (option.slider != null) {
+			slider = new UISlider(0, 0, option.slider.width != null ? Std.int(option.slider.width) : 120, option.slider.value, 
+				[{start: option.slider.min, end: option.slider.max, size: option.slider.max-option.slider.min}], false);
+
+			slider.onChange = function(v) {
+				option.slider.value = v;
+			};
+			slider.value = option.slider.value;
+		}
+	
+		var w:Int = labelKeybind != null ? Std.int(labelKeybind.x + labelKeybind.frameWidth + 10) : (label.frameWidth + 22);
+		if (slider != null) {
+			w += 120 + slider.barWidth;
+		}
+
+		super(x, y, w, label.frameHeight, 'editors/ui/menu-item');
 		members.push(label);
 		if (icon != null)
 			members.push(icon);
 		if (labelKeybind != null)
 			members.push(labelKeybind);
+		if (slider != null)
+			members.push(slider);
 	}
 
 	public override function draw() {
@@ -205,12 +287,25 @@ class UIContextMenuOptionSpr extends UISliceSprite {
 			icon.follow(this, 0, 0);
 		if (labelKeybind != null)
 			labelKeybind.follow(this, bWidth - 10 - labelKeybind.frameWidth, 2);
+		if (slider != null)
+			slider.follow(this, bWidth - 18 - slider.barWidth - slider.endText.width, 5);
 		super.draw();
 	}
 
 	public override function onHovered() {
 		super.onHovered();
-		if (FlxG.mouse.justReleased)
-			parent.select(option);
+
+		parent.lastHoveredOptionIndex = parent.contextMenuOptions.indexOf(this);
+
+		if (option.slider == null) { //TODO fix this logic cuz its stupid
+			if (option.childs != null) {
+				parent.openChildContextMenu(this);
+			} else {
+				if (FlxG.mouse.justReleased)
+					parent.select(option);
+			}
+		} else {
+			
+		}
 	}
 }
