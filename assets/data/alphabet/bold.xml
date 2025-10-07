@@ -150,4 +150,7 @@
 		<component anim="diacritic-dot-outline" x="18" y="59" scaleX="0.72" scaleY="0.72"/>
 		<component anim="diacritic-dot-fill" x="23" y="65" scaleX="0.72" scaleY="0.72"/>
 	</composite>
+	<anim char="з">character-three0</anim>
+	<anim char="щ" y="-8">character-щ</anim>
+	<anim char="ц" y="-8">character-ц</anim>
 </alphabetFont>

@@ -85,7 +85,7 @@
 			<str id="antialiasing-name">Сглаживание</str>
 			<str id="antialiasing-desc">Если выключено, то сглаживание на всех спрайтах будет отключено. Это повысит производительность, но спрайты станут более резкими и пиксельными.</str>
 
-			<str id="lowMemoryMode-name">Экономии Памяти</str>
+			<str id="lowMemoryMode-name">Экономия Памяти</str>
 			<str id="lowMemoryMode-desc">Если включено, то некоторые фоновые элементы сцен будут отключены для снижения потребления памяти.</str>
 
 			<str id="gameplayShaders-name">Игровые Шейдеры</str>
