@@ -25,8 +25,8 @@ class AsyncUpdater {
 	}
 	#end
 
-	public static var executableName:String = UpdateUtil.getExecName();
-	public static var executableGitHubName:String = UpdateUtil.getGitExecName();
+	public static var executableName:String = UpdateUtil.getNameOfExecutable();
+	public static var executableGitHubName:String = UpdateUtil.getNameOfUpdateExecutable();
 
 	public var releases:Array<GitHubRelease>;
 	public var progress:UpdaterProgress = new UpdaterProgress();

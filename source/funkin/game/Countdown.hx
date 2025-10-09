@@ -80,11 +80,10 @@ class Countdown extends FlxTypedSpriteGroup<FlxSprite> {
 		this.duration = params.duration;
 		this.speed = params.speed;
 
-		this.__createSprite();
+		this.makeSprite();
 	}
 
-	@:noPrivateAccess
-	private function __createSprite():Void {
+	public function makeSprite():Void {
 		if (!this.enabled) {
 			return;
 		}
@@ -116,11 +115,11 @@ class Countdown extends FlxTypedSpriteGroup<FlxSprite> {
 
 				switch(this.animationPreset) {
 					case CLASSIC:
-						tween = __createTween(sprite, {alpha: 0}, FlxEase.cubeInOut);
+						tween = makeTween(sprite, {alpha: 0}, FlxEase.cubeInOut);
 					case BEATING:
-						tween = __createTween(sprite, {alpha: 0, "scale.x": defaultSize, "scale.y": defaultSize}, FlxEase.expoOut);
+						tween = makeTween(sprite, {alpha: 0, "scale.x": defaultSize, "scale.y": defaultSize}, FlxEase.expoOut);
 					default: // DEFAULT
-						tween = __createTween(sprite, {y: sprite.y + 100, alpha: 0}, FlxEase.cubeInOut);
+						tween = makeTween(sprite, {y: sprite.y + 100, alpha: 0}, FlxEase.cubeInOut);
 				}
 			}
 
@@ -138,9 +137,8 @@ class Countdown extends FlxTypedSpriteGroup<FlxSprite> {
 			this.event.cancelled = false;
 		}
 	}
-
-	@:noPrivateAccess
-	private function __createTween(sprite:FlxSprite, values:Dynamic, easing:EaseFunction):VarTween {
+	
+	public function makeTween(sprite:FlxSprite, values:Dynamic, easing:EaseFunction):VarTween {
 		return FlxTween.tween(sprite, values, (this.duration / this.speed), {
 			ease: easing,
 			onComplete: function(twn:FlxTween) {
