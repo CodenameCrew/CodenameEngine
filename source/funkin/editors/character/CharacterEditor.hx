@@ -73,7 +73,7 @@ class CharacterEditor extends UIState {
 
 		undos = new UndoList<CharacterEditorChange>();
 
-		WindowUtils.suffix = " (" + TU.translate("editor.character.name") + ")";
+		WindowUtils.suffix = " (" + TU.translate("editor.character.name", true) + ")";
 		SaveWarning.selectionClass = CharacterSelection;
 		SaveWarning.saveFunc = () -> {_file_save(null);};
 

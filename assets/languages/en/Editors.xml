@@ -341,7 +341,7 @@
 			<str id="acceptCharacter">Press ACCEPT to edit this character.</str>
 			<str id="newCharacter">New Character</str>
 			<str id="newCharacterDesc">Press ACCEPT to create a new character.</str>
-			<str id="desc">Select a character to edit</str>
+			<str id="desc">Select a character to edit.</str>
 			<str id="desc-folder">Select a character to edit in {0}</str>
 		</group>
 
@@ -432,6 +432,7 @@
 					<str id="anim">Animation</str>
 					<str id="position">Position (X, Y)</str>
 					<str id="fps">FPS</str>
+					<str id="looping">Looping?</str>
 					<str id="indices">Indices (Frames)</str>
 				</group>
 
@@ -447,7 +448,7 @@
 			<str id="charName">Character Name $* Required$</str>
 			<str id="charImgName">Character Image File $* Required$</str>
 
-			<group name="Warnings" prefix="warnings.">
+			<group name="Warning" prefix="warning.">
 				<str id="char-exists-title">Creating Character: Error!</str>
 				<str id="char-exists-body">The character you are trying to create already exists, if you would like to override it delete the character first!</str>
 			</group>
@@ -459,7 +460,7 @@
 			<str id="acceptTypeface">Press ACCEPT to edit this typeface.</str>
 			<str id="newTypeface">New Typeface</str>
 			<str id="newTypefaceDesc">Press ACCEPT to create a new typeface.</str>
-			<str id="desc">Select a typeface to edit</str>
+			<str id="desc">Select a typeface to edit.</str>
 
 			<group name="Warnings" prefix="warnings.">
 				<str id="notImplemented-title">New Typeface: Feature Not Implemented!</str>
@@ -481,6 +482,7 @@
 				<group name="EditMenu" prefix="edit.">
 					<str id="undo">Undo</str>
 					<str id="redo">Redo</str>
+					<str id="editMainData">Edit Main Data</str>
 				</group>
 
 				<str id="topBar.glyph">Glyph</str>
@@ -509,6 +511,12 @@
 					<str id="zoomIn">Zoom in</str>
 					<str id="zoomOut">Zoom out</str>
 					<str id="resetZoom">Reset Zoom</str>
+				</group>
+
+				<str id="topBar.tape">Tape</str>
+				<group name="TapeMenu" prefix="tape.">
+					<str id="MoveTapeLeft">Move Tape Left</str>
+					<str id="MoveTapeRight">Move Tape Right</str>
 				</group>
 			</group>
 		</group>
@@ -550,9 +558,9 @@
 					<str id="zoomIn">Zoom in</str>
 					<str id="zoomOut">Zoom out</str>
 					<str id="zoomReset">Reset Zoom</str>
-					<str id="focusDad">Focus Dad</str>
+					<str id="focusDad">Focus Opponent</str>
 					<str id="focusGF">Focus GF</str>
-					<str id="focusBF">Focus BF</str>
+					<str id="focusBF">Focus Player</str>
 				</group>
 
 				<str id="topBar.editor">Editor</str>
@@ -591,7 +599,7 @@
 		<group name="StageElementEditScreen" prefix="stageElementEditScreen.">
 			<str id="win-character-title">Editing Character "{0}"</str>
 			<str id="win-sprite-title">Editing Sprite "{0}"</str>
-			<str id="win-title">Editing XML &lt;{0} /&gt;</str>
+			<str id="win-title">Editing XML &lt;{0}/&gt;</str>
 
 			<str id="character-title">Character Data</str>
 			<str id="sprite-title">Sprite Data</str>
@@ -622,7 +630,7 @@
 				<str id="beat">BEAT</str>
 				<str id="loop">LOOP</str>
 			</group>
-			<str id="tipCustomProperties">Tip: To access custom properties,\nHold Shift when clicking edit</str>
+			<str id="tipCustomProperties">Tip: To access custom properties,\nHold Shift when clicking edit button.</str>
 		</group>
 
 		<group name="StageXMLEditScreen" prefix="stageXMLEditScreen.">

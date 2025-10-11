@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<group name="General Editor Translations" prefix="editor.">
+		<str id="autosavingIn">Автосохранение через {0} секунд{1}</str>
+		<str id="autosavingCanceledSuffix">(Отменено)!</str>
+
+		<str id="ok">Ок</str>
+		<str id="cancel">Отмена</str>
+		<str id="save">Сохранить</str>
+		<str id="saveClose">Сохранить и Закрыть</str>
+		<str id="close">Закрыть</str>
+		<str id="notNow">Не Cейчас</str>
+		<str id="yes">Да</str>
+	</group>
+
+	<group name="UIImageExplorer" prefix="uiImageExplorer.">
+		<str id="symbol">Символ</str>
+		<str id="animation">Анимация</str>
+		<str id="atlas">Атлас</str>
+		<str id="spritemap">Спрайтлист</str>
+		<str id="symbol-ending">(-а, -ов)</str>
+		<str id="animation-ending">(-и, -й)</str>
+
+		<str id="directory">Путь ({0}/)</str>
+		<str id="found">Найден {0} {1}</str>
+		<str id="foundplural">Найдено {0} {1}</str>
+		<str id="notFound">#{0} НЕ найден(-а)#</str>
+		<str id="foundAtlas">Найден {0} Спрайтлист</str>
+		<str id="foundAtlasplural">Найдено {0} Спрайтлиста(-ов)</str>
+
+		<str id="fileAlreadyExists">Следующие файлы уже существуют: \n\n{0}\n\nВАЖНО: ПЕРЕЗАПИСЫВАНИЕ ОТМЕНИТЬ НЕЛЬЗЯ!</str>
+		<str id="override">Перезаписать Файлы</str>
+		<str id="useExisting">Использовать Существующие</str>
+	</group>
+
+	<group name="EditorPicker" prefix="editor.">
+		<str id="alphabet.name">Редактор Алфавита</str>
+		<str id="chart.name">Редактор Чартов</str>
+		<str id="character.name">Редактор Персонажей</str>
+		<str id="stage.name">Редактор Cцен</str>
+		<str id="uiDebug.name">Дебаг UI</str>
+		<str id="wiki.name">Вики</str>
+		<str id="debugOptions.name">Настройки Отладки</str>
+	</group>
+
+	<group name="ChartEditor">
+		<group name="CharterSelection" prefix="charterSelection.">
+			<str id="desc">Выберите песню для измениния чарта.</str>
+			<str id="acceptSong">Нажмите ПРИНЯТЬ чтобы выбрать сложность.</str>
+			<str id="acceptVariation">Нажмите ПРИНЯТЬ чтобы выбрать песню.</str>
+			<str id="acceptDifficulty">Нажмите ПРИНЯТЬ чтобы редактировть чарт выбранной сложности.</str>
+			<str id="selectDifficulty">Выберите сложность чтобы продолжить.</str>
+			<str id="newDifficulty">Новая Сложность</str>
+			<str id="newDifficultyDesc">Нажмите ПРИНЯТЬ чтобы создать новую сложность.</str>
+			<str id="newSong">Новая Песня</str>
+			<str id="newSongDesc">Нажмите ПРИНЯТЬ чтобы создать новую песню.</str>
+			<str id="newVariation">Новая Вариация</str>
+			<str id="newVariationDesc">Нажмите ПРИНЯТЬ чтобы создать новую вариацию песни.</str>
+		</group>
+
+		<group name="ChartCreationScreen" prefix="chartCreation.">
+			<str id="title">Создание Нового Чарта</str>
+			<str id="info">Информация о Чарте</str>
+			<str id="diffName">Название Сложности</str>
+			<str id="stage">Сцена</str>
+			<str id="scrollSpeed">Скорость Стрелок</str>
+
+			<str id="strumLineList">Струмлайны $* Требуется Минимум 1 Струмлайн$</str>
+			<str id="strumLine.format">Страмлайн - #{0}</str>
+
+			<group name="Warnings" prefix="warnings.">
+				<str id="song-exists-title">Создание Песни: Ошибка!</str>
+				<str id="song-exists-body">Песня, которую вы пытаетесь создать, уже существует. Если вы хотите пересоздать её, то сначала удалите существующую песню!</str>
+				<str id="chart-exists-title">Создание Чарта: Ошибка!</str>
+				<str id="chart-exists-body">Чарт, который вы пытаетесь создать, уже существует. Если вы хотите пересоздать его, то сначала удалите существующий чарт!</str>
+			</group>
+		</group>
+
+		<group name="ChartDataScreen" prefix="chartDataScreen.">
+			<str id="title">Свойства Чарта</str>
+			<str id="editChartData">Данные Чарта</str>
+			<str id="stage">Сцена</str>
+			<str id="scrollSpeed">Скорость Стрелок</str>
+		</group>
+
+		<group name="SongPosInfo" prefix="songPosInfo.">
+			<str id="step">Степ: {0}</str>
+			<str id="beat">Бит: {0}</str>
+			<str id="measure">Такт: {0}</str>
+			<str id="timeSignature">Размер: {0}/{1}</str>
+		</group>
+
+		<group name="CharterEventScreen" prefix="charterEventScreen.">
+			<str id="title-creating">Создать Группу Событий</str>
+			<str id="title-editing">Редактировать Группу Событий</str>
+
+			<str id="noEvent">Нет События</str>
+
+			<str id="strumLine.format">Струмлайн #{0} ({1})</str>
+		</group>
+
+		<group name="CharterEventTypeSelection" prefix="charterEventTypeSelection.">
+			<str id="title">Выберите Тип События...</str>
+		</group>
+
+		<group name="CharterMetaDataScreen" prefix="charterMetaDataScreen.">
+			<str id="title">Редактировать Метаданные</str>
+
+			<str id="songData">Данные Песни</str>
+			<str id="songName">Название Песни</str>
+			<str id="variation">Вариация Песни</str>
+			<str id="timeSignature">Размер Такта</str>
+			<str id="menusData">Данные Меню (Freeplay/Story)</str>
+			<str id="displayName">Отображаемое Имя</str>
+			<str id="icon">Иконка</str>
+			<str id="modesAllowed">Разрешенные Режимы</str>
+			<str id="color">Цвет</str>
+			<str id="difficulties">Сложности</str>
+			<str id="customValues">Кастомные Значения (Продвинутое)</str>
+			<str id="needsVoices">Нужны Вокалы</str>
+
+			<str id="opponentMode">Режим Оппонента</str>
+			<str id="coopAllowed">Ко-оп мод</str>
+		</group>
+
+		<group name="CharterNoteTypesList" prefix="charterNoteTypesList.">
+			<str id="title">Редактор Нот</str>
+
+			<str id="editNoteTypes">Редактировать Ноты</str>
+			<str id="editType">Новая нота {0}</str>
+		</group>
+
+		<group name="CharterStrumlineScreen" prefix="charterStrumlineScreen.">
+			<str id="win-title-creating">Создание Струмлайна {0}</str>
+			<str id="win-title-editing">Редактирование Свойств Струмлайна {0}</str>
+
+			<str id="title-creating">Создать Новый Струмлайн</str>
+			<str id="title-editing">Редактировать Свойства Струмлайна</str>
+		</group>
+
+		<group name="SongCreationScreen" prefix="songCreationScreen.">
+			<str id="win-title">Создание Новой Песни</str>
+			<str id="win-title-importing">Импорт Песни</str>
+			<str id="title">Информация о Песне</str>
+
+			<str id="instAudio">Инструментал $* Обязательно*$</str>
+			<str id="voicesAudio">Вокал</str>
+
+			<str id="importFrom">Импортировать из...</str>
+			<str id="importSource">Источник Импорта:</str>
+			<str id="vsliceProject">Проект V-Slice (.fnfc)</str>
+			<str id="importChartFormat">Формат Чарта</str>
+			<str id="importAudios">Добавить Аудио</str>
+			<str id="songFileName">Имя Файла Песни $* Обязательно$</str>
+			<str id="songDataFile">Файл Данных/Чарта $* Обязательно$</str>
+			<str id="songMetaFile">Мета Файл $* Обязательно$</str>
+
+			<str id="back">Назад</str>
+			<str id="next">Далее</str>
+		</group>
+
+		<group name="StrumlineOptions" prefix="charterStrumLine.">
+			<str id="characters">Персонажи</str>
+			<str id="newChar">Новый Перс</str>
+			<str id="type">Тип</str>
+			<str id="scrollSpeed">Скорость Стрелок</str>
+			<str id="stagePos">Позиция На Сцене</str>
+			<str id="scale">Размер</str>
+			<str id="spacing">Интервал</str>
+			<str id="hudPos">Hud Позиция (X [Между 0-1],Y)</str>
+			<str id="visible">Виден?</str>
+			<str id="useChartScrollSpeed">Использовать из чарта?</str>
+			<str id="vocalSuffix">Суффикс Вокала</str>
+			<str id="keyCount">Количество Клавиш</str>
+		</group>
+
+		<group name="ChartEditor" prefix="charter.">
+			<!-- Charter.hx -->
+			<group name="TopBar">
+				<str id="topBar.file">Файл</str>
+				<group name="FileMenu" prefix="file.">
+					<str id="new">Создать</str>
+					<str id="save">Сохранить</str>
+					<str id="saveAs">Сохранить Как...</str>
+					<str id="saveGlobalEvents">Сохранить Глобальные События</str>
+					<str id="saveGlobalEventsAs">Сохранить Глобальные События Как...</str>
+					<str id="saveNoLocalEvents">Сохранить без Локальных Событий</str>
+					<str id="saveNoLocalEventsAs">Сохранить без Локальных Событий Как...</str>
+					<str id="saveMeta">Сохранить Метаданные</str>
+					<str id="saveMetaAs">Сохранить Метаданные Как...</str>
+					<str id="exportFnfLegacy">Экспорт в FNF Legacy...</str>
+					<str id="exportPsych">Экспорт в Psych Engine...</str>
+					<str id="exit">Выход</str>
+				</group>
+
+				<str id="topBar.edit">Правка</str>
+				<group name="EditMenu" prefix="edit.">
+					<str id="undo">Отменить</str>
+					<str id="redo">Вернуть изменение</str>
+					<str id="copy">Копировать</str>
+					<str id="paste">Вставить</str>
+					<str id="cut">Вырезать</str>
+					<str id="delete">Удалить</str>
+				</group>
+
+				<str id="topBar.chart">Чарт</str>
+				<group name="ChartMenu" prefix="chart.">
+					<str id="playtest">Плэйтест</str>
+					<str id="playtestHere">Плэйтест с этого места</str>
+					<str id="playtestOpponent">Плэйтест за оппонента</str>
+					<str id="playtestOpponentHere">Плэйтест за оппонента с этого места</str>
+					<str id="enableScripts">Включить скрипты при тесте</str>
+					<str id="editChartData">Редактировать данные чарта</str>
+					<str id="editMetadata">Редактировать метаданные</str>
+				</group>
+
+				<str id="topBar.view">Вид</str>
+				<group name="ViewMenu" prefix="view.">
+					<str id="zoomIn">Увеличить</str>
+					<str id="zoomOut">Уменьшить</str>
+					<str id="resetZoom">Сбросить Масштаб</str>
+					<str id="showSectionsSeparator">Показать Разделители Секций</str>
+					<str id="showBeatsSeparator">Показать Разделители Битов</str>
+					<str id="rainbowWaveforms">Радужные Волны</str>
+					<str id="lowDetailWaveforms">Упрощенные Волны</str>
+					<str id="scrollLeft">Сместиться Влево</str>
+					<str id="scrollRight">Сместиться Вправо</str>
+					<str id="scrollReset">Сбросить Смещение</str>
+				</group>
+
+				<str id="topBar.song">Песня</str>
+				<group name="SongMenu" prefix="song.">
+					<str id="goStart">В начало</str>
+					<str id="goEnd">В конец</str>
+					<str id="addOpponentCamera">Добавить камеру на Оппонента</str>
+					<str id="addPlayerCamera">Добавить камеру на Игрока</str>
+					<str id="muteInst">Заглушить инструментал</str>
+					<str id="muteVoices">Заглушить вокал</str>
+				</group>
+
+				<group name="BookmarkMenu" prefix="bookmarks.">
+					<str id="addBookmarkHere">Добавить Закладку</str>
+					<str id="editBookmarkList">Редактировать Закладки</str>
+					<str id="goTo">Перейти к "{0}"</str>
+					<str id="createBookmarkTitle">Создание Закладки...</str>
+					<str id="createBookmarkName">Название:</str>
+					<str id="createBookmarkColor">Цвет:</str>
+					<str id="editBookmarkListTitle">Список Закладок</str>
+					<str id="editBookmarksTitle">Редактировать</str>
+					<str id="newBookmarkName">Новая Закладка</str>
+				</group>
+
+				<str id="topBar.note">Нота</str>
+				<group name="NoteMenu" prefix="note.">
+					<str id="addSustainLength">Увеличить длительность</str>
+					<str id="subtractSustainLength">Уменьшить длительность</str>
+					<str id="selectAll">Выбрать все</str>
+					<str id="selectMeasure">Выбрать такт</str>
+					<str id="editNoteTypesList">Редактировать Типы Нот</str>
+				</group>
+				<str id="topBar.snap">Сетка</str>
+				<group name="SnapMenu" prefix="snap.">
+					<str id="increaseSnap">↑ Привязка к Сетки</str>
+					<str id="resetSnap">Сбросить Привязку</str>
+					<str id="decreaseSnap">↓ Привязка к Сетки</str>
+
+					<str id="snap">Сетка {0}x</str>
+				</group>
+
+				<str id="topBar.playback">Воспроизведение</str>
+				<group name="PlaybackMenu" prefix="playback.">
+					<str id="play">Старт/Пауза</str>
+					<str id="speedRaise">↑ Скорость {0}%</str>
+					<str id="speedReset">Сбросить скорость</str>
+					<str id="speedLower">↓ Скорость {0}%</str>
+					<str id="sectionBack">Пред. секция</str>
+					<str id="sectionForward">След. секция</str>
+					<str id="sectionStart">Начало секции</str>
+					<str id="backStep">Пред. степ</str>
+					<str id="forwardStep">След. степ</str>
+					<str id="metronome">Метроном</str>
+					<str id="visualMetronome">Визуальный метроном</str>
+				</group>
+			</group>
+
+			<group name="NoteTypes" prefix="noteTypes.">
+				<str id="default">Стандартная Нота</str>
+			</group>
+
+			<group name="EventTypes" prefix="events.">
+				<str id="hscriptCall">Вызов HScript</str>
+				<str id="cameraMovement">Движение Камеры</str>
+				<str id="addCameraZoom">Добавить Зум Камеры</str>
+				<str id="cameraModuloChange">Изменение Модуля Камеры</str>
+				<str id="cameraFlash">Флешка</str>
+				<str id="bpmChange">Изменение BPM</str>
+				<str id="scrollSpeedChange">Изменение Скорости Стрелок</str>
+				<str id="altAnimationToggle">Переключение на Альт. анимацию</str>
+				<str id="playAnimation">Проиграть анимацию</str>
+			</group>
+
+			<group name="StrumlineOptions" prefix="strumLine.">
+				<str id="button-name">Опции ↓</str>
+
+				<str id="hitsounds">Звуки попаданя</str>
+				<str id="muteVocals">Выкл. Вокал</str>
+				<str id="edit">Редактировать</str>
+				<str id="delete">Удалить</str>
+
+				<str id="noWaveform">Без Волны</str>
+			</group>
+
+			<str id="createNew">Создать</str>
+			<str id="lock-unlock">Заблок./Разблок.</str>
+
+			<str id="info.localEvents">Локальные События\n(Только Эта Сложность)</str>
+			<str id="info.globalEvents">Глобальные События\n(Все Сложности)</str>
+			<str id="eventType-local">Лок. Событие</str>
+			<str id="eventType-global">Глоб. Событие</str>
+
+			<str id="addEvent">Добавить</str>
+			<str id="editEvent">Редактировать</str>
+			<str id="deleteEvent">Удалить</str>
+
+			<group name="Notifications" prefix="popup.">
+				<str id="savedChartAt">Чарт сохранен в {0}!</str>
+			</group>
+		</group>
+	</group>
+
+	<group name="CharacterEditor">
+		<group name="CharacterSelection" prefix="characterSelection.">
+			<str id="acceptFolder">Нажмите ПРИНЯТЬ чтобы редактировать эту папку.</str>
+			<str id="acceptCharacter">Нажмите ПРИНЯТЬ чтобы редактировать этого персонажа.</str>
+			<str id="newCharacter">Новый Персонаж</str>
+			<str id="newCharacterDesc">Нажмите ПРИНЯТЬ чтобы создать нового персонажа.</str>
+			<str id="desc">Выберите персонажа для редактирования.</str>
+			<str id="desc-folder">Выберите персонажа для редактирования в {0}</str>
+		</group>
+
+		<group name="CharacterInfoScreen" prefix="characterInfoScreen.">
+			<str id="win-title">Редактирование Персонажа</str>
+			<str id="title">Свойства Персонажа</str>
+			<str id="icon">Иконка</str>
+			<str id="iconColor">Цвет Иконки</str>
+			<str id="singDuration">Длительность Анимации Пения</str>
+			<str id="useSingDuration">Исп. Длительность Пения?</str>
+			<str id="customValues">Кастомные Значения (Продвинутое)</str>
+		</group>
+
+		<group name="CharacterEditor" prefix="characterEditor.">
+			<group name="TopBar">
+				<str id="topBar.file">Файл</str>
+				<group name="FileMenu" prefix="file.">
+					<str id="new">Создать</str>
+					<str id="save">Сохранить</str>
+					<str id="saveAs">Сохранить как...</str>
+					<str id="exit">Выход</str>
+				</group>
+
+				<str id="topBar.edit">Правка</str>
+				<group name="EditMenu" prefix="edit.">
+					<str id="copyOffset">Копировать Смещение</str>
+					<str id="pasteOffset">Вставить Смещение</str>
+					<str id="undo">Отменить</str>
+					<str id="redo">Вернуть изменение</str>
+					<str id="editInfo">Редактировать информацию</str>
+					<str id="editSprite">Редактировать спрайт</str>
+				</group>
+
+				<str id="topBar.offset">Смещение</str>
+				<group name="OffsetsMenu" prefix="offset.">
+					<str id="moveLeft">Влево</str>
+					<str id="moveUp">Вверх</str>
+					<str id="moveDown">Вниз</str>
+					<str id="moveRight">Вправо</str>
+					<str id="moveExtraLeft">Сильнее Влево</str>
+					<str id="moveExtraUp">Сильнее Вверх</str>
+					<str id="moveExtraDown">Сильнее Вниз</str>
+					<str id="moveExtraRight">Сильнее Вправо</str>
+					<str id="dragOffsetsMouse">Перетаскивать Мышью?</str>
+					<str id="clearOffsets">Сбросить Смещение</str>
+				</group>
+
+				<str id="topBar.stage">Сцена</str>
+				<group name="StageMenu" prefix="stage.">
+					<str id="useStage">Использовать "{0}"</str>
+					<str id="useNone">Без Сцены</str>
+				</group>
+
+				<str id="topBar.view">Вид</str>
+				<group name="ViewMenu" prefix="view.">
+					<str id="zoomIn">Увеличить</str>
+					<str id="zoomOut">Уменьшить</str>
+					<str id="resetZoom">Сбросить Масштаб</str>
+					<str id="charHitbox">Показать Хитбокс Персонажа?</str>
+					<str id="charCam">Показать Камеру Персонажа?</str>
+					<str id="axis">Показать Ось Координат?</str>
+				</group>
+
+				<str id="topBar.animation">Анимация</str>
+				<group name="AnimationMenu" prefix="animation.">
+					<str id="playAnim">Запустить</str>
+					<str id="stopAnim">Остановить</str>
+					<str id="changeAnimUp">Пред. Анимация</str>
+					<str id="changeAnimDown">След. Анимация</str>
+					<str id="playAnimOnOffset">Проиграть со Смещением?</str>
+				</group>
+
+				<group name="CharacterPropertiesWindow" prefix="characterProperties.">
+					<str id="position">Позиция (X, Y)</str>
+					<str id="scale">Размер</str>
+					<str id="editInfo">Редакт. Информацию</str>
+					<str id="editSprite">Редакт. Спрайт</str>
+					<str id="camPosition">Позиция Камеры (X, Y)</str>
+					<str id="charFlipped">Отразить?</str>
+					<str id="antialiased">Сгладить?</str>
+					<str id="testCharAs">Проверить как...</str>
+					<str id="charDesign">Поставить как...</str>
+				</group>
+
+				<group name="CharacterAnimButton" prefix="characterAnim.">
+					<str id="defaultAnimName">Новая Анимация</str>
+					<str id="name">Название</str>
+					<str id="anim">Анимация</str>
+					<str id="position">Позиция (X, Y)</str>
+					<str id="looping">Зациклить?</str>
+					<str id="indices">Индексы кадров</str>
+				</group>
+
+				<group name="CharacterSpriteScreen" prefix="characterSpriteScreen.">
+					<str id="win-title">Редактирование спрайта</str>
+					<str id="charImageFile">Файл Изображения $* Обязательно$</str>
+				</group>
+			</group>
+		</group>
+
+		<group name="CharacterCreationScreen" prefix="characterCreationScreen.">
+			<str id="win-title">Создание Нового Персонажа</str>
+			<str id="charName">Имя $* Обязательно$</str>
+			<str id="charImgName">Файл Изображения $* Обязательно$</str>
+
+			<group name="Warning" prefix="warning.">
+				<str id="char-exists-title">Создание Персонажа: Ошибка!</str>
+				<str id="char-exists-body">Персонаж, которого вы пытаетесь создать, уже существует. Если вы хотите пересоздать его, то сначала удалите существующего персонажа!</str>
+			</group>
+		</group>
+	</group>
+
+	<group name="AlphabetEditor" prefix="editor.alphabet.">
+		<group name="AlphabetSelection" prefix="selection.">
+			<str id="acceptTypeface">Нажмите ПРИНЯТЬ чтобы редактировать шрифт.</str>
+			<str id="newTypeface">Новый Шрифт</str>
+			<str id="newTypefaceDesc">Нажмите ПРИНЯТЬ чтобы создать новый шрифт.</str>
+			<str id="desc">Выберите шрифт для редактирования.</str>
+
+			<group name="Warnings" prefix="warnings.">
+				<str id="notImplemented-title">Новый Шрифт: Функция Не Реализована!</str>
+				<str id="notImplemented-body">Эта функция еще не реализована. Пожалуйста, дождитесь новых обновлений CNE, чтобы получить её.\n\n\n- Codename Crew</str>
+			</group>
+		</group>
+
+		<group name="AlphabetEditor">
+			<group name="TopBar">
+				<str id="topBar.file">Файл</str>
+				<group name="FileMenu" prefix="file.">
+					<str id="new">Создать</str>
+					<str id="save">Сохранить</str>
+					<str id="saveAs">Сохранить как...</str>
+					<str id="exit">Выход</str>
+				</group>
+
+				<str id="topBar.edit">Правка</str>
+				<group name="EditMenu" prefix="edit.">
+					<str id="undo">Отменить</str>
+					<str id="redo">Вернуть изменение</str>
+					<str id="editMainData">Редактирование Основных Данных</str>
+				</group>
+
+				<str id="topBar.glyph">Глиф</str>
+				<group name="GlyphMenu" prefix="glyph.">
+					<str id="newGlyph">Новый Глиф</str>
+					<str id="editGlyph">Редактировать Глиф</str>
+					<str id="deleteGlyph">Удалить Глиф</str>
+					<str id="deleteCurGlyph">Удалить Текущий Глиф</str>
+				</group>
+
+				<str id="topBar.offset">Смещение</str>
+				<group name="OffsetsMenu" prefix="offset.">
+					<str id="moveLeft">Влево</str>
+					<str id="moveUp">Вверх</str>
+					<str id="moveDown">Вниз</str>
+					<str id="moveRight">Вправо</str>
+					<str id="moveExtraLeft">Сильнее Влево</str>
+					<str id="moveExtraUp">Сильнее Вверх</str>
+					<str id="moveExtraDown">Сильнее Вниз</str>
+					<str id="moveExtraRight">Сильнее Вправо</str>
+					<str id="clearOffsets">Сбросить Смещение</str>
+				</group>
+
+				<str id="topBar.view">Вид</str>
+				<group name="ViewMenu" prefix="view.">
+					<str id="zoomIn">Увеличить</str>
+					<str id="zoomOut">Уменьшить</str>
+					<str id="resetZoom">Сбросить Масштаб</str>
+				</group>
+
+				<str id="topBar.tape">Лента</str>
+				<group name="TapeMenu" prefix="tape.">
+					<str id="MoveTapeLeft">Переместиться Влево</str>
+					<str id="MoveTapeRight">Переместиться Вправо</str>
+				</group>
+			</group>
+		</group>
+	</group>
+
+	<group name="StageEditor">
+		<group name="StageSelection" prefix="stageSelection.">
+			<str id="desc">Выберите сцену для редактирования. Сцены, написанные только на HSCRIPT-е, не поддерживаются.</str>
+			<str id="acceptStage">Нажмите ПРИНЯТЬ чтобы редактировать сцену.</str>
+			<str id="newStage">Новая Сцена</str>
+			<str id="acceptNewStage">Нажмите ПРИНЯТЬ чтобы создать новую сцену.</str>
+		</group>
+
+		<group name="StageEditor" prefix="stageEditor.">
+			<group name="TopBar">
+				<str id="topBar.file">Файл</str>
+				<group name="FileMenu" prefix="file.">
+					<str id="save">Сохранить</str>
+					<str id="saveAs">Сохранить как...</str>
+					<str id="exit">Выход</str>
+				</group>
+
+				<str id="topBar.edit">Правка</str>
+				<group name="EditMenu" prefix="edit.">
+					<str id="undo">Отменить</str>
+					<str id="redo">Вернуть изменение</str>
+					<str id="editStageInfo">Редактировать информацию сцены</str>
+				</group>
+
+				<str id="topBar.select">Выделение</str>
+				<group name="SelectionMenu" prefix="select.">
+					<str id="all">Выделить все</str>
+					<str id="deselect">Отменить Выделение</str>
+					<str id="inverse">Инвертировать Выделение</str>
+				</group>
+
+				<str id="topBar.view">Вид</str>
+				<group name="ViewMenu" prefix="view.">
+					<str id="zoomIn">Увеличить</str>
+					<str id="zoomOut">Уменьшить</str>
+					<str id="zoomReset">Сбросить Масштаб</str>
+					<str id="focusDad">Фокус На Оппонента</str>
+					<str id="focusGF">Фокус На GF</str>
+					<str id="focusBF">Фокус На Игрока</str>
+				</group>
+
+				<str id="topBar.editor">Редактор</str>
+				<group name="EditorMenu" prefix="editor.">
+					<str id="showCharacters">Показать Персонажей</str>
+				</group>
+
+				<group name="StageSpriteScreen" prefix="stageSpriteScreen.">
+					<str id="win-title">Редактирование спрайта сцены</str>
+					<str id="stageImageFile">Файл Изображения $* Обязательно$</str>
+				</group>
+			</group>
+		</group>
+
+		<group name="StageCreationScreen" prefix="stageCreationScreen.">
+			<str id="win-title">Создание Новой Сцены</str>
+			<str id="title">Информация о Сцене</str>
+			<str id="stageName">Название</str>
+			<str id="stagePath">Директория Сцены</str>
+
+			<group name="Warnings" prefix="warnings.">
+				<str id="stage-exists-title">Создание сцены: Ошибка!</str>
+				<str id="stage-exists-body">Сцена уже существует! Для перезаписи сначала удалите существующую стадию!</str>
+			</group>
+		</group>
+
+		<group name="StageInfoScreen" prefix="stageInfoScreen.">
+			<str id="win-title">Редактирование сцены "{0}"</str>
+			<str id="title">Информация о Сцене</str>
+			<str id="stageName">Название</str>
+			<str id="spritePath">Директория Спрайтов\n(Требуется Перезагрузка)</str>
+			<str id="startCamPos">Стартовая позиция камеры (X, Y)</str>
+			<str id="zoom">Зум Камеры</str>
+		</group>
+
+		<group name="StageElementEditScreen" prefix="stageElementEditScreen.">
+			<str id="win-character-title">Редактирование Персонажа "{0}"</str>
+			<str id="win-sprite-title">Редактирование Спрайта "{0}"</str>
+			<str id="win-title">Редактирование XML &lt;{0}/&gt;</str>
+
+			<str id="character-title">Данные Персонажа</str>
+			<str id="sprite-title">Данные Спрайта</str>
+			<str id="title">Данные XML</str>
+
+			<str id="elementName">Имя Элемента</str>
+			<str id="nameID">Идентификатор</str>
+			<str id="imageFile">Файл Изображения (WIP: нужна перезагрузка)\nВ (${stage.spritesParentFolder})</str>
+			<str id="scroll">Скролл {0}</str>
+			<str id="scale">Размер {0}</str>
+			<str id="camera">{0} камеры</str>
+			<str id="spacing">Отступы (X, Y)</str>
+			<str id="skew">Наклон {0}</str>
+			<str id="alpha">Прозрачность</str>
+			<str id="angle">Угол</str>
+			<str id="zoomFactor">Коэфицент Масштаба</str>
+			<str id="positionName">Название Позиции</str>
+			<str id="flipX">Отразить по X</str>
+			<str id="antialiasing">Сглаживание</str>
+			<str id="highMemory">Высокая Нагрузка</str>
+			<str id="lowMemory">Экономия Памяти</str>
+			<str id="attributes">Атрибуты</str>
+			<str id="transformPreview">Предпросмотр трансформации:</str>
+
+			<str id="animType">Тип Анимации</str>
+			<group name="AnimTypeDropdown" prefix="animType.">
+				<str id="none">НЕТУ</str>
+				<str id="beat">В БИТ</str>
+				<str id="loop">ЦИКЛ</str>
+			</group>
+			<str id="tipCustomProperties">Совет: Для получения доступа к пользовательским свойствам\nудерживайте Shift при нажатии на кнопку "Редактировать".</str>
+		</group>
+
+		<group name="StageXMLEditScreen" prefix="stageXMLEditScreen.">
+			<str id="win-title">Редактирование XML {0}</str>
+			<str id="title">Данные XML</str>
+			<str id="attributes">Атрибуты</str>
+		</group>
+
+		<str id="stageCharacters.requiredPosition">Этот персонаж обязательно должен быть на сцене!</str>
+		<str id="stageCharacters.noDeleteGirlfriend">Вы не можете удалить GF</str>
+
+		<group name="StageElement" prefix="stageElement.">
+			<str id="scale">Масштаб: {0}, {1}</str>
+			<str id="scroll">Скролл: {0}, {1}</str>
+		</group>
+
+		<group name="StageSprites" prefix="stageSprites.">
+			<str id="win-title">Спрайты Cцены</str>
+			<str id="sprite">Спрайт</str>
+			<str id="box">Коробка</str>
+			<str id="character">Персонаж</str>
+			<str id="warnings.not-implemented">Создание коробок еще не реализовано!</str>
+		</group>
+	</group>
+
+	<group name="PlayTesting" prefix="playtesting.">
+		<str id="exitGame">Выйти Из Игры</str>
+		<str id="exitToMenu">Выйти в Меню</str>
+		<str id="saveAndExitGame">Сохранить и Выйти Из Игры</str>
+		<str id="saveAndExitToMenu">Сохранить и Выйти в Меню</str>
+		<str id="cancel">Отмена</str>
+
+		<str id="warningTitle">НЕСОХРАНЕННЫЕ ИЗМЕНЕНИЯ!</str>
+		<str id="warningDesc">Ваши изменения будут *потеряны*, если вы не сохраните их. (Невозможно будет восстановить)\n\n\nВы точно хотите Выйти?</str>
+	</group>
+
+	<group name="SaveWarning" prefix="saveWarning.">
+		<str id="warningTitle">Несохраненные изменения!</str>
+		<str id="warningDesc">Ваши изменения будут потеряны, если вы не сохраните их. (Невозможно будет восстановить)\n\n\nВы точно хотите Выйти?</str>
+
+		<str id="exitGame">Выйти Из Игры</str>
+		<str id="exitToMenu">Выйти в Меню</str>
+		<str id="saveAndExitGame">Сохранить и Выйти</str>
+		<str id="saveAndExitToMenu">Сохранить и Выйти в Меню</str>
+		<str id="cancel">Отмена</str>
+	</group>
+
+	<group name="ModConfigWarning" prefix="modConfigWarning.">
+		<str id="warningTitle">Отсутствует конфигурация папки мода!</str>
+		<str id="warningDesc">У вашего мода отстутствует файл конфигурации!\n\nХотите ли вы автоматически сгенерировать его?\n\n(PS: Если это не ваш мод, то пожалуйста, отключите режим Разработчика, чтобы это всплывающее окно не появлялось.)</str>
+
+		<str id="createdTitle">Конфигурация мода создана!</str>
+		<str id="createdDesc">Ваш файл конфигурации был создан в папке {0}!</str>
+	</group>
+</language>
