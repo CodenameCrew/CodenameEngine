@@ -102,7 +102,7 @@ class AlphabetEditor extends UIState {
 						
 					},
 					{
-						label: translate("edit.editMainData"), // TODO: add translations
+						label: translate("edit.editMainData"),
 						onSelect: _edit_main
 					}
 				]
