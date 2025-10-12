@@ -1,5 +1,6 @@
 package funkin.editors.charter;
 
+import funkin.editors.ui.UIContextMenu.UIContextMenuOption;
 import flixel.util.FlxColor;
 import flixel.group.FlxSpriteGroup;
 import flixel.sound.FlxSound;
@@ -11,7 +12,7 @@ import funkin.game.HealthIcon;
 
 class CharterStrumline extends UISprite {
 	public var strumLine:ChartStrumLine;
-	public var hitsounds:Bool = true;
+	public var hitsoundVolume:Float = 1;
 
 	public var draggingSprite:UISprite;
 	public var healthIcons:FlxSpriteGroup;
@@ -24,6 +25,7 @@ class CharterStrumline extends UISprite {
 	public var curMenu:UIContextMenu = null;
 
 	public var vocals:FlxSound;
+	public var hasVocals:Bool = false;
 
 	public var keyCount:Int = 4;
 	public var startingID(get, null):Int;
@@ -143,9 +145,11 @@ class CharterStrumline extends UISprite {
 		if (asset != null) {
 			vocals.reset();
 			vocals.loadEmbedded(asset);
+			hasVocals = true;
 		}
 		else {
 			vocals.destroy();
+			hasVocals = false;
 		}
 		vocals.group = FlxG.sound.defaultMusicGroup;
 
@@ -179,17 +183,16 @@ class CharterStrumlineOptions extends UITopMenuButton {
 		contextMenu = [
 			{
 				label: TU.translate("charter.strumLine.hitsounds"),
-				onSelect: function(_) {
-					strLine.hitsounds = !strLine.hitsounds;
+				slider: {
+					min: 0,
+					max: 1,
+					value: strLine.hitsoundVolume,
+					onChange: function(t) {
+						strLine.hitsoundVolume = t.slider.value;
+						t.icon = t.slider.value > 0.5 ? 7 : (t.slider.value > 0 ? 8 : 9);
+					}
 				},
-				icon: strLine.hitsounds ? 1 : 0
-			},
-			{
-				label: TU.translate("charter.strumLine.muteVocals"),
-				onSelect: function(_) {
-					strLine.vocals.volume = strLine.vocals.volume > 0 ? 0 : 1;
-				},
-				icon: strLine.vocals.volume > 0 ? 0 : 1
+				icon: 7
 			},
 			null,
 			{
@@ -210,20 +213,42 @@ class CharterStrumlineOptions extends UITopMenuButton {
 			}
 		];
 
-		contextMenu.insert(0, {
-			label: TU.translate("charter.strumLine.noWaveform"),
-			onSelect: function(_) {strLine.selectedWaveform = -1;},
-			icon: strLine.selectedWaveform == -1 ? 1 : 0
-		});
+		if (strLine.hasVocals) {
+			contextMenu.insert(1, {
+				label: TU.translate("charter.strumLine.vocals"),
+				slider: {
+					min: 0,
+					max: 1,
+					value: strLine.vocals.volume,
+					onChange: function(t) {
+						strLine.vocals.volume = t.slider.value;
+						t.icon = t.slider.value > 0.5 ? 7 : (t.slider.value > 0 ? 8 : 9);
+					}
+				},
+				icon: 7
+			});
+		}
+
+		var waveformOptions:Array<UIContextMenuOption> = [
+			{
+				label: TU.translate("charter.strumLine.noWaveform"),
+				onSelect: function(_) {strLine.selectedWaveform = -1;},
+				icon: strLine.selectedWaveform == -1 ? 1 : 0
+			}
+		];
 
 		for (i => name in Charter.waveformHandler.waveformList)
-			contextMenu.insert(1+i, {
+			waveformOptions.push({
 				label: name,
 				onSelect: function(_) {strLine.selectedWaveform = i;},
 				icon: strLine.selectedWaveform == i ? 6 : 5
 			});
 
-		contextMenu.insert(1+Charter.waveformHandler.waveformList.length, null);
+		contextMenu.insert(0, {
+			label: TU.translate("charter.strumLine.waveforms"),
+			childs: waveformOptions
+		});
+		contextMenu.insert(1, null);
 
 		var cam = Charter.instance.charterCamera;
 		var point = CoolUtil.worldToScreenPosition(this, cam);

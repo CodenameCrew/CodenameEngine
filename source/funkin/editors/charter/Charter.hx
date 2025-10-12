@@ -1846,6 +1846,7 @@ class Charter extends UIState {
 	function _playback_metronome(t) {
 		t.icon = (Options.charterMetronomeEnabled = !Options.charterMetronomeEnabled) ? 1 : 0;
 	}
+	/*
 	function _song_muteinst(t) {
 		FlxG.sound.music.volume = FlxG.sound.music.volume > 0 ? 0 : 1;
 		t.icon = 1 - Std.int(Math.ceil(FlxG.sound.music.volume));
@@ -1861,8 +1862,20 @@ class Charter extends UIState {
 		for (strumLine in strumLines.members) strumLine.hitsounds = !strumLine.hitsounds;
 		t.icon = _hitsoundsEnabled ? 0 : 1;
 	}
+	*/
+
+	function _song_instvolume(t) {
+		FlxG.sound.music.volume = t.slider.value;
+		t.icon = t.slider.value > 0.5 ? 7 : (t.slider.value > 0 ? 8 : 9);
+	}
+	function _song_voicesvolume(t) {
+		vocals.volume = t.slider.value;
+		for (strumLine in strumLines.members) strumLine.vocals.volume = t.slider.value; //TODO: fix to multiply with other strumline specific volume
+		t.icon = t.slider.value > 0.5 ? 7 : (t.slider.value > 0 ? 8 : 9);
+	}
 	function _song_hitsoundvolume(t) {
 		hitsound.volume = t.slider.value;
+		t.icon = t.slider.value > 0.5 ? 7 : (t.slider.value > 0 ? 8 : 9);
 	}
 	function _playback_back(_) {
 		if (FlxG.sound.music.playing) return;
@@ -2070,36 +2083,37 @@ class Charter extends UIState {
 			newChilds.push(null);
 		}
 
-		
 		newChilds.push({
-			label: translate("song.instVolume"),
-			onSelect: _song_muteinst,
+			label: translate("song.inst"),
 			slider: {
 				min: 0,
 				max: 1,
-				value: 1
-			}
+				value: 1,
+				onChange: _song_instvolume
+			},
+			icon: 7
 		});
 
 		newChilds.push({
-			label: translate("song.voicesVolume"),
-			onSelect: _song_mutevoices,
+			label: translate("song.voices"),
 			slider: {
 				min: 0,
 				max: 1,
-				value: 1
-			}
+				value: 1,
+				onChange: _song_voicesvolume
+			},
+			icon: 7
 		});
 
 		newChilds.push({
-			label: translate("song.hitsoundsVolume"),
-			onSelect: _song_mutehitsounds,
+			label: translate("song.hitsounds"),
 			slider: {
 				min: 0,
 				max: 1,
 				value: 1,
 				onChange: _song_hitsoundvolume
-			}
+			},
+			icon: 7
 		});
 
 		if (songTopButton != null) songTopButton.contextMenu = newChilds;
@@ -2388,7 +2402,7 @@ class Charter extends UIState {
 	}
 
 	public inline function hitsoundsEnabled(id:Int)
-		return strumLines.members[id] != null && strumLines.members[id].hitsounds;
+		return strumLines.members[id] != null && strumLines.members[id].hitsoundVolume > 0;
 
 	public inline function __fixSelection(selection:Selection):Selection {
 		var newSelection:Selection = new Selection();
@@ -2479,7 +2493,7 @@ class Charter extends UIState {
 			quantSelected: quant,
 			noteTypeSelected: noteType,
 			strumlinesDraggable: strumLines.draggable,
-			hitSounds: [for (strumLine in strumLines.members) strumLine.hitsounds],
+			hitSounds: [for (strumLine in strumLines.members) strumLine.hitsoundVolume > 0],
 			mutedVocals: [for (strumLine in strumLines.members) !(strumLine.vocals.volume > 0)],
 			waveforms: [for (strumLine in strumLines.members) strumLine.selectedWaveform]
 		}
@@ -2495,7 +2509,7 @@ class Charter extends UIState {
 		strumLines.draggable = playtestInfo.strumlinesDraggable;
 
 		for (i => strumLine in strumLines.members)
-			strumLine.hitsounds = playtestInfo.hitSounds[i];
+			strumLine.hitsoundVolume = playtestInfo.hitSounds[i] ? 1 : 0;
 		for (i => strumLine in strumLines.members)
 			strumLine.vocals.volume = playtestInfo.mutedVocals[i] ? 0 : 1;
 		for (i => strumLine in strumLines.members)

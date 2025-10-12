@@ -237,9 +237,9 @@
 					<str id="goEnd">Go forward to the end</str> <!-- used to be "Go to the end" -->
 					<str id="addOpponentCamera">Add camera on Opponent</str>
 					<str id="addPlayerCamera">Add camera on Player</str>
-					<str id="instVolume">Instrumental volume</str>
-					<str id="voicesVolume">Voices volume</str>
-					<str id="hitsoundsVolume">Hitsounds volume</str>
+					<str id="inst">Instrumental</str>
+					<str id="voices">Voices</str>
+					<str id="hitsounds">Hitsounds</str>
 				</group>
 
 				<group name="BookmarkMenu" prefix="bookmarks.">
@@ -310,8 +310,9 @@
 			<group name="StrumlineOptions" prefix="strumLine.">
 				<str id="button-name">Options ↓</str>
 
+				<str id="waveforms">Waveforms</str>
 				<str id="hitsounds">Hitsounds</str>
-				<str id="muteVocals">Mute Vocals</str>
+				<str id="vocals">Vocals</str>
 				<str id="edit">Edit</str>
 				<str id="delete">Delete</str>
 

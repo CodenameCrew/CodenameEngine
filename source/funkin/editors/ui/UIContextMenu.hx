@@ -102,6 +102,10 @@ class UIContextMenu extends MusicBeatSubstate {
 			for(o in separators)
 				o.x -= bg.bWidth;
 		}
+
+		for(o in contextMenuOptions) {
+			o.postCreate();
+		}
 	}
 
 	public function select(option:UIContextMenuOption) {
@@ -188,6 +192,8 @@ typedef UIContextMenuSliderOptionData = {
 	var value:Float;
 	var ?width:Float;
 	var ?onChange:UIContextMenuOption->Void;
+	var ?showValues:Bool;
+	var ?sameLine:Bool;
 }
 
 typedef UIContextMenuCallback = UIContextMenu->Int->UIContextMenuOption->Void;
@@ -206,14 +212,24 @@ typedef UIContextMenuOption = {
 	var ?slider:UIContextMenuSliderOptionData;
 }
 
+enum abstract UIContextMenuOptionType(Int) from Int {
+	var DEFAULT = 0;
+	var SUBMENU = 1;
+	var SLIDER = 2;
+}
+
 class UIContextMenuOptionSpr extends UISliceSprite {
 	public var label:UIText;
 	public var labelKeybind:UIText;
 	public var icon:FlxSprite;
 	public var option:UIContextMenuOption;
+	public var optionType:UIContextMenuOptionType = DEFAULT;
+	
 	public var slider:UISlider = null;
 
 	var parent:UIContextMenu;
+
+	private var _lastIcon:Int = 0;
 
 	public function new(x:Float, y:Float, option:UIContextMenuOption, parent:UIContextMenu) {
 		label = new UIText(20, 2, 0, option.label);
@@ -221,61 +237,96 @@ class UIContextMenuOptionSpr extends UISliceSprite {
 		this.parent = parent;
 		this.color = option.color;
 
-		if (option.icon != null && option.icon > 0) {
-			icon = new FlxSprite(0, 0).loadGraphic(Paths.image('editors/ui/context-icons'), true, 20, 20);
-			icon.animation.add('icon', [option.icon-1], 0, true);
-			icon.animation.play('icon');
-		}
+		var w:Int = label.frameWidth + 22;
+		var h:Int = label.frameHeight;
 
-		if (option.keybinds == null) {
-			if (option.keybind != null) {
-				option.keybinds = [option.keybind];
-			}
-		}
+		if (option.childs != null) optionType = SUBMENU;
+		if (option.slider != null) optionType = SLIDER;
 
-		if (option.keybinds != null || option.keybindText != null) {
-			var text = if(option.keybindText == null) {
-				var textKeys:Array<String> = [];
-				for (o in option.keybinds[0]) {
-					if (Std.int(o) > 0) {
-						textKeys.push(o.toUIString());
+		switch(optionType) {
+
+			case SUBMENU:
+				labelKeybind = new UIText(label.x + label.frameWidth + 10, 2, 0, ">");
+			case SLIDER:
+				labelKeybind = new UIText(label.x + label.frameWidth + 10, 2, 0, "");
+				//slider needs to be created after so that it can match the menu width (when not on the same line)
+				if (option.slider.sameLine != null && option.slider.sameLine) {
+					var sliderWidth = option.slider.width != null ? Std.int(option.slider.width) : 120;
+					w += 120 + slider.barWidth;
+				} else {
+					h *= 2;	
+				}
+				
+			default:
+				if (option.keybinds == null) {
+					if (option.keybind != null) {
+						option.keybinds = [option.keybind];
 					}
 				}
-				textKeys.join("+");
-			} else {
-				option.keybindText;
-			}
-			labelKeybind = new UIText(label.x + label.frameWidth + 10, 2, 0, text);
-			labelKeybind.alpha = 0.75;
+
+				if (option.keybinds != null || option.keybindText != null) {
+					var text = if(option.keybindText == null) {
+						var textKeys:Array<String> = [];
+						for (o in option.keybinds[0]) {
+							if (Std.int(o) > 0) {
+								textKeys.push(o.toUIString());
+							}
+						}
+						textKeys.join("+");
+					} else {
+						option.keybindText;
+					}
+					labelKeybind = new UIText(label.x + label.frameWidth + 10, 2, 0, text);
+					labelKeybind.alpha = 0.75;
+
+					w = Std.int(labelKeybind.x + labelKeybind.frameWidth + 10);
+				}
 		}
 
-		if (option.childs != null) {
-			labelKeybind = new UIText(label.x + label.frameWidth + 10, 2, 0, ">");
-		}
+		super(x, y, w, h, 'editors/ui/menu-item');
 
-		if (option.slider != null) {
-			slider = new UISlider(0, 0, option.slider.width != null ? Std.int(option.slider.width) : 120, option.slider.value, 
-				[{start: option.slider.min, end: option.slider.max, size: option.slider.max-option.slider.min}], false);
-
-			slider.onChange = function(v) {
-				option.slider.value = v;
-			};
-			slider.value = option.slider.value;
-		}
-	
-		var w:Int = labelKeybind != null ? Std.int(labelKeybind.x + labelKeybind.frameWidth + 10) : (label.frameWidth + 22);
-		if (slider != null) {
-			w += 120 + slider.barWidth;
-		}
-
-		super(x, y, w, label.frameHeight, 'editors/ui/menu-item');
 		members.push(label);
-		if (icon != null)
-			members.push(icon);
+		updateIcon();
+
 		if (labelKeybind != null)
-			members.push(labelKeybind);
-		if (slider != null)
-			members.push(slider);
+			members.push(labelKeybind);			
+	}
+
+	//Called after all options are created and the context menu width/height is final
+	public function postCreate() {
+		switch(optionType) {
+			case SLIDER:
+
+				var sliderWidth = bWidth-50;
+				if (option.slider.sameLine != null && option.slider.sameLine) {
+					option.slider.width != null ? Std.int(option.slider.width) : 120;
+				}
+
+				slider = new UISlider(0, 0, sliderWidth, option.slider.value, 
+					[{start: option.slider.min, end: option.slider.max, size: option.slider.max-option.slider.min}], false);
+
+				slider.onChange = function(v) {
+					option.slider.value = v;
+					if (option.slider.onChange != null) option.slider.onChange(option);
+					updateIcon(); //check if icon has changed
+					@:privateAccess
+					labelKeybind.text = '${CoolUtil.quantize(slider.__barProgress * 100, 1)}%';
+				};
+				slider.value = option.slider.value;
+
+				if (option.slider.showValues == null || !option.slider.showValues) {
+					slider.startText.visible = false;
+					slider.endText.visible = false;
+					slider.valueStepper.visible = false;
+					slider.valueStepper.selectable = false;
+				}
+
+				members.push(slider);
+			case SUBMENU:
+
+			default:
+
+		}
 	}
 
 	public override function draw() {
@@ -287,8 +338,13 @@ class UIContextMenuOptionSpr extends UISliceSprite {
 			icon.follow(this, 0, 0);
 		if (labelKeybind != null)
 			labelKeybind.follow(this, bWidth - 10 - labelKeybind.frameWidth, 2);
-		if (slider != null)
-			slider.follow(this, bWidth - 18 - slider.barWidth - slider.endText.width, 5);
+		if (slider != null) {
+			if (option.slider.sameLine != null && option.slider.sameLine) {
+				slider.follow(this, bWidth - 18 - slider.barWidth - (slider.endText.visible ? slider.endText.width : 0), 5);
+			} else {
+				slider.follow(this, 20, 5 + label.frameHeight);
+			}
+		}
 		super.draw();
 	}
 
@@ -297,15 +353,32 @@ class UIContextMenuOptionSpr extends UISliceSprite {
 
 		parent.lastHoveredOptionIndex = parent.contextMenuOptions.indexOf(this);
 
-		if (option.slider == null) { //TODO fix this logic cuz its stupid
-			if (option.childs != null) {
+		switch(optionType) {
+			case SUBMENU:
 				parent.openChildContextMenu(this);
-			} else {
+			case SLIDER:
+				
+			default:
 				if (FlxG.mouse.justReleased)
 					parent.select(option);
+		}
+	}
+
+	public function updateIcon() {
+		var currentIcon = option.icon != null ? option.icon : 0;
+
+		if (_lastIcon != currentIcon) {
+			_lastIcon = currentIcon;
+			if (icon == null) {
+				icon = new FlxSprite(0, 0).loadGraphic(Paths.image('editors/ui/context-icons'), true, 20, 20);
+				members.push(icon);
 			}
-		} else {
-			
+			icon.visible = currentIcon > 0;
+
+			if (currentIcon > 0) {
+				icon.animation.add('icon', [currentIcon-1], 0, true);
+				icon.animation.play('icon');
+			}
 		}
 	}
 }
