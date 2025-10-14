@@ -33,6 +33,8 @@ class CharterStrumlineScreen extends UISubstateWindow {
 
 	public var strumLineCam:HudCamera;
 	public var previewStrumLine:CharterPreviewStrumLine;
+	public var previewBorder:Array<FlxSprite> = [];
+	private final borderGap:Int = 5;
 
 	private var onSave:ChartStrumLine -> Void = null;
 
@@ -176,20 +178,30 @@ class CharterStrumlineScreen extends UISubstateWindow {
 		addLabelOn(vocalsSuffixDropDown, TU.translate("charterStrumLine.vocalSuffix"));
 
 		keyCountStepper = new UINumericStepper(stagePositionDropdown.x, vocalsSuffixDropDown.y, strumLine.keyCount != null ? strumLine.keyCount : 4, 1, 0, 1, 1000, 84);
-		// if (Flags.CHARTER_ADVANCED_SETTINGS) {
-			add(keyCountStepper);
-			addLabelOn(keyCountStepper, TU.translate("charterStrumLine.keyCount"));
-		// }
+		add(keyCountStepper);
+		addLabelOn(keyCountStepper, TU.translate("charterStrumLine.keyCount"));
 
 		strumLineCam = new HudCamera();
 		strumLineCam.downscroll = Options.downscroll;
 		strumLineCam.bgColor = 0;
 		strumLineCam.alpha = 0;
 		FlxG.cameras.add(strumLineCam, false);
+		updateStrumlineCam(FlxG.width, FlxG.height);
+
 		previewStrumLine = new CharterPreviewStrumLine(0, 0, 0, 1, 4, 0);
 		previewStrumLine.camera = strumLineCam;
 		add(previewStrumLine);
 		FlxTween.tween(strumLineCam, {alpha: 1}, 0.25, {ease: FlxEase.cubeOut});
+
+		//preview border
+		previewBorder.push(new FlxSprite(-borderGap, -borderGap).makeSolid(FlxG.initialWidth + (borderGap*2), borderGap, 0x88FFFFFF));
+		previewBorder.push(new FlxSprite(-borderGap, 0).makeSolid(borderGap, FlxG.initialHeight, 0x88FFFFFF));
+		previewBorder.push(new FlxSprite(FlxG.initialWidth, 0).makeSolid(borderGap, FlxG.initialHeight, 0x88FFFFFF));
+		previewBorder.push(new FlxSprite(-borderGap, FlxG.initialHeight).makeSolid(FlxG.initialWidth + (borderGap*2), borderGap, 0x88FFFFFF));
+		for (border in previewBorder) {
+			border.camera = strumLineCam;
+			add(border);
+		}
 	}
 
 	function saveStrumline() {
@@ -222,7 +234,7 @@ class CharterStrumlineScreen extends UISubstateWindow {
 
 		previewStrumLine.visible = visibleCheckbox.checked;
 
-		var xOffset:Float = StrumLine.calculateStartingXPos(hudXStepper.value, hudScaleStepper.value, hudSpacingStepper.value, Std.int(keyCountStepper.value));
+		var xOffset:Float = StrumLine.calculateStartingXPosFromInitialWidth(hudXStepper.value, hudScaleStepper.value, hudSpacingStepper.value, Std.int(keyCountStepper.value));
 		previewStrumLine.updatePos(xOffset, hudYStepper.value, hudScaleStepper.value, hudSpacingStepper.value, Std.int(keyCountStepper.value), scrollSpeed);
 
 		super.update(elapsed);
@@ -232,6 +244,26 @@ class CharterStrumlineScreen extends UISubstateWindow {
 		super.destroy();
 		FlxTween.cancelTweensOf(strumLineCam);
 		FlxG.cameras.remove(strumLineCam);
+	}
+
+	public override function onResize(width:Int, height:Int) {
+		super.onResize(width, height);
+		if (!UIState.resolutionAware) return;
+
+		if ((width < FlxG.initialWidth || height < FlxG.initialHeight) && !Options.bypassEditorsResize) {
+			width = FlxG.initialWidth; height = FlxG.initialHeight;
+		}
+
+		updateStrumlineCam(width, height);
+	}
+
+	private function updateStrumlineCam(windowWidth:Int, windowHeight:Int) {
+		strumLineCam.width = FlxG.initialWidth + (borderGap*2);
+		strumLineCam.height = FlxG.initialHeight + (borderGap*2);
+		strumLineCam.x = (windowWidth/2) - (strumLineCam.width/2);
+		strumLineCam.y = (windowHeight/2) - (strumLineCam.height/2);
+		strumLineCam.scroll.x = -borderGap;
+		strumLineCam.scroll.y = -borderGap;
 	}
 }
 

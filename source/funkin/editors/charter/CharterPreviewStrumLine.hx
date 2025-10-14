@@ -41,7 +41,7 @@ class CharterPreviewStrumLine extends FlxTypedGroup<FlxSprite>
 		add(note);
 	}
 
-	var noteTime:Float = FlxG.height;
+	var noteTime:Float = FlxG.initialHeight;
 	var scroll:Float = 1.0;
 
 	public function updatePos(x:Float, y:Float, scale:Float, spacing:Float, keyCount:Int, scrollSpeed:Float){
@@ -61,7 +61,7 @@ class CharterPreviewStrumLine extends FlxTypedGroup<FlxSprite>
 		scroll = CoolUtil.fpsLerp(scroll, scrollSpeed, 0.2);
 		noteTime -= FlxG.elapsed * scroll * 1000 * 0.45;
 		if (noteTime <= 0.0)
-			noteTime = FlxG.height;
+			noteTime = FlxG.initialHeight;
 
 		note.x = members[0].x;
 		note.y = members[0].y + noteTime;
