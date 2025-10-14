@@ -77,6 +77,7 @@ class Charter extends UIState {
 	public var strumlineLockButton:CharterStrumlineButton;
 
 	public var hitsound:FlxSound;
+	public var hitsoundGlobalVolume:Float = 1.0;
 	public var metronome:FlxSound;
 
 	public var vocals:FlxSound;
@@ -1846,23 +1847,11 @@ class Charter extends UIState {
 	function _playback_metronome(t) {
 		t.icon = (Options.charterMetronomeEnabled = !Options.charterMetronomeEnabled) ? 1 : 0;
 	}
-	/*
-	function _song_muteinst(t) {
-		FlxG.sound.music.volume = FlxG.sound.music.volume > 0 ? 0 : 1;
-		t.icon = 1 - Std.int(Math.ceil(FlxG.sound.music.volume));
+
+	public function _slider_mutetoggle(t:UIContextMenuOption) {
+		if (t.slider == null) return;
+		t.button.slider.value = t.button.slider.value > 0 ? 0 : 1;
 	}
-	function _song_mutevoices(t) {
-		vocals.volume = vocals.volume > 0 ? 0 : 1;
-		for (strumLine in strumLines.members) strumLine.vocals.volume = strumLine.vocals.volume > 0 ? 0 : 1;
-		t.icon = 1 - Std.int(Math.ceil(vocals.volume));
-	}
-	var _hitsoundsEnabled = true;
-	function _song_mutehitsounds(t) {
-		_hitsoundsEnabled = !_hitsoundsEnabled;
-		for (strumLine in strumLines.members) strumLine.hitsounds = !strumLine.hitsounds;
-		t.icon = _hitsoundsEnabled ? 0 : 1;
-	}
-	*/
 
 	function _song_instvolume(t) {
 		FlxG.sound.music.volume = t.slider.value;
@@ -1874,7 +1863,7 @@ class Charter extends UIState {
 		t.icon = t.slider.value > 0.5 ? 7 : (t.slider.value > 0 ? 8 : 9);
 	}
 	function _song_hitsoundvolume(t) {
-		hitsound.volume = t.slider.value;
+		hitsoundGlobalVolume = t.slider.value;
 		t.icon = t.slider.value > 0.5 ? 7 : (t.slider.value > 0 ? 8 : 9);
 	}
 	function _playback_back(_) {
@@ -2091,6 +2080,7 @@ class Charter extends UIState {
 				value: 1,
 				onChange: _song_instvolume
 			},
+			onIconClick: _slider_mutetoggle,
 			icon: 7
 		});
 
@@ -2102,6 +2092,7 @@ class Charter extends UIState {
 				value: 1,
 				onChange: _song_voicesvolume
 			},
+			onIconClick: _slider_mutetoggle,
 			icon: 7
 		});
 
@@ -2113,6 +2104,7 @@ class Charter extends UIState {
 				value: 1,
 				onChange: _song_hitsoundvolume
 			},
+			onIconClick: _slider_mutetoggle,
 			icon: 7
 		});
 
@@ -2401,8 +2393,12 @@ class Charter extends UIState {
 			}
 	}
 
-	public inline function hitsoundsEnabled(id:Int)
-		return strumLines.members[id] != null && strumLines.members[id].hitsoundVolume > 0;
+	public inline function playHitsound(id:Int) {
+		if (strumLines.members[id] != null && strumLines.members[id].hitsoundVolume > 0 && hitsoundGlobalVolume > 0) {
+			hitsound.volume = hitsoundGlobalVolume * strumLines.members[id].hitsoundVolume;
+			hitsound.replay();
+		}
+	}
 
 	public inline function __fixSelection(selection:Selection):Selection {
 		var newSelection:Selection = new Selection();

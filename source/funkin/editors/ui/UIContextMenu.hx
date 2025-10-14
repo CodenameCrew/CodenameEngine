@@ -152,7 +152,7 @@ class UIContextMenu extends MusicBeatSubstate {
 		var index = contextMenuOptions.indexOf(optionSpr);
 		if (index != childContextMenuOptionIndex) {
 			childContextMenuOptionIndex = index;
-			var child = new UIContextMenu(optionSpr.option.childs, null, optionSpr.x + optionSpr.bWidth, optionSpr.y);
+			var child = new UIContextMenu(optionSpr.option.childs, null, optionSpr.x + optionSpr.bWidth + 4, optionSpr.y - 4);
 			persistentDraw = true;
 			persistentUpdate = true;
 			child.parentContextMenu = this;
@@ -190,9 +190,12 @@ typedef UIContextMenuSliderOptionData = {
 	var min:Float;
 	var max:Float;
 	var value:Float;
-	var ?width:Float;
 	var ?onChange:UIContextMenuOption->Void;
+	//default = 120, ignored if sameLine = false
+	var ?width:Float;
+	//disables stepper and text if false, default = false
 	var ?showValues:Bool;
+	//if true, the slider will be on the same line as the label text, otherwise it will be on the next line below the label
 	var ?sameLine:Bool;
 }
 
@@ -210,6 +213,7 @@ typedef UIContextMenuOption = {
 	var ?onCreate:UIContextMenuOptionSpr->Void;
 	var ?childs:Array<UIContextMenuOption>;
 	var ?slider:UIContextMenuSliderOptionData;
+	var ?onIconClick:UIContextMenuOption->Void;
 }
 
 enum abstract UIContextMenuOptionType(Int) from Int {
@@ -221,15 +225,13 @@ enum abstract UIContextMenuOptionType(Int) from Int {
 class UIContextMenuOptionSpr extends UISliceSprite {
 	public var label:UIText;
 	public var labelKeybind:UIText;
-	public var icon:FlxSprite;
+	public var icon:UIContextMenuOptionIcon;
 	public var option:UIContextMenuOption;
 	public var optionType:UIContextMenuOptionType = DEFAULT;
 	
 	public var slider:UISlider = null;
 
 	var parent:UIContextMenu;
-
-	private var _lastIcon:Int = 0;
 
 	public function new(x:Float, y:Float, option:UIContextMenuOption, parent:UIContextMenu) {
 		label = new UIText(20, 2, 0, option.label);
@@ -367,18 +369,42 @@ class UIContextMenuOptionSpr extends UISliceSprite {
 	public function updateIcon() {
 		var currentIcon = option.icon != null ? option.icon : 0;
 
-		if (_lastIcon != currentIcon) {
-			_lastIcon = currentIcon;
-			if (icon == null) {
-				icon = new FlxSprite(0, 0).loadGraphic(Paths.image('editors/ui/context-icons'), true, 20, 20);
-				members.push(icon);
-			}
-			icon.visible = currentIcon > 0;
+		if (icon == null && currentIcon > 0) {
+			members.push(icon = new UIContextMenuOptionIcon(option));
+		}
+		if (icon != null) {
+			icon.updateIconState(currentIcon);
+		}
+	}
+}
 
-			if (currentIcon > 0) {
-				icon.animation.add('icon', [currentIcon-1], 0, true);
-				icon.animation.play('icon');
-			}
+class UIContextMenuOptionIcon extends UISprite {
+	private var option:UIContextMenuOption;
+	private var _lastState:Int = 0;
+	override public function new(option:UIContextMenuOption) {
+		super();
+		this.option = option;
+		loadGraphic(Paths.image('editors/ui/context-icons'), true, 20, 20);
+		selectable = option.onIconClick != null;
+		cursor = option.onIconClick != null ? CLICK : ARROW;
+	}
+
+	public function updateIconState(state:Int) {
+		if (_lastState == state) return;
+		_lastState = state;
+
+		visible = state > 0;
+		if (state > 0) {
+			animation.add('icon', [state-1], 0, true);
+			animation.play('icon');
+		}
+	}
+
+	public override function onHovered() {
+		super.onHovered();
+
+		if (FlxG.mouse.justReleased && option.onIconClick != null) {
+			option.onIconClick(option);
 		}
 	}
 }

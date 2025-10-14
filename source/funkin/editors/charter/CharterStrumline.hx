@@ -192,6 +192,7 @@ class CharterStrumlineOptions extends UITopMenuButton {
 						t.icon = t.slider.value > 0.5 ? 7 : (t.slider.value > 0 ? 8 : 9);
 					}
 				},
+				onIconClick: Charter.instance._slider_mutetoggle,
 				icon: 7
 			},
 			null,
@@ -225,6 +226,7 @@ class CharterStrumlineOptions extends UITopMenuButton {
 						t.icon = t.slider.value > 0.5 ? 7 : (t.slider.value > 0 ? 8 : 9);
 					}
 				},
+				onIconClick: Charter.instance._slider_mutetoggle,
 				icon: 7
 			});
 		}
