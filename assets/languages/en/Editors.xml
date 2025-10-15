@@ -252,6 +252,7 @@
 					<str id="editBookmarkListTitle">Bookmark List</str>
 					<str id="editBookmarksTitle">Edit Bookmarks</str>
 					<str id="newBookmarkName">New Bookmark</str>
+					<str id="bookmarkList">Bookmark List</str>
 				</group>
 
 				<str id="topBar.note">Note</str>
@@ -260,6 +261,7 @@
 					<str id="subtractSustainLength">Subtract sustain length</str>
 					<str id="selectAll">Select all</str>
 					<str id="selectMeasure">Select measure</str>
+					<str id="noteTypesList">Note Types List</str>
 					<str id="editNoteTypesList">Edit Note Types List</str>
 				</group>
 				<str id="topBar.snap">Snap</str>

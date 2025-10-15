@@ -1859,7 +1859,7 @@ class Charter extends UIState {
 	}
 	function _song_voicesvolume(t) {
 		vocals.volume = t.slider.value;
-		for (strumLine in strumLines.members) strumLine.vocals.volume = t.slider.value; //TODO: fix to multiply with other strumline specific volume
+		for (strumLine in strumLines.members) strumLine.vocals.volume = t.slider.value * strumLine.vocalsVolume;
 		t.icon = t.slider.value > 0.5 ? 7 : (t.slider.value > 0 ? 8 : 9);
 	}
 	function _song_hitsoundvolume(t) {
@@ -2061,14 +2061,19 @@ class Charter extends UIState {
 
 		if (bookmarks.length > 0)
 		{
+			var bookmarkOptions:Array<UIContextMenuOption> = [];
 			var goToBookmark = TU.getRaw("charter.bookmarks.goTo");
 			for (b in bookmarks)
 			{
-				newChilds.push({
+				bookmarkOptions.push({
 					label: goToBookmark.format([b.name]),
 					onSelect: function(_) { Conductor.songPosition = Conductor.getTimeForStep(b.time); }
 				});
 			}
+			newChilds.push({
+				label: translate("bookmarks.bookmarkList"),
+				childs: bookmarkOptions
+			});
 			newChilds.push(null);
 		}
 
@@ -2278,16 +2283,18 @@ class Charter extends UIState {
 				keybind: [CONTROL, SHIFT, A],
 				onSelect: _note_selectmeasure
 			},
-			null,
-			{
-				label: "(0) " + translate("noteTypes.default"),
-				keybind: [ZERO],
-				onSelect: (_) -> {changeNoteType(0);},
-				icon: this.noteType == 0 ? 1 : 0
-			}
+			null
 		];
 
-		var noteKeys:Array<FlxKey> = [ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE];
+		var noteTypeOptions:Array<UIContextMenuOption> = [{
+			label: "(0) " + translate("noteTypes.default"),
+			keybind: [ZERO],
+			onSelect: (_) -> {changeNoteType(0);},
+			icon: this.noteType == 0 ? 1 : 0
+		}];
+
+		final noteKeys:Array<Array<Array<FlxKey>>> = [[[ZERO], [NUMPADZERO]], [[ONE], [NUMPADONE]], [[TWO], [NUMPADTWO]], [[THREE], [NUMPADTHREE]], [[FOUR], [NUMPADFOUR]], [[FIVE], [NUMPADFIVE]], 
+												[[SIX], [NUMPADSIX]], [[SEVEN], [NUMPADSEVEN]], [[EIGHT], [NUMPADEIGHT]], [[NINE], [NUMPADNINE]]];
 		for (i=>type in noteTypes) {
 			var realNoteID:Int = i+1; // Default Note not stored
 			var newChild:UIContextMenuOption = {
@@ -2296,9 +2303,13 @@ class Charter extends UIState {
 				onSelect: (_) -> {changeNoteType(realNoteID);},
 				icon: this.noteType == realNoteID ? 1 : 0
 			};
-			if (realNoteID <= 9) newChild.keybind = [noteKeys[realNoteID]];
-			newChilds.push(newChild);
+			if (realNoteID <= 9) newChild.keybinds = noteKeys[realNoteID];
+			noteTypeOptions.push(newChild);
 		}
+		newChilds.push({
+			label: translate("note.noteTypesList"),
+			childs: noteTypeOptions
+		});
 		newChilds.push({
 			label: translate("note.editNoteTypesList"),
 			color: 0xFF959829, icon: 4,
@@ -2306,6 +2317,7 @@ class Charter extends UIState {
 			onSelect: editNoteTypesList
 		});
 		if (noteTopButton != null) noteTopButton.contextMenu = newChilds;
+		if (topMenu != null && topMenu[noteIndex] != null) topMenu[noteIndex].childs = newChilds;
 		return newChilds;
 	}
 

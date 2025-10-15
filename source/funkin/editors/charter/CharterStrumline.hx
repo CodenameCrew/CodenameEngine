@@ -12,7 +12,6 @@ import funkin.game.HealthIcon;
 
 class CharterStrumline extends UISprite {
 	public var strumLine:ChartStrumLine;
-	public var hitsoundVolume:Float = 1;
 
 	public var draggingSprite:UISprite;
 	public var healthIcons:FlxSpriteGroup;
@@ -26,6 +25,8 @@ class CharterStrumline extends UISprite {
 
 	public var vocals:FlxSound;
 	public var hasVocals:Bool = false;
+	public var vocalsVolume:Float = 1;
+	public var hitsoundVolume:Float = 1;
 
 	public var keyCount:Int = 4;
 	public var startingID(get, null):Int;
@@ -220,9 +221,10 @@ class CharterStrumlineOptions extends UITopMenuButton {
 				slider: {
 					min: 0,
 					max: 1,
-					value: strLine.vocals.volume,
+					value: strLine.vocalsVolume,
 					onChange: function(t) {
-						strLine.vocals.volume = t.slider.value;
+						strLine.vocalsVolume = t.slider.value;
+						strLine.vocals.volume = Charter.instance.vocals.volume * strLine.vocalsVolume;
 						t.icon = t.slider.value > 0.5 ? 7 : (t.slider.value > 0 ? 8 : 9);
 					}
 				},
