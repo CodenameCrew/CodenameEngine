@@ -521,7 +521,7 @@ class Charter extends UIState {
 
 		strumlineLockButton = new CharterStrumlineButton("editors/charter/lock-strumline", translate("lock-unlock"));
 		strumlineLockButton.onClick = function () {
-			FlxG.sound.play(Paths.sound(!strumLines.draggable ? Flags.DEFAULT_CHARTER_STRUMUNLOCK_SOUND : Flags.DEFAULT_CHARTER_STRUMLOCK_SOUND));
+			UIState.playEditorSound(!strumLines.draggable ? Flags.DEFAULT_CHARTER_STRUMUNLOCK_SOUND : Flags.DEFAULT_CHARTER_STRUMLOCK_SOUND);
 			if (strumLines != null) {
 				strumLines.draggable = !strumLines.draggable;
 				strumlineLockButton.textTweenColor.color = strumLines.draggable ? 0xFF5C95CA : 0xFFE16565;
@@ -841,7 +841,7 @@ class Charter extends UIState {
 				else
 					Chart.save(PlayState.SONG, __diff.toLowerCase(), __variant, {saveMetaInChart: true, saveLocalEvents: true, seperateGlobalEvents: true, prettyPrint: Options.editorCharterPrettyPrint});
 
-				FlxG.sound.play(Paths.sound('editors/save'));
+				UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);
 				undos.save();
 			}
 			autoSaveNotif.cancelled = false;
@@ -1001,7 +1001,7 @@ class Charter extends UIState {
 							notesGroup.add(note);
 							selection = [note];
 							undos.addToUndo(CCreateSelection([note]));
-							FlxG.sound.play(Paths.sound(Flags.DEFAULT_CHARTER_NOTEPLACE_SOUND));
+							UIState.playEditorSound(Flags.DEFAULT_CHARTER_NOTEPLACE_SOUND);
 						}
 						isSelecting = false;
 					}
@@ -1130,7 +1130,7 @@ class Charter extends UIState {
 		if (selected == null) return selected;
 
 		if (selected is CharterNote) {
-			FlxG.sound.play(Paths.sound(Flags.DEFAULT_CHARTER_NOTEDELETE_SOUND));
+			UIState.playEditorSound(Flags.DEFAULT_CHARTER_NOTEDELETE_SOUND);
 			var note:CharterNote = cast selected;
 			note.strumLineID = strumLines.members.indexOf(note.strumLine);
 			note.strumLine = null; // For static undos :D
@@ -1610,20 +1610,20 @@ class Charter extends UIState {
 		else {undos = null; FlxG.switchState(new CharterSelection()); Charter.instance.__clearStatics();}
 	}
 
-	function _file_save_all(_) {saveEverything(); FlxG.sound.play(Paths.sound('editors/save'));}
-	function _file_save(_) {saveChart(); FlxG.sound.play(Paths.sound('editors/save'));}
-	function _file_saveas(_) {saveChartAs(); FlxG.sound.play(Paths.sound('editors/save'));}
-	function _file_events_save(_) {saveEvents(); FlxG.sound.play(Paths.sound('editors/save'));}
-	function _file_events_saveas(_) {saveEventsAs(); FlxG.sound.play(Paths.sound('editors/save'));}
-	function _file_save_no_events(_) {saveChart(true, false); FlxG.sound.play(Paths.sound('editors/save'));}
-	function _file_saveas_no_events(_) {saveChartAs(true, false); FlxG.sound.play(Paths.sound('editors/save'));}
-	function _file_meta_save(_) {saveMeta(); FlxG.sound.play(Paths.sound('editors/save'));}
-	function _file_meta_saveas(_) {saveMetaAs(); FlxG.sound.play(Paths.sound('editors/save'));}
-	function _file_saveas_fnflegacy(_) {saveLegacyChartAs(); FlxG.sound.play(Paths.sound('editors/save'));}
-	function _file_saveas_psych(_) {savePsychChartAs(); FlxG.sound.play(Paths.sound('editors/save'));}
+	function _file_save_all(_) {saveEverything(); UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);}
+	function _file_save(_) {saveChart(); UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);}
+	function _file_saveas(_) {saveChartAs(); UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);}
+	function _file_events_save(_) {saveEvents(); UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);}
+	function _file_events_saveas(_) {saveEventsAs(); UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);}
+	function _file_save_no_events(_) {saveChart(true, false); UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);}
+	function _file_saveas_no_events(_) {saveChartAs(true, false); UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);}
+	function _file_meta_save(_) {saveMeta(); UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);}
+	function _file_meta_saveas(_) {saveMetaAs(); UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);}
+	function _file_saveas_fnflegacy(_) {saveLegacyChartAs(); UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);}
+	function _file_saveas_psych(_) {savePsychChartAs(); UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);}
 
 	function _edit_copy(_, playSFX=true) {
-		if (playSFX) FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_COPY_SOUND));
+		if (playSFX) UIState.playEditorSound(Flags.DEFAULT_EDITOR_COPY_SOUND);
 		if(selection.length == 0) return;
 
 		var minStep:Float = selection[0].step;
@@ -1642,7 +1642,7 @@ class Charter extends UIState {
 		];
 	}
 	function _edit_paste(_) {
-		FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_PASTE_SOUND));
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_PASTE_SOUND);
 		if (clipboard.length <= 0) return;
 
 		var minStep = curStep;
@@ -1670,7 +1670,7 @@ class Charter extends UIState {
 	}
 
 	function _edit_cut(_) {
-		FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_CUT_SOUND));
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_CUT_SOUND);
 		if (selection == null || selection.length == 0) return;
 
 		_edit_copy(_, false);
@@ -1678,7 +1678,7 @@ class Charter extends UIState {
 	}
 
 	function _edit_delete(_) {
-		FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_DELETE_SOUND));
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_DELETE_SOUND);
 		if (selection == null || selection.length == 0) return;
 		selection.loop((n:CharterNote) -> {
 			noteDeleteAnims.deleteNotes.push({note: n, time: noteDeleteAnims.deleteTime});
@@ -1687,7 +1687,7 @@ class Charter extends UIState {
 	}
 
 	function _undo(undo:CharterChange) {
-		FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_UNDO_SOUND));
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_UNDO_SOUND);
 		switch(undo) {
 			case null: // do nothing
 			case CDeleteStrumLine(strumLineID, strumLine):
@@ -1748,7 +1748,7 @@ class Charter extends UIState {
 	}
 
 	function _redo(redo:CharterChange) {
-		FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_REDO_SOUND));
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_REDO_SOUND);
 		switch(redo) {
 			case null: // do nothing
 			case CDeleteStrumLine(strumLineID, strumLine):
@@ -2159,8 +2159,8 @@ class Charter extends UIState {
 	inline function _snap_decreasesnap(_) changequant(-1);
 	inline function _snap_resetsnap(_) setquant(16);
 
-	inline function changequant(change:Int) {FlxG.sound.play(Paths.sound(Flags.DEFAULT_CHARTER_SNAPPINGCHANGE_SOUND)); quant = quants[FlxMath.wrap(quants.indexOf(quant) + change, 0, quants.length-1)]; buildSnapsUI();};
-	inline function setquant(newQuant:Int) {FlxG.sound.play(Paths.sound(Flags.DEFAULT_CHARTER_SNAPPINGCHANGE_SOUND)); quant = newQuant; buildSnapsUI();}
+	inline function changequant(change:Int) {UIState.playEditorSound(Flags.DEFAULT_CHARTER_SNAPPINGCHANGE_SOUND); quant = quants[FlxMath.wrap(quants.indexOf(quant) + change, 0, quants.length-1)]; buildSnapsUI();};
+	inline function setquant(newQuant:Int) {UIState.playEditorSound(Flags.DEFAULT_CHARTER_SNAPPINGCHANGE_SOUND); quant = newQuant; buildSnapsUI();}
 
 	function buildSnapsUI():Array<UIContextMenuOption> {
 		var snapsTopButton:UITopMenuButton = topMenuSpr == null ? null : cast topMenuSpr.members[snapIndex];
@@ -2196,12 +2196,12 @@ class Charter extends UIState {
 	}
 
 	inline function _note_addsustain(t) {
-		FlxG.sound.play(Paths.sound(Flags.DEFAULT_CHARTER_SUSTAINADD_SOUND));
+		UIState.playEditorSound(Flags.DEFAULT_CHARTER_SUSTAINADD_SOUND);
 		changeNoteSustain(1);
 	}
 
 	inline function _note_subtractsustain(t) {
-		FlxG.sound.play(Paths.sound(Flags.DEFAULT_CHARTER_SUSTAINDELETE_SOUND));
+		UIState.playEditorSound(Flags.DEFAULT_CHARTER_SUSTAINDELETE_SOUND);
 		changeNoteSustain(-1);
 	}
 
