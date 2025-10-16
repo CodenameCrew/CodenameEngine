@@ -321,16 +321,19 @@ class CharterGridSeperatorBase extends FlxSprite {
 	private static var lastMaxMeasure:Float = -1;
 
 	public static var lastConductorSprY:Float = Math.NEGATIVE_INFINITY;
+	public static var lastCameraZoom:Float = -1;
 
 	private static var beatStepTimes:Array<Float> = [];
 	private static var measureStepTimes:Array<Float> = [];
 	private static var timeSignatureChangeGaps:Array<Float> = [];
 
 	private function recalculateBeats() {
+		@:privateAccess
+		var currentZoom = Charter.instance.__camZoom;
 		var conductorSprY = Charter.instance.gridBackdrops.conductorSprY;
-		if (conductorSprY == lastConductorSprY) return;
+		if (conductorSprY == lastConductorSprY && currentZoom == lastCameraZoom) return; //only update if song pos or camera zoom has changed
 
-		var zoomOffset = ((FlxG.height * (1/cameras[0].zoom)) * 0.5);
+		var zoomOffset = ((FlxG.height * (1/currentZoom)) * 0.5);
 
 		minStep = (conductorSprY - zoomOffset)/40;
 		maxStep = (conductorSprY + zoomOffset)/40;
@@ -369,6 +372,7 @@ class CharterGridSeperatorBase extends FlxSprite {
 		}
 
 		lastConductorSprY = conductorSprY;
+		lastCameraZoom = currentZoom;
 	}
 
 	private inline function calculateTimeSignatureGaps() {
@@ -459,6 +463,7 @@ class CharterGridSeperator extends CharterGridSeperatorBase {
 class CameraHighlight extends FlxSprite {
 
 	private var grid:CharterBackdrop;
+	private var _currentCameraMovementIndex:Int = 0;
 	public function new(grid:CharterBackdrop) {
 		this.grid = grid;
 		super();
@@ -484,8 +489,23 @@ class CameraHighlight extends FlxSprite {
 			}
 		}
 
-		for (change in Charter.instance.cameraMovementChanges) {
+		//update index if gone backwards
+		while(_currentCameraMovementIndex > 0) {
+			if (Charter.instance.cameraMovementChanges[_currentCameraMovementIndex] == null || Charter.instance.cameraMovementChanges[_currentCameraMovementIndex].endStep >= minStep) {
+				_currentCameraMovementIndex--;
+			} else {
+				break;
+			}
+		}
+
+		var seenFirstVisible = false;
+		for (i in _currentCameraMovementIndex...Charter.instance.cameraMovementChanges.length) {
+			var change = Charter.instance.cameraMovementChanges[i];
 			if (change.endStep >= minStep) {
+				if (!seenFirstVisible) {
+					_currentCameraMovementIndex = i; //remember the index for the next frame, so we dont need to loop through everything every time
+					seenFirstVisible = true;
+				}
 				if (change.strumLineID == strumLineID) {
 					setupHighlight(change.step, change.endStep); super.draw();
 					setupLine(change.step); super.draw();
