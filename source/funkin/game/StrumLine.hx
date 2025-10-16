@@ -420,6 +420,9 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	public static inline function calculateStartingXPos(hudXRatio:Float, scale:Float, spacing:Float, keyCount:Int) {
 		return (FlxG.width * hudXRatio) - ((Note.swagWidth * scale * ((keyCount/2)-0.5) * spacing) + Note.swagWidth * 0.5 * scale);
 	}
+	public static inline function calculateStartingXPosFromInitialWidth(hudXRatio:Float, scale:Float, spacing:Float, keyCount:Int) {
+		return (FlxG.initialWidth * hudXRatio) - ((Note.swagWidth * scale * ((keyCount/2)-0.5) * spacing) + Note.swagWidth * 0.5 * scale);
+	}
 
 	/**
 	 * SETTERS & GETTERS
