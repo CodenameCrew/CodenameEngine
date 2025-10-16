@@ -156,6 +156,8 @@ class UIContextMenuOptionSpr extends UISliceSprite {
 
 	public function new(x:Float, y:Float, option:UIContextMenuOption, parent:UIContextMenu) {
 		label = new UIText(20, 2, 0, option.label);
+		label.updateHitbox();
+		label.frameHeight += 4;
 		this.option = option;
 		this.parent = parent;
 		this.color = option.color;
