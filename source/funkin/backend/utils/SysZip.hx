@@ -2,157 +2,120 @@ package funkin.backend.utils;
 
 #if sys
 import haxe.io.Input;
-import haxe.zip.Entry;
-import haxe.zip.InflateImpl;
 import haxe.zip.Reader;
 import sys.io.File;
 import sys.io.FileInput;
 
+import haxe.io.Bytes;
+
 /**
  * Class that extends Reader allowing you to load ZIP entries without blowing your RAM up!!
- * Half of the code is taken from haxe libraries btw
+ * ~~Half of the code is taken from haxe libraries btw~~ Reworked by ItsLJcool to actually work for zip files.
  */
-class SysZip extends Reader {
-	var input:Input;
+class SysZip {
 	var fileInput:FileInput;
+	var filePath:String;
 
 	public var entries:List<SysZipEntry>;
 
 	/**
 	 * Opens a zip from a specified path.
-	 * @param path Path to the zip file.
+	 * @param path Path to the zip file. (With the extension)
 	 */
-	public static function openFromFile(path:String) {
-
-		return new SysZip(File.read(path, true));
-	}
+	public static function openFromFile(path:String) { return new SysZip(path); } // keeping for compatibility.
 
 	/**
-	 * Creates a new SysZip from a specified file input.
-	 * @param input File input.
+	 * Creates a new SysZip from a specified path.
+	 * @param path Path to the zip file. (With the extension)
 	 */
-	public function new(input:FileInput) {
-		super(input);
-		fileInput = input;
-	}
+	public function new(path:String) {
+		this.filePath = path;
+		fileInput = File.read(path, true);
 
-	/**
-	 * Reads all the data present in a specified entry.
-	 * NOTE: If the entry is compressed, the data won't be decompressed. For decompression, use `unzipEntry`.
-	 * @param e Entry
-	 */
-	public function readEntryData(e:SysZipEntry) {
-		var bytes:haxe.io.Bytes = null;
-		var buf = null;
-		var tmp = null;
-
-		fileInput.seek(e.seekPos, SeekBegin);
-		if (e.crc32 == null) {
-			if (e.compressed) {
-				#if neko
-				// enter progressive mode : we use a different input which has
-				// a temporary buffer, this is necessary since we have to uncompress
-				// progressively, and after that we might have pending read data
-				// that needs to be processed
-				var bufSize = 65536;
-				if (buf == null) {
-					buf = new haxe.io.BufferInput(i, haxe.io.Bytes.alloc(bufSize));
-					tmp = haxe.io.Bytes.alloc(bufSize);
-					i = buf;
-				}
-				var out = new haxe.io.BytesBuffer();
-				var z = new neko.zip.Uncompress(-15);
-				z.setFlushMode(neko.zip.Flush.SYNC);
-				while (true) {
-					if (buf.available == 0)
-						buf.refill();
-					var p = bufSize - buf.available;
-					if (p != buf.pos) {
-						// because of lack of "srcLen" in zip api, we need to always be stuck to the buffer end
-						buf.buf.blit(p, buf.buf, buf.pos, buf.available);
-						buf.pos = p;
-					}
-					var r = z.execute(buf.buf, buf.pos, tmp, 0);
-					out.addBytes(tmp, 0, r.write);
-					buf.pos += r.read;
-					buf.available -= r.read;
-					if (r.done)
-						break;
-				}
-				bytes = out.getBytes();
-				#else
-				var bufSize = 65536;
-				if (tmp == null)
-					tmp = haxe.io.Bytes.alloc(bufSize);
-				var out = new haxe.io.BytesBuffer();
-				var z = new InflateImpl(i, false, false);
-				while (true) {
-					var n = z.readBytes(tmp, 0, bufSize);
-					out.addBytes(tmp, 0, n);
-					if (n < bufSize)
-						break;
-				}
-				bytes = out.getBytes();
-				#end
-			} else
-				bytes = i.read(e.dataSize);
-			e.crc32 = i.readInt32();
-			if (e.crc32 == 0x08074b50)
-				e.crc32 = i.readInt32();
-			e.dataSize = i.readInt32();
-			e.fileSize = i.readInt32();
-			// set data to uncompressed
-			e.dataSize = e.fileSize;
-			e.compressed = false;
-		} else
-			bytes = i.read(e.dataSize);
-		return bytes;
+		updateEntries(); // automatic but if you feel like you don't want it to be automatic, you can remove this.
 	}
 
 	/**
 	 * Unzips and returns all of the data present in an entry.
 	 * @param f Entry to read from.
 	 */
-	public function unzipEntry(f:SysZipEntry) {
-		var data = readEntryData(f);
+	public function unzipEntry(f:SysZipEntry):Bytes {
+		fileInput.seek(f.seekPos, SeekBegin);
+		var data = fileInput.read(f.compressedSize);
+		
+		if (!f.compressed) return data;
 
-		if (!f.compressed)
-			return data;
 		var c = new haxe.zip.Uncompress(-15);
-		var s = haxe.io.Bytes.alloc(f.fileSize);
+		var s = Bytes.alloc(f.fileSize);
 		var r = c.execute(data, 0, s, 0);
 		c.close();
-		if (!r.done || r.read != data.length || r.write != f.fileSize)
-			throw "Invalid compressed data for " + f.fileName;
-		data = s;
-		return data;
+
+		if (!r.done || r.read != data.length || r.write != f.fileSize) throw "Invalid compressed data for " + f.fileName;
+		return s;
 	}
 
-	public override function read():List<Entry> {
-		if (entries != null)
-			return entries;
+	public function updateEntries() {
 		entries = new List();
-		while (true) {
-			var e = readEntryHeader();
-			if (e == null)
-				break;
+		
+		// --- locate End of Central Directory (EOCD) ---
+		var fileSize:Int = sys.FileSystem.stat(this.filePath).size; // probably need a better way to check the size of the file.
+		var scanSize:Int = (65535 < fileSize) ? 65535 : fileSize;
+		
+		fileInput.seek(fileSize - scanSize, SeekBegin); // It seems this usually ends up being 0 anyways, but for cases where it might not be?? I'd just make sure. but Someone do some digging I don't know if this required.
+		
+		var buf = fileInput.read(scanSize);
+		var b = new haxe.io.BytesInput(buf);
+		b.position = (buf.length - 22) + 16; // offset to start of central directory
 
-			var zipEntry:SysZipEntry = cast e;
-			zipEntry.seekPos = fileInput.tell();
+		// --- read central directory ---
+		fileInput.seek(b.readInt32(), SeekBegin);
+		while (true) {
+			if (fileInput.readInt32() != 0x02014b50) break; // central dir file header signature
+
+			fileInput.seek(6, SeekCur); // version/flags
+			var compMethod = fileInput.readUInt16();
+			fileInput.seek(8, SeekCur); // time/date + CRC32 (4, 4)
+			var compSize = fileInput.readInt32();
+			var uncompSize = fileInput.readInt32();
+			var nameLen = fileInput.readUInt16();
+			var extraLen = fileInput.readUInt16();
+			var commentLen = fileInput.readUInt16();
+			fileInput.seek(8, SeekCur); // skip disk number/start attrs
+			var localHeaderOffset = fileInput.readInt32();
+
+			var name = fileInput.read(nameLen).toString();
+
+			// skip central directory extra/comment
+			fileInput.seek(extraLen + commentLen, SeekCur);
+
+			// --- compute correct seekPos using local header ---
+			var curPos = fileInput.tell();
+			fileInput.seek(localHeaderOffset + 26, SeekBegin);
+			var localNameLen = fileInput.readUInt16();
+			var localExtraLen = fileInput.readUInt16();
+			fileInput.seek(curPos, SeekBegin);
+
+			var zipEntry:SysZipEntry = {
+				fileName: name,
+				fileSize: uncompSize,
+				seekPos: (localHeaderOffset + 30 + localNameLen + localExtraLen),
+				compressedSize: compSize,
+				compressed: (compMethod == 8),
+			};
 			entries.add(zipEntry);
-			fileInput.seek(e.dataSize, SeekCur);
 		}
-		return entries;
 	}
 
 	public function dispose() {
-		if (input != null)
-			input.close();
+		if (fileInput != null) fileInput.close();
 	}
 }
 
 typedef SysZipEntry = {
-	> Entry,
+	var fileName:String;
+	var fileSize:Int;
 	var seekPos:Int;
+	var compressedSize:Int;
+	var compressed:Bool;
 }
 #end
