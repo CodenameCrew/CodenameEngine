@@ -1,0 +1,494 @@
+// funkin source classes cannot be imported here
+import haxe.io.Path;
+import hxp.*;
+import lime.tools.*;
+import sys.FileSystem;
+import sys.io.Process;
+
+using StringTools;
+
+class Project extends HXProject
+{
+	static final TITLE:String = "Friday Night Funkin' - Codename Engine";
+	static final EXECUTABLE:String = "CodenameEngine";
+	static final VERSION:String = "1.0.1";
+	static final COMPANY:String = "Yoshman29";
+	static final PACKAGE:String = "com.codenamecrew.codenameengine";
+	static final MAIN_CLASS:String = "funkin.backend.system.MainApplication";
+
+	static final PRELOADER:String = "flixel.system.FlxPreloader";
+	static final SOURCE_FOLDERS:Array<String> = ["source"];
+
+	// Compile Flags
+	static final EMBED_ASSETS:CompileFlag = CompileFlag.get("EMBED_ASSETS");
+	static final PRELOAD_ALL:CompileFlag = CompileFlag.get("PRELOAD_ALL");
+	static final STRIPPED_COMPILE:CompileFlag = CompileFlag.get("STRIPPED_COMPILE");
+	static final UPDATE_CHECKING:CompileFlag = CompileFlag.get("UPDATE_CHECKING");
+	static final DISCORD_RPC:CompileFlag = CompileFlag.get("DISCORD_RPC");
+	static final MODCHARTING_FEATURES:CompileFlag = CompileFlag.get("MODCHARTING_FEATURES");
+	static final GITHUB_API:CompileFlag = CompileFlag.get("GITHUB_API");
+	static final COMPILE_ALL_CLASSES:CompileFlag = CompileFlag.get("COMPILE_ALL_CLASSES");
+	static final CUSTOM_CLASSES:CompileFlag = CompileFlag.get("CUSTOM_CLASSES");
+	static final ALLOW_MULTITHREADING:CompileFlag = CompileFlag.get("ALLOW_MULTITHREADING");
+	static final MOD_SUPPORT:CompileFlag = CompileFlag.get("MOD_SUPPORT");
+	static final TRANSLATIONS_SUPPORT:CompileFlag = CompileFlag.get("TRANSLATIONS_SUPPORT");
+	static final GLOBAL_SCRIPT:CompileFlag = CompileFlag.get("GLOBAL_SCRIPT");
+	static final SOFTCODED_STATES:CompileFlag = CompileFlag.get("SOFTCODED_STATES");
+	static final NDLLS_SUPPORTED:CompileFlag = CompileFlag.get("NDLLS_SUPPORTED");
+	static final USE_ADAPTED_ASSETS:CompileFlag = CompileFlag.get("USE_ADAPTED_ASSETS");
+	static final THREE_D_SUPPORT:CompileFlag = CompileFlag.get("THREE_D_SUPPORT");
+	static final NAPE_ENABLED:CompileFlag = CompileFlag.get("NAPE_ENABLED");
+	static final VIDEO_CUTSCENES:CompileFlag = CompileFlag.get("VIDEO_CUTSCENES");
+	static final SHOW_BUILD_ON_FPS:CompileFlag = CompileFlag.get("SHOW_BUILD_ON_FPS");
+	static final DARK_MODE_WINDOW:CompileFlag = CompileFlag.get("DARK_MODE_WINDOW");
+
+	public function new():Void
+	{
+		super();
+
+		CompileFlag.project = this;
+
+		haxe.Log.trace = (v:Dynamic, ?info:haxe.PosInfos) ->
+		{
+			if (!isDisplay())
+				Sys.println(v);
+		};
+
+		doWelcomeHeader();
+		trace("Configuring project...");
+		trace("");
+		configureApp();
+		configureCompileFlags();
+		configureAssets();
+		configureLibs();
+		configureIcons();
+		trace("");
+		trace("Configured project");
+		trace("Starting build...");
+		trace("");
+	}
+
+	function getHaxeVersion():String {
+		var process = new Process("haxe", ["-version"]);
+		var version:String = "";
+
+		try {
+			version = process.stdout.readAll().toString().trim();
+		} catch (e) {}
+
+		process.close();
+		return version;
+	}
+
+	function doWelcomeHeader() {
+		var haxeVersion = getHaxeVersion().trim();
+		var sleepChangeVersion = false;
+
+		var width = 60; // total banner width
+
+		inline function centerText(text:String, width:Int):String {
+			var innerWidth = width - 2;
+			var padding = Std.int(Math.max(0, Std.int((innerWidth - text.length) / 2)));
+			var left = StringTools.lpad("", " ", padding);
+			var right = StringTools.lpad("", " ", innerWidth - text.length - padding);
+			return "=" + left + text + right + "=";
+		}
+
+		inline function infoLine(label:String, value:String):String {
+			var innerWidth = width - 2;
+			if (label.length == 0) {
+				// no label: center the value
+				var padding = Std.int(Math.max(0, (innerWidth - value.length) / 2));
+				var left = StringTools.lpad("", " ", padding);
+				var right = StringTools.lpad("", " ", innerWidth - value.length - padding);
+				return "=" + left + value + right + "=";
+			} else {
+				var colonPos = Std.int(innerWidth / 2);
+				var labelPart = StringTools.lpad(label, " ", Std.int(Math.max(0, colonPos - 2)));
+				var valuePart = value;
+				var remainingSpace = Std.int(Math.max(0, innerWidth - (labelPart.length + 3 + valuePart.length)));
+				var rightPad = StringTools.lpad("", " ", remainingSpace);
+				return "=" + labelPart + " : " + valuePart + rightPad + "=";
+			}
+		}
+
+		var unicode = #if (target.unicode) true #else false #end;
+
+		trace('');
+		trace(StringTools.lpad("", "=", width));
+		trace(centerText(TITLE, width));
+		trace(StringTools.lpad("", "=", width));
+		trace(infoLine("Engine Version", 'v${VERSION}'));
+		trace(infoLine("Haxe Version", 'v${haxeVersion}'));
+		trace(StringTools.lpad("", "=", width));
+
+		try {
+			var lastBuiltWith:Null<String> = null;
+			var compiling = isDebug() ? "debug" : "release";
+			var target = isWeb() ? "html5" : (isIOS() ? "ios" : (isAndroid() ? "android" : (isWindows() ? "windows" : (isMac() ? "macos" : (isLinux() ? "linux" : "")))));
+
+			if (target == "") throw "Unknown target";
+
+			var exportPath = Sys.getCwd() + "/export/" + compiling + "/" + target + "/obj/Options.txt";
+			var options = sys.io.File.getContent(exportPath);
+
+			for (option in options.split("\n")) {
+				if (option.startsWith("haxe=")) {
+					lastBuiltWith = option.substr(5).trim();
+					break;
+				}
+			}
+
+			if (lastBuiltWith != null && lastBuiltWith.length > 0 && lastBuiltWith != haxeVersion) {
+				trace(infoLine("", unicode ? "⚠️ Haxe version mismatch!" : "[WARNING] Haxe version mismatch!"));
+				trace(infoLine("Last Built With", lastBuiltWith));
+				trace(infoLine("Current Version", haxeVersion));
+				trace(StringTools.lpad("", "=", width));
+				trace(infoLine("", "!!! Make sure to DELETE your EXPORT folders !!!"));
+				trace(StringTools.lpad("", "=", width));
+				sleepChangeVersion = true;
+			}
+		} catch (e) {}
+
+		var targetPlatform = isWeb() ? "Web (HTML5)" : (isIOS() ? "iOS" : (isAndroid() ? "Android" : (isWindows() ? "Windows" : (isMac() ? "Mac" : (isLinux() ? "Linux" : "Unknown")))));
+
+		if (isHashLink())
+			targetPlatform = "Hashlink (" + targetPlatform + ")";
+
+		trace(infoLine("Target Platform", targetPlatform));
+		trace(infoLine("Build Type", isDebug() ? "Debug" : "Release"));
+		trace(infoLine("Build Date", Date.now().toString()));
+		trace(StringTools.lpad("", "=", width));
+		trace('');
+
+		if (sleepChangeVersion)
+			Sys.sleep(5);
+	}
+
+	function configureApp():Void
+	{
+		trace("Configuring game...");
+		meta.title = TITLE;
+		meta.version = VERSION;
+		meta.company = COMPANY;
+		meta.packageName = PACKAGE;
+		
+		app.main = MAIN_CLASS;
+		app.file = EXECUTABLE;
+		app.preloader = PRELOADER;
+
+		var buildDir = 'export/${isDebug() ? 'debug' : 'release'}/';
+		trace('Output directory: $buildDir');
+		app.path = buildDir;
+
+		sources = SOURCE_FOLDERS;
+		templatePaths.push(Path.combine(Haxelib.getPath(new Haxelib(#if lime "lime" #else "hxp" #end)), #if lime "templates" #else "" #end));
+
+		window.hardware = true;
+		window.vsync = false;
+		window.allowHighDPI = true;
+
+		if (isWeb())
+			window.resizable = true;
+
+		if (isDesktop())
+		{
+			window.orientation = Orientation.LANDSCAPE;
+			window.fullscreen = false;
+			window.resizable = true;
+			window.vsync = false;
+		} else if (isMobile())
+		{
+			window.orientation = Orientation.LANDSCAPE;
+			window.fullscreen = true;
+			window.resizable = false;
+			window.borderless = true;
+			window.width = 0;
+			window.height = 0;
+		}
+	}
+	
+	function configureCompileFlags()
+	{
+		trace("Configuring compile flags...");
+
+		setDefine("disable-version-check");
+		setHaxedef("disable-version-check");
+		setHaxedef("no-deprecation-warnings");
+
+		// DO NOT REMOVE!! ALLOWS ME TO DO REGIONS LIKE IN C# AND KEEP CODE ORGANIZED. REMOVING IT WOULD BREAK THE ENGINE
+		setHaxedef("REGION");
+
+		setHaxedef("SAVE_PATH", EXECUTABLE);
+		setHaxedef("SAVE_NAME", "save-default");
+		setHaxedef("SAVE_OPTIONS_PATH", EXECUTABLE);
+		setHaxedef("SAVE_OPTIONS_NAME", "options");
+
+		PRELOAD_ALL.integrate(!isWeb());
+		EMBED_ASSETS.integrate(false);
+		
+		UPDATE_CHECKING.integrate(!isWeb() && !isHashLink());
+		DISCORD_RPC.integrate(isCPP() && isDesktop());
+		STRIPPED_COMPILE.integrate(false); //should be isRelease() if you want to use it
+		MODCHARTING_FEATURES.integrate(STRIPPED_COMPILE.isDisabled());
+		GITHUB_API.integrate(!isWeb() && !isHashLink());
+		COMPILE_ALL_CLASSES.integrate(STRIPPED_COMPILE.isDisabled());
+		CUSTOM_CLASSES.integrate(STRIPPED_COMPILE.isDisabled());
+		ALLOW_MULTITHREADING.integrate(!isWeb());
+		MOD_SUPPORT.integrate(!isWeb());
+		TRANSLATIONS_SUPPORT.integrate(true);
+		GLOBAL_SCRIPT.integrate(true);
+		SOFTCODED_STATES.integrate(true);
+		NDLLS_SUPPORTED.integrate(!isWeb() && !isHashLink());
+		USE_ADAPTED_ASSETS.integrate(!isWeb());
+		THREE_D_SUPPORT.integrate(STRIPPED_COMPILE.isDisabled());
+		NAPE_ENABLED.integrate(STRIPPED_COMPILE.isDisabled());
+		VIDEO_CUTSCENES.integrate(isCPP() && (isDesktop() || isMobile()));
+		SHOW_BUILD_ON_FPS.integrate(true);
+		DARK_MODE_WINDOW.integrate(true);
+
+		setDefine("FLX_NO_GENERIC"); // Disable a optimization, to allow reflection to use more functions
+
+		if (DISCORD_RPC.isEnabled())
+			setHaxedef("DISCORD_DISABLE_IO_THREAD");
+
+		if (MODCHARTING_FEATURES.isEnabled())
+		{
+			setHaxedef("FM_ENGINE", "CODENAME");
+			setHaxedef("FM_ENGINE_VERSION", "1.0");
+			addMacroFlag("modchart.backend.macros.Macro.includeFiles()");
+		}
+
+		if (COMPILE_ALL_CLASSES.isEnabled())
+		{
+			addHaxeFlag("-dce no");
+			addMacroFlag("funkin.backend.system.macros.Macros.addAdditionalClasses()");
+		}
+
+		addMacroFlag("funkin.backend.system.macros.Macros.initMacros()");
+
+		if (isDebug())
+			setHaxedef("HXCPP_DEBUG_LINK");
+
+		environment.set("HAXEPATH", "./");
+
+		setHaxedef("HXCPP_CHECK_POINTER");
+		setHaxedef("HXCPP_STACK_LINE");
+		setHaxedef("HXCPP_CATCH_SEGV");
+		setHaxedef("hscriptPos");
+		setHaxedef("EXPERIMENTAL_FLXGRAPHIC_DESTROY_FIX");
+		setHaxedef("FLX_NO_FOCUS_LOST_SCREEN");
+
+		if (isRelease())
+		{
+			setHaxedef("FLX_NO_DEBUG");
+			setHaxedef("analyzer-optimize");
+		}
+		setHaxedef("openfl_dpi_aware");
+	}
+
+	function configureAssets()
+	{
+		trace("Configuring assets...");
+
+		var shouldPreload = PRELOAD_ALL.isEnabled();
+		var shouldEmbed = EMBED_ASSETS.isEnabled();
+
+    	includeAssetLibrary("default", shouldEmbed, shouldPreload);
+    	addAssetPath("assets", shouldEmbed);
+    	addAsset("art/readme.txt", "do NOT readme.txt", false);
+
+		if (isDesktop())
+			addAsset("building/alsoft.txt", 'plugins/alsoft.${isWindows() ? "ini" : "conf"}', false);
+	}
+
+	function configureLibs()
+	{
+		trace("Configuring libraries...");
+
+		includeHaxelib("flixel");
+		includeHaxelib("flixel-addons");
+		includeHaxelib("format");
+		includeHaxelib("flxanimate");
+		includeHaxelib("hscript-improved");
+		includeHaxelib("markdown");
+
+		if (VIDEO_CUTSCENES.isEnabled())
+			includeHaxelib("hxvlc");
+		if (THREE_D_SUPPORT.isEnabled())
+			includeHaxelib("away3d");
+		if (NAPE_ENABLED.isEnabled())
+			includeHaxelib("nape-haxe4");
+		if (DISCORD_RPC.isEnabled())
+			includeHaxelib("hxdiscord_rpc");
+		if (MODCHARTING_FEATURES.isEnabled())
+			includeHaxelib("funkin-modchart");
+		if (isDebug())
+			includeHaxelib("hxcpp-debug-server");
+	}
+
+	function configureIcons()
+	{
+		trace("Configuring app icons...");
+		// TODO: ADD MOBILE ICONS
+		for (size in [16, 32, 64])
+			addIcon('art/icon${size}.png', size);
+		addIcon("art/icons/iconOG.png");
+	}
+
+	function includeHaxelib(name:String, version:String = ""):Void
+	{
+		haxelibs.push(new Haxelib(name, version));
+	}
+
+	function addAsset(path:String, ?rename:String, embed:Bool = false):Void
+	{
+		var asset = new Asset(path, rename, null, embed, true);
+		asset.library = "default";
+		assets.push(asset);
+	}
+
+	public function addAssetPath(path:String, ?rename:String, embed:Bool = false):Void
+	{
+		if (path == "") return;
+
+		var targetPath = Path.addTrailingSlash(rename ?? path);
+
+		if (!FileSystem.exists(path))
+			trace('[ERROR] Path "${path}" was not found');
+		else if (!FileSystem.isDirectory(path))
+			trace('[ERROR] Path "${path}" needs to be a directory.');
+
+		for (file in FileSystem.readDirectory(path))
+		{
+			if (FileSystem.isDirectory('${path}/${file}'))
+				addAssetPath('${path}/${file}', '${targetPath}${file}', embed);
+			else
+				addAsset('${path}/${file}', '${targetPath}${file}', embed);
+		}
+	}
+
+	function includeAssetLibrary(name:String, embed:Bool = false, preload:Bool = false):Void
+	{
+    	this.libraries.push(new Library('', name, null, embed, preload, false, ""));
+	}
+
+	inline function addIcon(icon:String, ?size:Int):Void
+		icons.push(new Icon(icon, size));
+
+	inline function addHaxeFlag(value:String):Void
+		haxeflags.push(value);
+
+	inline function addMacroFlag(value:String):Void
+		addHaxeFlag('--macro ${value}');
+	
+	inline function isDebug():Bool
+		return debug;
+
+	inline function isRelease():Bool
+		return !isDebug();
+
+	inline function isDisplay():Bool
+		return command == "display";
+
+	inline function isWeb():Bool
+		return platformType == PlatformType.WEB;
+
+	inline function isMobile():Bool
+		return platformType == PlatformType.MOBILE;
+
+	inline function isDesktop():Bool
+		return platformType == PlatformType.DESKTOP;
+
+	inline function isWindows():Bool
+		return target == Platform.WINDOWS;
+
+	inline function isMac():Bool
+		return target == Platform.MAC;
+
+	inline function isLinux():Bool
+		return target == Platform.LINUX;
+
+	inline function isAndroid():Bool
+		return target == Platform.ANDROID;
+
+	inline function isIOS():Bool
+		return target == Platform.IOS;
+
+	inline function isHashLink():Bool
+		return targetFlags.exists("hl");
+
+	inline function isCPP():Bool
+		return defines.exists("cpp");
+
+	public inline function getHaxedef(name:String):Null<Dynamic>
+		return haxedefs.get(name);
+
+	public inline function setHaxedef(name:String, ?value:String):Void
+		haxedefs.set(name, value ?? "");
+
+	public inline function unsetHaxedef(name:String):Void
+		haxedefs.remove(name);
+
+	public inline function getDefine(name:String):Null<Dynamic>
+		return defines.get(name);
+
+  	public inline function setDefine(name:String, ?value:String):Void
+    	defines.set(name, value ?? "");
+
+  	public inline function unsetDefine(name:String):Void
+    	defines.remove(name);
+}
+
+class CompileFlag {
+	public static final INVERSION:String = "NO_";
+	public static var project:Project;
+
+	public static function get(name:String):CompileFlag {
+		return new CompileFlag(name);
+	}
+
+	var name:String;
+	public function new(name:String) {
+		this.name = name;
+	}
+
+	public function enable(stopPropagation:Bool = false):Void
+	{
+		project.setHaxedef(name);
+		project.setDefine(name);
+		if (!stopPropagation)
+			getInverse().disable(true);
+	}
+
+	public function disable(stopPropagation:Bool = false):Void
+	{
+		project.unsetHaxedef(name);
+		project.unsetDefine(name);
+		if (!stopPropagation)
+			getInverse().enable(true);
+	}
+
+	public function integrate(defaultEnabled:Bool = false):Void {
+		var inverse = getInverse();
+
+		if (isEnabled()) inverse.disable(true); // Makes sure the inverse is disabled if it wasn't already
+		else if (inverse.isEnabled()) disable(true); // If the inverse is enabled, disable this
+		else (defaultEnabled ? enable : disable)(true); // Set to the default state otherwise
+	}
+	
+	public function isEnabled():Bool {
+		return project.haxedefs.exists(name) || project.defines.exists(name);
+	}
+
+	public function isDisabled():Bool {
+		return getInverse().isEnabled() || !isEnabled();
+	}
+
+	function getInverse():CompileFlag {
+		var inversionName = name;
+		if (!inversionName.startsWith(INVERSION))
+			inversionName = INVERSION + inversionName;
+		return new CompileFlag(inversionName);
+	}
+}
