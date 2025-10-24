@@ -164,8 +164,10 @@ class EventsData {
 
 			if (fileTxt.trim() == "") continue;
 
-			eventsList.push(eventName);
-			eventsParams.set(eventName, []);
+			if (!eventsList.contains(eventName)) {
+				eventsList.push(eventName);
+				eventsParams.set(eventName, []);
+			}
 
 			try {
 				var data:EventInfoFile = cast Json.parse(fileTxt);
