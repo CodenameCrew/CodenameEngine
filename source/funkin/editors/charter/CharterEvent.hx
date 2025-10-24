@@ -82,7 +82,7 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 	}
 
 	/**
-	 * Pack data is a list of 4 strings separated by `________PACKSEP________`
+	 * Pack data is a list of 5 strings separated by `________PACKSEP________`
 	 * [0] Event Name
 	 * [1] Event Script
 	 * [2] Event JSON Info
@@ -276,10 +276,47 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 				}
 
 			case "Camera Movement":
-				// camera movement, use health icon
-				if(event.params != null) {
-					var icon = getIconFromStrumline(event.params[0]);
-					if(icon != null) return icon;
+				var shouldDoArrow:Bool = false;
+				var icon:Null<FlxSprite> = null;
+				if (event.params != null) {
+					shouldDoArrow = event.params[1] && event.params[3] != "CLASSIC"; // is Tweened and isnt Lerped
+					icon = getIconFromStrumline(event.params[0]); // camera movement, use health icon
+				}
+				
+				if (icon == null) icon = generateDefaultIcon(event.name);
+				
+				if(event.params != null && shouldDoArrow && !inMenu) {
+					var group = new EventIconGroup();
+					group.add(icon);
+					group.members[0].x -= 8;
+					group.members[0].y -= 8;
+					generateEventIconDurationArrow(group, event.params[2]);
+					return group;
+				} else
+					return icon;
+
+			case "Camera Position":
+				var shouldDoArrow:Bool = false;
+				if (event.params != null)
+					shouldDoArrow = event.params[2] && event.params[4] != "CLASSIC"; // is Tweened and isnt Lerped
+
+				if(event.params != null && shouldDoArrow && !inMenu) {
+					var group = new EventIconGroup();
+					group.add(generateDefaultIcon(event.name));
+					generateEventIconDurationArrow(group, event.params[3]);
+					return group;
+				}
+
+			case "Camera Zoom":
+				var shouldDoArrow:Bool = false;
+				if (event.params != null)
+					shouldDoArrow = event.params[0];
+
+				if(event.params != null && shouldDoArrow && !inMenu) {
+					var group = new EventIconGroup();
+					group.add(generateDefaultIcon(event.name));
+					generateEventIconDurationArrow(group, event.params[3]);
+					return group;
 				}
 		}
 		return generateDefaultIcon(event.name);

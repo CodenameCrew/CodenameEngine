@@ -1655,7 +1655,12 @@ class PlayState extends MusicBeatState
 				var camera:FlxCamera = event.params[1] == "camHUD" ? camHUD : camGame;
 				camera.zoom += event.params[0];
 			case "Camera Bop":
-				camZoomingMult += event.params[0];
+				if (useCamZoomMult) {
+					camZoomingMult += event.params[0];
+				} else {
+					FlxG.camera.zoom += event.params[0] * camZoomingStrength;
+					camHUD.zoom += event.params[0] * camZoomingStrength;
+				}
 			case "Camera Zoom":
 				var cam = event.params[2] == "camHUD" ? camHUD : camGame;
 				var name = (event.params[2] == "camHUD" ? "camHUD" : "camGame") + ".zoom";  // avoiding having different values from these 2  - Nex
