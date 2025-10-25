@@ -60,7 +60,7 @@ class TreeMenuScreen extends FlxSpriteGroup {
 	var curFloatOption:ITreeFloatOption;
 	var __firstFrame:Bool = true;
 
-	public function new(name:String, desc:String, ?prefix:String, ?objects:Array<FlxSprite>) {
+	public function new(name:String, desc:String, prefix:String = "", ?objects:Array<FlxSprite>) {
 		super();
 		this.prefix = prefix;
 		rawName = name;

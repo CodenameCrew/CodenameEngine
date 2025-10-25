@@ -126,6 +126,7 @@ class Options
 	public static var P1_VOLUME_UP:Array<FlxKey> = [PLUS];
 	public static var P1_VOLUME_DOWN:Array<FlxKey> = [MINUS];
 	public static var P1_VOLUME_MUTE:Array<FlxKey> = [ZERO];
+	public static var P1_FPS_COUNTER:Array<FlxKey> = [#if web NUMBER_3 #else F3 #end]; // 3 on web or F3 on windows, linux and other things that runs code
 
 	// Debugs
 	public static var P1_DEV_ACCESS:Array<FlxKey> = [SEVEN];
@@ -158,6 +159,7 @@ class Options
 	public static var P2_VOLUME_UP:Array<FlxKey> = [NUMPADPLUS];
 	public static var P2_VOLUME_DOWN:Array<FlxKey> = [NUMPADMINUS];
 	public static var P2_VOLUME_MUTE:Array<FlxKey> = [NUMPADZERO];
+	public static var P2_FPS_COUNTER:Array<FlxKey> = [];
 
 	// Debugs
 	public static var P2_DEV_ACCESS:Array<FlxKey> = [];
@@ -190,6 +192,7 @@ class Options
 	public static var SOLO_VOLUME_UP(get, null):Array<FlxKey>;
 	public static var SOLO_VOLUME_DOWN(get, null):Array<FlxKey>;
 	public static var SOLO_VOLUME_MUTE(get, null):Array<FlxKey>;
+	public static var SOLO_FPS_COUNTER(get, null):Array<FlxKey>;
 
 	// Debugs
 	public static var SOLO_DEV_ACCESS(get, null):Array<FlxKey>;
