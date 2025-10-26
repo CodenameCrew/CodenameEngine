@@ -99,7 +99,7 @@ class CharacterAnimsWindow extends UIButtonList<CharacterAnimButton> {
 		displayAnimsFramesList.remove(name);
 
 	public function deleteAnimation(button:CharacterAnimButton, addToUndo:Bool = true) {
-		FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_DELETE_SOUND));
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_DELETE_SOUND);
 		if (buttons.members.length <= 1) return;
 		if (character.getAnimName() == button.anim)
 			@:privateAccess CharacterEditor.instance._animation_down(null);
