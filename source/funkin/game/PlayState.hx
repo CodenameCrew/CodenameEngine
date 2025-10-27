@@ -1476,7 +1476,7 @@ class PlayState extends MusicBeatState
 					}
 				} else {
 					soundUpdate();
-					__vocalSyncTimer += 4.9; // next update in 5 seconds
+					__vocalSyncTimer += 0.9; // next update in 5 seconds
 				}
 			}
 		}
