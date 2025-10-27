@@ -1469,7 +1469,7 @@ class PlayState extends MusicBeatState
 							if (os * os > vs)
 							{
 								sd[1] = 0;
-								s.play(true, Conductor.songPosition); // restart sound at music position
+								s.play(true, mt); // restart sound at music position
 							}
 							trace('Sound ' + i + ': music=' + mt + ', sound=' + ct + ', diff=' + diff + ', smoothDiff=' + sd[1] + ', pitch=' + s.pitch);
 						}
