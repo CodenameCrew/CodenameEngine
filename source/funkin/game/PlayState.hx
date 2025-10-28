@@ -560,13 +560,15 @@ class PlayState extends MusicBeatState
 		* Whether or not to use pitch correction when resyncing vocals.
 	  * Without using pitch adjustment, the audio may occasionally exhibit subtle sync drift.
 	 */
-	public var usePitchCorrection:Bool = true;
+	public var usePitchCorrection:Bool = Flags.VOCAL_PITCH_CORRECTION;
 
 	@:noCompletion @:dox(hide) private var _startCountdownCalled:Bool = false;
 	@:noCompletion @:dox(hide) private var _endSongCalled:Bool = false;
 
-	@:dox(hide) var __vocalSyncTimer:Float = 0;
+	@:dox(hide) var __vocalIntervalMoment:Float = 0.1; // moment for interval updates
+	@:dox(hide) var __vocalSyncTimer:Float = 0.1;
 	@:dox(hide) var __vocalOffsetTimer:Float = 0;
+	@:dox(hide) var __vocalSound:Int = 0;
 	@:dox(hide) var __sounds:Array<Array<Dynamic>>;
 
 	private function get_accuracy():Float {
@@ -1265,6 +1267,7 @@ class PlayState extends MusicBeatState
 		}
 
 		__sounds = sounds; // update sound list
+		__vocalIntervalMoment = 0.05; // reset interval moment
 	}
 
 	@:dox(hide)
@@ -1439,7 +1442,7 @@ class PlayState extends MusicBeatState
 		{
 			if ((__vocalSyncTimer -= elapsed) <= 0)
 			{
-				__vocalSyncTimer = (__vocalSyncTimer < -0.1) ? -0.1 : __vocalSyncTimer + 0.1; // max 10fps
+				__vocalSyncTimer = (__vocalSyncTimer < -__vocalIntervalMoment) ? 0 : __vocalSyncTimer + __vocalIntervalMoment; // max 10fps
 
 				if (__sounds != null) {
 					final soundCount = __sounds.length;
@@ -1451,13 +1454,11 @@ class PlayState extends MusicBeatState
 						final sm = 0.1; // smoothing
 
 						// account for offset changes
-						var i = soundCount;
-						while (i-- > 0)
-						{
-							var sd:Array<Dynamic> = __sounds[i];
-							var s:FlxSound = sd[0];
-							if (!s.playing) continue;
+						final i = __vocalSound;
 
+						var sd:Array<Dynamic> = __sounds[i];
+						var s:FlxSound = sd[0];
+						if (s.playing) {
 							final ct = s.getActualTime();
 
 							final diff = mt - ct;
@@ -1471,12 +1472,14 @@ class PlayState extends MusicBeatState
 								sd[1] = 0;
 								s.play(true, mt); // restart sound at music position
 							}
-							trace('Sound ' + i + ': music=' + mt + ', sound=' + ct + ', diff=' + diff + ', smoothDiff=' + sd[1] + ', pitch=' + s.pitch);
+							trace('Sound ' + i + ': music=' + mt + ', time=' + ct + ', diff=' + diff + ', smoothDiff=' + sd[1] + ', pitch=' + s.pitch + ', __vocalSyncTimer=' + __vocalSyncTimer);
+
+							__vocalSound = (i + 1) % soundCount;
 						}
 					}
 				} else {
 					soundUpdate();
-					__vocalSyncTimer += 0.9; // next update in 5 seconds
+					__vocalSyncTimer = 1; // next update in 1 seconds
 				}
 			}
 		}

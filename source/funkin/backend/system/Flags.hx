@@ -169,6 +169,17 @@ class Flags {
 	public static var GITAROO_CHANCE:Float = 0.1;
 	public static var DEFAULT_MUTE_VOCALS_ON_MISS:Bool = true;
 
+	/**
+	 * Whether or not to use pitch correction when resyncing vocals.
+	 * Without using pitch adjustment, the audio may occasionally exhibit subtle sync drift.
+	 */
+	public static var VOCAL_PITCH_CORRECTION:Bool = true;
+	/**
+	 * Interval (in seconds) for vocal synchronization updates.
+	 * Smaller values mean more frequent synchronization but higher CPU usage.
+	 */
+	public static var VOCAL_SYNC_INTERVAL:Float = 0.1;
+
 	public static var DEFAULT_MAX_HEALTH:Float = 2.0;
 	public static var DEFAULT_HEALTH:Null<Float> = null;//DEFAULT_MAX_HEALTH / 2.0;
 	public static var DEFAULT_ICONBOP:Bool = true;
