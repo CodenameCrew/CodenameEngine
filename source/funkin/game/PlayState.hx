@@ -557,8 +557,9 @@ class PlayState extends MusicBeatState
 	public var hitWindow:Float = Options.hitWindow; // is calculated in create(), is safeFrames in milliseconds.
 
 	/**
-		* Whether or not to use pitch correction when resyncing vocals.
-	  * Without using pitch adjustment, the audio may occasionally exhibit subtle sync drift.
+	 * Whether or not to use pitch correction when resyncing vocals.
+	 * Without using pitch adjustment, the audio may occasionally exhibit subtle sync drift.
+	 * If you just want to adjust the overall playback speed, you can try modifying FlxG.timeScale.
 	 */
 	public var usePitchCorrection:Bool = Flags.VOCAL_PITCH_CORRECTION;
 
@@ -1265,8 +1266,14 @@ class PlayState extends MusicBeatState
 			if (sv.loaded) sounds[idx++] = [sv, 0]; // [sound, offset]
 		}
 
+		if (sounds.length < 1)
+		{
+			__sounds = []; // no sounds
+			return;
+		}
+
 		__sounds = sounds; // update sound list
-		__vocalIntervalMoment = 0.05; // reset interval moment
+		__vocalIntervalMoment = Flags.VOCAL_SYNC_INTERVAL / sounds.length; // reset interval moment
 	}
 
 	@:dox(hide)
@@ -1450,7 +1457,7 @@ class PlayState extends MusicBeatState
 						final mt = FlxG.sound.music.getActualTime(); // in ms
 						final vs = usePitchCorrection ? 256 : 100; // 10ms for no pitch correction, 16ms for pitch correction
 						final pf = 0.00025; // pitch factor
-						final sm = 0.1; // smoothing
+						final sm = Flags.VOCAL_SYNC_INTERVAL; // smoothing
 
 						// account for offset changes
 						final i = __vocalSound;
@@ -1471,7 +1478,7 @@ class PlayState extends MusicBeatState
 								sd[1] = 0;
 								s.play(true, mt); // restart sound at music position
 							}
-							trace('Sound ' + i + ': music=' + mt + ', time=' + ct + ', diff=' + diff + ', smoothDiff=' + sd[1] + ', pitch=' + s.pitch + ', __vocalSyncTimer=' + __vocalSyncTimer);
+							trace('Sound ' + i + ': music=' + Math.round(mt) + ' time=' + Math.round(ct) + ' diff=' + Math.round(diff * 100) / 100 + ' smoothDiff=' + Math.round(sd[1] * 100) / 100 + ' pitch=' + Math.round(s.pitch * 100000) / 100000);
 
 							__vocalSound = (i + 1) % soundCount;
 						}

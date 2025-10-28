@@ -172,6 +172,7 @@ class Flags {
 	/**
 	 * Whether or not to use pitch correction when resyncing vocals.
 	 * Without using pitch adjustment, the audio may occasionally exhibit subtle sync drift.
+	 * If you just want to adjust the overall playback speed, you can try modifying FlxG.timeScale.
 	 */
 	public static var VOCAL_PITCH_CORRECTION:Bool = true;
 	/**
