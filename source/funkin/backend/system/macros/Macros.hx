@@ -58,6 +58,11 @@ class Macros {
 
 		final macroPath = 'funkin.backend.system.macros.Macros';
 		Compiler.addMetadata('@:build($macroPath.buildLimeAssetLibrary())', 'lime.utils.AssetLibrary');
+
+		//Adds Compat for #if hscript blocks when you have hscript improved
+		if (Context.defined("hscript_improved") && !Context.defined("hscript")) {
+			Compiler.define('hscript');
+		}
 	}
 
 	public static function buildLimeAssetLibrary():Array<Field> {

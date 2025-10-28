@@ -48,6 +48,7 @@
 		<str id="category.engine">Engine</str>
 		<group name="engine" prefix="engine.">
 			<str id="switchMod">Switch Mod</str>
+			<str id="fpsCounter">FPS Counter</str>
 		</group>
 
 		<str id="category.volume">Volume</str>

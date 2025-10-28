@@ -44,8 +44,9 @@
 		<str id="category.engine">Silnik</str>
 		<group name="engine" prefix="engine.">
 			<str id="switchMod">Zmień Moda</str>
+			<str id="fpsCounter">Licznik FPS</str>
 		</group>
-		
+
 		<str id="category.volume">Głośność</str>
 		<str id="volume.up">Głóśniej</str>
 		<str id="volume.down">Ciszej</str>

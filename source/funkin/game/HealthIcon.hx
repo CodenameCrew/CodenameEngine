@@ -232,9 +232,7 @@ class HealthIcon extends FunkinSprite
 						else if (node.exists("offsety"))
 							offsetY = Std.parseFloat(node.get("offsety")).getDefault(0);
 
-						addOffset(animName, offsetX, offsetY);
-
-						addAnim(animName, node.get("anim"), Std.parseInt(node.get("fps")).getDefault(24), false); // don't allow looping for transitions
+						addAnim(animName, node.get("anim"), Std.parseInt(node.get("fps")).getDefault(24), false, null, null, offsetX, offsetY); // don't allow looping for transitions
 						if (animateAtlas == null && animation.exists(animName))
 							animation.getByName(animName).flipX = isPlayer != iconIsPlayer;
 					case "anim":
@@ -265,15 +263,13 @@ class HealthIcon extends FunkinSprite
 						else if (node.exists("offsety"))
 							offsetY = Std.parseFloat(node.get("offsety")).getDefault(0);
 
-						addOffset(animName, offsetX, offsetY);
-
 						var looped:Bool = false;
 						if (node.exists("looped"))
 							looped = node.get("looped").toLowerCase() == "true";
 						else if (node.exists("loop"))
 							looped = node.get("loop").toLowerCase() == "true";
 
-						addAnim(animName, node.get("anim"), Std.parseInt(node.get("fps")).getDefault(24), looped);
+						addAnim(animName, node.get("anim"), Std.parseInt(node.get("fps")).getDefault(24), looped, null, null, offsetX, offsetY);
 						if (animateAtlas == null && animation.exists(animName))
 							animation.getByName(animName).flipX = isPlayer != iconIsPlayer;
 					case "step":
