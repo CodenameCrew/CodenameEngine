@@ -123,6 +123,10 @@ class KeybindsOptions extends MusicBeatSubstate {
 					name: "engine.switchMod",
 					control: 'SWITCHMOD'
 				},
+				{
+					name: "engine.fpsCounter",
+					control: 'FPS_COUNTER'
+				},
 			]
 		},
 		{
