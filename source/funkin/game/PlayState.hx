@@ -567,7 +567,6 @@ class PlayState extends MusicBeatState
 
 	@:dox(hide) var __vocalIntervalMoment:Float = 0.1; // moment for interval updates
 	@:dox(hide) var __vocalSyncTimer:Float = 0.1;
-	@:dox(hide) var __vocalOffsetTimer:Float = 0;
 	@:dox(hide) var __vocalSound:Int = 0;
 	@:dox(hide) var __sounds:Array<Array<Dynamic>>;
 
