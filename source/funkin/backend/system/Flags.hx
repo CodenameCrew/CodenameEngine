@@ -179,7 +179,7 @@ class Flags {
 	 * Interval (in seconds) for vocal synchronization updates.
 	 * Smaller values mean more frequent synchronization but higher CPU usage.
 	 */
-	public static var VOCAL_SYNC_INTERVAL:Float = 0.1;
+	public static var VOCAL_SYNC_INTERVAL:Float = 0.05;
 
 	public static var DEFAULT_MAX_HEALTH:Float = 2.0;
 	public static var DEFAULT_HEALTH:Null<Float> = null;//DEFAULT_MAX_HEALTH / 2.0;
