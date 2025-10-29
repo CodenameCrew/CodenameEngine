@@ -1480,7 +1480,7 @@ class PlayState extends MusicBeatState
 							}
 							trace('Sound ' + i + ': music=' + Math.round(mt) + ' time=' + Math.round(ct) + ' diff=' + Math.round(diff * 100) / 100 + ' smoothDiff=' + Math.round(sd[1] * 100) / 100 + ' pitch=' + Math.round(s.pitch * 100000) / 100000);
 
-							__vocalSound = (i + 1) % soundCount;
+							__vocalSound = i + 1 >= soundCount ? 0 : i; // next sound
 						}
 					}
 				} else {
