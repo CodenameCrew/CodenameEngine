@@ -1251,29 +1251,31 @@ class PlayState extends MusicBeatState
 	 */
 	public function soundUpdate():Void
 	{
-		var sounds:Array<Array<Dynamic>> = [];
-		var idx:Int = 0;
+		var soundList:Array<Array<Dynamic>> = [];
+		var currentIndex:Int = 0;
 
 		// add main vocals
-		if (vocals.loaded) sounds[idx++] = [vocals, 0];
+		if (vocals.loaded)
+			soundList[currentIndex++] = [vocals, 0];
 
 		// also add strumline vocals
-		final sl = strumLines.members;
-		final sln = sl.length;
-		for (i in 0...sln)
+		final strumlineArray = strumLines.members;
+		final strumlineCount = strumlineArray.length;
+		for (i in 0...strumlineCount)
 		{
-			final sv = sl[i].vocals;
-			if (sv.loaded) sounds[idx++] = [sv, 0]; // [sound, offset]
+			final strumlineVocals = strumlineArray[i].vocals;
+			if (strumlineVocals.loaded)
+				soundList[currentIndex++] = [strumlineVocals, 0]; // [sound, offset]
 		}
 
-		if (sounds.length < 1)
+		if (soundList.length < 1)
 		{
 			__sounds = []; // no sounds
 			return;
 		}
 
-		__sounds = sounds; // update sound list
-		__vocalIntervalMoment = Flags.VOCAL_SYNC_INTERVAL / sounds.length; // reset interval moment
+		__sounds = soundList; // update sound list
+		__vocalIntervalMoment = Flags.VOCAL_SYNC_INTERVAL / soundList.length; // reset interval moment
 	}
 
 	@:dox(hide)
@@ -1450,37 +1452,42 @@ class PlayState extends MusicBeatState
 			{
 				__vocalSyncTimer = (__vocalSyncTimer < -__vocalIntervalMoment) ? 0 : __vocalSyncTimer + __vocalIntervalMoment; // max 10fps
 
-				if (__sounds != null) {
-					final soundCount = __sounds.length;
-					if (soundCount > 0)
+				if (__sounds != null)
+				{
+					final totalSounds = __sounds.length;
+					if (totalSounds > 0)
 					{
-						final mt = FlxG.sound.music.getActualTime(); // in ms
-						final vs = usePitchCorrection ? 256 : 100; // 10ms for no pitch correction, 16ms for pitch correction
-						final pf = 0.00025; // pitch factor
-						final sm = Flags.VOCAL_SYNC_INTERVAL; // smoothing
+						final musicTime = FlxG.sound.music.getActualTime(); // in ms
+						final varianceThreshold = usePitchCorrection ? 256 : 100; // 10ms for no pitch correction, 16ms for pitch correction
+						final pitchAdjustmentFactor = 0.00025; // pitch factor
+						final smoothingFactor = Flags.VOCAL_SYNC_INTERVAL; // smoothing
 
 						// account for offset changes
-						final i = __vocalSound;
+						final currentSoundIndex = __vocalSound;
 
-						var sd:Array<Dynamic> = __sounds[i];
-						var s:FlxSound = sd[0];
-						if (s.playing) {
-							final ct = s.getActualTime();
+						var soundData:Array<Dynamic> = __sounds[currentSoundIndex];
+						var vocalSound:FlxSound = soundData[0];
+						if (vocalSound.playing)
+						{
+							final currentVocalTime = vocalSound.getActualTime();
 
-							final diff = mt - ct;
-							sd[1] += (diff - sd[1]) * sm; // smooth the difference
+							final timeDifference = musicTime - currentVocalTime;
+							soundData[1] += (timeDifference - soundData[1]) * smoothingFactor; // smooth the difference
 
-							if (usePitchCorrection) s.pitch = 1 + sd[1] * pf; // pitch adjustment
+							if (usePitchCorrection)
+								vocalSound.pitch = 1 + soundData[1] * pitchAdjustmentFactor; // pitch adjustment
 
-							final os = sd[1];
-							if (os * os > vs)
+							final smoothedOffset = soundData[1];
+							if (smoothedOffset * smoothedOffset > varianceThreshold)
 							{
-								sd[1] = 0;
-								s.play(true, mt); // restart sound at music position
+								soundData[1] = 0;
+								vocalSound.play(true, musicTime); // restart sound at music position
 							}
-							trace('Sound ' + i + ': music=' + Math.round(mt) + ' time=' + Math.round(ct) + ' diff=' + Math.round(diff * 100) / 100 + ' smoothDiff=' + Math.round(sd[1] * 100) / 100 + ' pitch=' + Math.round(s.pitch * 100000) / 100000);
+							trace('Sound ' + currentSoundIndex + ': music=' + Math.round(musicTime) + ' time=' + Math.round(currentVocalTime) + ' diff='
+								+ Math.round(timeDifference * 100) / 100 + ' smoothDiff=' + Math.round(soundData[1] * 100) / 100 + ' pitch='
+								+ Math.round(vocalSound.pitch * 100000) / 100000);
 
-							__vocalSound = i + 1 >= soundCount ? 0 : i; // next sound
+							__vocalSound = currentSoundIndex + 1 >= totalSounds ? 0 : currentSoundIndex; // next sound
 						}
 					}
 				} else {
