@@ -9,7 +9,8 @@
 		<!-- <git name="lime" url="https://github.com/CodenameCrew/cne-lime" />  disabled for now until fixed -->
 
 		<!-- Flixel -->
-		<git name="flixel" url="https://github.com/CodenameCrew/cne-flixel" />
+		<lib name="hxWebP" />
+		<git name="flixel" url="https://github.com/Xnilios/cne-flixelhxwebp" />
 		<git name="flixel-addons" url="https://github.com/CodenameCrew/cne-flixel-addons" />
 
 		<!-- Other Libraries -->
