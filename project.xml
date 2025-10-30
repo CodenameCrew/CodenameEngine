@@ -124,6 +124,7 @@
 	<haxedef name="no-deprecation-warnings"/>
 	<haxedef name="DISCORD_DISABLE_IO_THREAD" if="DISCORD_RPC"/>
 
+	<haxelib name="hxWebP" />
 	<haxelib name="flixel" />
 	<haxelib name="flixel-addons" />
 
