@@ -32,7 +32,8 @@ class PauseSubState extends MusicBeatSubstate
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
-
+	var bg:FlxSprite;
+	
 	public var pauseScript:Script;
 	public var selectCall:NameEvent->Void;  // Mainly for extern stuff that aren't scripts  - Nex
 
@@ -74,7 +75,7 @@ class PauseSubState extends MusicBeatSubstate
 
 		if (__cancelDefault = event.cancelled) return;
 
-		var bg:FlxSprite = new FlxSprite().makeSolid(FlxG.width + 100, FlxG.height + 100, FlxColor.BLACK);
+		bg = new FlxSprite().makeSolid(FlxG.width + 100, FlxG.height + 100, FlxColor.BLACK);
 		bg.updateHitbox();
 		bg.alpha = 0;
 		bg.screenCenter();
