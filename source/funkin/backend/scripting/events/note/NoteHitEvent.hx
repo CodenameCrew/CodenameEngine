@@ -118,6 +118,10 @@ final class NoteHitEvent extends CancellableEvent {
 	 * The attached healthIcon used distinction for icons amongst others
 	 */
 	public var healthIcon:HealthIcon;
+	/**
+	 * Whether note hits are judged in the old way or not.
+	 */
+	public var legacyJudge:Bool = false;
 
 	/**
 	 * Prevents the default sing animation from being played.

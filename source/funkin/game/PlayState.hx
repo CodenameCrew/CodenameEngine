@@ -1890,15 +1890,40 @@ class PlayState extends MusicBeatState
 
 		var event:NoteHitEvent;
 		if (strumLine != null && !strumLine.cpu)
-			event = EventManager.get(NoteHitEvent).recycle(false, !note.isSustainNote, !note.isSustainNote, null, defaultDisplayRating, defaultDisplayCombo, note, strumLine.characters, true, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), "game/score/", "", note.strumID, daRating.score, note.isSustainNote ? null : daRating.accuracy, 0.023, daRating.name, Options.splashesEnabled && !note.isSustainNote && daRating.splash, 0.5, true, 0.7, true, true, iconP1);
+			event = EventManager.get(NoteHitEvent).recycle(false, !note.isSustainNote, !note.isSustainNote, null, defaultDisplayRating, defaultDisplayCombo, note, strumLine.characters, true, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), "game/score/", "", note.strumID, daRating.score, note.isSustainNote ? null : daRating.accuracy, 0.023, daRating.name, Options.splashesEnabled && !note.isSustainNote && daRating.splash, 0.5, true, 0.7, true, true, iconP1, false);
 		else
-			event = EventManager.get(NoteHitEvent).recycle(false, false, false, null, defaultDisplayRating, defaultDisplayCombo, note, strumLine.characters, false, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), "game/score/", "", note.strumID, 0, null, 0, daRating.name, false, 0.5, true, 0.7, true, true, iconP2);
+			event = EventManager.get(NoteHitEvent).recycle(false, false, false, null, defaultDisplayRating, defaultDisplayCombo, note, strumLine.characters, false, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), "game/score/", "", note.strumID, 0, null, 0, daRating.name, false, 0.5, true, 0.7, true, true, iconP2, false);
 		event.deleteNote = !note.isSustainNote; // work around, to allow sustain notes to be deleted
 		event = scripts.event(strumLine != null && !strumLine.cpu ? "onPlayerHit" : "onDadHit", event);
 		strumLine.onHit.dispatch(event);
 		gameAndCharsEvent("onNoteHit", event);
 
 		if (!event.cancelled) {
+			if (event.legacyJudge) {
+				event.rating = 'sick';
+				event.score = 300;
+				event.accuracy = 1;
+
+				if (noteDiff > hitWindow * 0.9)
+				{
+					event.rating = 'shit';
+					event.score = 50;
+					event.accuracy = 0.25;
+				}
+				else if (noteDiff > hitWindow * 0.75)
+				{
+					event.rating = 'bad';
+					event.score = 100;
+					event.accuracy = 0.45;
+				}
+				else if (noteDiff > hitWindow * 0.2)
+				{
+					event.rating = 'good';
+					event.score = 200;
+					event.accuracy = 0.75;
+				}
+			}
+
 			if (!note.isSustainNote) {
 				if (event.countScore) songScore += event.score;
 				if (event.accuracy != null) {
