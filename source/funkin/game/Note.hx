@@ -61,6 +61,15 @@ class Note extends FlxSprite
 	public var sustainParent:Null<Note>;
 
 	/**
+	 * Number of active sustain pieces attached to this note
+	 * 
+	 * Increases by 1 every time a hold piece is initialized.
+	 * 
+	 * Decreases by 1 every time a hold piece gets destroyed.
+	 */
+	public var tail:Int = 0;
+
+	/**
 	 * Name of the splash.
 	 */
 	public var splash:String = "default";
@@ -103,6 +112,8 @@ class Note extends FlxSprite
 	private static var __customNoteTypeExists:Map<String, Bool> = [];
 
 	public var animSuffix:String = null;
+
+	public var tripTimer:Float = 0; // ranges from 0 to 1
 
 
 	private static function customTypePathExists(path:String) {

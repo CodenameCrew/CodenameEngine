@@ -25,8 +25,8 @@ class HitWindowData
 			case FNF_VSLICE:
 				map.set("sick", 45.0);
 				map.set("good", 90.0);
-				map.set("bad", 135.0);
-				map.set("shit", 160.0);
+				map.set("bad", 135.4);
+				map.set("shit", 180.0);
 			// Default, taken from Etterna
 			case _:
 				map.set("sick", 37.8);
@@ -38,6 +38,7 @@ class HitWindowData
 		return map;
 	}
 
+	public static var JUDGE_SCALES:Array<Float> = [1.5, 1.33, 1.16, 1.0, 0.84, 0.66, 0.5, 0.33, 0.2];
 	public static function scaleWindows(windows:StringMap<Float>, scale:Float):StringMap<Float>
 	{
 		var scaled = new StringMap<Float>();

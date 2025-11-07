@@ -161,6 +161,9 @@ class StrumLine extends FlxTypedGroup<Strum> {
 					curLen = Math.min(len, Conductor.stepCrochet);
 					notes.members[total-(il++)-1] = prev = new Note(this, note, true, curLen, note.sLen - len, prev);
 					len -= curLen;
+
+					if (prev != null && prev.sustainParent != null)
+						prev.sustainParent.tail++;
 				}
 			}
 		}
@@ -236,10 +239,23 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 
 		if (__updateNote_event.strum == null) return;
-
 		if (__updateNote_event.__reposNote) __updateNote_event.strum.updateNotePosition(daNote);
+
+
 		if (daNote.isSustainNote)
+		{
 			daNote.updateSustain(__updateNote_event.strum);
+
+			if (daNote.tripTimer > 0 && daNote.tail > 3)
+			{
+				daNote.tripTimer -= 0.05 / daNote.sustainLength;
+				if (daNote.tripTimer <= 0)
+				{
+					daNote.tripTimer = 0;
+					daNote.canBeHit = false;
+				}
+			}
+		}
 	}
 
 	var __funcsToExec:Array<Note->Void> = [];
@@ -250,6 +266,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 	function __inputProcessPressed(note:Note) {
 		if (__pressed[note.strumID] && note.isSustainNote && note.sustainParent != null && note.sustainParent.wasGoodHit && note.strumTime < __updateNote_songPos && !note.wasGoodHit) {
+			note.tripTimer = 1;
 			PlayState.instance.goodNoteHit(this, note);
 			note.updateSustainClip();
 		}
@@ -421,6 +438,8 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		var event:SimpleNoteEvent = EventManager.get(SimpleNoteEvent).recycle(note);
 		onNoteDelete.dispatch(event);
 		if (!event.cancelled) {
+			if (note.isSustainNote && note.sustainParent != null && note.sustainParent.tail > 0)
+				note.sustainParent.tail--;
 			note.kill();
 			notes.remove(note, true);
 			note.destroy();
