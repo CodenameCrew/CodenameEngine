@@ -121,8 +121,10 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	@:noCompletion var isDanceLeftDanceRight:Bool = false;
 
 	override function update(elapsed:Float) {
-		super.update(elapsed);
 		scripts.call("update", [elapsed]);
+
+		super.update(elapsed);
+
 		if (stunned) {
 			__stunnedTime += elapsed;
 			if (__stunnedTime > Flags.STUNNED_TIME)
@@ -133,6 +135,8 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 			tryDance();
 
 		__lockAnimThisFrame = false;
+
+		scripts.call("postUpdate", [elapsed]);
 	}
 
 	private var danced:Bool = false;

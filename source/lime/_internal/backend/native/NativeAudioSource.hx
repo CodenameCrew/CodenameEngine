@@ -13,6 +13,7 @@ import lime.media.vorbis.Vorbis;
 import lime.media.vorbis.VorbisFile;
 #end
 
+import lime.math.Vector2;
 import lime.math.Vector4;
 import lime.media.AudioBuffer;
 import lime.media.AudioSource;
@@ -29,6 +30,11 @@ class NativeAudioSource {
 	private static var STREAM_MAX_BUFFERS:Int = 8;
 	private static var STREAM_TIMER_FREQUENCY:Int = 100;
 	private static var STREAM_BUFFER_FREQUENCY:Int = 3;
+
+	private static var moreFormatsSupported:Null<Bool>;
+	private static var stereoAnglesExtensionSupported:Null<Bool>;
+	private static var loopPointsSupported:Null<Bool>; // TODO: implement loop Points for looped static sources
+	private static var latencyExtensionSupported:Null<Bool>;
 
 	private var parent:AudioSource;
 	private var disposed:Bool;
@@ -54,7 +60,9 @@ class NativeAudioSource {
 	private var streamEnded:Bool;
 	private var dataLength:Float;
 
-	private var position:Vector4 = new Vector4();
+	private var position:Vector4;
+	private var angles:Vector2;
+	private var anglesArray:Array<Float>;
 	private var length:Null<Float>;
 	private var loopTime:Null<Float>;
 	private var loops:Int;
@@ -64,6 +72,10 @@ class NativeAudioSource {
 	public function dispose() {
 		disposed = true;
 		stop();
+
+		position = null;
+		angles = null;
+		anglesArray = null;
 
 		if (handle != null) {
 			AL.sourcei(handle, AL.BUFFER, AL.NONE);
@@ -81,16 +93,26 @@ class NativeAudioSource {
 
 	public function init() {
 		if (handle != null) return;
-
 		if (disposed = (handle = AL.createSource()) == null) return;
+
+		if (position == null) position = new Vector4();
+		if (angles == null) angles = new Vector2(Math.PI / 6, -Math.PI / 6); // https://github.com/kcat/openal-soft/issues/1032
+		anglesArray = [0, 0];
+
+		if (moreFormatsSupported == null) moreFormatsSupported = AL.isExtensionPresent("AL_EXT_MCFORMATS");
+		if (stereoAnglesExtensionSupported == null) stereoAnglesExtensionSupported = AL.isExtensionPresent("AL_EXT_STEREO_ANGLES");
+		if (latencyExtensionSupported == null) latencyExtensionSupported = AL.isExtensionPresent("AL_SOFT_source_latency");
+		if (loopPointsSupported == null) loopPointsSupported = AL.isExtensionPresent("AL_SOFT_loop_points");
+
 		AL.sourcef(handle, AL.MAX_GAIN, 10);
+		AL.distanceModel(AL.NONE);
 
 		var buffer = parent.buffer;
 		var channels = buffer.channels, bitsPerSample = buffer.bitsPerSample;
 
 		// Default is just AL.FORMAT_MONO8 if it doesn't match any to avoid yo ears getting blasted
 		var isCreativeXFi = AL.getString(AL.RENDERER) == "X-Fi";
-		if (channels > 2 && (isCreativeXFi || AL.isExtensionPresent("AL_EXT_MCFORMATS"))) { // https://github.com/openalext/openalext/blob/master/AL_EXT_MCFORMATS.txt
+		if (channels > 2 && (isCreativeXFi || moreFormatsSupported)) { // https://github.com/openalext/openalext/blob/master/AL_EXT_MCFORMATS.txt
 			if (channels == 3) format = bitsPerSample == 32 ? 0x1209 : (bitsPerSample == 16 ? 0x1208 : 0x1207);
 			else if (channels == 4) format = bitsPerSample == 32 ? 0x1206 : (bitsPerSample == 16 ? 0x1205 : 0x1204);
 			else if (channels == 6) format = bitsPerSample == 32 ? 0x120C : (bitsPerSample == 16 ? 0x120B : 0x120A);
@@ -466,7 +488,7 @@ class NativeAudioSource {
 
 	public function getLatency():Float {
 		/*#if (lime >= "8.3.0")
-		if (AL.isExtensionPresent("AL_SOFT_source_latency")) {
+		if (latencyExtensionSupported) {
 			final offsets = AL.getSourcedvSOFT(handle, AL.SEC_OFFSET_LATENCY_SOFT, 2);
 			if (offsets != null) return offsets[1] * 1000;
 		}
@@ -474,7 +496,28 @@ class NativeAudioSource {
 		return 0;
 	}
 
-	public function getPosition():Vector4 return position;
+	public function getAngles():Vector2 {
+		if (angles == null) angles = new Vector2(Math.PI / 6, -Math.PI / 6);
+		return angles;
+	}
+
+	public function setAngles(left:Float, right:Float):Vector2 {
+		if (angles == null) angles = new Vector2(left, right);
+		else angles.setTo(left, right);
+
+		if (!disposed) {
+			anglesArray[0] = angles.x;
+			anglesArray[1] = angles.y;
+			AL.sourcei(handle, 0x1214/*AL.SOURCE_SPATIALIZE_SOFT*/, AL.FALSE);
+			AL.sourcefv(handle, 0x1030/*AL.STEREO_ANGLES*/, anglesArray);
+		}
+		return angles;
+	}
+
+	public function getPosition():Vector4 {
+		if (position == null) position = new Vector4();
+		return position;
+	}
 
 	public function setPosition(value:Vector4):Vector4 {
 		position.x = value.x;
@@ -482,11 +525,26 @@ class NativeAudioSource {
 		position.z = value.z;
 		position.w = value.w;
 
+		// OpenAL Soft Positions doesn't seem to do anything but panning?
 		if (!disposed) {
-			AL.distanceModel(AL.NONE);
+			AL.sourcei(handle, 0x1214/*AL.SOURCE_SPATIALIZE_SOFT*/, Math.abs(position.x) > 1e-04 ? AL.TRUE : AL.FALSE);
+			AL.sourcei(handle, AL.MAX_DISTANCE, 1);
 			AL.source3f(handle, AL.POSITION, position.x, position.y, position.z);
 		}
 		return position;
+	}
+
+	public function getPan():Float return getPosition().x;
+
+	public function setPan(value:Float):Float {
+		getPosition().setTo(value, 0, -Math.sqrt(1 - value * value));
+		if (!disposed) {
+			if (parent.buffer.channels > 1 && stereoAnglesExtensionSupported)
+				setAngles(Math.PI * (Math.min(-value * 2 + 1, 1)) / 6, -Math.PI * Math.min(value * 2 + 1, 1) / 6);
+			else
+				setPosition(position);
+		}
+		return value;
 	}
 
 	inline private function getFloat(x:Int64):Float return x.high * 4294967296. + (x.low >> 0);

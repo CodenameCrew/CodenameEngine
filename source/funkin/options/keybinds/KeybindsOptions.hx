@@ -127,6 +127,10 @@ class KeybindsOptions extends MusicBeatSubstate {
 						name: translate("engine.switchMod"),
 						control: 'SWITCHMOD'
 					},
+					{
+						name: translate("engine.fpsCounter"),
+						control: 'FPS_COUNTER'
+					},
 				]
 			},
 			{
@@ -193,7 +197,7 @@ class KeybindsOptions extends MusicBeatSubstate {
 			add(title);
 
 			k++;
-			for(e in category.settings) {
+			for (e in category.settings) {
 				var sparrowIcon:String = null;
 				var sparrowAnim:String = null;
 				if (e.sparrowIcon != null) sparrowIcon = e.sparrowIcon;

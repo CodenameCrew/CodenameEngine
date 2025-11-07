@@ -1,7 +1,5 @@
 package funkin.backend.system;
 
-import sys.io.File;
-import sys.FileSystem;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
@@ -9,17 +7,21 @@ import flixel.graphics.FlxGraphic;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.ui.FlxSoundTray;
+import funkin.backend.assets.AssetSource;
 import funkin.backend.assets.AssetsLibraryList;
 import funkin.backend.assets.ModsFolder;
-import funkin.backend.assets.AssetSource;
+import funkin.backend.system.framerate.Framerate;
 import funkin.backend.system.framerate.SystemInfo;
 import funkin.backend.system.modules.*;
 import funkin.editors.SaveWarning;
+import funkin.options.PlayerSettings;
 import openfl.Assets;
 import openfl.Lib;
 import openfl.display.Sprite;
 import openfl.text.TextFormat;
 import openfl.utils.AssetLibrary;
+import sys.FileSystem;
+import sys.io.File;
 
 #if ALLOW_MULTITHREADING
 import sys.thread.Thread;
@@ -40,7 +42,7 @@ class Main extends Sprite
 
 	public static var scaleMode:FunkinRatioScaleMode;
 	#if !mobile
-	public static var framerateSprite:funkin.backend.system.framerate.Framerate;
+	public static var framerateSprite:Framerate;
 	#end
 
 	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels).
@@ -79,7 +81,7 @@ class Main extends Sprite
 		addChild(game = new FunkinGame(gameWidth, gameHeight, MainState, Options.framerate, Options.framerate, skipSplash, startFullscreen));
 
 		#if (!mobile && !web)
-		addChild(framerateSprite = new funkin.backend.system.framerate.Framerate());
+		addChild(framerateSprite = new Framerate());
 		SystemInfo.init();
 		#end
 	}
@@ -156,6 +158,7 @@ class Main extends Sprite
 		FlxG.signals.focusGained.add(onFocus);
 		FlxG.signals.preStateSwitch.add(onStateSwitch);
 		FlxG.signals.postStateSwitch.add(onStateSwitchPost);
+		FlxG.signals.postUpdate.add(onUpdate);
 
 		FlxG.mouse.useSystemCursor = true;
 		#if DARK_MODE_WINDOW
@@ -208,6 +211,14 @@ class Main extends Sprite
 
 	private static function onStateSwitch() {
 		scaleMode.resetSize();
+	}
+
+	public static function onUpdate() {
+		if (PlayerSettings.solo.controls.DEV_CONSOLE)
+			NativeAPI.allocConsole();
+
+		if (PlayerSettings.solo.controls.FPS_COUNTER)
+			Framerate.debugMode = (Framerate.debugMode + 1) % 3;
 	}
 
 	private static function onStateSwitchPost() {

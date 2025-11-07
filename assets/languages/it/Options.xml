@@ -46,6 +46,7 @@
 
 		<group name="engine" prefix="engine.">
 			<str id="switchMod">Cambia Mod</str>
+			<str id="fpsCounter">Contatore FPS</str>
 		</group>
 
 		<str id="volume.up">Su</str>

@@ -46,8 +46,9 @@
 
 		<group name="engine" prefix="engine.">
 			<str id="switchMod">Cambiar Mod</str>
+			<str id="fpsCounter">Contador de FPS</str>
 		</group>
-		
+
 		<str id="category.volume">Volumen</str>
 		<str id="volume.up">Arriba</str>
 		<str id="volume.down">Abajo</str>

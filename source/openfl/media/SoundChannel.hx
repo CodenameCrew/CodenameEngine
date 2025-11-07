@@ -273,13 +273,9 @@ import lime.media.openal.AL;
 			if (__isValid)
 			{
 				#if lime
+				// TODO: implement SoundTransform.leftToRight, etc. with Native setAngles?
 				__source.gain = volume;
-
-				var position = __source.position;
-				position.x = pan;
-				position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
-				__source.position = position;
-
+				__source.pan = pan;
 				return value;
 				#end
 			}
