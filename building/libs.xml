@@ -17,7 +17,7 @@
 		<git name="flxanimate" url="https://github.com/CodenameCrew/cne-flxanimate" />
 		<git name="hxdiscord_rpc" url="https://github.com/CodenameCrew/cne-hxdiscord_rpc" skipDeps="true" />
 		<lib name="funkin-modchart" version="1.2.4" skipDeps="true" />
-		<lib name="hxvlc" version="1.9.3" skipDeps="true" />
+		<lib name="hxvlc" version="2.2.4" skipDeps="true" />
 
 		<!-- Documentation and other features -->
 		<git name="away3d" url="https://github.com/CodenameCrew/away3d" />
