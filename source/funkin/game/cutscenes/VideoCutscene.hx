@@ -62,21 +62,6 @@ class VideoCutscene extends Cutscene {
 		video.antialiasing = true;
 		#if (hxvlc < version("2.0.0"))
 		video.autoPause = false;  // Imma handle it better inside this class, mainly because of the pause menu  - Nex
-		#else
-		video.bitmap.onOpening.add(function() @:privateAccess {
-			#if (hxvlc < version("2.1.0"))
-			final onFocusGained = video.onFocusGained;
-			final onFocusLost = video.onFocusLost;
-			#else
-			final onFocusGained = video.bitmap.onFocusGained;
-			final onFocusLost = video.bitmap.onFocusLost;
-			#end
-
-			if (FlxG.signals.focusGained.has(onFocusGained))
-				FlxG.signals.focusGained.remove(onFocusGained);
-			if (FlxG.signals.focusLost.has(onFocusLost))
-				FlxG.signals.focusLost.remove(onFocusLost);
-		});
 		#end
 		video.bitmap.onEndReached.add(close);
 		video.bitmap.onFormatSetup.add(function() if (video.bitmap != null && video.bitmap.bitmapData != null) {
@@ -222,6 +207,7 @@ class VideoCutscene extends Cutscene {
 		}
 	}
 
+	#if (hxvlc < version("2.0.0"))
 	@:dox(hide) override public function onFocus() {
 		if(FlxG.autoPause && !paused) video.resume();
 		super.onFocus();
@@ -231,6 +217,7 @@ class VideoCutscene extends Cutscene {
 		if(FlxG.autoPause && !paused) video.pause();
 		super.onFocusLost();
 	}
+	#end
 
 	public override function pauseCutscene() {
 		video.pause();
