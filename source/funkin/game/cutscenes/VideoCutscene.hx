@@ -60,9 +60,6 @@ class VideoCutscene extends Cutscene {
 
 		add(video = new FlxVideoSprite());
 		video.antialiasing = true;
-		#if (hxvlc < version("2.0.0"))
-		video.autoPause = false;  // Imma handle it better inside this class, mainly because of the pause menu  - Nex
-		#end
 		video.bitmap.onEndReached.add(close);
 		video.bitmap.onFormatSetup.add(function() if (video.bitmap != null && video.bitmap.bitmapData != null) {
 			final width = video.bitmap.bitmapData.width;
@@ -206,18 +203,6 @@ class VideoCutscene extends Cutscene {
 			curSubtitle++;
 		}
 	}
-
-	#if (hxvlc < version("2.0.0"))
-	@:dox(hide) override public function onFocus() {
-		if(FlxG.autoPause && !paused) video.resume();
-		super.onFocus();
-	}
-
-	@:dox(hide) override public function onFocusLost() {
-		if(FlxG.autoPause && !paused) video.pause();
-		super.onFocusLost();
-	}
-	#end
 
 	public override function pauseCutscene() {
 		video.pause();
