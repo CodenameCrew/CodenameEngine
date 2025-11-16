@@ -81,6 +81,11 @@ class AudioSource
 	public var position(get, set):Vector4;
 
 	/**
+		The stereo pan of the audio source.
+	**/
+	public var pan(get, set):Float;
+
+	/**
 		The latency of the audio source.
 	**/
 	public var latency(get, never):Float;
@@ -126,7 +131,7 @@ class AudioSource
 	@:noCompletion inline private function init():Void
 	{
 		__backend.init();
-		activeSources.push(this);
+		if (!activeSources.contains(this)) activeSources.push(this);
 	}
 
 	/**
@@ -227,6 +232,16 @@ class AudioSource
 	@:noCompletion inline private function set_position(value:Vector4):Vector4
 	{
 		return __backend.setPosition(value);
+	}
+
+	@:noCompletion inline private function get_pan():Float
+	{
+		return __backend.getPan();
+	}
+
+	@:noCompletion inline private function set_pan(value:Float):Float
+	{
+		return __backend.setPan(value);
 	}
 
 	@:noCompletion inline private function get_latency():Float

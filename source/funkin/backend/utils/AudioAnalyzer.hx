@@ -20,8 +20,7 @@ typedef AudioAnalyzerCallback = Int->Int->Void;
  * An utility that analyze FlxSounds,
  * can be used to make waveform or real-time audio visualizer.
  * 
- * FlxSound.amplitude does work in CNE so if any case if your only checking for peak of current
- * time, use that instead.
+ * FlxSound.amplitude works so if any case if your only checking for peak of current time, use that instead.
  */
 final class AudioAnalyzer {
 	/**
@@ -296,7 +295,7 @@ final class AudioAnalyzer {
 		__check();
 	}
 
-	function __check() if (sound.buffer != buffer) {
+	function __check() if (sound != null && sound.buffer != buffer) {
 		byteSize = 1 << ((buffer = sound.buffer).bitsPerSample - 1);
 
 		#if (lime_cffi && lime_vorbis)
@@ -324,7 +323,7 @@ final class AudioAnalyzer {
 	 * @param maxFreq The maximum frequency to cap (Optional, default 22000.0, Above 23000.0 is not recommended).
 	 * @return Output of levels/bars that ranges from 0 to 1.
 	 */
-	public function getLevels(startPos:Float, ?volume:Float, barCount:Int, ?levels:Array<Float>, ?ratio:Float, ?minDb:Float, ?maxDb:Float, ?minFreq:Float, ?maxFreq:Float):Array<Float>
+	public function getLevels(?startPos:Float, ?volume:Float, barCount:Int, ?levels:Array<Float>, ?ratio:Float, ?minDb:Float, ?maxDb:Float, ?minFreq:Float, ?maxFreq:Float):Array<Float>
 		return inline getLevelsFromFrequencies(__frequencies = getFrequencies(startPos, volume, __frequencies), buffer.sampleRate, barCount, levels, ratio, minDb, maxDb, minFreq, maxFreq);
 
 	/**
@@ -334,8 +333,8 @@ final class AudioAnalyzer {
 	 * @param frequencies The output for getting the frequencies, to avoid memory leaks (Optional).
 	 * @return Output of frequencies.
 	 */
-	public function getFrequencies(startPos:Float, ?volume:Float, ?frequencies:Array<Float>):Array<Float>
-		return inline getFrequenciesFromSamples(__freqSamples = getSamples(startPos, fftN, true, -1, volume, __freqSamples), fftN, useWindowingFFT, frequencies);
+	public function getFrequencies(?startPos:Float, ?volume:Float, ?frequencies:Array<Float>):Array<Float>
+		return inline getFrequenciesFromSamples(__freqSamples = getSamples(startPos != null ? startPos : sound.time, fftN, true, -1, volume, __freqSamples), fftN, useWindowingFFT, frequencies);
 
 	/**
 	 * Analyzes an attached FlxSound from startPos to endPos in milliseconds to get the amplitudes.
@@ -467,36 +466,37 @@ final class AudioAnalyzer {
 		@:privateAccess return sound._source != null && sound._source.__backend != null && sound._source.__backend.playing;
 
 	inline function __readStream(startPos:Float, endPos:Float, callback:AudioAnalyzerCallback):Float @:privateAccess {
-		var backend = sound._source.__backend;
-		var i = backend.bufferSizes.length - backend.queuedBuffers;
-		var time = backend.bufferTimes[i] * 1000;
+		final backend = sound._source.__backend;
 
+		// TODO: Wrap it with try until i figured it out an effective way to do this...
+		// So... sometimes it just uses the decoder even if it looks good?? please help
 		var n = Math.floor((endPos - startPos) * __toBits);
-		if (startPos >= time && startPos < backend.bufferTimes[backend.bufferSizes.length - 1] * 1000) {
-			var pos = Math.floor((startPos - time) * __toBits), buf = backend.bufferDatas[i].buffer, size = backend.bufferSizes[i], c = 0;
+		var i = backend.bufferLengths.length - backend.queuedBuffers - 1, time:Float;
+		while (++i < backend.bufferLengths.length) if (startPos >= (time = backend.bufferTimes[i] * 1000)) {
+			var pos = Math.floor((startPos - time) * __toBits), buf = backend.bufferDatas[i].buffer, size = backend.bufferLengths[i], c = 0;
 			while (pos >= size) {
-				if (++i >= backend.bufferSizes.length) {
-					n = 0;
-					break;
-				}
+				if (++i >= backend.bufferLengths.length) break;
 				pos -= size;
 				buf = backend.bufferDatas[i].buffer;
-				size = backend.bufferSizes[i];
+				size = backend.bufferLengths[i];
 			}
-			pos -= pos % __sampleSize;
+			if (i >= backend.bufferLengths.length) break;
+			if ((pos -= pos % __sampleSize) < 0) pos = 0;
 			n -= pos % __sampleSize;
 
 			while (n > 0) {
 				callback(getByte(buf, pos, __wordSize), c);
 				if (++c > buffer.channels) c = 0;
 				if ((pos += __wordSize) >= size) {
-					if (++i >= backend.bufferSizes.length) break;
+					if (++i >= backend.bufferLengths.length) break;
 					pos = 0;
 					buf = backend.bufferDatas[i].buffer;
-					size = backend.bufferSizes[i];
+					size = backend.bufferLengths[i];
 				}
 				n -= __wordSize;
 			}
+
+			break;
 		}
 
 		return endPos - (n / __toBits);

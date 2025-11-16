@@ -18,7 +18,7 @@ class NumOption extends TextOption {
 	var __number:Alphabet;
 
 	function set_currentValue(v:Float):Float {
-		if (__number != null) __number.text = ": $v";
+		if (__number != null) __number.text = ': $v';
 		return currentValue = v;
 	}
 
