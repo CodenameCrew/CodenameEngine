@@ -39,12 +39,11 @@ class FramerateCounter extends Sprite {
 
 		super.__enterFrame(t);
 
-		lastFPS = CoolUtil.fpsLerp(lastFPS, FlxG.rawElapsed == 0 ? 0 : (1 / FlxG.rawElapsed), 0.25);
+		lastFPS = FlxMath.lerp(lastFPS, t <= 0 ? 0 : (1000 / t), 1.0 - Math.pow(0.75, t * 0.06));
 
-		final currentTime = Date.now().getTime();
-		if (currentTime - lastUpdateTime >= updateInterval) {
+		if ((lastUpdateTime += t) >= updateInterval) {
 			fpsNum.text = Std.string(Math.floor(lastFPS));
-			lastUpdateTime = currentTime;
+			lastUpdateTime = 0;
 		}
 
 		fpsLabel.x = fpsNum.x + fpsNum.width;
