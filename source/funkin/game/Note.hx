@@ -67,7 +67,7 @@ class Note extends FlxSprite
 	 * 
 	 * Decreases by 1 every time a hold piece gets destroyed.
 	 */
-	public var tail:Int = 0;
+	public var tailCount:Int = 0;
 
 	/**
 	 * Name of the splash.

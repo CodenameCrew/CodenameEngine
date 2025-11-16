@@ -163,7 +163,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 					len -= curLen;
 
 					if (prev != null && prev.sustainParent != null)
-						prev.sustainParent.tail++;
+						prev.sustainParent.tailCount++;
 				}
 			}
 		}
@@ -246,7 +246,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		{
 			daNote.updateSustain(__updateNote_event.strum);
 
-			if (daNote.tripTimer > 0 && daNote.tail > 3)
+			if (daNote.tripTimer > 0 && daNote.tailCount > 3)
 			{
 				daNote.tripTimer -= 0.05 / daNote.sustainLength;
 				if (daNote.tripTimer <= 0)
@@ -438,8 +438,8 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		var event:SimpleNoteEvent = EventManager.get(SimpleNoteEvent).recycle(note);
 		onNoteDelete.dispatch(event);
 		if (!event.cancelled) {
-			if (note.isSustainNote && note.sustainParent != null && note.sustainParent.tail > 0)
-				note.sustainParent.tail--;
+			if (note.isSustainNote && note.sustainParent != null && note.sustainParent.tailCount > 0)
+				note.sustainParent.tailCount--;
 			note.kill();
 			notes.remove(note, true);
 			note.destroy();
