@@ -121,7 +121,7 @@ final class NoteHitEvent extends CancellableEvent {
 	/**
 	 * Whether note hits are judged in the old way or not.
 	 */
-	public var legacyJudge:Bool = false;
+	public var legacyJudge(get, never):Bool;
 
 	/**
 	 * Prevents the default sing animation from being played.
@@ -200,4 +200,7 @@ final class NoteHitEvent extends CancellableEvent {
 		characters = [char];
 		return char;
 	}
+
+	private inline function get_legacyJudge():Bool
+		return Flags.CURRENT_API_VERSION == 1;
 }
