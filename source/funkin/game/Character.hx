@@ -109,17 +109,17 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 	public function swapLeftRightAnimations() {
 		// Find all "alternate" poses
-		var altPoses = ['']; // Pre-fill with empty string
-		var baseStr = 'singRIGHT'; // Any "sing" animation string could work, really
+		var variants = ['']; // Pre-fill with empty string
+		var pose = 'singRIGHT'; // Any "sing" animation string could work, really
 		for (a in xml.nodes.anim) {
-			if (a.att.name != baseStr && StringTools.startsWith(a.att.name, baseStr)) {
-				altPoses.push(a.att.name.substring(baseStr.length));
+			if (a.att.name != pose && StringTools.startsWith(a.att.name, pose)) {
+				variants.push(a.att.name.substring(pose.length));
 			}
 		}
 
-		for (i in altPoses) {
-			CoolUtil.switchAnimFrames(animation.getByName('singRIGHT' + i), animation.getByName('singLEFT' + i));
-			switchOffset('singLEFT' + i, 'singRIGHT' + i);
+		for (i in variants) {
+			CoolUtil.switchAnimFrames(animation.getByName('singRIGHT$i'), animation.getByName('singLEFT$i'));
+			switchOffset('singLEFT$i', 'singRIGHT$i');
 		}
 
 		__swappedLeftRightAnims = true;
