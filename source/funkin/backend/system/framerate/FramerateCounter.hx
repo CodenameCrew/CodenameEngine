@@ -13,7 +13,7 @@ class FramerateCounter extends Sprite {
 
 	private var accumulatedTime:Float = openfl.Lib.getTimer();
 
-	private final updateInterval:Float = 1000 / 15;
+	private final updateInterval:Float = 1 / 15;
 	private var lastUpdateTime:Float = 0;
 
 	public function new() {
