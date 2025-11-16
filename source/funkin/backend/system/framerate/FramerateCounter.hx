@@ -38,16 +38,12 @@ class FramerateCounter extends Sprite {
 		if (alpha <= 0.05) return;
 
 		super.__enterFrame(t);
-		
-		if (Framerate.debugMode != 0) {
-			lastFPS = CoolUtil.fpsLerp(lastFPS, FlxG.rawElapsed == 0 ? 0 : (1 / FlxG.rawElapsed), 0.25);
-			final currentTime = Date.now().getTime();
-			if (currentTime - lastUpdateTime >= updateInterval) {
-				updateFPSDisplay();
-				updateFPSPosition();
-				lastUpdateTime = currentTime;
-			}
-			return;
+
+		lastFPS = CoolUtil.fpsLerp(lastFPS, FlxG.rawElapsed == 0 ? 0 : (1 / FlxG.rawElapsed), 0.25);
+		final currentTime = Date.now().getTime();
+		if (currentTime - lastUpdateTime >= updateInterval) {
+			updateFPSDisplay();
+			lastUpdateTime = currentTime;
 		}
 		updateFPSPosition();
 	}
