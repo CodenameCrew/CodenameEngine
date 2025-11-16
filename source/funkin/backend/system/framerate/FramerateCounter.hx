@@ -9,6 +9,10 @@ class FramerateCounter extends Sprite {
 	public var fpsLabel:TextField;
 	public var lastFPS:Float = 0;
 
+	private var frameCount:Int = 0;
+
+	private var accumulatedTime:Float = openfl.Lib.getTimer();
+
 	private final updateInterval:Float = 1000 / 15;
 	private var lastUpdateTime:Float = 0;
 
@@ -39,11 +43,20 @@ class FramerateCounter extends Sprite {
 
 		super.__enterFrame(t);
 
-		lastFPS = FlxMath.lerp(lastFPS, t <= 0 ? 0 : (1000 / t), 1.0 - Math.pow(0.75, t * 0.06));
+		frameCount++;
 
-		if ((lastUpdateTime += t) >= updateInterval) {
-			fpsNum.text = Std.string(Math.floor(lastFPS));
-			lastUpdateTime = 0;
+		if ((lastUpdateTime += FlxG.rawElapsed) >= updateInterval)
+		{
+			final timer = openfl.Lib.getTimer();
+
+			final time = timer - accumulatedTime;
+
+			accumulatedTime = timer;
+
+			lastFPS = FlxMath.lerp(lastFPS, time <= 0 ? 0 : (1000 / time) * frameCount, 1.0 - Math.pow(0.75, time * 0.06));
+
+			fpsNum.text = Std.string(Math.round(lastFPS));
+			lastUpdateTime = frameCount = 0;
 		}
 
 		fpsLabel.x = fpsNum.x + fpsNum.width;
