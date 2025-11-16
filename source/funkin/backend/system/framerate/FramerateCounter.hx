@@ -40,19 +40,13 @@ class FramerateCounter extends Sprite {
 		super.__enterFrame(t);
 
 		lastFPS = CoolUtil.fpsLerp(lastFPS, FlxG.rawElapsed == 0 ? 0 : (1 / FlxG.rawElapsed), 0.25);
+
 		final currentTime = Date.now().getTime();
 		if (currentTime - lastUpdateTime >= updateInterval) {
-			updateFPSDisplay();
+			fpsNum.text = Std.string(Math.floor(lastFPS));
 			lastUpdateTime = currentTime;
 		}
-		updateFPSPosition();
-	}
 
-	private inline function updateFPSDisplay():Void
-		fpsNum.text = Std.string(Math.floor(lastFPS));
-
-	private inline function updateFPSPosition():Void
-	{
 		fpsLabel.x = fpsNum.x + fpsNum.width;
 		fpsLabel.y = (fpsNum.y + fpsNum.height) - fpsLabel.height;
 	}
