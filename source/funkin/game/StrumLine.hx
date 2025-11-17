@@ -161,6 +161,9 @@ class StrumLine extends FlxTypedGroup<Strum> {
 					curLen = Math.min(len, Conductor.stepCrochet);
 					notes.members[total-(il++)-1] = prev = new Note(this, note, true, curLen, note.sLen - len, prev);
 					len -= curLen;
+
+					if (prev != null && prev.sustainParent != null)
+						prev.sustainParent.tailCount++;
 				}
 			}
 		}
@@ -236,10 +239,23 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 
 		if (__updateNote_event.strum == null) return;
-
 		if (__updateNote_event.__reposNote) __updateNote_event.strum.updateNotePosition(daNote);
+
+
 		if (daNote.isSustainNote)
+		{
 			daNote.updateSustain(__updateNote_event.strum);
+
+			if (daNote.tripTimer > 0 && daNote.tailCount > 3)
+			{
+				daNote.tripTimer -= 0.05 / daNote.sustainLength;
+				if (daNote.tripTimer <= 0)
+				{
+					daNote.tripTimer = 0;
+					daNote.canBeHit = false;
+				}
+			}
+		}
 	}
 
 	var __funcsToExec:Array<Note->Void> = [];
@@ -249,16 +265,27 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	var __notePerStrum:Array<Note> = [];
 
 	function __inputProcessPressed(note:Note) {
-		if (__pressed[note.strumID] && note.isSustainNote && note.strumTime < __updateNote_songPos && !note.wasGoodHit) {
+		if (__pressed[note.strumID] && note.isSustainNote && note.sustainParent != null && note.sustainParent.wasGoodHit && note.strumTime < __updateNote_songPos && !note.wasGoodHit) {
+			note.tripTimer = 1;
 			PlayState.instance.goodNoteHit(this, note);
 			note.updateSustainClip();
 		}
 	}
 	function __inputProcessJustPressed(note:Note) {
 		if (__justPressed[note.strumID] && !note.isSustainNote && !note.wasGoodHit && note.canBeHit) {
-			if (__notePerStrum[note.strumID] == null) 											__notePerStrum[note.strumID] = note;
-			else if (Math.abs(__notePerStrum[note.strumID].strumTime - note.strumTime) <= 2)  	deleteNote(note);
-			else if (note.strumTime < __notePerStrum[note.strumID].strumTime)					__notePerStrum[note.strumID] = note;
+			var cur = __notePerStrum[note.strumID];
+			var songPos = __updateNote_songPos;
+
+			var noteDist = Math.abs(note.strumTime - songPos);
+			var curDist = cur != null ? Math.abs(cur.strumTime - songPos) : 999999;
+
+			var notePenalty = note.avoid ? 1 : 0;
+			var curPenalty = (cur != null && cur.avoid) ? 1 : 0;
+
+			if (cur == null
+				|| notePenalty < curPenalty
+				|| (notePenalty == curPenalty && noteDist < curDist))
+				__notePerStrum[note.strumID] = note;
 		}
 	}
 
@@ -272,14 +299,14 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		if (cpu) return;
 
 		__funcsToExec.clear();
-		__pressed.clear();
-		__justPressed.clear();
-		__justReleased.clear();
+		__pressed.resize(members.length);
+		__justPressed.resize(members.length);
+		__justReleased.resize(members.length);
 
-		for(s in members) {
-			__pressed.push(s.__getPressed(this));
-			__justPressed.push(s.__getJustPressed(this));
-			__justReleased.push(s.__getJustReleased(this));
+		for(i in 0...members.length) {
+			__pressed[i] = members[i].__getPressed(this);
+			__justPressed[i] = members[i].__getJustPressed(this);
+			__justReleased[i] = members[i].__getJustReleased(this);
 		}
 
 		var event = EventManager.get(InputSystemEvent).recycle(__pressed, __justPressed, __justReleased, this, id);
@@ -411,6 +438,8 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		var event:SimpleNoteEvent = EventManager.get(SimpleNoteEvent).recycle(note);
 		onNoteDelete.dispatch(event);
 		if (!event.cancelled) {
+			if (note.isSustainNote && note.sustainParent != null && note.sustainParent.tailCount > 0)
+				note.sustainParent.tailCount--;
 			note.kill();
 			notes.remove(note, true);
 			note.destroy();
