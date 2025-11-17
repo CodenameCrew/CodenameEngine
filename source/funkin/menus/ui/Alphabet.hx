@@ -345,6 +345,10 @@ class Alphabet extends FlxSprite {
 	}
 
 	function drawLetter(camera) {
+		// i'll have to improve this with blit rendering. not sure how.
+		// i can't just store all the bitmaps in the component since it's also responsable for flips and colors.
+		if (FlxG.renderBlit)
+			updateFramePixels();
 		_frame.prepareMatrix(_matrix, ANGLE_0, checkFlipX() != camera.flipX, checkFlipY() != camera.flipY);
 
 		_matrix.translate(_frame.frame.width * -0.5, _frame.frame.height * -0.5);
