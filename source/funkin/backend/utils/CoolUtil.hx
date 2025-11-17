@@ -1421,6 +1421,21 @@ final class CoolUtil
 
 		return toProperty.setValue(fromProperty.getValue());
 	}
+
+	private static var lastTimeStamp:Float = -1;
+	public static function debugTimeStamp(?customText:String = "Quick Debug") {
+		if (lastTimeStamp > 0) {
+			var endTimeStamp = haxe.Timer.stamp();
+			Logs.traceColored([
+				Logs.logText("[Haxe Time Stamp] ", YELLOW),
+				Logs.logText(customText),
+				Logs.logText(' | Time stamp took ${(endTimeStamp - lastTimeStamp)} milliseconds.'),
+			], INFO);
+			lastTimeStamp = -1;
+			return;
+		}
+		lastTimeStamp = haxe.Timer.stamp();
+	}
 }
 
 class PropertyInfo {
