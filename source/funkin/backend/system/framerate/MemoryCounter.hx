@@ -36,7 +36,7 @@ class MemoryCounter extends Sprite {
 		if (alpha <= 0.05) return;
 		super.__enterFrame(t);
 
-		var mem = MemoryUtil.currentMemUsage();
+		final mem = MemoryUtil.currentMemUsage();
 
 		if (mem == memory) {
 			updateLabelPosition();
