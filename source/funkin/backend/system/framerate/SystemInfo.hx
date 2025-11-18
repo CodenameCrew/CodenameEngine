@@ -157,15 +157,19 @@ class SystemInfo extends FramerateCategory {
 	static var sizeLabels:Array<String> = [" MB", " GB", " TB"];
 	static function getSizeString(size:Float):String
 	{
-		var rSize:Float = size;
-		var label:Int = 0;
-		var len = sizeLabels.length;
-		while (rSize >= 1024 && label < len - 1)
-		{
-			label++;
-			rSize /= 1024;
+		if (size < 1024 * 1024)
+		{ // < 1GB
+			return Std.int(size / 1024) + " MB";
 		}
-		return Std.int(rSize) + ((label <= 1) ? "" : "." + CoolUtil.addZeros(Std.string(Std.int((rSize % 1) * 100)), 2)) + sizeLabels[label];
+		else if (size < 1024 * 1024 * 1024)
+		{ // < 1TB
+			return Std.int(size / (1024 * 1024)) + " GB";
+		}
+		else
+		{ // >= 1TB
+			var tb = size / (1024 * 1024 * 1024);
+			return Std.int(tb) + "." + CoolUtil.addZeros(Std.string(Std.int((tb % 1) * 100)), 2) + " TB";
+		}
 	}
 
 	public function new() {
