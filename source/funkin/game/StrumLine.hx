@@ -216,7 +216,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		if (__updateNote_event.cancelled) return;
 
 		if (__updateNote_event.__updateHitWindow) {
-			var hitWindow = PlayState.instance.hitWindow;
+			var hitWindow = Flags.USE_LEGACY_TIMING ? PlayState.instance.hitWindow : PlayState.instance.ratingManager.lastHitWindow;
 			daNote.canBeHit = (daNote.strumTime > __updateNote_songPos - (hitWindow * daNote.latePressWindow)
 				&& daNote.strumTime < __updateNote_songPos + (hitWindow * daNote.earlyPressWindow));
 
