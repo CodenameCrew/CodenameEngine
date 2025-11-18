@@ -16,6 +16,12 @@ class UIContextMenu extends MusicBeatSubstate {
 	public var contextMenuOptions:Array<UIContextMenuOptionSpr> = [];
 	public var separators:Array<FlxSprite> = [];
 
+	public var childContextMenu:UIContextMenu = null;
+	public var parentContextMenu:UIContextMenu = null;
+	private var childContextMenuOptionIndex:Int = -1;
+	@:allow(funkin.editors.ui.UIContextMenu)
+	private var lastHoveredOptionIndex:Int = -1;
+
 	var scroll:Float = 0.0;
 	var flipped:Bool = false;
 
@@ -96,6 +102,10 @@ class UIContextMenu extends MusicBeatSubstate {
 			for(o in separators)
 				o.x -= bg.bWidth;
 		}
+
+		for(o in contextMenuOptions) {
+			o.postCreate();
+		}
 	}
 
 	public function select(option:UIContextMenuOption) {
@@ -105,12 +115,12 @@ class UIContextMenu extends MusicBeatSubstate {
 		if (callback != null)
 			callback(this, index, option);
 		if (option.closeOnSelect == null ? true : option.closeOnSelect)
-			close();
+			closeWithParents();
 	}
 
 	public override function update(elapsed:Float) {
-		if (__oobDeletion && FlxG.mouse.justPressed && !bg.hoveredByChild)
-			close();
+		if (__oobDeletion && FlxG.mouse.justPressed && !bg.hoveredByChild && !hoveringAnyChildren())
+			closeWithParents();
 
 		__oobDeletion = true;
 
@@ -121,6 +131,14 @@ class UIContextMenu extends MusicBeatSubstate {
 
 		contextCam.scroll.y = CoolUtil.fpsLerp(contextCam.scroll.y, scroll, 0.5);
 		contextCam.alpha = CoolUtil.fpsLerp(contextCam.alpha, 1, 0.25);
+
+		if (parentContextMenu != null) {
+			if (hoveringAnyParents() && parentContextMenu.lastHoveredOptionIndex != parentContextMenu.childContextMenuOptionIndex) {
+				closeWithChildren();
+				parentContextMenu.childContextMenuOptionIndex = -1;
+			}
+		}
+
 	}
 
 	public override function destroy() {
@@ -129,6 +147,56 @@ class UIContextMenu extends MusicBeatSubstate {
 		if (UIState.state.curContextMenu == this)
 			UIState.state.curContextMenu = null;
 	}
+
+	public function openChildContextMenu(optionSpr:UIContextMenuOptionSpr) {
+		var index = contextMenuOptions.indexOf(optionSpr);
+		if (index != childContextMenuOptionIndex) {
+			childContextMenuOptionIndex = index;
+			var child = new UIContextMenu(optionSpr.option.childs, null, optionSpr.x + optionSpr.bWidth + 4, optionSpr.y - 4);
+			persistentDraw = true;
+			persistentUpdate = true;
+			child.parentContextMenu = this;
+			childContextMenu = child;
+			openSubState(child);
+		}
+	}
+	public function closeWithParents() {
+		close();
+		if (parentContextMenu != null) {
+			parentContextMenu.closeWithParents();
+		}
+	}
+	public function closeWithChildren() {
+		if (childContextMenu != null) {
+			childContextMenu.closeWithChildren();
+		}
+		close();
+	}
+	public function hoveringAnyParents() {
+		if (parentContextMenu != null) {
+			return parentContextMenu.bg.hoveredByChild || parentContextMenu.hoveringAnyParents();
+		}
+		return false;
+	}
+	public function hoveringAnyChildren() {
+		if (childContextMenu != null) {
+			return childContextMenu.bg.hoveredByChild || childContextMenu.hoveringAnyChildren();
+		}
+		return false;
+	}
+}
+
+typedef UIContextMenuSliderOptionData = {
+	var min:Float;
+	var max:Float;
+	var value:Float;
+	var ?onChange:UIContextMenuOption->Void;
+	//default = 120, ignored if sameLine = false
+	var ?width:Float;
+	//disables stepper and text if false, default = false
+	var ?showValues:Bool;
+	//if true, the slider will be on the same line as the label text, otherwise it will be on the next line below the label
+	var ?sameLine:Bool;
 }
 
 typedef UIContextMenuCallback = UIContextMenu->Int->UIContextMenuOption->Void;
@@ -144,13 +212,24 @@ typedef UIContextMenuOption = {
 	var ?button:UIContextMenuOptionSpr;
 	var ?onCreate:UIContextMenuOptionSpr->Void;
 	var ?childs:Array<UIContextMenuOption>;
+	var ?slider:UIContextMenuSliderOptionData;
+	var ?onIconClick:UIContextMenuOption->Void;
+}
+
+enum abstract UIContextMenuOptionType(Int) from Int {
+	var DEFAULT = 0;
+	var SUBMENU = 1;
+	var SLIDER = 2;
 }
 
 class UIContextMenuOptionSpr extends UISliceSprite {
 	public var label:UIText;
 	public var labelKeybind:UIText;
-	public var icon:FlxSprite;
+	public var icon:UIContextMenuOptionIcon;
 	public var option:UIContextMenuOption;
+	public var optionType:UIContextMenuOptionType = DEFAULT;
+	
+	public var slider:UISlider = null;
 
 	var parent:UIContextMenu;
 
@@ -160,40 +239,96 @@ class UIContextMenuOptionSpr extends UISliceSprite {
 		this.parent = parent;
 		this.color = option.color;
 
-		if (option.icon != null && option.icon > 0) {
-			icon = new FlxSprite(0, 0).loadGraphic(Paths.image('editors/ui/context-icons'), true, 20, 20);
-			icon.animation.add('icon', [option.icon-1], 0, true);
-			icon.animation.play('icon');
-		}
+		var w:Int = label.frameWidth + 22;
+		var h:Int = label.frameHeight;
 
-		if (option.keybinds == null) {
-			if (option.keybind != null) {
-				option.keybinds = [option.keybind];
-			}
-		}
+		if (option.childs != null) optionType = SUBMENU;
+		if (option.slider != null) optionType = SLIDER;
 
-		if (option.keybinds != null || option.keybindText != null) {
-			var text = if(option.keybindText == null) {
-				var textKeys:Array<String> = [];
-				for (o in option.keybinds[0]) {
-					if (Std.int(o) > 0) {
-						textKeys.push(o.toUIString());
+		switch(optionType) {
+
+			case SUBMENU:
+				labelKeybind = new UIText(label.x + label.frameWidth + 10, 2, 0, ">");
+			case SLIDER:
+				labelKeybind = new UIText(label.x + label.frameWidth + 10, 2, 0, "");
+				//slider needs to be created after so that it can match the menu width (when not on the same line)
+				if (option.slider.sameLine != null && option.slider.sameLine) {
+					var sliderWidth = option.slider.width != null ? Std.int(option.slider.width) : 120;
+					w += 120 + slider.barWidth;
+				} else {
+					h *= 2;	
+				}
+				
+			default:
+				if (option.keybinds == null) {
+					if (option.keybind != null) {
+						option.keybinds = [option.keybind];
 					}
 				}
-				textKeys.join("+");
-			} else {
-				option.keybindText;
-			}
-			labelKeybind = new UIText(label.x + label.frameWidth + 10, 2, 0, text);
-			labelKeybind.alpha = 0.75;
+
+				if (option.keybinds != null || option.keybindText != null) {
+					var text = if(option.keybindText == null) {
+						var textKeys:Array<String> = [];
+						for (o in option.keybinds[0]) {
+							if (Std.int(o) > 0) {
+								textKeys.push(o.toUIString());
+							}
+						}
+						textKeys.join("+");
+					} else {
+						option.keybindText;
+					}
+					labelKeybind = new UIText(label.x + label.frameWidth + 10, 2, 0, text);
+					labelKeybind.alpha = 0.75;
+
+					w = Std.int(labelKeybind.x + labelKeybind.frameWidth + 10);
+				}
 		}
 
-		super(x, y, labelKeybind != null ? Std.int(labelKeybind.x + labelKeybind.frameWidth + 10) : (label.frameWidth + 22), label.frameHeight, 'editors/ui/menu-item');
+		super(x, y, w, h, 'editors/ui/menu-item');
+
 		members.push(label);
-		if (icon != null)
-			members.push(icon);
+		updateIcon();
+
 		if (labelKeybind != null)
-			members.push(labelKeybind);
+			members.push(labelKeybind);			
+	}
+
+	//Called after all options are created and the context menu width/height is final
+	public function postCreate() {
+		switch(optionType) {
+			case SLIDER:
+
+				var sliderWidth = bWidth-50;
+				if (option.slider.sameLine != null && option.slider.sameLine) {
+					option.slider.width != null ? Std.int(option.slider.width) : 120;
+				}
+
+				slider = new UISlider(0, 0, sliderWidth, option.slider.value, 
+					[{start: option.slider.min, end: option.slider.max, size: option.slider.max-option.slider.min}], false);
+
+				slider.onChange = function(v) {
+					option.slider.value = v;
+					if (option.slider.onChange != null) option.slider.onChange(option);
+					updateIcon(); //check if icon has changed
+					@:privateAccess
+					labelKeybind.text = '${CoolUtil.quantize(slider.__barProgress * 100, 1)}%';
+				};
+				slider.value = option.slider.value;
+
+				if (option.slider.showValues == null || !option.slider.showValues) {
+					slider.startText.visible = false;
+					slider.endText.visible = false;
+					slider.valueStepper.visible = false;
+					slider.valueStepper.selectable = false;
+				}
+
+				members.push(slider);
+			case SUBMENU:
+
+			default:
+
+		}
 	}
 
 	public override function draw() {
@@ -205,12 +340,71 @@ class UIContextMenuOptionSpr extends UISliceSprite {
 			icon.follow(this, 0, 0);
 		if (labelKeybind != null)
 			labelKeybind.follow(this, bWidth - 10 - labelKeybind.frameWidth, 2);
+		if (slider != null) {
+			if (option.slider.sameLine != null && option.slider.sameLine) {
+				slider.follow(this, bWidth - 18 - slider.barWidth - (slider.endText.visible ? slider.endText.width : 0), 5);
+			} else {
+				slider.follow(this, 20, 5 + label.frameHeight);
+			}
+		}
 		super.draw();
 	}
 
 	public override function onHovered() {
 		super.onHovered();
-		if (FlxG.mouse.justReleased)
-			parent.select(option);
+
+		parent.lastHoveredOptionIndex = parent.contextMenuOptions.indexOf(this);
+
+		switch(optionType) {
+			case SUBMENU:
+				parent.openChildContextMenu(this);
+			case SLIDER:
+				
+			default:
+				if (FlxG.mouse.justReleased)
+					parent.select(option);
+		}
+	}
+
+	public function updateIcon() {
+		var currentIcon = option.icon != null ? option.icon : 0;
+
+		if (icon == null && currentIcon > 0) {
+			members.push(icon = new UIContextMenuOptionIcon(option));
+		}
+		if (icon != null) {
+			icon.updateIconState(currentIcon);
+		}
+	}
+}
+
+class UIContextMenuOptionIcon extends UISprite {
+	private var option:UIContextMenuOption;
+	private var _lastState:Int = 0;
+	override public function new(option:UIContextMenuOption) {
+		super();
+		this.option = option;
+		loadGraphic(Paths.image('editors/ui/context-icons'), true, 20, 20);
+		selectable = option.onIconClick != null;
+		cursor = option.onIconClick != null ? CLICK : ARROW;
+	}
+
+	public function updateIconState(state:Int) {
+		if (_lastState == state) return;
+		_lastState = state;
+
+		visible = state > 0;
+		if (state > 0) {
+			animation.add('icon', [state-1], 0, true);
+			animation.play('icon');
+		}
+	}
+
+	public override function onHovered() {
+		super.onHovered();
+
+		if (FlxG.mouse.justReleased && option.onIconClick != null) {
+			option.onIconClick(option);
+		}
 	}
 }
