@@ -104,6 +104,7 @@ class CharacterAnimsWindow extends UIButtonList<CharacterAnimButton> {
 		if (character.getAnimName() == button.anim)
 			@:privateAccess CharacterEditor.instance._animation_down(null);
 
+		character.ghosts.remove(button.anim);
 		character.removeAnimation(button.anim);
 		if (character.animOffsets.exists(button.anim)) character.animOffsets.remove(button.anim);
 		if (character.animDatas.exists(button.anim)) character.animDatas.remove(button.anim);
