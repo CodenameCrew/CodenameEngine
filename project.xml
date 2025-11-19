@@ -3,9 +3,9 @@
 	<!-- _________________________ Application Settings _________________________ -->
 	<app
 		title="Friday Night Funkin' - Codename Engine" main="funkin.backend.system.Main"
-		file="CodenameEngine" packageName="com.yoshman29.codenameengine"
-		package="com.yoshman29.codenameengine"
-		version="1.0.1" company="Yoshman29" />
+		file="CodenameEngine" packageName="com.codenamecrew.codenameengine"
+		package="com.codenamecrew.codenameengine"
+		version="1.0.1" company="CodenameCrew" />
 
 	<!--
 		CHANGE THE SAVE PATH & NAME FOR YOUR MOD HERE!
