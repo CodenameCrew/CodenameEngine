@@ -9,9 +9,7 @@ class KeybindsOptions extends MusicBeatSubstate {
 	public static var instance:KeybindsOptions;
 
 	public function translate(id:String, ?args:Array<Dynamic>)
-		return TU.translate("KeybindsOptions." + id, args);
-
-	public var categories:Array<ControlsCategory> = [];
+		return TU.translate(id, args);
 
 	public var settingCam:FlxCamera;
 
@@ -29,130 +27,131 @@ class KeybindsOptions extends MusicBeatSubstate {
 	];
 	public var camFollow:FlxObject = new FlxObject(0, 0, 2, 2);
 
-	var isSubState:Bool = false;
-
-	public override function create() {
-		categories = [
-			{
-				name: translate("category.notes"),
-				settings: [
-					{
-						sparrowIcon: "game/notes/default",
-						sparrowAnim: "purple0",
-						name: translate("left"),
-						control: 'NOTE_LEFT'
-					},
-					{
-						sparrowIcon: "game/notes/default",
-						sparrowAnim: "blue0",
-						name: translate("down"),
-						control: 'NOTE_DOWN'
-					},
-					{
-						sparrowIcon: "game/notes/default",
-						sparrowAnim: "green0",
-						name: translate("up"),
-						control: 'NOTE_UP'
-					},
-					{
-						sparrowIcon: "game/notes/default",
-						sparrowAnim: "red0",
-						name: translate("right"),
-						control: 'NOTE_RIGHT'
-					},
-				]
-			},
-			{
-				name: translate("category.ui"),
-				settings: [
-					{
-						name: translate("left"),
-						control: 'LEFT'
-					},
-					{
-						name: translate("down"),
-						control: 'DOWN'
-					},
-					{
-						name: translate("up"),
-						control: 'UP'
-					},
-					{
-						name: translate("right"),
-						control: 'RIGHT'
-					},
-					{
-						name: translate("ui.accept"),
-						control: 'ACCEPT'
-					},
-					{
-						name: translate("ui.back"),
-						control: 'BACK'
-					},
-					{
-						name: translate("ui.reset"),
-						control: 'RESET'
-					},
-					{
-						name: translate("ui.pause"),
-						control: 'PAUSE'
-					},
-					{
-						name: translate("ui.changeMode"),
-						control: 'CHANGE_MODE'
-					},
-				]
-			},
+	public var categories:Array<ControlsCategory> = [];
+	public static var defaultCategories:Array<ControlsCategory> = [
 		{
-			name: translate("category.volume"),
+			name: "category.notes",
 			settings: [
 				{
-					name: translate("volume.up"),
+					sparrowIcon: "game/notes/default",
+					sparrowAnim: "purple0",
+					name: "left",
+					control: 'NOTE_LEFT'
+				},
+				{
+					sparrowIcon: "game/notes/default",
+					sparrowAnim: "blue0",
+					name: "down",
+					control: 'NOTE_DOWN'
+				},
+				{
+					sparrowIcon: "game/notes/default",
+					sparrowAnim: "green0",
+					name: "up",
+					control: 'NOTE_UP'
+				},
+				{
+					sparrowIcon: "game/notes/default",
+					sparrowAnim: "red0",
+					name: "right",
+					control: 'NOTE_RIGHT'
+				},
+			]
+		},
+		{
+			name: "category.ui",
+			settings: [
+				{
+					name: "left",
+					control: 'LEFT'
+				},
+				{
+					name: "down",
+					control: 'DOWN'
+				},
+				{
+					name: "up",
+					control: 'UP'
+				},
+				{
+					name: "right",
+					control: 'RIGHT'
+				},
+				{
+					name: "ui.accept",
+					control: 'ACCEPT'
+				},
+				{
+					name: "ui.back",
+					control: 'BACK'
+				},
+				{
+					name: "ui.reset",
+					control: 'RESET'
+				},
+				{
+					name: "ui.pause",
+					control: 'PAUSE'
+				},
+				{
+					name: "ui.changeMode",
+					control: 'CHANGE_MODE'
+				},
+			]
+		},
+		{
+			name: "category.volume",
+			settings: [
+				{
+					name: "volume.up",
 					control: 'VOLUME_UP'
 				},
 				{
-					name: translate("volume.down"),
+					name: "volume.down",
 					control: 'VOLUME_DOWN'
 				},
 				{
-					name: translate("volume.mute"),
+					name: "volume.mute",
 					control: 'VOLUME_MUTE'
 				},
 			]
 		},
-			{
-				name: translate("category.engine"),
-				settings: [
-					{
-						name: translate("engine.switchMod"),
-						control: 'SWITCHMOD'
-					},
-					{
-						name: translate("engine.fpsCounter"),
-						control: 'FPS_COUNTER'
-					},
-				]
-			},
-			{
-				name: translate("category.developer"),
-				devModeOnly: true,
-				settings: [
-					{
-						name: translate("developer.devMenus"),
-						control: 'DEV_ACCESS'
-					},
-					{
-						name: translate("developer.openConsole"),
-						control: 'DEV_CONSOLE'
-					},
-					{
-						name: translate("developer.reloadState"),
-						control: 'DEV_RELOAD'
-					},
-				]
-			}
-		];
+		{
+			name: "category.engine",
+			settings: [
+				{
+					name: "engine.switchMod",
+					control: 'SWITCHMOD'
+				},
+				{
+					name: "engine.fpsCounter",
+					control: 'FPS_COUNTER'
+				},
+			]
+		},
+		{
+			name: "category.developer",
+			devModeOnly: true,
+			settings: [
+				{
+					name: "developer.devMenus",
+					control: 'DEV_ACCESS'
+				},
+				{
+					name: "developer.openConsole",
+					control: 'DEV_CONSOLE'
+				},
+				{
+					name: "developer.reloadState",
+					control: 'DEV_RELOAD'
+				},
+			]
+		}
+	];
 
+	public var isSubState:Bool = false;
+
+	public override function create() {
 		super.create();
 		instance = this;
 
@@ -184,6 +183,8 @@ class KeybindsOptions extends MusicBeatSubstate {
 			FlxG.camera.follow(camFollow, LOCKON, 0.125);
 		}
 
+		for (category in defaultCategories) categories.push(category);
+
 		var customCategories = loadCustomCategories();
 		for (i in customCategories) categories.push(i);
 
@@ -192,7 +193,11 @@ class KeybindsOptions extends MusicBeatSubstate {
 			if (category.devModeOnly && !Options.devMode) continue;
 
 			k++;
-			var title = new Alphabet(0, k * 75, category.name, "bold");
+			var translationPrefix:String = (category.custom != null) ? '' : 'KeybindsOptions.';
+
+			var categoryToTranslate:String = translationPrefix + category.name;
+			var translatedCategory:String = TU.exists(categoryToTranslate) ? translate(categoryToTranslate) : category.name;
+			var title = new Alphabet(0, k * 75, translatedCategory, "bold");
 			title.screenCenter(X);
 			add(title);
 
@@ -203,7 +208,9 @@ class KeybindsOptions extends MusicBeatSubstate {
 				if (e.sparrowIcon != null) sparrowIcon = e.sparrowIcon;
 				if (e.sparrowAnim != null) sparrowAnim = e.sparrowAnim;
 
-				var text = new KeybindSetting(100, k * 75, e.name, e.control, sparrowIcon, sparrowAnim, e.custom == null ? false : e.custom);
+				var nameToTranslate:String = translationPrefix + e.name;
+				var translatedName:String = TU.exists(nameToTranslate) ? translate(nameToTranslate) : e.name;
+				var text = new KeybindSetting(100, k * 75, translatedName, e.control, sparrowIcon, sparrowAnim, e.custom == null ? false : e.custom);
 				if (!isSubState)
 					text.bind1.color = text.bind2.color = FlxColor.BLACK;
 				alphabets.add(text);
@@ -322,6 +329,7 @@ class KeybindsOptions extends MusicBeatSubstate {
 
 						var cat:ControlsCategory = {
 							name: category.getAtt("name"),
+							custom: true,
 							settings: []
 						};
 
@@ -358,4 +366,5 @@ typedef ControlsCategory = {
 	var name:String;
 	var settings:Array<KeybindSettingData>;
 	var ?devModeOnly:Bool;
+	var ?custom:Bool;
 }
