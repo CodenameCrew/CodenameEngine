@@ -118,10 +118,6 @@ final class NoteHitEvent extends CancellableEvent {
 	 * The attached healthIcon used distinction for icons amongst others
 	 */
 	public var healthIcon:HealthIcon;
-	/**
-	 * Whether note hits are judged in the old way or not.
-	 */
-	public var legacyJudge(get, set):Bool;
 
 	/**
 	 * Prevents the default sing animation from being played.
@@ -199,16 +195,5 @@ final class NoteHitEvent extends CancellableEvent {
 	private function set_character(char:Character) {
 		characters = [char];
 		return char;
-	}
-
-	private var _explicitLegacyJudge:Null<Bool> = null;
-	private inline function get_legacyJudge():Bool {
-		if (_explicitLegacyJudge != null)
-			return _explicitLegacyJudge;
-		return Flags.CURRENT_API_VERSION == 1;
-	}
-	private function set_legacyJudge(value:Bool):Bool {
-		_explicitLegacyJudge = value;
-		return value;
 	}
 }

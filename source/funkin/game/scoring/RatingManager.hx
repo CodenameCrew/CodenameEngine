@@ -12,6 +12,7 @@ class RatingManager
 {
 	public var hitWindows:StringMap<Float>;
 	public var ratingData:Array<Rating> = [];
+	public var lastHitWindow:Float = -1;
 
 	public function new(?preset:WindowPreset):Void
 	{
@@ -62,6 +63,8 @@ class RatingManager
 		var window = data.window != null
 			? data.window
 			: (hitWindows.exists(name) ? hitWindows.get(name) : -1);
+
+		if (window > lastHitWindow) lastHitWindow = window;
 
 		var newRating:Rating = {
 			name: name,
