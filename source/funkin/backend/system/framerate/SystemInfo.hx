@@ -154,20 +154,13 @@ class SystemInfo extends FramerateCategory {
 		if (totalMem != "Unknown" && memType != "Unknown") __formattedSysText += '\nTotal MEM: $totalMem $memType';
 	}
 
-	static var sizeLabels:Array<String> = [" MB", " GB", " TB"];
-	static function getSizeString(size:Float):String
-	{
-		if (size < 1024 * 1024)
-		{ // < 1GB
-			return Std.int(size / 1024) + " MB";
-		}
-		else if (size < 1024 * 1024 * 1024)
-		{ // < 1TB
-			return Std.int(size / (1024 * 1024)) + " GB";
-		}
-		else
-		{ // >= 1TB
-			var tb = size / (1024 * 1024 * 1024);
+	static function getSizeString(size:Float):String {
+		if (size < 1024)
+			return Std.int(size) + " MB";
+		else if (size < 1024 * 1024)
+			return Std.int(size / 1024) + " GB";
+		else {
+			var tb = size / (1024 * 1024);
 			return Std.int(tb) + "." + CoolUtil.addZeros(Std.string(Std.int((tb % 1) * 100)), 2) + " TB";
 		}
 	}
