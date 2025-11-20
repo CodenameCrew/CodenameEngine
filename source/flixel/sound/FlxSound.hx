@@ -718,7 +718,7 @@ class FlxSound extends FlxBasic {
 		_paused = false;
 		_time = startTime;
 		_lastTime = FlxG.game.getTicks();
-		if (_channel == null || !_channel.__isValid || _source == null #if lime_cffi || _source.__backend.disposed || _source.__backend.handle == null #end)
+		if (_channel == null || !_channel.__isValid || _source == null #if lime_cffi || _source.__backend.disposed #end)
 			makeChannel();
 
 		if (_channel != null) {
@@ -939,19 +939,19 @@ class FlxSound extends FlxBasic {
 		return _time = time;
 	}
 
-	inline function get_offset():Float return _offset;
-	inline function set_offset(offset:Float):Float {
+	function get_offset():Float return _offset;
+	function set_offset(offset:Float):Float {
 		if (_offset == (_offset = offset)) return offset;
 		//time = time + _offset;
 		return offset;
 	}
 
-	inline function get_length():Float return _length - _offset;
+	function get_length():Float return _length - _offset;
 
-	/*function get_latency():Float {
-		if (_channel != null) return _source.latency;
-		return 0;
-	}*/
+	//function get_latency():Float {
+	//	if (_channel != null) return _source.latency;
+	//	return 0;
+	//}
 
 	override function toString():String {
 		return FlxStringUtil.getDebugString([

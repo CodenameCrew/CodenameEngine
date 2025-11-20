@@ -81,8 +81,8 @@ class PauseSubState extends MusicBeatSubstate
 		bg.scrollFactor.set();
 		add(bg);
 
-		var multiplayerInfo:String = PlayState.opponentMode ? 'pause.coopMode' :
-									 PlayState.coopMode ? 'pause.opponentMode' :
+		var multiplayerInfo:String = PlayState.opponentMode ? 'pause.opponentMode' :
+									 PlayState.coopMode ? 'pause.coopMode' :
 									 null;
 
 		levelInfo = new FunkinText(20, 15, 0, PlayState.SONG.meta.displayName, 32, false);
