@@ -332,6 +332,10 @@ class PlayState extends MusicBeatState
 	 * The total accuracy amount.
 	 */
 	public var totalAccuracyAmount:Float = 0;
+	/**
+	 * Tracks how much of each rating was received.
+	 */
+	public var hits:Map<String, Int> = [];
 
 	/**
 	 * FunkinText that shows your score.
@@ -363,6 +367,11 @@ class PlayState extends MusicBeatState
 
 	public static var campaignAccuracyTotal:Float = 0;
 	public static var campaignAccuracyCount:Float = 0;
+
+	/**
+	 * Number of each rating received for the current week.
+	 */
+	public static var campaignHits:Map<String, Int> = [];
 
 	/**
 	 * Camera zoom at which the game lerps to.
@@ -1731,7 +1740,7 @@ class PlayState extends MusicBeatState
 				score: songScore,
 				misses: misses,
 				accuracy: accuracy,
-				hits: [],
+				hits: hits,
 				date: Date.now().toString()
 			}, getSongChanges());
 			#end
@@ -1758,6 +1767,7 @@ class PlayState extends MusicBeatState
 			campaignMisses += misses;
 			campaignAccuracyTotal += accuracy;
 			campaignAccuracyCount++;
+			for (k => v in hits) campaignHits[k] += v;
 			storyPlaylist.shift();
 			storyVariations.shift();
 
@@ -1771,7 +1781,7 @@ class PlayState extends MusicBeatState
 						score: campaignScore,
 						misses: campaignMisses,
 						accuracy: campaignAccuracy,
-						hits: [],
+						hits: campaignHits,
 						date: Date.now().toString()
 					});
 					#end
@@ -1941,6 +1951,7 @@ class PlayState extends MusicBeatState
 					displayCombo(event);
 					if (event.displayRating)
 						displayRating(event.rating, event);
+					hits[rating.name] += 1;
 					ratingNum += 1;
 				}
 			}
@@ -2178,6 +2189,7 @@ class PlayState extends MusicBeatState
 		campaignMisses = 0;
 		campaignAccuracyTotal = 0;
 		campaignAccuracyCount = 0;
+		campaignHits = [];
 		chartingMode = coopMode = opponentMode = false;
 		__loadSong(storyPlaylist[0], difficulty, storyVariations[0]);
 	}
