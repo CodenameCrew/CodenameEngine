@@ -435,7 +435,7 @@ class SongCreationScreen extends UISubstateWindow {
 				color: colorWheel.curColor,
 				opponentModeAllowed: opponentModeCheckbox.checked,
 				coopAllowed: coopAllowedCheckbox.checked,
-				difficulties: [for (diff in difficultiesTextBox.label.text.split(",")) diff.trim()]
+				difficulties: [for (diff in difficultiesTextBox.label.text.split(",")) if (diff.length > 0) diff.trim()]
 			});
 
 			if (onSave != null) onSave({

@@ -48,13 +48,13 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 			parent.openSubState(new ChartCreationScreen(saveChart));
 		}));
 
-		if (!first) screen.curSelected = 1;
+		if (!first) screen.curSelected = s.difficulties.length > 0 ? 1 : 0;
 		else {
 			cast(screen.members[0], NewOption).itemHeight = 120;
 			screen.insert(1, new NewOption(getID('newVariation'), getID('newVariationDesc'), () -> {
 				parent.openSubState(new VariationCreationScreen(s, saveSong));
 			}));
-			screen.curSelected = 2;
+			screen.curSelected = s.difficulties.length > 0 ? 2 : 1;
 		}
 		#end
 
