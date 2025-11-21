@@ -1953,9 +1953,9 @@ class PlayState extends MusicBeatState
 					displayCombo(event);
 					if (event.displayRating)
 						displayRating(event.rating, event);
-					hits[rating.name] += 1;
 					ratingNum += 1;
 				}
+				if (event.player) hits[rating.name] += 1;
 			}
 
 			if (strumLine != null) strumLine.addHealth(event.healthGain);
