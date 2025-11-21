@@ -1244,12 +1244,13 @@ class PlayState extends MusicBeatState
 	}
 
 	@:dox(hide)
-	function resyncVocals():Void
+	inline function resyncVocals():Void
 	{
-		var time = Conductor.songPosition + Conductor.songOffset;
-		for (strumLine in strumLines.members) strumLine.vocals.play(true, time);
-		vocals.play(true, time);
+		final time = Conductor.songPosition + Conductor.songOffset;
+
 		if (!inst.playing) inst.play(true, time);
+		vocals.play(true, time);
+		for (strumLine in strumLines.members) strumLine.vocals.play(true, time);
 
 		gameAndCharsCall("onVocalsResync");
 	}
@@ -1408,13 +1409,12 @@ class PlayState extends MusicBeatState
 		else if (FlxG.sound.music != null && (__vocalSyncTimer -= elapsed) < 0) {
 			__vocalSyncTimer = 1;
 
-			var instTime = FlxG.sound.music.getActualTime();
-			var isOffsync:Bool = vocals.loaded && Math.abs(instTime - vocals.getActualTime()) > 100;
-			if (!isOffsync) {
-				for (strumLine in strumLines.members) {
-					if ((isOffsync = strumLine.vocals.loaded && Math.abs(instTime - strumLine.vocals.getActualTime()) > 100)) break;
-				}
-			}
+			final instTime = FlxG.sound.music.getActualTime();
+			var isOffsync:Bool = vocals.loaded && Math.abs(instTime - vocals.getActualTime()) > 4;
+			if (!isOffsync)
+				for (strumLine in strumLines.members)
+					if ((isOffsync = strumLine.vocals.loaded && Math.abs(instTime - strumLine.vocals.getActualTime()) > 4))
+						break;
 
 			if (isOffsync) resyncVocals();
 		}
