@@ -1948,13 +1948,15 @@ class PlayState extends MusicBeatState
 				}
 				if (event.countAsCombo) combo++;
 
-				if (event.showRating || (event.showRating == null && event.player))
-				{
-					displayCombo(event);
-					if (event.displayRating)
+				if (event.player) {
+					if (event.showRating || event.showRating == null)
+					{
+						displayCombo(event);
+						if (event.displayRating)
 						displayRating(event.rating, event);
+						ratingNum += 1;
+					}
 					hits[rating.name] += 1;
-					ratingNum += 1;
 				}
 			}
 
