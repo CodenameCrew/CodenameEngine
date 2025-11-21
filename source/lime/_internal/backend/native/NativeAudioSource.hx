@@ -571,7 +571,7 @@ class NativeAudioSource {
 		else if (completed) return getLength();
 		else if (!playing) return lastTime - parent.offset;
 
-		var time = AL.getSourcef(source, AL.SEC_OFFSET);
+		var time = AL.getSourcef(source, AL.SAMPLE_OFFSET) / sampleRate;
 		if (streamed) {
 			if (playing && streamEnded && AL.getSourcei(source, AL.SOURCE_STATE) == AL.STOPPED) {
 				complete();
@@ -594,7 +594,7 @@ class NativeAudioSource {
 		value = Math.isFinite(value) ? Math.max(Math.min(value + parent.offset, length), parent.offset) : parent.offset;
 
 		if (streamed) AL.sourceStop(source);
-		else AL.sourcef(source, AL.SEC_OFFSET, value / 1000);
+		else AL.sourcef(source, AL.SAMPLE_OFFSET, value / 1000 * sampleRate);
 
 		final timeRemaining = (length - value) / getPitch();
 		if (playing) {

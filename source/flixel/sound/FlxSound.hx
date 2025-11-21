@@ -769,7 +769,8 @@ class FlxSound extends FlxBasic {
 			_lastTime = FlxG.game.getTicks();
 			_time = loopTime;
 		}
-		else _channel.loops = 999;
+		else if (_source != null)
+			_source.loops = 999;
 	}
 
 	/**
@@ -799,7 +800,7 @@ class FlxSound extends FlxBasic {
 	}
 
 	inline function get_playing():Bool @:privateAccess
-		return _channel != null && _channel.__isValid && _source.playing;
+		return _source != null && _source.playing;
 
 	inline function get_volume():Float
 		return _volume;
@@ -832,12 +833,12 @@ class FlxSound extends FlxBasic {
 	inline function get_buffer():AudioBuffer
 		@:privateAccess return _sound != null ? _sound.__buffer : null;
 
-	function update_amplitude():Void @:privateAccess {
-		if (_channel == null || !_channel.__updatePeaks(get_time()) || !_amplitudeUpdate) return;
-
-		_amplitudeUpdate = false;
-		_amplitudeLeft = _channel.__leftPeak;
-		_amplitudeRight = _channel.__rightPeak;
+	inline function update_amplitude():Void @:privateAccess {
+		if (_channel != null && _channel.__updatePeaks(get_time()) && _amplitudeUpdate) {
+			_amplitudeUpdate = false;
+			_amplitudeLeft = _channel.__leftPeak;
+			_amplitudeRight = _channel.__rightPeak;
+		}
 	}
 
 	inline function get_amplitudeLeft():Float {
@@ -865,30 +866,27 @@ class FlxSound extends FlxBasic {
 	inline function get_pitch():Float
 		return _pitch;
 
-	function set_pitch(v:Float):Float {
+	inline function set_pitch(v:Float):Float {
 		_realPitch = (_pitch = v) * _timeScaleAdjust;
-		if (_channel != null) _channel.pitch = _realPitch;
+		if (_source != null) _source.pitch = _realPitch;
 		return _pitch;
 	}
 	#end
 
 	function set_looped(v:Bool):Bool {
-		if (playing) {
-			if (v) _channel.loops = 999;
-			else _channel.loops = 0;
-		}
+		if (playing) _source.loops = v ? 999 : 0;
 		return looped = v;
 	}
 
 	function set_loopTime(v:Float):Float {
-		if (playing) _channel.loopTime = v;
+		if (playing) _source.loopTime = v;
 		return loopTime = v;
 	}
 
 	function set_endTime(v:Null<Float>):Null<Float> {
 		if (playing) {
-			if (v != null && v > 0 && v < _length) _channel.endTime = v;
-			else _channel.endTime = null;
+			if (v != null && v > 0 && v < _length) _source.length = v;
+			else _source.length = null;
 		}
 		return endTime = v;
 	}
@@ -900,7 +898,7 @@ class FlxSound extends FlxBasic {
 			return _time;
 	}
 	function get_time():Float {
-		if (_channel == null || @:privateAccess !_channel.__isValid || /*AudioManager.context == null*/funkin.backend.system.Main.audioDisconnected) return _time;
+		if (_source == null || /*AudioManager.context == null*/funkin.backend.system.Main.audioDisconnected) return _time;
 
 		final sourceTime = _source.currentTime - _source.offset - _offset;
 		if (!_source.playing || _realPitch <= 0) {
@@ -948,10 +946,7 @@ class FlxSound extends FlxBasic {
 
 	function get_length():Float return _length - _offset;
 
-	//function get_latency():Float {
-	//	if (_channel != null) return _source.latency;
-	//	return 0;
-	//}
+	//function get_latency():Float return _source != null ? _source.latency : 0;
 
 	override function toString():String {
 		return FlxStringUtil.getDebugString([
