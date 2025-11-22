@@ -50,6 +50,7 @@ class UITopMenuButton extends UISliceSprite {
 
 		this.label = new UIText(4, 0, 0, label);
 		this.label.alignment = CENTER;
+		this.label.updateHitbox(); //IDK WHY BUT WITHOUT THIS FILED WIDTH OF RUSSIAN TEXT IS LESS THAN NECESSARY
 		bWidth = Std.int(this.label.fieldWidth = this.label.frameWidth + 8);
 		members.push(this.label);
 	}
