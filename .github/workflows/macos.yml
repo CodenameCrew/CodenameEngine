@@ -7,7 +7,7 @@ jobs:
   build:
     name: Mac OS Build
     permissions: write-all
-    runs-on: macos-13
+    runs-on: macos-15-intel
     steps:
       - name: Pulling the new commit
         uses: actions/checkout@v4
