@@ -265,8 +265,9 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	var __notePerStrum:Array<Note> = [];
 
 	function __inputProcessPressed(note:Note) {
-		if (__pressed[note.strumID] && note.isSustainNote && note.sustainParent != null && note.sustainParent.wasGoodHit && note.strumTime < __updateNote_songPos && !note.wasGoodHit) {
+		if (__pressed[note.strumID] && note.isSustainNote && note.sustainParent != null && note.prevNote != null && note.prevNote.wasGoodHit && note.strumTime < __updateNote_songPos && !note.wasGoodHit) {
 			note.tripTimer = 1;
+			note.canBeHit = true;
 			PlayState.instance.goodNoteHit(this, note);
 		}
 	}
@@ -287,61 +288,100 @@ class StrumLine extends FlxTypedGroup<Strum> {
 				__notePerStrum[note.strumID] = note;
 		}
 	}
+	function __processImmediateSustains(parentNote:Note)
+	{
+		if (parentNote == null || parentNote.isSustainNote)
+			return;
+
+		var currentSustain:Note = parentNote.nextSustain;
+		while (currentSustain != null && currentSustain.isSustainNote && currentSustain.sustainParent == parentNote)
+		{
+			trace("Immediate sustain hit for note at " + currentSustain.strumTime);
+			if (currentSustain.strumTime <= __updateNote_songPos && !currentSustain.wasGoodHit && currentSustain.canBeHit)
+			{
+				currentSustain.tripTimer = 1;
+				PlayState.instance.goodNoteHit(this, currentSustain);
+			}
+			currentSustain = currentSustain.nextSustain;
+		}
+	}
 
 	/**
 	 * Updates the input for the strumline, and handles the input.
 	 * @param id The ID of the strum
 	**/
-	public function updateInput(id:Int = 0) {
+	public function updateInput(id:Int = 0)
+	{
 		updateNotes();
 
-		if (cpu) return;
+		if (cpu)
+			return;
 
 		__funcsToExec.clear();
 		__pressed.resize(members.length);
 		__justPressed.resize(members.length);
 		__justReleased.resize(members.length);
 
-		for(i in 0...members.length) {
+		for (i in 0...members.length)
+		{
 			__pressed[i] = members[i].__getPressed(this);
 			__justPressed[i] = members[i].__getJustPressed(this);
 			__justReleased[i] = members[i].__getJustReleased(this);
 		}
 
 		var event = EventManager.get(InputSystemEvent).recycle(__pressed, __justPressed, __justReleased, this, id);
-		if (PlayState.instance != null) PlayState.instance.gameAndCharsEvent("onInputUpdate", event);
-		if (event.cancelled) return;
+		if (PlayState.instance != null)
+			PlayState.instance.gameAndCharsEvent("onInputUpdate", event);
+		if (event.cancelled)
+			return;
 
 		__pressed = CoolUtil.getDefault(event.pressed, []);
 		__justPressed = CoolUtil.getDefault(event.justPressed, []);
 		__justReleased = CoolUtil.getDefault(event.justReleased, []);
 
-		__notePerStrum = cast new haxe.ds.Vector(members.length);//[for(_ in 0...members.length) null];
+		__notePerStrum = cast new haxe.ds.Vector(members.length);
 
-
-		if (__pressed.contains(true)) {
-			for(c in characters)
-				if (c.lastAnimContext != DANCE)
-					c.__lockAnimThisFrame = true;
-
-			__funcsToExec.push(__inputProcessPressed);
-		}
 		if (__justPressed.contains(true))
 			__funcsToExec.push(__inputProcessJustPressed);
 
-		if (__funcsToExec.length > 0) {
-			notes.forEachAlive(function(note:Note) {
-				for(e in __funcsToExec) if (e != null) e(note);
+		if (__funcsToExec.length > 0)
+		{
+			notes.forEachAlive(function(note:Note)
+			{
+				for (e in __funcsToExec)
+					if (e != null)
+						e(note);
 			});
 		}
 
-		if (!ghostTapping) for(k=>pr in __justPressed) if (pr && __notePerStrum[k] == null) {
-			// FUCK YOU
-			PlayState.instance.noteMiss(this, null, k, ID);
-		}
-		for(e in __notePerStrum) if (e != null) PlayState.instance.goodNoteHit(this, e);
+		for (e in __notePerStrum)
+			if (e != null)
+			{
+				PlayState.instance.goodNoteHit(this, e);
+				if (!e.isSustainNote)
+				{
+					__processImmediateSustains(e);
+				}
+			}
 
-		forEach(function(str:Strum) {
+		if (__pressed.contains(true))
+		{
+			for (c in characters)
+				if (c.lastAnimContext != DANCE)
+					c.__lockAnimThisFrame = true;
+
+			notes.forEachAlive(__inputProcessPressed);
+		}
+
+		if (!ghostTapping)
+			for (k => pr in __justPressed)
+				if (pr && __notePerStrum[k] == null)
+				{
+					PlayState.instance.noteMiss(this, null, k, ID);
+				}
+
+		forEach(function(str:Strum)
+		{
 			str.updatePlayerInput(str.__getPressed(this), str.__getJustPressed(this), str.__getJustReleased(this));
 		});
 		PlayState.instance.gameAndCharsCall("onPostInputUpdate");
