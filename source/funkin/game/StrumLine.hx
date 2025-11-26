@@ -296,7 +296,6 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		var currentSustain:Note = parentNote.nextSustain;
 		while (currentSustain != null && currentSustain.isSustainNote && currentSustain.sustainParent == parentNote)
 		{
-			trace("Immediate sustain hit for note at " + currentSustain.strumTime);
 			if (currentSustain.strumTime <= __updateNote_songPos && !currentSustain.wasGoodHit && currentSustain.canBeHit)
 			{
 				currentSustain.tripTimer = 1;
