@@ -258,7 +258,6 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		}
 	}
 
-	// var __funcsToExec:Array<Note->Void> = [];
 	var __pressed:Array<Bool> = [];
 	var __justPressed:Array<Bool> = [];
 	var __justReleased:Array<Bool> = [];
@@ -297,7 +296,6 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 		if (cpu) return;
 
-		// __funcsToExec.clear();
 		__pressed.resize(members.length);
 		__justPressed.resize(members.length);
 		__justReleased.resize(members.length);
