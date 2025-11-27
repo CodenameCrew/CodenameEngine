@@ -318,16 +318,12 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 		__notePerStrum = cast new haxe.ds.Vector(members.length);
 
-		if (__justPressed.contains(true)) {
+		if (__justPressed.contains(true))
 			__funcsToExec.push(__inputProcessJustPressed);
-		}
 
 		if (__funcsToExec.length > 0) {
-			notes.forEachAlive(function(note:Note)
-			{
-				for (e in __funcsToExec)
-					if (e != null)
-						e(note);
+			notes.forEachAlive(function(note:Note) {
+				for (e in __funcsToExec) if (e != null) e(note);
 			});
 		}
 
@@ -343,11 +339,10 @@ class StrumLine extends FlxTypedGroup<Strum> {
 			notes.forEachAlive(__inputProcessPressed);
 		}
 
-		if (!ghostTapping)
-			for (k => pr in __justPressed)
-				if (pr && __notePerStrum[k] == null) {
-					PlayState.instance.noteMiss(this, null, k, ID);
-				}
+		if (!ghostTapping) for (k => pr in __justPressed) if (pr && __notePerStrum[k] == null) {
+			// FUCK YOU
+			PlayState.instance.noteMiss(this, null, k, ID);
+		}
 
 		forEach(function(str:Strum) {
 			str.updatePlayerInput(str.__getPressed(this), str.__getJustPressed(this), str.__getJustReleased(this));
