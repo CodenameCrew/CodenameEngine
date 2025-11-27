@@ -258,7 +258,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		}
 	}
 
-	var __funcsToExec:Array<Note->Void> = [];
+	// var __funcsToExec:Array<Note->Void> = [];
 	var __pressed:Array<Bool> = [];
 	var __justPressed:Array<Bool> = [];
 	var __justReleased:Array<Bool> = [];
@@ -297,7 +297,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 		if (cpu) return;
 
-		__funcsToExec.clear();
+		// __funcsToExec.clear();
 		__pressed.resize(members.length);
 		__justPressed.resize(members.length);
 		__justReleased.resize(members.length);
@@ -319,13 +319,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		__notePerStrum = cast new haxe.ds.Vector(members.length);
 
 		if (__justPressed.contains(true))
-			__funcsToExec.push(__inputProcessJustPressed);
-
-		if (__funcsToExec.length > 0) {
-			notes.forEachAlive(function(note:Note) {
-				for (e in __funcsToExec) if (e != null) e(note);
-			});
-		}
+			notes.forEachAlive(__inputProcessJustPressed);
 
 		if (__pressed.contains(true)) {
 			for (e in __notePerStrum)
