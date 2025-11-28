@@ -188,7 +188,6 @@
 	<haxedef name="SOFTCODED_CLASSES" if="SOFTCODED_CLASSES" />
 	<haxedef name="USE_ADAPTED_ASSETS" if="USE_ADAPTED_ASSETS" />
 	<haxedef name="openfl_dpi_aware" if="openfl_dpi_aware" />
-	<haxedef name="audio_stream_async" unless="web" />
 
 	<!-- _________________________________ Custom _______________________________ -->
 

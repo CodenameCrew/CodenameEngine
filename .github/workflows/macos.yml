@@ -10,13 +10,13 @@ jobs:
     runs-on: macos-13
     steps:
       - name: Pulling the new commit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
           haxe-version: 4.3.7
       - name: Restore existing build cache for faster compilation
-        uses: actions/cache@v3
+        uses: actions/cache@v4.2.3
         with:
           # not caching the bin folder to prevent asset duplication and stuff like that
           key: cache-build-mac
@@ -24,8 +24,8 @@ jobs:
             .haxelib/
             export/release/macos/haxe/
             export/release/macos/obj/
-          restore-keys: |
-            cache-build-mac
+      - run: |
+          echo "HXCPP_COMPILE_CACHE=~/.hxcpp" >> $GITHUB_ENV
       - name: Installing/Updating libraries
         run: |
           haxe -cp commandline -D analyzer-optimize --run Main setup -s
@@ -64,7 +64,7 @@ jobs:
               }
             }
       - name: Uploading new cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4.2.3
         with:
           # caching again since for some reason it doesnt work with the first post cache shit
           key: cache-build-mac
@@ -72,5 +72,3 @@ jobs:
             .haxelib/
             export/release/macos/haxe/
             export/release/macos/obj/
-          restore-keys: |
-            cache-build-mac

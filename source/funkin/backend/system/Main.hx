@@ -13,6 +13,7 @@ import funkin.backend.assets.ModsFolder;
 import funkin.backend.system.framerate.Framerate;
 import funkin.backend.system.framerate.SystemInfo;
 import funkin.backend.system.modules.*;
+import funkin.backend.utils.EngineUtil;
 import funkin.editors.SaveWarning;
 import funkin.options.PlayerSettings;
 import openfl.Assets;
@@ -22,10 +23,6 @@ import openfl.text.TextFormat;
 import openfl.utils.AssetLibrary;
 import sys.FileSystem;
 import sys.io.File;
-
-#if ALLOW_MULTITHREADING
-import sys.thread.Thread;
-#end
 #if android
 import android.content.Context;
 import android.os.Build;
@@ -61,7 +58,10 @@ class Main extends Sprite
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
 	#if ALLOW_MULTITHREADING
-	public static var gameThreads:Array<Thread> = [];
+	// DEPRECATED
+	@:dox(hide) public static var gameThreads(get, set):Array<sys.thread.Thread>;
+	static function get_gameThreads() return EngineUtil.gameThreads;
+	static function set_gameThreads(v) return EngineUtil.gameThreads = v;
 	#end
 
 	public static function preInit() {
@@ -99,16 +99,8 @@ class Main extends Sprite
 		#end;
 	public static var startedFromSource:Bool = #if TEST_BUILD true #else false #end;
 
-
-	private static var __threadCycle:Int = 0;
-	public static function execAsync(func:Void->Void) {
-		#if ALLOW_MULTITHREADING
-		var thread = gameThreads[(__threadCycle++) % gameThreads.length];
-		thread.events.run(func);
-		#else
-		func();
-		#end
-	}
+	// DEPRECATED
+	@:dox(hide) public static function execAsync(func:Void->Void) EngineUtil.execAsync(func);
 
 	private static function getTimer():Int {
 		return time = Lib.getTimer();
@@ -120,10 +112,6 @@ class Main extends Sprite
 		MemoryUtil.init();
 		@:privateAccess
 		FlxG.game.getTimer = getTimer;
-		#if ALLOW_MULTITHREADING
-		for(i in 0...4)
-			gameThreads.push(Thread.createWithEventLoop(function() {Thread.current().events.promise();}));
-		#end
 		FunkinCache.init();
 		Paths.assetsTree = new AssetsLibraryList();
 
