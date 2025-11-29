@@ -39,9 +39,9 @@ class NativeAudioSource {
 	public static var STREAM_BUFFER_SAMPLES:Int = 0x2000; // how much buffers will be generating every frequency (doesnt have to be pow of 2?).
 	public static var STREAM_MIN_BUFFERS:Int = 2; // how much buffers can a stream hold on minimum or starting.
 	public static var STREAM_MAX_BUFFERS:Int = 8; // how much limit of a buffers can be used for streamed audios, must be higher than minimum.
-	public static var STREAM_FLUSH_BUFFERS:Int = 3; // how much buffers can it play.
+	public static var STREAM_MAX_FLUSH_BUFFERS:Int = 3; // how much buffers can it play.
 	public static var STREAM_PROCESS_BUFFERS:Int = 2; // how much buffers can be processed in a frequency tick.
-	public static var MAX_POOL_BUFFERS:Int = 32; // how much buffers for the pool to hold.
+	public static var POOL_MAX_BUFFERS:Int = 32; // how much buffers for the pool to hold.
 
 	public static var moreFormatsSupported:Null<Bool>;
 	public static var loopPointsSupported:Null<Bool>;
@@ -191,7 +191,7 @@ class NativeAudioSource {
 		}
 
 		if (bufferDatas != null) {
-			for (data in bufferDatas) if (bufferDataPool.length < MAX_POOL_BUFFERS) bufferDataPool.push(data);
+			for (data in bufferDatas) if (bufferDataPool.length < POOL_MAX_BUFFERS) bufferDataPool.push(data);
 			bufferDatas = null;
 		}
 
@@ -268,7 +268,7 @@ class NativeAudioSource {
 			final length = STREAM_BUFFER_SAMPLES * channels;
 			bufferLength = length * wordSize;
 
-			if (buffers == null) buffers = AL.genBuffers(STREAM_FLUSH_BUFFERS);
+			if (buffers == null) buffers = AL.genBuffers(STREAM_MAX_FLUSH_BUFFERS);
 			if (bufferDatas == null) {
 				bufferDatas = [];
 				bufferTimes = [];
@@ -305,7 +305,7 @@ class NativeAudioSource {
 				AL.deleteBuffers(buffers);
 				buffers = null;
 
-				for (data in bufferDatas) if (bufferDataPool.length < MAX_POOL_BUFFERS) bufferDataPool.push(data);
+				for (data in bufferDatas) if (bufferDataPool.length < POOL_MAX_BUFFERS) bufferDataPool.push(data);
 				bufferDatas.resize(0);
 			}
 
@@ -400,7 +400,7 @@ class NativeAudioSource {
 			}
 		}
 		catch (e:haxe.Exception) {
-			trace('NativeAudioSource readToBufferData Bug! error: ${e.message} | ${e.stack.toString()}, streamEnded: $streamEnded, total: $total, n: $n');
+			trace('NativeAudioSource readToBufferData Bug! error: ${e.details()}, streamEnded: $streamEnded, total: $total, n: $n');
 			return result;
 		}
 
@@ -431,10 +431,10 @@ class NativeAudioSource {
 
 	inline function flushBuffers() {
 		var i = STREAM_MAX_BUFFERS - (requestBuffers - queuedBuffers);
-		while (queuedBuffers < STREAM_FLUSH_BUFFERS && queuedBuffers < requestBuffers) {
+		while (queuedBuffers < STREAM_MAX_FLUSH_BUFFERS && queuedBuffers < requestBuffers) {
 			AL.bufferData(buffers[nextBuffer], format, bufferDatas[i], bufferLengths[i], sampleRate);
 			AL.sourceQueueBuffer(source, buffers[nextBuffer]);
-			if (++nextBuffer == STREAM_FLUSH_BUFFERS) nextBuffer = 0;
+			if (++nextBuffer == STREAM_MAX_FLUSH_BUFFERS) nextBuffer = 0;
 			queuedBuffers++;
 			i++;
 		}
@@ -521,7 +521,7 @@ class NativeAudioSource {
 		}
 
 		#if ALLOW_MULTITHREADING
-		if (streamSources.length != 0) funkin.backend.utils.EngineUtil.execAsync(streamBuffersUpdate);
+		if (streamSources.length != 0) funkin.backend.utils.ThreadUtil.execAsync(streamBuffersUpdate);
 		#else
 		if (streamSources.length == 0) {
 			if (wasEmpty) {

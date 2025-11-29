@@ -1,7 +1,6 @@
 package funkin.backend.scripting;
 
 import hscript.IHScriptCustomBehaviour;
-import funkin.backend.utils.EngineUtil;
 
 class MultiThreadedScript implements IFlxDestroyable implements IHScriptCustomBehaviour {
 	/**
@@ -57,7 +56,7 @@ class MultiThreadedScript implements IFlxDestroyable implements IHScriptCustomBe
 
 	public function call(func:String, args:Array<Dynamic>) {
 		#if ALLOW_MULTITHREADING
-		EngineUtil.execAsync(() -> {
+		funkin.backend.utils.ThreadUtil.execAsync(() -> {
 			callEnded = false;
 			returnValue = script.call(func, args);
 			callEnded = true;

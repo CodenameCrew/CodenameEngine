@@ -95,9 +95,9 @@ final class AudioAnalyzer {
 	static var __twiddleImags:Array<Array<Float>> = [];
 	static var __freqReals:Array<Array<Float>> = [];
 	static var __freqImags:Array<Array<Float>> = [];
+	static var __freqCalculating:Int = 0;
 	#if (target.threaded)
 	static var __mutex:Mutex = new Mutex();
-	static var __freqCalculating:Int = 0;
 	#end
 
 	/**
