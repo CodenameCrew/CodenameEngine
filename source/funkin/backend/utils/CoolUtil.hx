@@ -1004,17 +1004,16 @@ final class CoolUtil
 	}
 
 	/**
-	 * Returns if the mouse is overlapping the sprite on the given camera, taking the camera's position and scroll into account.
+	 * Returns if the mouse is overlapping the sprite on a given camera, taking the camera's position, scroll and zoom into account.
 	 *
 	 * @param   sprite  Any `FlxBasic`
-	 * @param   camera  The desired "screen" to check overlap on. If `null`, the first camera in `FlxG.state.cameras` is used (normally `FlxG.camera`).
+	 * @param   camera  The camera you want to check overlap on. Uses the sprite's camera by default.
 	 * @return  Bool
 	 */
 	public static function mouseOverlaps(sprite:FlxBasic, ?camera:FlxCamera) {
-		if (camera == null)
-			camera = FlxG.state.cameras[0];
+		var camToCheck = camera ?? sprite.camera;
+		var posthing:FlxPoint = FlxG.mouse.getWorldPosition(camToCheck);
 
-		var posthing = FlxG.mouse.getWorldPosition(camera);
 		return posthing != null && FlxMath.inBounds(posthing.x, sprite.x, sprite.x + sprite.width) && FlxMath.inBounds(posthing.y, sprite.y, sprite.y + sprite.height);
 	}
 
