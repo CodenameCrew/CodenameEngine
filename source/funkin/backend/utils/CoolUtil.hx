@@ -856,7 +856,7 @@ final class CoolUtil
 	 */
 	public static inline function browsePath(path:String) {
 		var formattedPath:String = Path.normalize(path);
-		
+
 		#if windows
 		formattedPath = formattedPath.replace("/", "\\");
 		Sys.command("explorer", [formattedPath]);
@@ -1004,6 +1004,21 @@ final class CoolUtil
 	}
 
 	/**
+	 * Returns if the mouse is overlapping the sprite on the given camera, taking the camera's position and scroll into account.
+	 *
+	 * @param   sprite  Any `FlxBasic`
+	 * @param   camera  The desired "screen" to check overlap on. If `null`, the first camera in `FlxG.state.cameras` is used (normally `FlxG.camera`).
+	 * @return  Bool
+	 */
+	public static function mouseOverlaps(sprite:FlxBasic, ?camera:FlxCamera) {
+		if (camera == null)
+			camera = FlxG.state.cameras[0];
+
+		var posthing = FlxG.mouse.getWorldPosition(camera);
+		return posthing != null && FlxMath.inBounds(posthing.x, sprite.x, sprite.x + sprite.width) && FlxMath.inBounds(posthing.y, sprite.y, sprite.y + sprite.height);
+	}
+
+	/**
 	 * Sorts an array alphabetically.
 	 * @param array Array to sort
 	 * @param lowercase Whenever the array should be sorted in lowercase
@@ -1053,7 +1068,7 @@ final class CoolUtil
 			r.add(str);
 		return r.toString();
 	}
-	
+
 	public static inline function bound(Value:Float, Min:Float, Max:Float):Float {
 		#if cpp
 		var _hx_tmp1:Float = Value;
@@ -1200,8 +1215,8 @@ final class CoolUtil
 
 	/**
 	 * ! REQUIRES FULL PATH!!!
-	 * @param path 
-	 * @return Bool 
+	 * @param path
+	 * @return Bool
 	 */
 	public static function imageHasFrameData(path:String):String {
 		if (FileSystem.exists(Path.withExtension(path, "xml"))) return "xml";
@@ -1267,7 +1282,7 @@ final class CoolUtil
 	public static function getAnimsListFromSprite(spr:FunkinSprite):Array<String> {
 		if (spr.animateAtlas != null) {
 			return [for (symbol => timeline in spr.animateAtlas.anim.symbolDictionary) symbol];
-		} else 
+		} else
 			return getAnimsListFromFrames(spr.frames);
 	}
 
