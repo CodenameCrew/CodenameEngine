@@ -316,8 +316,14 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 		__notePerStrum = cast new haxe.ds.Vector(members.length); // [for(_ in 0...members.length) null];
 
-		if (__justPressed.contains(true))
+		if (__justPressed.contains(true)) {
 			notes.forEachAlive(__inputProcessJustPressed);
+
+			if (!ghostTapping) for (k => pr in __justPressed) if (pr && __notePerStrum[k] == null) {
+				// FUCK YOU
+				PlayState.instance.noteMiss(this, null, k, ID);
+			}
+		}
 
 		if (__pressed.contains(true)) {
 			for (e in __notePerStrum)
@@ -329,11 +335,6 @@ class StrumLine extends FlxTypedGroup<Strum> {
 					c.__lockAnimThisFrame = true;
 
 			notes.forEachAlive(__inputProcessPressed);
-		}
-
-		if (!ghostTapping) for (k => pr in __justPressed) if (pr && __notePerStrum[k] == null) {
-			// FUCK YOU
-			PlayState.instance.noteMiss(this, null, k, ID);
 		}
 
 		forEach(function(str:Strum) {
