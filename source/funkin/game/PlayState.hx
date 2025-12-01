@@ -1021,41 +1021,17 @@ class PlayState extends MusicBeatState
 			introSprites[swagCounter],
 			0.6, true, null, null, null));
 
-		var sprite:FlxSprite = null;
-		var sound:FlxSound = null;
-		var tween:FlxTween = null;
+		var countdown:Countdown = new Countdown({
+			event: event,
+			enabled: true,
+			playSound: true,
+			animationPreset: DEFAULT,
+			duration: (Conductor.crochet / 1000),
+			speed: 1.0
+		});
+		countdown.cameras = [camHUD];
 
-		if (!event.cancelled) {
-			if (event.spritePath != null) {
-				var spr = event.spritePath;
-				if (!Assets.exists(spr)) spr = Paths.image('$spr');
-
-				sprite = new FunkinSprite().loadAnimatedGraphic(spr);
-				sprite.scrollFactor.set();
-				sprite.scale.set(event.scale, event.scale);
-				sprite.updateHitbox();
-				sprite.screenCenter();
-				sprite.antialiasing = event.antialiasing;
-				add(sprite);
-				tween = FlxTween.tween(sprite, {y: sprite.y + 100, alpha: 0}, Conductor.crochet / 1000, {
-					ease: FlxEase.cubeInOut,
-					onComplete: function(twn:FlxTween)
-					{
-						sprite.destroy();
-						remove(sprite, true);
-					}
-				});
-			}
-			if (event.soundPath != null) {
-				var sfx = event.soundPath;
-				if (!Assets.exists(sfx)) sfx = Paths.sound(sfx);
-				sound = FlxG.sound.play(sfx, event.volume);
-			}
-		}
-		event.sprite = sprite;
-		event.sound = sound;
-		event.spriteTween = tween;
-		event.cancelled = false;
+		add(countdown);
 
 		gameAndCharsEvent("onPostCountdown", event);
 	}
