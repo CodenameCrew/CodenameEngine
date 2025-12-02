@@ -165,13 +165,13 @@ class Strum extends FlxSprite {
 				if (shouldX) daNote.x = (this.width - daNote.width) / 2;
 				if (shouldY) {
 					daNote.y = (daNote.strumTime - Conductor.songPosition) * (0.45 * CoolUtil.quantize(getScrollSpeed(daNote), 100));
-					if (daNote.isSustainNote) daNote.y += N_WIDTHDIV2;
+					if (daNote.isSustainNote) daNote.y += height / 2;
 				}
 			} else {
 				var offset = FlxPoint.get(0, (Conductor.songPosition - daNote.strumTime) * (0.45 * CoolUtil.quantize(getScrollSpeed(daNote), 100)));
 				var realOffset = FlxPoint.get(0, 0);
 
-				if (daNote.isSustainNote) offset.y -= N_WIDTHDIV2;
+				if (daNote.isSustainNote) offset.y -= height / 2;
 
 				if (Std.int(daNote.__noteAngle % 360) != 0) {
 					var noteAngleCos = FlxMath.fastCos(daNote.__noteAngle / PIX180);
