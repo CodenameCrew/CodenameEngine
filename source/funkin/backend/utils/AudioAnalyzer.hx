@@ -95,9 +95,9 @@ final class AudioAnalyzer {
 	static var __twiddleImags:Array<Array<Float>> = [];
 	static var __freqReals:Array<Array<Float>> = [];
 	static var __freqImags:Array<Array<Float>> = [];
+	static var __freqCalculating:Int = 0;
 	#if (target.threaded)
 	static var __mutex:Mutex = new Mutex();
-	static var __freqCalculating:Int = 0;
 	#end
 
 	/**
@@ -471,7 +471,7 @@ final class AudioAnalyzer {
 		// TODO: Wrap it with try until i figured it out an effective way to do this...
 		// So... sometimes it just uses the decoder even if it looks good?? please help
 		var n = Math.floor((endPos - startPos) * __toBits);
-		var i = backend.bufferLengths.length - backend.queuedBuffers - 1, time:Float;
+		var i = backend.bufferLengths.length - backend.requestBuffers - 1, time:Float;
 		while (++i < backend.bufferLengths.length) if (startPos >= (time = backend.bufferTimes[i] * 1000)) {
 			var pos = Math.floor((startPos - time) * __toBits), buf = backend.bufferDatas[i].buffer, size = backend.bufferLengths[i], c = 0;
 			while (pos >= size) {

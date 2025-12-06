@@ -128,7 +128,7 @@ class Flags {
 	@:also(funkin.game.PlayState.opponentMode)
 	public static var DEFAULT_OPPONENT_MODE:Bool = false;
 
-	@:lazy public static var USE_LEGACY_TIMING:Null<Bool> = null;
+	public static var USE_LEGACY_TIMING:Null<Bool> = null;
 
 	public static var DEFAULT_NOTE_MS_LIMIT:Float = 1500;
 	public static var DEFAULT_NOTE_SCALE:Float = 0.7;
@@ -153,6 +153,8 @@ class Flags {
 	public static var DEFAULT_HUD_ZOOM_MULT:Float = 0.03;
 	public static var DEFAULT_CAM_ZOOM_LERP:Float = 0.05;
 	public static var DEFAULT_HUD_ZOOM_LERP:Float = 0.05;
+
+	public static var USE_LEGACY_ZOOM_FACTOR:Null<Bool> = null;
 	
 	// Font configuration
 	public static var DEFAULT_FONT:String = "vcr.ttf";
@@ -304,6 +306,7 @@ class Flags {
 		if (MOD_API_VERSION == null) MOD_API_VERSION = CURRENT_API_VERSION;
 		if (WINDOW_TITLE_USE_MOD_NAME == null) WINDOW_TITLE_USE_MOD_NAME = !overridenFlags.exists('TITLE') && overridenFlags.exists('MOD_NAME');
 		if (USE_LEGACY_TIMING == null) USE_LEGACY_TIMING = MOD_API_VERSION <= 1;
+		if (USE_LEGACY_ZOOM_FACTOR == null) USE_LEGACY_ZOOM_FACTOR = MOD_API_VERSION <= 1;
 	}
 
 	public static function loadFromDatas(datas:Array<String>):Map<String, String> {

@@ -332,6 +332,10 @@ class PlayState extends MusicBeatState
 	 * The total accuracy amount.
 	 */
 	public var totalAccuracyAmount:Float = 0;
+	/**
+	 * Tracks how much of each rating was received.
+	 */
+	public var hits:Map<String, Int> = [];
 
 	/**
 	 * FunkinText that shows your score.
@@ -363,6 +367,11 @@ class PlayState extends MusicBeatState
 
 	public static var campaignAccuracyTotal:Float = 0;
 	public static var campaignAccuracyCount:Float = 0;
+
+	/**
+	 * Number of each rating received for the current week.
+	 */
+	public static var campaignHits:Map<String, Int> = [];
 
 	/**
 	 * Camera zoom at which the game lerps to.
@@ -679,6 +688,8 @@ class PlayState extends MusicBeatState
 		Conductor.setupSong(SONG);
 
 		detailsText = isStoryMode ? ("Story Mode: " + storyWeek.name) : "Freeplay";
+
+		for (rating in [for (i in ratingManager.ratingData) i.name]) hits.set(rating, 0); // Ensure all keys exist as to prevent null errors.
 
 		// Checks if cutscene files exists
 		var cutscenePath = Paths.script('songs/${SONG.meta.name}/cutscene');
@@ -1244,12 +1255,13 @@ class PlayState extends MusicBeatState
 	}
 
 	@:dox(hide)
-	function resyncVocals():Void
+	inline function resyncVocals():Void
 	{
-		var time = Conductor.songPosition + Conductor.songOffset;
-		for (strumLine in strumLines.members) strumLine.vocals.play(true, time);
-		vocals.play(true, time);
+		final time = Conductor.songPosition + Conductor.songOffset;
+
 		if (!inst.playing) inst.play(true, time);
+		vocals.play(true, time);
+		for (strumLine in strumLines.members) strumLine.vocals.play(true, time);
 
 		gameAndCharsCall("onVocalsResync");
 	}
@@ -1408,13 +1420,12 @@ class PlayState extends MusicBeatState
 		else if (FlxG.sound.music != null && (__vocalSyncTimer -= elapsed) < 0) {
 			__vocalSyncTimer = 1;
 
-			var instTime = FlxG.sound.music.getActualTime();
-			var isOffsync:Bool = vocals.loaded && Math.abs(instTime - vocals.getActualTime()) > 100;
-			if (!isOffsync) {
-				for (strumLine in strumLines.members) {
-					if ((isOffsync = strumLine.vocals.loaded && Math.abs(instTime - strumLine.vocals.getActualTime()) > 100)) break;
-				}
-			}
+			final instTime = FlxG.sound.music.getActualTime();
+			var isOffsync:Bool = vocals.loaded && Math.abs(instTime - vocals.getActualTime()) > 12;
+			if (!isOffsync)
+				for (strumLine in strumLines.members)
+					if ((isOffsync = strumLine.vocals.loaded && Math.abs(instTime - strumLine.vocals.getActualTime()) > 12))
+						break;
 
 			if (isOffsync) resyncVocals();
 		}
@@ -1731,7 +1742,7 @@ class PlayState extends MusicBeatState
 				score: songScore,
 				misses: misses,
 				accuracy: accuracy,
-				hits: [],
+				hits: hits,
 				date: Date.now().toString()
 			}, getSongChanges());
 			#end
@@ -1758,6 +1769,7 @@ class PlayState extends MusicBeatState
 			campaignMisses += misses;
 			campaignAccuracyTotal += accuracy;
 			campaignAccuracyCount++;
+			for (k => v in hits) campaignHits[k] += v;
 			storyPlaylist.shift();
 			storyVariations.shift();
 
@@ -1771,7 +1783,7 @@ class PlayState extends MusicBeatState
 						score: campaignScore,
 						misses: campaignMisses,
 						accuracy: campaignAccuracy,
-						hits: [],
+						hits: campaignHits,
 						date: Date.now().toString()
 					});
 					#end
@@ -1943,6 +1955,7 @@ class PlayState extends MusicBeatState
 						displayRating(event.rating, event);
 					ratingNum += 1;
 				}
+				if (event.player) hits[rating.name] += 1;
 			}
 
 			if (strumLine != null) strumLine.addHealth(event.healthGain);
@@ -1971,6 +1984,7 @@ class PlayState extends MusicBeatState
 		}
 
 		if (event.deleteNote) strumLine.deleteNote(note);
+		else note.updateSustainClip();
 
 		gameAndCharsEvent("onPostNoteHit", event);
 	}
@@ -2178,6 +2192,7 @@ class PlayState extends MusicBeatState
 		campaignMisses = 0;
 		campaignAccuracyTotal = 0;
 		campaignAccuracyCount = 0;
+		campaignHits = [];
 		chartingMode = coopMode = opponentMode = false;
 		__loadSong(storyPlaylist[0], difficulty, storyVariations[0]);
 	}

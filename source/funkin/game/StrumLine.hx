@@ -268,7 +268,6 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		if (__pressed[note.strumID] && note.isSustainNote && note.sustainParent != null && note.sustainParent.wasGoodHit && note.strumTime < __updateNote_songPos && !note.wasGoodHit) {
 			note.tripTimer = 1;
 			PlayState.instance.goodNoteHit(this, note);
-			note.updateSustainClip();
 		}
 	}
 	function __inputProcessJustPressed(note:Note) {

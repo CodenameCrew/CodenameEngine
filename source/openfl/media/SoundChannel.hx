@@ -164,7 +164,7 @@ import lime.media.openal.AL;
 		#if lime_cffi
 		var backend = __source.__backend, i = 0;
 		if (backend.streamed) {
-			size = backend.bufferLengths[i = backend.bufferLengths.length - backend.queuedBuffers];
+			size = backend.bufferLengths[i = backend.bufferLengths.length - backend.requestBuffers];
 			buf = backend.bufferDatas[i].buffer;
 			pos -= Math.floor(backend.bufferTimes[i] * buffer.sampleRate * buffer.channels * wordSize);
 			while (pos > size) {
