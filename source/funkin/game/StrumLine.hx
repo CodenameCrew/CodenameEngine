@@ -264,6 +264,12 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	var __notePerStrum:Array<Note> = [];
 
 	function __inputProcessPressed(note:Note) {
+		if (__pressed[note.strumID] && note.isSustainNote && note.strumTime < __updateNote_songPos && !note.wasGoodHit) {
+			note.tripTimer = 1;
+			PlayState.instance.goodNoteHit(this, note);
+		}
+	}
+	function __inputProcessPressedOne(note:Note) {
 		if (__pressed[note.strumID] && note.isSustainNote && note.sustainParent != null && note.prevNote != null && note.prevNote.wasGoodHit && note.strumTime < __updateNote_songPos && !note.wasGoodHit) {
 			note.tripTimer = 1;
 			PlayState.instance.goodNoteHit(this, note);
@@ -332,7 +338,10 @@ class StrumLine extends FlxTypedGroup<Strum> {
 				if (c.lastAnimContext != DANCE)
 					c.__lockAnimThisFrame = true;
 
-			notes.forEachAlive(__inputProcessPressed);
+			if (Options.sustainsAsOneNote)
+				notes.forEachAlive(__inputProcessPressedOne);
+			else
+				notes.forEachAlive(__inputProcessPressed);
 		}
 
 		forEach(function(str:Strum) {

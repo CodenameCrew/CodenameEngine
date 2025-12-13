@@ -15,6 +15,7 @@ class GameplayOptions extends TreeMenuScreen {
 		add(new Checkbox(getNameID('naughtyness'), getDescID('naughtyness'), 'naughtyness'));
 		add(new Checkbox(getNameID('camZoomOnBeat'), getDescID('camZoomOnBeat'), 'camZoomOnBeat'));
 		add(new Checkbox(getNameID('autoPause'), getDescID('autoPause'), 'autoPause', __changeAutoPause));
+		add(new Checkbox(getNameID('sustainsAsOneNote'), getDescID('sustainsAsOneNote'), 'sustainsAsOneNote'));
 		add(offsetSetting = new NumOption(getNameID('songOffset'), getDescID('songOffset'), -999, 999, 1, 'songOffset', __changeOffset));
 		add(new SliderOption(getNameID('volumeMusic'), getDescID('volumeMusic'), 0, 1, 1, 5, 'volumeMusic', -1, __changeVolumeMusic));
 		add(new SliderOption(getNameID('volumeSFX'), getDescID('volumeSFX'), 0, 1, 1, 5, 'volumeSFX'));
