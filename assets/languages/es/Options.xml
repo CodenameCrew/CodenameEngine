@@ -94,6 +94,9 @@
 
 		<str id="ghostTapping-desc">Si está desactivado, apretar una tecla sin ninguna nota contará como un Combo Break.</str>
 
+		<str id="sustainsAsOneNote-name">Sostenidos como Una Nota</str>
+		<str id="sustainsAsOneNote-desc">Si está activado, las notas sostenidas no se pueden presionar si fallas, y cuentan como un solo Acierto/Fallo. Desactiva esto si prefieres el sistema de entrada antiguo.</str>
+
 		<str id="naughtyness-name">Guarradas</str>
 		<str id="naughtyness-desc">Si está desactivado, se censurarán las escenas de Week 7.</str>
 
