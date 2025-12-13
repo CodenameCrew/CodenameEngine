@@ -105,9 +105,6 @@
 		<str id="ghostTapping-name">Toques Fantasma</str>
 		<str id="ghostTapping-desc">Se desmarcado, bater em teclas que não tem uma nota conta como erro.</str>
 
-		<str id="sustainsAsOneNote-name">Sustenidos como Uma Nota</str>
-		<str id="sustainsAsOneNote-desc">Se marcado, as notas seguidas não podem ser pressionadas se falharem, e contam como um único Acerto/Falha. Desmarque isto se preferir o sistema de entrada antigo.</str>
-
 		<str id="naughtyness-name">Indecência</str>
 		<str id="naughtyness-desc">Se desmarcado, irá censurar as cenas da Semana 7, ou mais.</str>
 

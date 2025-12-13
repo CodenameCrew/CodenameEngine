@@ -136,6 +136,8 @@ class Flags {
 	public static var DEFAULT_MODCHART_HOLD_SUBDIVISIONS:Int = 4;
 	#end
 
+	public static var SUSTAINS_AS_ONE_NOTE:Bool = true;
+
 	@:also(funkin.game.Character.FALLBACK_DEAD_CHARACTER)
 	public static var DEFAULT_GAMEOVER_CHARACTER:String = "bf-dead";
 

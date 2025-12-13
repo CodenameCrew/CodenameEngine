@@ -338,7 +338,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 				if (c.lastAnimContext != DANCE)
 					c.__lockAnimThisFrame = true;
 
-			if (Options.sustainsAsOneNote)
+			if (Flags.SUSTAINS_AS_ONE_NOTE)
 				notes.forEachAlive(__inputProcessPressedOne);
 			else
 				notes.forEachAlive(__inputProcessPressed);

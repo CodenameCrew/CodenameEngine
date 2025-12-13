@@ -23,7 +23,6 @@ class Options
 	public static var naughtyness:Bool = true;
 	public static var downscroll:Bool = false;
 	public static var ghostTapping:Bool = true;
-	public static var sustainsAsOneNote:Bool = true;
 	public static var flashingMenu:Bool = true;
 	public static var camZoomOnBeat:Bool = true;
 	public static var fpsCounter:Bool = true;

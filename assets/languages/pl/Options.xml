@@ -95,9 +95,6 @@
 		<str id="ghostTapping-name">Wolne stukanie</str>
 		<str id="ghostTapping-desc">Jeśli wyłączone, próba kliknięcia struny która nie ma nuty sprawi chybienie.</str>
 
-		<str id="sustainsAsOneNote-name">Słupki jako Jeden Dźwięk</str>
-		<str id="sustainsAsOneNote-desc">Jeśli włączone, Słupków nie da się wcisnąć po pomyłce, i liczą się jako jedno Trafienie/Pomyłka. Wyłącz jeśli wolisz stary system wejścia.</str>
-
 		<str id="naughtyness-name">Niegrzeczność</str>
 		<str id="naughtyness-desc">Jeśli wyłączone, cenzuruje scenki 7 Tygodnia.</str>
 

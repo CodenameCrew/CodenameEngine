@@ -101,9 +101,6 @@
 		<str id="ghostTapping-name">Ghost Tapping</str>
 		<str id="ghostTapping-desc">Se disattivato, cliccare una strum in assenza di una nota risulterà in un miss.</str>
 
-		<str id="sustainsAsOneNote-name">Note Sostenute come Una Nota</str>
-		<str id="sustainsAsOneNote-desc">Se attivato, le note sostenute non possono essere premute se si sbaglia, e contano come un singolo Hit/Miss. Disattiva questo se preferisci il vecchio sistema di input.</str>
-
 		<str id="naughtyness-name">Volgarita'</str>
 		<str id="naughtyness-desc">Se disattivato, censorerà i filmati della Week 7 o altro.</str>
 

@@ -105,9 +105,6 @@
 		<str id="ghostTapping-name">Ghost Tapping</str>
 		<str id="ghostTapping-desc">If unchecked, trying to hit any strum that have no note that can be hit will cause a miss.</str>
 
-		<str id="sustainsAsOneNote-name">Sustains as One Note</str>
-		<str id="sustainsAsOneNote-desc">If checked, Hold Notes can't be pressedif you miss, and count as a single Hit/Miss. Uncheck this if you prefer the old Input System.</str>
-
 		<str id="naughtyness-name">Naughtyness</str>
 		<str id="naughtyness-desc">If unchecked, will censor the Week 7 cutscenes or more.</str>
 
