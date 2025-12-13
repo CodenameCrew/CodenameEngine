@@ -121,7 +121,7 @@ class Strum extends FlxSprite {
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
 		if (cpu) {
-			if (lastHit + (Conductor.crochet / 2) < Conductor.songPosition && getAnim() == "confirm") {
+			if (lastHit + (Conductor.crochet * 0.5) < Conductor.songPosition && getAnim() == "confirm") {
 				playAnim("static");
 			}
 		}
@@ -133,7 +133,7 @@ class Strum extends FlxSprite {
 	}
 
 	@:noCompletion public static inline final PIX180:Float = 565.4866776461628; // 180 * Math.PI
-	@:noCompletion public static final N_WIDTHDIV2:Float = Note.swagWidth / 2;
+	@:noCompletion public static final N_WIDTHDIV2:Float = Note.swagWidth / 2; // DEPRECATED
 
 	/**
 	 * Updates the position of a note.
@@ -162,16 +162,16 @@ class Strum extends FlxSprite {
 
 		if (shouldX || shouldY) {
 			if (daNote.strumRelativePos) {
-				if (shouldX) daNote.x = (this.width - daNote.width) / 2;
+				if (shouldX) daNote.x = (this.width - daNote.width) * 0.5;
 				if (shouldY) {
 					daNote.y = (daNote.strumTime - Conductor.songPosition) * (0.45 * CoolUtil.quantize(getScrollSpeed(daNote), 100));
-					if (daNote.isSustainNote) daNote.y += N_WIDTHDIV2;
+					if (daNote.isSustainNote) daNote.y += height * 0.5;
 				}
 			} else {
 				var offset = FlxPoint.get(0, (Conductor.songPosition - daNote.strumTime) * (0.45 * CoolUtil.quantize(getScrollSpeed(daNote), 100)));
 				var realOffset = FlxPoint.get(0, 0);
 
-				if (daNote.isSustainNote) offset.y -= N_WIDTHDIV2;
+				if (daNote.isSustainNote) offset.y -= height * 0.5;
 
 				if (Std.int(daNote.__noteAngle % 360) != 0) {
 					var noteAngleCos = FlxMath.fastCos(daNote.__noteAngle / PIX180);
