@@ -136,6 +136,8 @@ class Flags {
 	public static var DEFAULT_MODCHART_HOLD_SUBDIVISIONS:Int = 4;
 	#end
 
+	public static var SUSTAINS_AS_ONE_NOTE:Null<Bool> = null;
+
 	@:also(funkin.game.Character.FALLBACK_DEAD_CHARACTER)
 	public static var DEFAULT_GAMEOVER_CHARACTER:String = "bf-dead";
 
@@ -305,8 +307,9 @@ class Flags {
 	private static function loadPost() {
 		if (MOD_API_VERSION == null) MOD_API_VERSION = CURRENT_API_VERSION;
 		if (WINDOW_TITLE_USE_MOD_NAME == null) WINDOW_TITLE_USE_MOD_NAME = !overridenFlags.exists('TITLE') && overridenFlags.exists('MOD_NAME');
-		if (USE_LEGACY_TIMING == null) USE_LEGACY_TIMING = MOD_API_VERSION <= 1;
-		if (USE_LEGACY_ZOOM_FACTOR == null) USE_LEGACY_ZOOM_FACTOR = MOD_API_VERSION <= 1;
+		if (USE_LEGACY_TIMING == null) USE_LEGACY_TIMING = MOD_API_VERSION < 2;
+		if (USE_LEGACY_ZOOM_FACTOR == null) USE_LEGACY_ZOOM_FACTOR = MOD_API_VERSION < 2;
+		if (SUSTAINS_AS_ONE_NOTE == null) SUSTAINS_AS_ONE_NOTE = MOD_API_VERSION >= 2;
 	}
 
 	public static function loadFromDatas(datas:Array<String>):Map<String, String> {
