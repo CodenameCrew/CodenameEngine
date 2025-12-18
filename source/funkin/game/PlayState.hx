@@ -1952,6 +1952,8 @@ class PlayState extends MusicBeatState
 		strumLine.onHit.dispatch(event);
 		gameAndCharsEvent("onNoteHit", event);
 
+		note.noSustainClip = !event.clipSustain;
+		
 		if (!event.cancelled) {
 			if (!note.isSustainNote) {
 				if (event.countScore) songScore += event.score;
