@@ -224,9 +224,10 @@ class StrumLine extends FlxTypedGroup<Strum> {
 				daNote.tooLate = true;
 		}
 
-		if (cpu && __updateNote_event.__autoCPUHit && !daNote.avoid && !daNote.wasGoodHit && daNote.strumTime < __updateNote_songPos) PlayState.instance.goodNoteHit(this, daNote);
+		if (cpu && __updateNote_event.__autoCPUHit && !daNote.avoid && !daNote.wasGoodHit && daNote.strumTime < __updateNote_songPos)
+			PlayState.instance.goodNoteHit(this, daNote);
 
-		if (daNote.wasGoodHit && daNote.isSustainNote && daNote.strumTime + daNote.sustainLength < __updateNote_songPos) {
+		if (daNote.wasGoodHit && daNote.isSustainNote && daNote.strumTime + daNote.sustainLength < __updateNote_songPos && !daNote.noSustainClip) {
 			deleteNote(daNote);
 			return;
 		}
@@ -241,20 +242,8 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		if (__updateNote_event.strum == null) return;
 		if (__updateNote_event.__reposNote) __updateNote_event.strum.updateNotePosition(daNote);
 
-
-		if (daNote.isSustainNote)
-		{
+		if (daNote.isSustainNote) {
 			daNote.updateSustain(__updateNote_event.strum);
-
-			if (daNote.tripTimer > 0 && daNote.tailCount > 3)
-			{
-				daNote.tripTimer -= 0.05 / daNote.sustainLength;
-				if (daNote.tripTimer <= 0)
-				{
-					daNote.tripTimer = 0;
-					daNote.canBeHit = false;
-				}
-			}
 		}
 	}
 
@@ -264,14 +253,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	var __notePerStrum:Array<Note> = [];
 
 	function __inputProcessPressed(note:Note) {
-		if (__pressed[note.strumID] && note.isSustainNote && note.strumTime < __updateNote_songPos && !note.wasGoodHit) {
-			note.tripTimer = 1;
-			PlayState.instance.goodNoteHit(this, note);
-		}
-	}
-	function __inputProcessPressedOne(note:Note) {
-		if (__pressed[note.strumID] && note.isSustainNote && note.sustainParent != null && note.prevNote != null && note.prevNote.wasGoodHit && note.strumTime < __updateNote_songPos && !note.wasGoodHit) {
-			note.tripTimer = 1;
+		if (__pressed[note.strumID] && note.isSustainNote && note.sustainParent.wasGoodHit && note.strumTime < __updateNote_songPos && !note.wasGoodHit) {
 			PlayState.instance.goodNoteHit(this, note);
 		}
 	}
@@ -338,10 +320,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 				if (c.lastAnimContext != DANCE)
 					c.__lockAnimThisFrame = true;
 
-			if (Flags.SUSTAINS_AS_ONE_NOTE)
-				notes.forEachAlive(__inputProcessPressedOne);
-			else
-				notes.forEachAlive(__inputProcessPressed);
+			notes.forEachAlive(__inputProcessPressed);
 		}
 
 		forEach(function(str:Strum) {

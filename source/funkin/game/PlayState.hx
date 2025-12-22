@@ -1833,18 +1833,25 @@ class PlayState extends MusicBeatState
 	 */
 	public function noteMiss(strumLine:StrumLine, note:Note, ?direction:Int, ?player:Int):Void
 	{
-		var playerID:Null<Int> = note == null ? player : strumLines.members.indexOf(strumLine);
-		var directionID:Null<Int> = note == null ? direction : note.strumID;
+		var hasNote:Bool = note != null;
+		var playerID:Null<Int> = hasNote ? strumLines.members.indexOf(strumLine) : player;
+		var directionID:Null<Int> = hasNote ? note.strumID : direction;
 		if (playerID == null || directionID == null || playerID == -1) return;
 
-		if (Flags.SUSTAINS_AS_ONE_NOTE) {
-			if (note != null ? (note.isSustainNote && note.prevNote != null && note.prevNote.isSustainNote && !note.prevNote.wasGoodHit) : false) {
+		if (hasNote) {
+			if (Flags.SUSTAINS_AS_ONE_NOTE && note.isSustainNote) {
 				strumLine.deleteNote(note);
-				return;
+				if (note.sustainParent.wasGoodHit) {
+					note.sustainParent.wasGoodHit = false;
+					note.sustainParent.tooLate = true;
+					note = note.sustainParent;
+				}
+				else
+					return;
 			}
 		}
 
-		var event:NoteMissEvent = gameAndCharsEvent("onPlayerMiss", EventManager.get(NoteMissEvent).recycle(note, -10, 1, muteVocalsOnMiss, note != null ? ((note.isSustainNote && Flags.SUSTAINS_AS_ONE_NOTE) ? -0.1425 : -0.0475) : -0.04, Paths.sound(FlxG.random.getObject(Flags.DEFAULT_MISS_SOUNDS)), FlxG.random.float(0.1, 0.2), note == null, combo > 5, "sad", true, true, "miss", strumLines.members[playerID].characters, playerID, note != null ? note.noteType : null, directionID, 0));
+		var event:NoteMissEvent = gameAndCharsEvent("onPlayerMiss", EventManager.get(NoteMissEvent).recycle(note, -10, 1, muteVocalsOnMiss, hasNote ? ((note.isSustainNote && Flags.SUSTAINS_AS_ONE_NOTE) ? -0.1425 : -0.0475) : -0.04, Paths.sound(FlxG.random.getObject(Flags.DEFAULT_MISS_SOUNDS)), FlxG.random.float(0.1, 0.2), !hasNote, combo > 5, "sad", true, true, "miss", strumLines.members[playerID].characters, playerID, hasNote ? note.noteType : null, directionID, 0));
 		strumLine.onMiss.dispatch(event);
 		if (event.cancelled) {
 			gameAndCharsEvent("onPostPlayerMiss", event);
@@ -1883,7 +1890,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if (event.deleteNote && strumLine != null && note != null)
+		if (event.deleteNote && strumLine != null && hasNote)
 			strumLine.deleteNote(note);
 
 		gameAndCharsEvent("onPostPlayerMiss", event);
@@ -1945,6 +1952,8 @@ class PlayState extends MusicBeatState
 		strumLine.onHit.dispatch(event);
 		gameAndCharsEvent("onNoteHit", event);
 
+		note.noSustainClip = !event.clipSustain;
+		
 		if (!event.cancelled) {
 			if (!note.isSustainNote) {
 				if (event.countScore) songScore += event.score;
