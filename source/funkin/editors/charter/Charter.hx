@@ -80,6 +80,7 @@ class Charter extends UIState {
 	public var metronome:FlxSound;
 
 	public var vocals:FlxSound;
+	public var voicesMuted:Bool = false;
 
 	public var quant:Int = 16;
 	public var quants:Array<Int> = [4, 8, 12, 16, 20, 24, 32, 48, 64, 192]; // different quants
@@ -1812,9 +1813,9 @@ class Charter extends UIState {
 		t.icon = 1 - Std.int(Math.ceil(FlxG.sound.music.volume));
 	}
 	function _song_mutevoices(t) {
-		vocals.volume = vocals.volume > 0 ? 0 : 1;
-		for (strumLine in strumLines.members) strumLine.vocals.volume = strumLine.vocals.volume > 0 ? 0 : 1;
-		t.icon = 1 - Std.int(Math.ceil(vocals.volume));
+		vocals.volume = (voicesMuted = !voicesMuted) ? 0 : 1;
+		for (strumLine in strumLines.members) strumLine.updateVoicesVolume();
+		t.icon = voicesMuted ? 1 : 0;
 	}
 	function _playback_back(_) {
 		if (FlxG.sound.music.playing) return;

@@ -300,6 +300,7 @@ class Chart {
 			var eventsPath = '$songPath/events$variantSuffix.json', events = filterEventsForSaving(chart.events, false, true);
 
 			if (events.length != 0) CoolUtil.safeSaveFile(eventsPath, Json.stringify({events: events}, null, prettyPrint));
+			else if (FileSystem.exists(eventsPath)) FileSystem.deleteFile(eventsPath); // If there's no events to save, then get rid of the file (if it exists already).
 		}
 		#end
 
