@@ -1,5 +1,5 @@
 @ECHO OFF
-cd ..
+cd /d "%~dp0.."
 echo Generating documentation...
 echo Platform is based on Windows
 haxelib run lime build windows --haxeflag="-xml docs/doc.xml" -D doc-gen -D DOCUMENTATION --no-output
