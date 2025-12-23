@@ -84,28 +84,30 @@ final class TranslationUtil
 	 * If `name` is `null`, its gonna use the current language.
 	 * If `name` is not `null`, it will load the translations for the given language.
 	 */
-	public static function setLanguage(?name:String):Void {
+	public static function setLanguage(?name:String, ?noLogs = false):Void {
 		#if TRANSLATIONS_SUPPORT
 		if(name == null) name = curLanguage;
 		if(!langConfigs.exists(name)) name = Flags.DEFAULT_LANGUAGE;
 		if(!langConfigs.exists(name)) name = foundLanguages[0];
 
-		if(curLanguage != name) {
-			Logs.traceColored([
-				Logs.getPrefix("Language"),
-				Logs.logText("Changing saved language to: "),
-				Logs.logText('${getLanguageName(name)} ($name)', GREEN)
-			], INFO);
-			// todo: make this into a notification system for the user
-			// notification would be in previous language
-			// but only if the user didnt manually change it.
-			curLanguage = name;
-		} else {
-			Logs.traceColored([
-				Logs.getPrefix("Language"),
-				Logs.logText("Setting Language To: "),
-				Logs.logText('${getLanguageName(name)} ($name)', GREEN)
-			], VERBOSE);
+		if(!noLogs) {
+			if(curLanguage != name) {
+				Logs.traceColored([
+					Logs.getPrefix("Language"),
+					Logs.logText("Changing saved language to: "),
+					Logs.logText('${getLanguageName(name)} ($name)', GREEN)
+				], INFO);
+				// todo: make this into a notification system for the user
+				// notification would be in previous language
+				// but only if the user didnt manually change it.
+				curLanguage = name;
+			} else {
+				Logs.traceColored([
+					Logs.getPrefix("Language"),
+					Logs.logText("Setting Language To: "),
+					Logs.logText('${getLanguageName(name)} ($name)', GREEN)
+				], VERBOSE);
+			}
 		}
 
 		for(mod in ModsFolder.getLoadedModsLibs(false))
@@ -123,11 +125,22 @@ final class TranslationUtil
 	 *
 	 * If `id` is `null` then it's gonna search using `defString`.
 	 */
-	public static inline function get(?id:String, ?params:Array<Dynamic>, ?def:String):String
-		return getRaw(id, def).format(params);
+	public static inline function get(?id:String, ?params:Array<Dynamic>, ?def:String, ?mustDefaultLang:Bool):String {
+		final result = getRaw(id, def).format(params);
+		
+		if (mustDefaultLang && hasCyrillic(result)) {
+			final oldLang = curLanguage;
+			setLanguage("en", true);
+			final engResult = getRaw(id, def).format(params);
+			setLanguage(oldLang, true);
+			return engResult;
+		} // I want to redo this but I'm too lazy
+		
+		return result;
+	}
 
-	public static inline function translate(?id:String, ?params:Array<Dynamic>, ?def:String):String
-		return get(id, params, def);
+	public static inline function translate(?id:String, ?params:Array<Dynamic>, ?def:String, ?mustDefaultLang:Bool):String
+		return get(id, params, def, mustDefaultLang);
 
 	public static inline function translateDiff(?id:String, ?params:Array<Dynamic>):String
 		return get("diff." + id.toLowerCase(), params, id);
@@ -302,6 +315,19 @@ final class TranslationUtil
 		#else
 		return [];
 		#end
+	}
+
+	/**
+	 * Since lime is shit and can't render Cyrillic on the window title, this function will return the title from a language that will use Cyrillic to English
+	 */
+	public static function hasCyrillic(text:String):Bool {
+		for (i in 0...text.length) {
+			var code = text.charCodeAt(i);
+			if ((code >= 'А'.code && code <= 'Я'.code) || 
+				(code >= 'а'.code && code <= 'я'.code))
+				return true;
+		}
+		return false;
 	}
 
 	// Utils

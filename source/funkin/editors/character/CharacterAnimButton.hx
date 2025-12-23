@@ -116,7 +116,7 @@ class CharacterAnimButton extends UIButton {
 		foldableButtons.push(fpsStepper);
 		addLabelOn(fpsStepper, translate("fps"), 12);
 
-		loopedCheckbox = new UICheckbox(fpsStepper.x + 82 - 32 + 26, fpsStepper.y, "Looping?", animData.loop, 0, true);
+		loopedCheckbox = new UICheckbox(fpsStepper.x + 82 - 32 + 26, fpsStepper.y, translate("looping"), animData.loop, 0, true);
 		loopedCheckbox.onChecked = (newLooping:Bool) -> {this.changeLooping(newLooping);};
 		members.push(loopedCheckbox);
 		foldableButtons.push(loopedCheckbox);
