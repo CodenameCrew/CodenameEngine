@@ -1,6 +1,7 @@
 package flx3d;
 
 #if THREE_D_SUPPORT
+import flx3d._internal.TextureView3D;
 import away3d.containers.View3D;
 import away3d.library.assets.IAsset;
 import flixel.FlxG;
@@ -18,12 +19,12 @@ import flixel.FlxSprite;
 class FlxView3D extends FlxSprite
 {
 	#if THREE_D_SUPPORT
-	@:noCompletion private var bmp:BitmapData;
+	@:noCompletion private var bmp:BitmapData = null;
 
 	/**
 	 * The Away3D View
 	 */
-	public var view:View3D;
+	public var view:TextureView3D;
 
 	/**
 	 * Set this flag to true to force the View3D to update during the `draw()` call.
@@ -41,18 +42,43 @@ class FlxView3D extends FlxSprite
 	public function new(x:Float = 0, y:Float = 0, width:Int = -1, height:Int = -1)
 	{
 		super(x, y);
-
-		view = new View3D();
+		view = new TextureView3D();
+		view.addCallback = function() {
+			trace("ADDED");
+			bmp = view.bitmap; //new BitmapData(Std.int(view.width), Std.int(view.height), true, 0x0);
+			loadGraphic(bmp);
+		}
 		view.visible = false;
-
-		view.width = width == -1 ? FlxG.width : width;
-		view.height = height == -1 ? FlxG.height : height;
+		//view.width = width == -1 ? FlxG.width : width;
+		//view.height = height == -1 ? FlxG.height : height;
+		this.width = width == -1 ? FlxG.width : width;
+		this.height = height == -1 ? FlxG.height : height;
 
 		view.backgroundAlpha = 0;
 		FlxG.stage.addChildAt(view, 0);
 
-		bmp = new BitmapData(Std.int(view.width), Std.int(view.height), true, 0x0);
-		loadGraphic(bmp);
+	}
+
+	override function resetHelpers():Void
+	{
+		resetFrameSize();
+		//resetSizeFromFrame(); // commenting out this shit because it's causing issues
+		_flashRect2.x = 0;
+		_flashRect2.y = 0;
+
+		if (graphic != null)
+		{
+			_flashRect2.width = graphic.width;
+			_flashRect2.height = graphic.height;
+		}
+
+		centerOrigin();
+
+		if (FlxG.renderBlit)
+		{
+			dirty = true;
+			updateFramePixels();
+		}
 	}
 
 	/**
@@ -86,25 +112,33 @@ class FlxView3D extends FlxSprite
 		}
 	}
 
-	@:noCompletion override function draw()
+	override function update(elapsed:Float) {
+		if (bmp != view.bitmap) {
+			funkin.backend.system.Logs.warn("FlxView3D bitmaps do not match, correcting...");
+			bmp = view.bitmap;
+		}
+		
+	}
+
+	/*@:noCompletion override function draw()
 	{
 		super.draw();
-
 		if (dirty3D)
 		{
+			view.x = 0;
 			view.visible = false;
 			FlxG.stage.addChildAt(view, 0);
 
 			var old = FlxG.game.filters;
 			FlxG.game.filters = null;
 
-			view.renderer.queueSnapshot(bmp);
+			//view.renderer.queueSnapshot(bmp);
 			view.render();
 
 			FlxG.game.filters = old;
 			FlxG.stage.removeChild(view);
 		}
-	}
+	}*/
 
 	@:noCompletion override function set_width(newWidth:Float):Float
 	{
