@@ -139,22 +139,25 @@ class FlxView3D extends FlxSprite
 
 	@:noCompletion override function draw()
 	{
-		super.draw();
 		if (dirty3D)
 		{
-			view.visible = false;
-			FlxG.stage.addChildAt(view, 0);
+			if (legacyRender) {
+				view.visible = false;
+				FlxG.stage.addChildAt(view, 0);
 
-			var old = FlxG.game.filters;
-			FlxG.game.filters = null;
+				var old = FlxG.game.filters;
+				FlxG.game.filters = null;
 
-			if (legacyRender)
 				view.renderer.queueSnapshot(bmp);
+			}
 			view.render();
 
-			FlxG.game.filters = old;
-			FlxG.stage.removeChild(view);
+			if (legacyRender) {
+				FlxG.game.filters = old;
+				FlxG.stage.removeChild(view);
+			}
 		}
+		super.draw();
 	}
 
 	@:noCompletion override function set_width(newWidth:Float):Float

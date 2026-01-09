@@ -54,6 +54,7 @@ class TextureView3D extends View3D {
 
 	private function _createFramebuffer() {
 		if (width == 0 || height == 0) return;
+		if (_framebuffer != null) _framebuffer.dispose();
 		_framebuffer = FlxG.stage.context3D.createRectangleTexture(Std.int(_width), Std.int(_height), BGRA, true);
 		bitmap = BitmapDataCrashFix.fromTextureCrashFix(_framebuffer);
 		addCallback();
