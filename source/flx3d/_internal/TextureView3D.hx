@@ -1,6 +1,5 @@
 package flx3d._internal;
 
-import haxe.CallStack;
 import flixel.FlxG;
 import haxe.Exception;
 import away3d.containers.View3D;
@@ -11,11 +10,10 @@ import away3d.core.managers.Stage3DManager;
 import away3d.core.managers.Stage3DProxy;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.RectangleTexture;
+import openfl.display3D.Context3D;
 import openfl.display.BitmapData;
 import openfl.events.Event;
 import openfl.geom.Point;
-
-// TODO: error when disposing of Stage3DProxy. Possibly related to it using Flixel's stage?
 
 class TextureView3D extends View3D {
 	public var bitmap:BitmapData;
@@ -23,42 +21,24 @@ class TextureView3D extends View3D {
 	private var _initialised:Bool = false;
 	public var addCallback:() -> Void;
 	
-	/*private override function onAddedToStage(event:Event):Void
-	{
-		if (_addedToStage)
-			return;
-		super.onAddedToStage(event);
-		trace(_stage3DProxy);
-		_framebuffer = _stage3DProxy.context3D.createRectangleTexture(Std.int(width), Std.int(height), BGRA, true);
-		bitmap = BitmapData.fromTexture(_framebuffer);
-		if (addCallback != null) addCallback();
-	}*/
-
-	public override function dispose() {
+	public override function dispose() @:privateAccess{
+		/*_stage3DProxy._stage3DManager.removeStage3DProxy(_stage3DProxy);
+		_stage3DProxy._stage3DIndex = -1;
+		_stage3DProxy._stage3DManager = null;
+		_stage3DProxy._stage3D = null;*/
 		_stage3DProxy = null;
 		super.dispose();
 	}
 
 	private override function set_height(value:Float):Float {
-		//if (_height == value) return value;
-		trace("height", value);
-		trace("=====set_height CALLSTACK=====");
-		trace(CallStack.toString(CallStack.callStack()));
-		trace("==============================");
+		if (_height == value) return value;
 		super.set_height(value);
-		//trace("from: set_height");
 		_createFramebuffer();
 		return value;
 	}
 	private override function set_width(value:Float):Float {
-		//if (value > 2048) throw new Exception("breakpoint");
-		//if (_width == value) return value;
-		trace("width", value);
-		trace("=====set_width CALLSTACK=====");
-		trace(CallStack.toString(CallStack.callStack()));
-		trace("=============================");
+		if (_width == value) return value;
 		super.set_width(value);
-		//trace("from: set_width");
 		_createFramebuffer();
 		return value;
 	}
@@ -68,35 +48,15 @@ class TextureView3D extends View3D {
 		super(scene, camera, renderer, forceSoftware, profile, contextIndex);
 		
 		_stage3DProxy = Stage3DManager.getInstance(FlxG.stage).getStage3DProxy(0);
-		addEventListener(Event.ENTER_FRAME, _tryCreateFramebuffer);
-	}
-
-	public function createFramebuffer() {
-		/*if (!_initialised || width == 0 || height == 0) return;
-		trace(_width, _height);
-		_framebuffer = _stage3DProxy.context3D.createRectangleTexture(Std.int(_width), Std.int(_height), BGRA, true);
-		bitmap = BitmapData.fromTexture(_framebuffer);
-		addCallback();*/
+		_initialised = true;
+		_createFramebuffer();
 	}
 
 	private function _createFramebuffer() {
-		if (!_initialised || width == 0 || height == 0) return;
-		trace(_width, _height);
-		_framebuffer = _stage3DProxy.context3D.createRectangleTexture(Std.int(_width), Std.int(_height), BGRA, true);
-		bitmap = BitmapData.fromTexture(_framebuffer);
+		if (width == 0 || height == 0) return;
+		_framebuffer = FlxG.stage.context3D.createRectangleTexture(Std.int(_width), Std.int(_height), BGRA, true);
+		bitmap = BitmapDataCrashFix.fromTextureCrashFix(_framebuffer);
 		addCallback();
-	}
-
-	private function _tryCreateFramebuffer(event:Event) {
-		if (_initialised) return;
-		if (_stage3DProxy == null) return;
-		if (_stage3DProxy.context3D == null) return;
-		if (_width == 0 || _height == 0) return;
-		
-		_initialised = true;
-		trace("from: _tryCreateFramebuffer");
-		_createFramebuffer();
-		removeEventListener(Event.ENTER_FRAME, _tryCreateFramebuffer);
 	}
 
 	/**
@@ -179,7 +139,9 @@ class TextureView3D extends View3D {
 		stage3DProxy.bufferClear = false;
 	}
 
-	private override function updateBackBuffer():Void {
+	// idk if i need this but i'll keep commented in case removing it breaks anything
+
+	/*private override function updateBackBuffer():Void {
 		// No reason trying to configure back buffer if there is no context available.
 		// Doing this anyway (and relying on _stage3DProxy to cache width/height for
 		// context does get available) means usesSoftwareRendering won't be reliable.
@@ -205,11 +167,30 @@ class TextureView3D extends View3D {
 				_stage3DProxy.configureBackBuffer(Std.int(_globalWidth), Std.int(_globalHeight), _antiAlias, true);
 				_backBufferInvalid = false;
 			} else {
-				// no. fuck you.
 				/*var stageBR:Point = new Point(stage.x + stage.stageWidth, stage.y + stage.stageHeight);
 				width = parent != null ? parent.globalToLocal(stageBR).x - _localTLPos.x : stage.stageWidth;
-				height = parent != null ? parent.globalToLocal(stageBR).y - _localTLPos.y : stage.stageHeight;*/
+				height = parent != null ? parent.globalToLocal(stageBR).y - _localTLPos.y : stage.stageHeight;* /
 			}
 		}
+	}*/
+}
+
+
+class BitmapDataCrashFix extends BitmapData {
+	public static function fromTextureCrashFix(texture:TextureBase):BitmapDataCrashFix
+	@:privateAccess {
+		if (texture == null) return null;
+
+		var bitmapData = new BitmapDataCrashFix(texture.__width, texture.__height, true, 0);
+		bitmapData.readable = false;
+		bitmapData.__texture = texture;
+		bitmapData.__textureContext = texture.__textureContext;
+		bitmapData.image = null;
+		return bitmapData;
+	}
+
+	@:dox(hide) public override function getTexture(context:Context3D):TextureBase
+	{
+		return __texture;
 	}
 }

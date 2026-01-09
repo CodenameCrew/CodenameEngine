@@ -15,6 +15,10 @@ import flixel.FlxSprite;
  *
  * @author lunarcleint
  * @see https://twitter.com/lunarcleint
+ *
+ *
+ * @author StrawberrySage
+ * @see https://twitter.com/StrawberrySage_
  */
 class FlxView3D extends FlxSprite
 {
@@ -24,12 +28,15 @@ class FlxView3D extends FlxSprite
 	/**
 	 * The Away3D View
 	 */
-	public var view:TextureView3D;
+	public var view:View3D;
+	private var _textureView:TextureView3D;
 
 	/**
 	 * Set this flag to true to force the View3D to update during the `draw()` call.
 	 */
 	public var dirty3D:Bool = true;
+
+	private var legacyRender:Bool = false;
 
 	/**
 	 * Creates a new instance of a View3D from Away3D and renders it as a FlxSprite
@@ -41,18 +48,32 @@ class FlxView3D extends FlxSprite
 	 */
 	public function new(x:Float = 0, y:Float = 0, width:Int = -1, height:Int = -1)
 	{
+		// TODO: With new rendering, it seems to only work if 2 or more views are being rendered, hence why it only worked in Funkscop and nothing else.
+		legacyRender = false;
+
 		super(x, y);
-		view = new TextureView3D();
-		view.addCallback = function() {
-			trace("ADDED");
-			bmp = view.bitmap; //new BitmapData(Std.int(view.width), Std.int(view.height), true, 0x0);
-			loadGraphic(bmp);
+		var setInitialWidth:Bool = false;
+		if (legacyRender) {
+			view = new View3D();
 		}
+		else {
+			_textureView = new TextureView3D();
+			_textureView.addCallback = function() {
+				bmp = _textureView.bitmap;
+				loadGraphic(bmp);
+			}
+
+			view = _textureView;
+		}
+		
 		view.visible = false;
-		//view.width = width == -1 ? FlxG.width : width;
-		//view.height = height == -1 ? FlxG.height : height;
+
 		this.width = width == -1 ? FlxG.width : width;
 		this.height = height == -1 ? FlxG.height : height;
+		if (legacyRender) {
+			bmp = new BitmapData(Std.int(view.width), Std.int(view.height), true, 0x0);
+			loadGraphic(bmp);
+		}
 
 		view.backgroundAlpha = 0;
 		FlxG.stage.addChildAt(view, 0);
@@ -61,8 +82,12 @@ class FlxView3D extends FlxSprite
 
 	override function resetHelpers():Void
 	{
+		if (legacyRender) {
+			super.resetHelpers();
+			return;
+		}
 		resetFrameSize();
-		//resetSizeFromFrame(); // commenting out this shit because it's causing issues
+		//resetSizeFromFrame();
 		_flashRect2.x = 0;
 		_flashRect2.y = 0;
 
@@ -112,33 +137,25 @@ class FlxView3D extends FlxSprite
 		}
 	}
 
-	override function update(elapsed:Float) {
-		if (bmp != view.bitmap) {
-			funkin.backend.system.Logs.warn("FlxView3D bitmaps do not match, correcting...");
-			bmp = view.bitmap;
-		}
-		
-	}
-
-	/*@:noCompletion override function draw()
+	@:noCompletion override function draw()
 	{
 		super.draw();
 		if (dirty3D)
 		{
-			view.x = 0;
 			view.visible = false;
 			FlxG.stage.addChildAt(view, 0);
 
 			var old = FlxG.game.filters;
 			FlxG.game.filters = null;
 
-			//view.renderer.queueSnapshot(bmp);
+			if (legacyRender)
+				view.renderer.queueSnapshot(bmp);
 			view.render();
 
 			FlxG.game.filters = old;
 			FlxG.stage.removeChild(view);
 		}
-	}*/
+	}
 
 	@:noCompletion override function set_width(newWidth:Float):Float
 	{
