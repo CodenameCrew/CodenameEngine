@@ -24,19 +24,44 @@ class FlxView3D extends FlxSprite
 {
 	#if THREE_D_SUPPORT
 	@:noCompletion private var bmp:BitmapData = null;
+	private var _textureView:TextureView3D;
+	private var legacyRender:Bool = false;
+
+	// With new rendering, it seems to only work if 2 or more views are being rendered.
+	// This workaround creates a second instance if there is only one view.
+	// "There is nothing more permanent than a temporary solution"
+	// -idk who said this i just wanted to quote it
+	private static var workaroundInstance:FlxView3D;
+	private static var createdWorkaround:Bool = false;
+
+	private inline function createWorkaround()
+	{
+		if (!createdWorkaround && !legacyRender)
+		{
+			createdWorkaround = true;
+			workaroundInstance = new FlxView3D(0, 0, 1, 1);
+			FlxG.state.add(workaroundInstance);
+		}
+	}
+
+	private inline function destroyWorkaround()
+	{
+		if (workaroundInstance == this)
+		{
+			workaroundInstance = null;
+			createdWorkaround = false;
+		}
+	}
 
 	/**
 	 * The Away3D View
 	 */
 	public var view:View3D;
-	private var _textureView:TextureView3D;
 
 	/**
 	 * Set this flag to true to force the View3D to update during the `draw()` call.
 	 */
 	public var dirty3D:Bool = true;
-
-	private var legacyRender:Bool = false;
 
 	/**
 	 * Creates a new instance of a View3D from Away3D and renders it as a FlxSprite
@@ -48,29 +73,31 @@ class FlxView3D extends FlxSprite
 	 */
 	public function new(x:Float = 0, y:Float = 0, width:Int = -1, height:Int = -1)
 	{
-		// TODO: With new rendering, it seems to only work if 2 or more views are being rendered, hence why it only worked in Funkscop and nothing else.
 		legacyRender = false;
 
 		super(x, y);
-		var setInitialWidth:Bool = false;
-		if (legacyRender) {
+		if (legacyRender)
+		{
 			view = new View3D();
 		}
-		else {
+		else
+		{
 			_textureView = new TextureView3D();
-			_textureView.addCallback = function() {
-				bmp = _textureView.bitmap;
+			_textureView.onUpdateBitmap = function(bitmap)
+			{
+				bmp = bitmap;
 				loadGraphic(bmp);
 			}
 
 			view = _textureView;
 		}
-		
+
 		view.visible = false;
 
 		this.width = width == -1 ? FlxG.width : width;
 		this.height = height == -1 ? FlxG.height : height;
-		if (legacyRender) {
+		if (legacyRender)
+		{
 			bmp = new BitmapData(Std.int(view.width), Std.int(view.height), true, 0x0);
 			loadGraphic(bmp);
 		}
@@ -78,32 +105,7 @@ class FlxView3D extends FlxSprite
 		view.backgroundAlpha = 0;
 		FlxG.stage.addChildAt(view, 0);
 
-	}
-
-	override function resetHelpers():Void
-	{
-		if (legacyRender) {
-			super.resetHelpers();
-			return;
-		}
-		resetFrameSize();
-		//resetSizeFromFrame();
-		_flashRect2.x = 0;
-		_flashRect2.y = 0;
-
-		if (graphic != null)
-		{
-			_flashRect2.width = graphic.width;
-			_flashRect2.height = graphic.height;
-		}
-
-		centerOrigin();
-
-		if (FlxG.renderBlit)
-		{
-			dirty = true;
-			updateFramePixels();
-		}
+		createWorkaround();
 	}
 
 	/**
@@ -135,13 +137,16 @@ class FlxView3D extends FlxSprite
 			view.dispose();
 			view = null;
 		}
+
+		destroyWorkaround();
 	}
 
 	@:noCompletion override function draw()
 	{
 		if (dirty3D)
 		{
-			if (legacyRender) {
+			if (legacyRender)
+			{
 				view.visible = false;
 				FlxG.stage.addChildAt(view, 0);
 
@@ -149,12 +154,14 @@ class FlxView3D extends FlxSprite
 				FlxG.game.filters = null;
 
 				view.renderer.queueSnapshot(bmp);
-			}
-			view.render();
+				view.render();
 
-			if (legacyRender) {
 				FlxG.game.filters = old;
 				FlxG.stage.removeChild(view);
+			}
+			else
+			{
+				view.render();
 			}
 		}
 		super.draw();

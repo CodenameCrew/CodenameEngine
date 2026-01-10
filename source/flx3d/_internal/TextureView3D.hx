@@ -15,60 +15,70 @@ import openfl.display.BitmapData;
 import openfl.events.Event;
 import openfl.geom.Point;
 
-class TextureView3D extends View3D {
+class TextureView3D extends View3D
+{
 	public var bitmap:BitmapData;
+
 	private var _framebuffer:TextureBase = null;
 	private var _initialised:Bool = false;
-	public var addCallback:() -> Void;
-	
-	public override function dispose() @:privateAccess{
-		/*_stage3DProxy._stage3DManager.removeStage3DProxy(_stage3DProxy);
-		_stage3DProxy._stage3DIndex = -1;
-		_stage3DProxy._stage3DManager = null;
-		_stage3DProxy._stage3D = null;*/
+
+	public var onUpdateBitmap:(BitmapData) -> Void;
+
+	public override function dispose() @:privateAccess {
+		// prevents the game from disposing flixel's stage3D/context3D
 		_stage3DProxy = null;
 		super.dispose();
 	}
 
-	private override function set_height(value:Float):Float {
-		if (_height == value) return value;
+	private override function set_height(value:Float):Float
+	{
+		if (_height == value)
+			return value;
 		super.set_height(value);
 		_createFramebuffer();
 		return value;
 	}
-	private override function set_width(value:Float):Float {
-		if (_width == value) return value;
+
+	private override function set_width(value:Float):Float
+	{
+		if (_width == value)
+			return value;
 		super.set_width(value);
 		_createFramebuffer();
 		return value;
 	}
 
 	public function new(scene:Scene3D = null, camera:Camera3D = null, renderer:RendererBase = null, forceSoftware:Bool = false, profile:String = "baseline",
-			contextIndex:Int = -1) {
+			contextIndex:Int = -1)
+	{
 		super(scene, camera, renderer, forceSoftware, profile, contextIndex);
-		
+
 		_stage3DProxy = Stage3DManager.getInstance(FlxG.stage).getStage3DProxy(0);
 		_initialised = true;
 		_createFramebuffer();
 	}
 
-	private function _createFramebuffer() {
-		if (width == 0 || height == 0) return;
-		if (_framebuffer != null) _framebuffer.dispose();
+	private function _createFramebuffer()
+	{
+		if (width == 0 || height == 0)
+			return;
+		if (_framebuffer != null)
+			_framebuffer.dispose();
 		_framebuffer = FlxG.stage.context3D.createRectangleTexture(Std.int(_width), Std.int(_height), BGRA, true);
 		bitmap = BitmapDataCrashFix.fromTextureCrashFix(_framebuffer);
-		addCallback();
+		onUpdateBitmap(bitmap);
 	}
 
 	/**
 	 * Renders the view.
 	 */
-	public override function render():Void 
+	public override function render():Void
 	{
 		Stage3DProxy.drawTriangleCount = 0;
 
 		// if context3D has Disposed by the OS,don't render at this frame
-		if (stage3DProxy.context3D == null || !stage3DProxy.recoverFromDisposal()) {
+		if (stage3DProxy.context3D == null || !stage3DProxy.recoverFromDisposal())
+		{
 			_backBufferInvalid = true;
 			return;
 		}
@@ -80,9 +90,11 @@ class TextureView3D extends View3D {
 		if (_shareContext && _layeredView)
 			stage3DProxy.clearDepthBuffer();
 
-		if (!_parentIsStage) {
+		if (!_parentIsStage)
+		{
 			var globalPos:Point = parent.localToGlobal(_localTLPos);
-			if (_globalPos.x != globalPos.x || _globalPos.y != globalPos.y) {
+			if (_globalPos.x != globalPos.x || _globalPos.y != globalPos.y)
+			{
 				_globalPos = globalPos;
 				_globalPosDirty = true;
 			}
@@ -111,13 +123,15 @@ class TextureView3D extends View3D {
 		if (_depthPrepass)
 			renderDepthPrepass(_entityCollector);
 
-		
 		@:privateAccess _renderer.clearOnRender = !_depthPrepass;
 
-		if (_filter3DRenderer != null && _stage3DProxy.context3D != null) {
+		if (_filter3DRenderer != null && _stage3DProxy.context3D != null)
+		{
 			_renderer.render(_entityCollector, _filter3DRenderer.getMainInputTexture(_stage3DProxy), _rttBufferManager.renderToTextureRect);
 			_filter3DRenderer.render(_stage3DProxy, camera, _depthRender);
-		} else {
+		}
+		else
+		{
 			@:privateAccess _renderer.shareContext = _shareContext;
 			if (_shareContext)
 				_renderer.render(_entityCollector, _framebuffer, _scissorRect);
@@ -125,7 +139,8 @@ class TextureView3D extends View3D {
 				_renderer.render(_entityCollector, _framebuffer);
 		}
 
-		if (!_shareContext) {
+		if (!_shareContext)
+		{
 			stage3DProxy.present();
 
 			// fire collected mouse events
@@ -141,7 +156,6 @@ class TextureView3D extends View3D {
 	}
 
 	// idk if i need this but i'll keep commented in case removing it breaks anything
-
 	/*private override function updateBackBuffer():Void {
 		// No reason trying to configure back buffer if there is no context available.
 		// Doing this anyway (and relying on _stage3DProxy to cache width/height for
@@ -176,11 +190,11 @@ class TextureView3D extends View3D {
 	}*/
 }
 
-
-class BitmapDataCrashFix extends BitmapData {
-	public static function fromTextureCrashFix(texture:TextureBase):BitmapDataCrashFix
-	@:privateAccess {
-		if (texture == null) return null;
+class BitmapDataCrashFix extends BitmapData
+{
+	public static function fromTextureCrashFix(texture:TextureBase):BitmapDataCrashFix @:privateAccess {
+		if (texture == null)
+			return null;
 
 		var bitmapData = new BitmapDataCrashFix(texture.__width, texture.__height, true, 0);
 		bitmapData.readable = false;
