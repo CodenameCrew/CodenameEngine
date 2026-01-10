@@ -15,10 +15,6 @@ import flixel.FlxSprite;
  *
  * @author lunarcleint
  * @see https://twitter.com/lunarcleint
- *
- *
- * @author StrawberrySage
- * @see https://twitter.com/StrawberrySage_
  */
 class FlxView3D extends FlxSprite
 {
