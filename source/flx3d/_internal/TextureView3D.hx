@@ -24,7 +24,7 @@ class TextureView3D extends View3D
 	public var onUpdateBitmap:(BitmapData) -> Void;
 
 	/**
-	 * Prevents the enging from disposing Flixel's Stage3D/Context3D instance
+	 * Prevents the engine from disposing Flixel's Stage3D/Context3D instance
 	 */
 	public override function dispose() @:privateAccess {
 		_stage3DProxy = null;
