@@ -20,12 +20,13 @@ class TextureView3D extends View3D
 	public var bitmap:BitmapData;
 
 	private var _framebuffer:TextureBase = null;
-	private var _initialised:Bool = false;
 
 	public var onUpdateBitmap:(BitmapData) -> Void;
 
+	/**
+	 * Prevents the enging from disposing Flixel's Stage3D/Context3D instance
+	 */
 	public override function dispose() @:privateAccess {
-		// prevents the game from disposing flixel's stage3D/context3D
 		_stage3DProxy = null;
 		super.dispose();
 	}
@@ -54,7 +55,6 @@ class TextureView3D extends View3D
 		super(scene, camera, renderer, forceSoftware, profile, contextIndex);
 
 		_stage3DProxy = Stage3DManager.getInstance(FlxG.stage).getStage3DProxy(0);
-		_initialised = true;
 		_createFramebuffer();
 	}
 
