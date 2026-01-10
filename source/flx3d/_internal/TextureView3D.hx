@@ -154,40 +154,6 @@ class TextureView3D extends View3D
 		// register that a view has been rendered
 		stage3DProxy.bufferClear = false;
 	}
-
-	// idk if i need this but i'll keep commented in case removing it breaks anything
-	/*private override function updateBackBuffer():Void {
-		// No reason trying to configure back buffer if there is no context available.
-		// Doing this anyway (and relying on _stage3DProxy to cache width/height for
-		// context does get available) means usesSoftwareRendering won't be reliable.
-		if (_stage3DProxy.context3D != null && !_shareContext) {
-			if (_globalWidth > 0 && _globalHeight > 0) {
-				// Backbuffers are limited to 2048x2048 in software mode and
-				// trying to configure the backbuffer to be bigger than that
-				// will throw an error. Capping the value is a graceful way of
-				// avoiding runtime exceptions for developers who are unable
-				// to test their Away3D implementation on screens that are
-				// large enough for this error to ever occur.
-				if (_stage3DProxy.usesSoftwareRendering) {
-					// Even though these checks where already made in the width
-					// and height setters, at that point we couldn't be sure that
-					// the context had even been retrieved and the software flag
-					// thus be reliable. Make checks again.
-					if (_globalWidth > 2048)
-						_globalWidth = 2048;
-					if (_globalHeight > 2048)
-						_globalHeight = 2048;
-				}
-
-				_stage3DProxy.configureBackBuffer(Std.int(_globalWidth), Std.int(_globalHeight), _antiAlias, true);
-				_backBufferInvalid = false;
-			} else {
-				/*var stageBR:Point = new Point(stage.x + stage.stageWidth, stage.y + stage.stageHeight);
-				width = parent != null ? parent.globalToLocal(stageBR).x - _localTLPos.x : stage.stageWidth;
-				height = parent != null ? parent.globalToLocal(stageBR).y - _localTLPos.y : stage.stageHeight;* /
-			}
-		}
-	}*/
 }
 
 class BitmapDataCrashFix extends BitmapData
