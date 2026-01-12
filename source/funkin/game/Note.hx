@@ -1,6 +1,7 @@
 package funkin.game;
 
 import flixel.math.FlxPoint;
+import flixel.math.FlxAngle;
 import flixel.math.FlxRect;
 import funkin.backend.chart.ChartData;
 import funkin.backend.scripting.events.note.NoteCreationEvent;
@@ -243,10 +244,10 @@ class Note extends FlxSprite
 	override function drawComplex(camera:FlxCamera) {
 		var downscrollCam = (camera is HudCamera ? ({var _:HudCamera=cast camera;_;}).downscroll : false);
 		if (updateFlipY) flipY = (isSustainNote && flipSustain) && (downscrollCam != (__strum != null && __strum.getScrollSpeed(this) < 0));
-		if (downscrollCam) {
-			frameOffset.y += __notePosFrameOffset.y * 2;
+		if (downscrollCam && isSustainNote) {
+			angle *= -1;
 			super.drawComplex(camera);
-			frameOffset.y -= __notePosFrameOffset.y * 2;
+			angle *= -1;
 		} else
 			super.drawComplex(camera);
 	}
@@ -258,36 +259,24 @@ class Note extends FlxSprite
 		@:privateAccess var oldDefaultCameras = FlxCamera._defaultCameras;
 		@:privateAccess if (__strumCameras != null) FlxCamera._defaultCameras = __strumCameras;
 
-		var negativeScroll = isSustainNote && nextSustain != null && lastScrollSpeed < 0;
-		if (negativeScroll)	offset.y *= -1;
-
+		var negativeScroll = isSustainNote && strumRelativePos && lastScrollSpeed < 0;
+		if (negativeScroll) y -= height;
 		if (__strum != null && strumRelativePos) {
-			var pos = __posPoint.set(x, y);
-
-			setPosition(__strum.x, __strum.y);
-
-			__notePosFrameOffset.set(pos.x / scale.x, pos.y / scale.y);
-
-			frameOffset.x -= __notePosFrameOffset.x;
-			frameOffset.y -= __notePosFrameOffset.y;
-
-			this.frameOffsetAngle = __noteAngle;
-
+			final pos = __posPoint.set(x, y);
+			// distance = pos.y , we can use it safely like this
+			final xx = -origin.x + offset.x + (pos.y * Math.cos((__noteAngle + 90) * FlxAngle.TO_RAD));
+			final yy = -origin.y + offset.y + (pos.y * Math.sin((__noteAngle + 90) * FlxAngle.TO_RAD));
+			setPosition(
+				xx + __strum.x + (__strum.width * 0.5),
+				yy + __strum.y + (__strum.height * 0.5)
+			);
 			super.draw();
-
-			this.frameOffsetAngle = 0;
-
-			frameOffset.x += __notePosFrameOffset.x;
-			frameOffset.y += __notePosFrameOffset.y;
-
 			setPosition(pos.x, pos.y);
-			//pos.put();
 		} else {
-			__notePosFrameOffset.set(0, 0);
 			super.draw();
 		}
+		if (negativeScroll) y += height;
 
-		if (negativeScroll)	offset.y *= -1;
 		@:privateAccess FlxCamera._defaultCameras = oldDefaultCameras;
 	}
 
@@ -301,7 +290,7 @@ class Note extends FlxSprite
 		if (lastScrollSpeed != scrollSpeed) {
 			lastScrollSpeed = scrollSpeed;
 			if (nextSustain != null) {
-				scale.y = (sustainLength * 0.45 * scrollSpeed) / frameHeight;
+				scale.y = (sustainLength * 0.45 * Math.abs(scrollSpeed)) / frameHeight;
 				updateHitbox();
 				scale.y += gapFix / frameHeight;
 			}
@@ -311,7 +300,7 @@ class Note extends FlxSprite
 	}
 
 	public function updateSustainClip() if (wasGoodHit && !noSustainClip) {
-		var t = FlxMath.bound((Conductor.songPosition - strumTime) / height * 0.45 * lastScrollSpeed, 0, 1);
+		var t = FlxMath.bound((Conductor.songPosition - strumTime) / height * 0.45 * Math.abs(lastScrollSpeed), 0, 1);
 		var rect = clipRect == null ? FlxRect.get() : clipRect;
 		clipRect = rect.set(0, frameHeight * t, frameWidth, frameHeight * (1 - t));
 	}
