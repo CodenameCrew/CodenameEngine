@@ -244,10 +244,14 @@ class Note extends FlxSprite
 	override function drawComplex(camera:FlxCamera) {
 		var downscrollCam = (camera is HudCamera ? ({var _:HudCamera=cast camera;_;}).downscroll : false);
 		if (updateFlipY) flipY = (isSustainNote && flipSustain) && (downscrollCam != (__strum != null && __strum.getScrollSpeed(this) < 0));
-		if (downscrollCam && isSustainNote) {
-			angle *= -1;
+		if (downscrollCam && __strum != null) {
+			final xx = x;
+			x += origin.x - offset.x;
+			x -= __strum.x; x *= -1; x += __strum.x;
+			x -= origin.x - offset.x;
+			x += __strum.width; // ??? maybe this isnt good
 			super.drawComplex(camera);
-			angle *= -1;
+			x = xx;
 		} else
 			super.drawComplex(camera);
 	}
