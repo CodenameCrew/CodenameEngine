@@ -36,6 +36,8 @@ import funkin.backend.week.WeekData;
 import funkin.savedata.FunkinSave;
 import haxe.io.Path;
 
+import funkin.backend.FunkinCamera;
+
 using StringTools;
 
 @:access(flixel.text.FlxText.FlxTextFormatRange)
@@ -671,7 +673,7 @@ class PlayState extends MusicBeatState
 		GameOverSubstate.script = Flags.DEFAULT_GAMEOVER_SCRIPT;
 		(scripts = new ScriptPack("PlayState")).setParent(this);
 
-		camGame = camera;
+		FlxG.cameras.add(camGame = new FunkinCamera(), true);
 		FlxG.cameras.add(camHUD = new HudCamera(), false);
 		camHUD.bgColor.alpha = 0;
 
@@ -834,17 +836,17 @@ class PlayState extends MusicBeatState
 		for(str in strumLines)
 			str.generate(str.data, (chartingMode && Charter.startHere) ? Charter.startTime : null);
 
-		FlxG.camera.follow(camFollow, LOCKON, Flags.DEFAULT_CAMERA_FOLLOW_SPEED);
-		FlxG.camera.zoom = defaultCamZoom;
+		camGame.follow(camFollow, LOCKON, Flags.DEFAULT_CAMERA_FOLLOW_SPEED);
+		camGame.zoom = defaultCamZoom;
 		// camHUD.zoom = defaultHudZoom;
 
 		if (smoothTransitionData != null && smoothTransitionData.stage == curStage) {
-			FlxG.camera.scroll.set(smoothTransitionData.camX, smoothTransitionData.camY);
-			FlxG.camera.zoom = smoothTransitionData.camZoom;
+			camGame.scroll.set(smoothTransitionData.camX, smoothTransitionData.camY);
+			camGame.zoom = smoothTransitionData.camZoom;
 			MusicBeatState.skipTransIn = true;
 			camFollow.setPosition(smoothTransitionData.camFollowX, smoothTransitionData.camFollowY);
 		} else {
-			FlxG.camera.focusOn(camFollow.getPosition(FlxPoint.weak()));
+			camGame.focusOn(camFollow.getPosition(FlxPoint.weak()));
 		}
 		smoothTransitionData = null;
 
@@ -1396,8 +1398,8 @@ class PlayState extends MusicBeatState
 				if (useCamZoomMult) {
 					if (camZoomingMult < maxCamZoomMult) camZoomingMult += camZoomingStrength;
 				}
-				else if (FlxG.camera.zoom < maxCamZoom) {
-					FlxG.camera.zoom += camGameZoomMult * camZoomingStrength;
+				else if (camGame.zoom < maxCamZoom) {
+					camGame.zoom += camGameZoomMult * camZoomingStrength;
 					camHUD.zoom += camHUDZoomMult * camZoomingStrength;
 				}
 			}
@@ -1442,11 +1444,11 @@ class PlayState extends MusicBeatState
 		if (camZooming) {
 			if (useCamZoomMult) {
 				camZoomingMult = lerp(camZoomingMult, defaultZoom, camZoomLerp) - defaultZoom;
-				FlxG.camera.zoomMultiplier = camZoomingMult * camGameZoomMult + defaultZoom;
+				camGame.zoomMultiplier = camZoomingMult * camGameZoomMult + defaultZoom;
 				camHUD.zoomMultiplier = camZoomingMult * camHUDZoomMult + defaultZoom;
 				camZoomingMult += defaultZoom;
 			}
-			FlxG.camera.zoom = lerp(FlxG.camera.zoom, defaultCamZoom, camGameZoomLerp);
+			camGame.zoom = lerp(camGame.zoom, defaultCamZoom, camGameZoomLerp);
 			camHUD.zoom = lerp(camHUD.zoom, defaultHudZoom, camHUDZoomLerp);
 		}
 
@@ -1567,14 +1569,14 @@ class PlayState extends MusicBeatState
 				moveCamera();
 
 				if (strumLines.members[curCameraTarget] != null) {
-					if (event.params[1] == false) FlxG.camera.snapToTarget();
+					if (event.params[1] == false) camGame.snapToTarget();
 					else if (event.params[3] != null && event.params[3] != "CLASSIC") {  // making more nullchecks in this event because of the default save value being false  - Nex
-						var oldFollow = FlxG.camera.followEnabled;
-						FlxG.camera.followEnabled = false;
-						eventsTween.set("cameraMovement", FlxTween.tween(FlxG.camera.scroll, {x: camFollow.x - FlxG.camera.width * 0.5, y: camFollow.y - FlxG.camera.height * 0.5},
+						var oldFollow = camGame.followEnabled;
+						camGame.followEnabled = false;
+						eventsTween.set("cameraMovement", FlxTween.tween(camGame.scroll, {x: camFollow.x - camGame.width * 0.5, y: camFollow.y - camGame.height * 0.5},
 							(Conductor.stepCrochet / 1000) * (event.params[2] == null ? 4 : event.params[2]), {
 								ease: CoolUtil.flxeaseFromString(event.params[3], event.params[4]),
-								onComplete: (_) -> FlxG.camera.followEnabled = oldFollow
+								onComplete: (_) -> camGame.followEnabled = oldFollow
 							})
 						);
 					}
@@ -1590,14 +1592,14 @@ class PlayState extends MusicBeatState
 				var isOffset = event.params[6] == true;
 				camFollow.setPosition(isOffset ? (camFollow.x + event.params[0]) : event.params[0], isOffset ? (camFollow.y + event.params[1]) : event.params[1]);
 
-				if (event.params[2] == false) FlxG.camera.snapToTarget();
+				if (event.params[2] == false) camGame.snapToTarget();
 				else if (event.params[4] != null && event.params[4] != "CLASSIC") {
-					var oldFollow = FlxG.camera.followEnabled;
-					FlxG.camera.followEnabled = false;
-					eventsTween.set("cameraMovement", FlxTween.tween(FlxG.camera.scroll, {x: camFollow.x - FlxG.camera.width * 0.5, y: camFollow.y - FlxG.camera.height * 0.5},
+					var oldFollow = camGame.followEnabled;
+					camGame.followEnabled = false;
+					eventsTween.set("cameraMovement", FlxTween.tween(camGame.scroll, {x: camFollow.x - camGame.width * 0.5, y: camFollow.y - camGame.height * 0.5},
 						(Conductor.stepCrochet / 1000) * (event.params[3] == null ? 4 : event.params[3]), {
 							ease: CoolUtil.flxeaseFromString(event.params[4], event.params[5]),
-							onComplete: (_) -> FlxG.camera.followEnabled = oldFollow
+							onComplete: (_) -> camGame.followEnabled = oldFollow
 						})
 					);
 				}
@@ -1609,7 +1611,7 @@ class PlayState extends MusicBeatState
 					if (useCamZoomMult) {
 						camZoomingMult += event.params[0];
 					} else {
-						FlxG.camera.zoom += event.params[0] * camZoomingStrength;
+						camGame.zoom += event.params[0] * camZoomingStrength;
 						camHUD.zoom += event.params[0] * camZoomingStrength;
 					}
 				}
@@ -1808,11 +1810,11 @@ class PlayState extends MusicBeatState
 	public function registerSmoothTransition() {
 		smoothTransitionData = {
 			stage: curStage,
-			camX: FlxG.camera.scroll.x,
-			camY: FlxG.camera.scroll.y,
+			camX: camGame.scroll.x,
+			camY: camGame.scroll.y,
 			camFollowX: camFollow.x,
 			camFollowY: camFollow.y,
-			camZoom: FlxG.camera.zoom
+			camZoom: camGame.zoom
 		};
 		MusicBeatState.skipTransIn = true;
 		MusicBeatState.skipTransOut = true;

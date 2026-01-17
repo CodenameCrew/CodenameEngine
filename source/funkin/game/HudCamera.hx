@@ -5,7 +5,7 @@ import flixel.math.FlxPoint;
 /**
  * Camera meant for PlayState hud, allows for flipping the camera.
 **/
-class HudCamera extends FlxCamera {
+class HudCamera extends FunkinCamera {
 	/**
 	 * Whenever the camera should flip the y axis.
 	 * Keeps the sprites not flipped, but the positions are flipped.

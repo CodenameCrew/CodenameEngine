@@ -5,6 +5,7 @@ import funkin.backend.MusicBeatState;
 import funkin.backend.MusicBeatSubstate;
 import funkin.backend.MusicBeatGroup;
 import funkin.backend.FunkinSprite;
+import funkin.backend.FunkinCamera;
 import funkin.backend.utils.*;
 import funkin.backend.utils.TranslationUtil as TU;
 import funkin.backend.system.Logs;
