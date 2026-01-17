@@ -5,7 +5,7 @@ import funkin.backend.system.Conductor;
 
 /**
  * Legacy FNF chart parser.
- * This is for charts that that were made before v0.5.0.
+ * This is for charts that that were made before v0.3.0.
 **/
 class FNFLegacyParser {
 	public static function parse(data:Dynamic, result:ChartData) {

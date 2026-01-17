@@ -8,7 +8,7 @@ import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 
 /**
- * CNE/Flixel version of RuntimeBlendModeShader.
+ * CNE edit of RuntimeCustomBlendShader.
  * Used to apply blend modes taking into account background textures.
  */
 class BlendModeShader extends FlxShader
