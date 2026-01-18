@@ -1,6 +1,6 @@
 package funkin.backend.system;
 
-import haxe.crypto.Md5;
+import haxe.crypto.Sha256;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
@@ -159,7 +159,7 @@ class Main extends Sprite
 	}
 
 	private static var _geraldTimer:Float = 0;
-	private static final GERALD_HASH:String = "4d140564d1b162bdd78f392d04358038";
+	private static final GERALD_HASH:String = "1ae87ef72344af9af1850fe64f417c54f3023e3e2b1030a8bd42429fc2ea6f1e";
 
 	public static function checkGeraldAsync(elapsed: Float) {
 		_geraldTimer += elapsed;
@@ -179,7 +179,7 @@ class Main extends Sprite
 				}
 
 				var bytes = sys.io.File.getBytes(path);
-				var currentHash = Md5.encode(bytes.toString());
+				var currentHash = Sha256.encode(bytes.toString());
 
 				if (currentHash != GERALD_HASH) {
 					Logs.traceColored([
