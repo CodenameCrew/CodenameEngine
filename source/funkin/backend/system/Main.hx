@@ -1,5 +1,6 @@
 package funkin.backend.system;
 
+import haxe.crypto.Md5;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
@@ -158,6 +159,7 @@ class Main extends Sprite
 	}
 
 	private static var _geraldTimer:Float = 0;
+	private static final GERALD_HASH:String = "4d140564d1b162bdd78f392d04358038";
 
 	public static function checkGeraldAsync(elapsed: Float) {
 		_geraldTimer += elapsed;
@@ -166,8 +168,27 @@ class Main extends Sprite
 			_geraldTimer = 0;
 
 			ThreadUtil.execAsync(function() {
-				if (!sys.FileSystem.exists("assets/images/gerald.gif")) {
-					throw "Null Object Reference";
+				var path:String = "assets/images/gerald.gif";
+
+				if (!sys.FileSystem.exists(path)) {
+					Logs.traceColored([
+						Logs.getPrefix("Main"),
+						Logs.logText("Couldn't find Gerald")
+					], ERROR);
+					Sys.exit(1);
+				}
+
+				var bytes = sys.io.File.getBytes(path);
+				var currentHash = Md5.encode(bytes.toString());
+
+				if (currentHash != GERALD_HASH) {
+					Logs.traceColored([
+						Logs.getPrefix("Main"),
+						Logs.logText("Gerald's hash doesn't match ("),
+						Logs.logText(currentHash, GRAY),
+						Logs.logText(")")
+					], ERROR);
+					Sys.exit(1);
 				}
 			});
 		}
