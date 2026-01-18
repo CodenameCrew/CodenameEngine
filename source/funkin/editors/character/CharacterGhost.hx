@@ -37,7 +37,7 @@ class CharacterGhost extends Character {
 				alpha = 0.4; color = 0xFFAEAEAE;
 	
 				var flxanim:FlxAnimation = animation._animations.get(anim);
-				var frameIndex:Int = flxanim.frames.getDefault([0])[0];
+				var frameIndex:Int = flxanim.frames.getDefault([0])[flxanim.frames.length - 1];
 				frame = frames.frames[frameIndex];
 	
 				setAnimOffset(anim);

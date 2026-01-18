@@ -245,7 +245,7 @@ class TitleState extends MusicBeatState
 					if (parentFolder != "" && !parentFolder.endsWith("/")) parentFolder += "/";
 					for(sprNode in node.elements) {
 						var spr = XMLUtil.createSpriteFromXML(sprNode, parentFolder);
-						switch(node.name) {
+						switch(sprNode.name) {
 							case "press-enter":
 								titleText = spr;
 							default:
