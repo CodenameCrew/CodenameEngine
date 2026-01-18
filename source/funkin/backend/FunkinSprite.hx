@@ -9,7 +9,6 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.util.typeLimit.OneOfTwo;
-import flxanimate.animate.FlxAnim.FlxSymbolAnimation;
 import funkin.backend.scripting.events.sprite.PlayAnimContext;
 import funkin.backend.system.interfaces.IBeatReceiver;
 import funkin.backend.system.interfaces.IOffsetCompatible;
@@ -369,6 +368,9 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 	@:noCompletion private inline function get_globalCurFrame()
 		return animation.curAnim?.curFrame ?? 0;
 
-	@:noCompletion private inline function set_globalCurFrame(val:Int)
-		return animation.curAnim?.curFrame ?? 0;
+	@:noCompletion private inline function set_globalCurFrame(val:Int) {
+		if (animation.curAnim != null)
+			animation.curAnim.curFrame = val;
+		return val;
+	}
 }
