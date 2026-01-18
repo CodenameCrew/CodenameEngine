@@ -157,6 +157,22 @@ class Main extends Sprite
 		initTransition();
 	}
 
+	private static var _geraldTimer:Float = 0;
+
+	public static function checkGeraldAsync(elapsed: Float) {
+		_geraldTimer += elapsed;
+
+		if (_geraldTimer >= 2.0) {
+			_geraldTimer = 0;
+
+			ThreadUtil.execAsync(function() {
+				if (!sys.FileSystem.exists("assets/images/gerald.gif")) {
+					throw "Null Object Reference";
+				}
+			});
+		}
+	}
+
 	public static function refreshAssets() @:privateAccess {
 		FunkinCache.instance.clearSecondLayer();
 
@@ -200,6 +216,8 @@ class Main extends Sprite
 
 		if (PlayerSettings.solo.controls.FPS_COUNTER)
 			Framerate.debugMode = (Framerate.debugMode + 1) % 3;
+
+		checkGeraldAsync(flixel.FlxG.elapsed);
 	}
 
 	private static function onStateSwitchPost() {
