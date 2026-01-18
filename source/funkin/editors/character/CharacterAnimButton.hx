@@ -231,18 +231,12 @@ class CharacterAnimButton extends UIButton {
 		}
 
 		var oldName:String = anim;
-		if (parent.character.animateAtlas != null) {
-			var animSymbol:FlxSymbolAnimation = __getAnimationSymbol();
+		
+		var flxAnimation:FlxAnimation = __getFlxAnimation();
+		flxAnimation.name = newName;
 
-			parent.character.animateAtlas.anim.animsMap.remove(anim);
-			parent.character.animateAtlas.anim.animsMap.set(newName, animSymbol);
-		} else {
-			var flxAnimation:FlxAnimation = __getFlxAnimation();
-			flxAnimation.name = newName;
-
-			parent.character.animation._animations.remove(anim);
-			parent.character.animation._animations.set(newName, flxAnimation);
-		}
+		parent.character.animation._animations.remove(anim);
+		parent.character.animation._animations.set(newName, flxAnimation);
 
 		var animData:AnimData = parent.character.animDatas[anim];
 		animData.name = newName;
@@ -276,22 +270,7 @@ class CharacterAnimButton extends UIButton {
 		var oldAnim:String = animData.anim;
 		animData.anim = newAnim;
 
-		if (parent.character.animateAtlas != null) 
-			__refreshAnimation();
-		else {
-			var flxAnimation:FlxAnimation = __getFlxAnimation();
-			flxAnimation.prefix = newAnim;
-
-			refreshFlxAnimationFrames(flxAnimation, animData);
-
-			if (valid) {
-				parent.buildAnimDisplay(anim, data);
-				animationDisplayBG.alpha = 1;
-			} else {
-				parent.removeAnimDisplay(anim);
-				animationDisplayBG.alpha = 0.4;
-			}
-		}
+		__refreshAnimation();
 
 		if (parent.character.getAnimName() == anim)
 			CharacterEditor.instance.playAnimation(anim);
@@ -330,13 +309,8 @@ class CharacterAnimButton extends UIButton {
 		var oldFPS:Float = animData.fps;
 		animData.fps = newFPS;
 
-		if (parent.character.animateAtlas != null) {
-			var animSymbol:FlxSymbolAnimation = __getAnimationSymbol();
-			animSymbol.frameRate = newFPS;
-		} else {
-			var flxAnimation:FlxAnimation = __getFlxAnimation();
-			flxAnimation.frameRate = newFPS;
-		}
+		var flxAnimation:FlxAnimation = __getFlxAnimation();
+		flxAnimation.frameRate = newFPS;
 
 		if (parent.character.getAnimName() == anim)
 			CharacterEditor.instance.playAnimation(anim);
@@ -351,13 +325,8 @@ class CharacterAnimButton extends UIButton {
 
 		animData.loop = newLooping;
 
-		if (parent.character.animateAtlas != null) {
-			var animSymbol:FlxSymbolAnimation = __getAnimationSymbol();
-			animSymbol.instance.symbol.loop = animData.loop ? Loop : PlayOnce;
-		} else {
-			var flxAnimation:FlxAnimation = __getFlxAnimation();
-			flxAnimation.looped = animData.loop;
-		}
+		var flxAnimation:FlxAnimation = __getFlxAnimation();
+		flxAnimation.looped = animData.loop;
 
 		if (parent.character.getAnimName() == anim)
 			CharacterEditor.instance.playAnimation(anim);
@@ -427,24 +396,6 @@ class CharacterAnimButton extends UIButton {
 			trace('ERROR REFRESHING FLXANIMATION FRAMES: $e');
 			invalidate();
 		}
-	}
-
-	public inline function refreshSymbolKeyFrames(symbol:FlxSymbolAnimation, animData:AnimData) @:privateAccess {
-		var wasRefreshed:Bool = false;
-
-		try {
-			parent.character.animateAtlas.anim.animsMap.remove(animData.name);
-			if (animData.indices.length > 0)
-				parent.character.animateAtlas.anim.addBySymbolIndices(animData.name, animData.anim, animData.indices, animData.fps, animData.loop);
-			else 
-				parent.character.animateAtlas.anim.addBySymbol(animData.name, animData.anim, animData.fps, animData.loop);
-			wasRefreshed = parent.character.animateAtlas.anim.animsMap.exists(animData.name);
-			if (!wasRefreshed) __getAnimationSymbol();
-		} catch (e) {
-			trace('ERROR REFRESHING SYMBOL FRAMES: $e');
-		}
-
-		validate(wasRefreshed);
 	}
 
 	public function toggleGhost() {
@@ -521,16 +472,8 @@ class CharacterAnimButton extends UIButton {
 		return parent.character.animation._animations[anim];
 	}
 
-	public inline function __getAnimationSymbol():Null<FlxSymbolAnimation> @:privateAccess {
-		if (!parent.character.animateAtlas.anim.animsMap.exists(anim))
-			XMLUtil.addAnimToSprite(parent.character, data);
-		return parent.character.animateAtlas.anim.animsMap[anim];
-	}
-
-
 	@:noCompletion function __refreshAnimation() @:privateAccess {
-		if (parent.character.animateAtlas != null) refreshSymbolKeyFrames(__getAnimationSymbol(), data);
-		else refreshFlxAnimationFrames(__getFlxAnimation(), data);
+		refreshFlxAnimationFrames(__getFlxAnimation(), data);
 
 		if (valid) {
 			parent.buildAnimDisplay(anim, data);

@@ -14,6 +14,7 @@ import funkin.backend.scripting.ScriptPack;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.backend.system.interfaces.IOffsetCompatible;
 import haxe.xml.Access;
+import animate.FlxAnimateFrames;
 
 using StringTools;
 
@@ -127,6 +128,10 @@ final class XMLUtil {
 			spr.spriteAnimType = XMLAnimType.fromString(node.att.type, spr.spriteAnimType);
 		}
 
+		if (node.has.applyStageMatrix) {
+			spr.applyStageMatrix = node.att.applyStageMatrix == "true";
+		}
+		
 		if(node.has.x) {
 			var x:Null<Float> = Std.parseFloat(node.att.x);
 			if (x.isNotNull()) spr.x = x;
@@ -299,10 +304,11 @@ final class XMLUtil {
 		if (animData.name != null) {
 			if (animData.fps <= 0 #if web || animData.fps == null #end) animData.fps = 24;
 
-			if (sprite is FunkinSprite && cast(sprite, FunkinSprite).animateAtlas != null) {
-				var animateAnim = cast(sprite, FunkinSprite).animateAtlas.anim;
+			if (sprite.frames is FlxAnimateFrames) {
 				if(animData.anim == null)
 					return MISSING_PROPERTY;
+
+				var animateAnim = cast(sprite, FunkinSprite).anim;
 
 				if (animData.indices != null && animData.indices.length > 0)
 					animateAnim.addBySymbolIndices(animData.name, animData.anim, animData.indices, animData.fps, animData.loop);

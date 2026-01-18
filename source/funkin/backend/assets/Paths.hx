@@ -8,6 +8,7 @@ import funkin.backend.scripting.Script;
 import haxe.io.Path;
 import lime.utils.AssetLibrary;
 import openfl.utils.Assets as OpenFlAssets;
+import animate.FlxAnimateFrames;
 
 using StringTools;
 
@@ -174,6 +175,9 @@ class Paths
 	inline static public function getSparrowAtlas(key:String, ?library:String, ?ext:String)
 		return FlxAtlasFrames.fromSparrow(image(key, library, ext), file('images/$key.xml', library));
 
+	inline static public function getAnimateAtlasAlt(key:String)
+		return FlxAnimateFrames.fromAnimate(key);
+
 	inline static public function getSparrowAtlasAlt(key:String, ?ext:String)
 		return FlxAtlasFrames.fromSparrow('$key.${ext != null ? ext : Flags.IMAGE_EXT}', '$key.xml');
 
@@ -263,6 +267,8 @@ class Paths
 				cur++;
 			}
 			return finalFrames;
+		} else if (Assets.exists('$noExt/Animation.json')) {
+			return Paths.getAnimateAtlasAlt(noExt);
 		} else if (Assets.exists('$noExt.xml')) {
 			return Paths.getSparrowAtlasAlt(noExt, ext);
 		} else if (Assets.exists('$noExt.txt')) {

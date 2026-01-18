@@ -20,33 +20,19 @@ class CharacterGhost extends Character {
 		var wasInvalidFrame:Bool = !colorTransform.__isDefault(false);
 		colorTransform.__identity();
 
-		if (animateAtlas != null) {
-			storeAtlasState();
-			for (anim in ghosts) {
-				animateAtlas.anim.play(anim, true, false, 0);
-				setAnimOffset(anim);
+		for (anim in ghosts) @:privateAccess {
+			alpha = 0.4; color = 0xFFAEAEAE;
 
-				alpha = 0.4; color = 0xFFAEAEAE;
-				super.draw();
-			}
+			var flxanim:FlxAnimation = animation._animations.get(anim);
+			var frameIndex:Int = flxanim.frames.getDefault([0])[flxanim.frames.length - 1];
+			frame = frames.frames[frameIndex];
 
-			if (ghosts.length > 0) restoreAtlasState();
+			setAnimOffset(anim);
+			super.draw();
 		}
-		else {
-			for (anim in ghosts) @:privateAccess {
-				alpha = 0.4; color = 0xFFAEAEAE;
-	
-				var flxanim:FlxAnimation = animation._animations.get(anim);
-				var frameIndex:Int = flxanim.frames.getDefault([0])[flxanim.frames.length - 1];
-				frame = frames.frames[frameIndex];
-	
-				setAnimOffset(anim);
-				super.draw();
-			}
 
-			if (ghosts.length > 0)
-				frame = frames.frames[animation.frameIndex];
-		}
+		if (ghosts.length > 0)
+			frame = frames.frames[animation.frameIndex];
 		ghostDraw = FakeCallCamera.instance.ignoreDraws = false; 
 
 		alpha = 1; color = 0xFFFFFFFF;
@@ -55,7 +41,7 @@ class CharacterGhost extends Character {
 			offset.set(globalOffset.x * (isPlayer != playerOffsets ? 1 : -1), -globalOffset.y);
 			colorTransform.color = 0xFFEF0202;
 		} else
-			setAnimOffset(animateAtlas != null ? atlasPlayingAnim : animation.name);
+			setAnimOffset(animation.name);
 		
 		super.draw();
 	}
@@ -71,21 +57,5 @@ class CharacterGhost extends Character {
 	}
 
 	// This gets annoying lmao -lunar
-	private var atlasState:AtlasState = null;
-	public function storeAtlasState():AtlasState @:privateAccess {
-		return atlasState = {
-			oldAnim: atlasPlayingAnim,
-			oldFrame: animateAtlas.anim.curFrame,
-			oldTick: animateAtlas.anim._tick,
-			oldPlaying: animateAtlas.anim.isPlaying,
-		};
-	}
-
-	public function restoreAtlasState(state:AtlasState = null) @:privateAccess {
-		if (state == null) state = atlasState;
-
-		animateAtlas.anim.play(state.oldAnim, true, false, state.oldFrame);
-		animateAtlas.anim._tick = state.oldTick;
-		animateAtlas.anim.isPlaying = state.oldPlaying;
-	}
+	// it's gone now <3 -yosh
 }

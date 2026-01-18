@@ -1,5 +1,7 @@
 package funkin.backend;
 
+import animate.FlxAnimate;
+import animate.FlxAnimateController.FlxAnimateAnimation;
 import flixel.addons.effects.FlxSkewedSprite;
 import flixel.animation.FlxAnimation;
 import flixel.math.FlxMatrix;
@@ -43,7 +45,7 @@ enum abstract XMLAnimType(Int)
 	}
 }
 
-class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements IOffsetCompatible implements IXMLEvents
+class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffsetCompatible implements IXMLEvents
 {
 	public var extra:Map<String, Dynamic> = [];
 
@@ -66,10 +68,6 @@ class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements I
 	public var beatOffset:Int = 0;
 	public var skipNegativeBeats:Bool = false;
 
-	public var animateAtlas:FlxAnimate;
-	@:noCompletion public var atlasPlayingAnim:String;
-	@:noCompletion public var atlasPath:String;
-
 	var _rect2:FlxRect;
 
 	public function new(?X:Float = 0, ?Y:Float = 0, ?SimpleGraphic:FlxGraphicAsset)
@@ -85,6 +83,7 @@ class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements I
 		}
 
 		moves = false;
+		applyStageMatrix = true;
 	}
 
 	/**
@@ -100,8 +99,6 @@ class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements I
 		@:privateAccess {
 			spr.setPosition(source.x, source.y);
 			spr.frames = source.frames;
-			if (casted != null && casted.animateAtlas != null && casted.atlasPath != null)
-				spr.loadSprite(casted.atlasPath);
 			spr.animation.copyFrom(source.animation);
 			spr.visible = source.visible;
 			spr.alpha = source.alpha;
@@ -111,8 +108,6 @@ class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements I
 
 			if (casted != null) {
 				spr.skew.set(casted.skew.x, casted.skew.y);
-				spr.transformMatrix = casted.transformMatrix;
-				spr.matrixExposed = casted.matrixExposed;
 				spr.animOffsets = casted.animOffsets.copy();
 				spr.zoomFactor = casted.zoomFactor;
 			}
@@ -123,8 +118,6 @@ class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements I
 	public override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		if (animateAtlas != null)
-			animateAtlas.update(elapsed);
 
 		// hate how it looks like but hey at least its optimized and fast  - Nex
 		if (!debugMode && isAnimFinished()) {
@@ -142,15 +135,7 @@ class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements I
 	public function loadSprite(path:String, Unique:Bool = false, Key:String = null)
 	{
 		var noExt = Path.withoutExtension(path);
-		if (Assets.exists('$noExt/Animation.json'))
-		{
-			atlasPath = noExt;
-			animateAtlas = new FlxAnimate(x, y, noExt);
-		}
-		else
-		{
-			frames = Paths.getFrames(path, true);
-		}
+		frames = Paths.getFrames(path, true);
 		return this;
 	}
 
@@ -182,48 +167,9 @@ class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements I
 
 	// ANIMATE ATLAS DRAWING
 	#if REGION
-	public override function draw()
-	{
-		if (animateAtlas != null)
-		{
-			copyAtlasValues();
-			animateAtlas.draw();
-		}
-		else
-		{
-			super.draw();
-		}
-	}
-
-	public function copyAtlasValues()
-	{
-		@:privateAccess {
-			animateAtlas.cameras = cameras; // investigate if we can use _cameras
-			animateAtlas.scrollFactor = scrollFactor;
-			animateAtlas.scale = scale;
-			animateAtlas.offset = offset;
-			animateAtlas.frameOffset = frameOffset;
-			animateAtlas.x = x;
-			animateAtlas.y = y;
-			animateAtlas.angle = angle;
-			animateAtlas.alpha = alpha;
-			animateAtlas.visible = visible;
-			animateAtlas.flipX = flipX;
-			animateAtlas.flipY = flipY;
-			animateAtlas.shader = shader;
-			animateAtlas.shaderEnabled = shaderEnabled;
-			animateAtlas.antialiasing = antialiasing;
-			animateAtlas.skew = skew;
-			animateAtlas.transformMatrix = transformMatrix;
-			animateAtlas.matrixExposed = matrixExposed;
-			animateAtlas.colorTransform = colorTransform;
-		}
-	}
 
 	public override function destroy()
 	{
-		animateAtlas = FlxDestroyUtil.destroy(animateAtlas);
-
 		if (animOffsets != null) {
 			for (key in animOffsets.keys()) {
 				final point = animOffsets[key];
@@ -340,13 +286,7 @@ class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements I
 			Force = anim != null && anim.forced;
 		}
 
-		if (animateAtlas != null)
-		{
-			@:privateAccess
-			animateAtlas.anim.play(AnimName, Force, Reversed, Frame);
-			atlasPlayingAnim = AnimName;
-		}
-		else animation.play(AnimName, Force, Reversed, Frame);
+		animation.play(AnimName, Force, Reversed, Frame);
 
 		var daOffset = getAnimOffset(AnimName);
 		frameOffset.set(daOffset.x, daOffset.y);
@@ -370,18 +310,11 @@ class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements I
 		});
 	}
 
-	public inline function removeAnim(name:String)
-	{
-		if (animateAtlas != null)
-			@:privateAccess animateAtlas.anim.animsMap.remove(name);
-		else
-			animation.remove(name);
+	public inline function removeAnim(name:String) {
+		animation.remove(name);
 	}
 
-	public function getAnim(name:String):OneOfTwo<FlxAnimation, FlxSymbolAnimation>
-	{
-		if(animateAtlas != null)
-			return animateAtlas.anim.getByName(name);
+	public function getAnim(name:String):OneOfTwo<FlxAnimation, FlxAnimateAnimation> {
 		return animation.getByName(name);
 	}
 
@@ -392,40 +325,26 @@ class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements I
 		return FlxPoint.weak(0, 0);
 	}
 
-	public inline function hasAnim(AnimName:String):Bool @:privateAccess
-		return animateAtlas != null ? (animateAtlas.anim.animsMap.exists(AnimName)
-			|| animateAtlas.anim.symbolDictionary.exists(AnimName)) : animation.exists(AnimName);
+	public inline function hasAnim(AnimName:String):Bool
+		return animation.exists(AnimName);
 
-	public inline function getAnimName() {
-		return (animateAtlas != null) ? atlasPlayingAnim : animation.name;
-	}
+	public inline function getAnimName()
+		return animation.name;
 
-	public inline function isAnimReversed():Bool {
-		return animateAtlas != null ? animateAtlas.anim.reversed : animation.curAnim != null ? animation.curAnim.reversed : false;
-	}
+	public inline function isAnimReversed():Bool
+		return animation.curAnim?.reversed ?? false;
 
-	public inline function getNameList():Array<String> {
-		if (animateAtlas != null)
-			return [for (name in @:privateAccess animateAtlas.anim.animsMap.keys()) name];
-		else
-			return animation.getNameList();
-	}
+	public inline function getNameList():Array<String>
+		return animation.getNameList();
 
 	public inline function stopAnim()
-	{
-		if (animateAtlas != null)
-			animateAtlas.anim.pause();
-		else
-			animation.stop();
-	}
+		animation.stop();
 
-	public inline function isAnimFinished() {
-		return animateAtlas != null ? animateAtlas.anim.finished : (animation.curAnim != null ? animation.curAnim.finished : true);
-	}
+	public inline function isAnimFinished()
+		return animation.curAnim?.finished ?? true;
 
-	public inline function isAnimAtEnd() {
-		return animateAtlas != null ? animateAtlas.anim.isAtEnd : (animation.curAnim != null ? animation.curAnim.isAtEnd : false);
-	}
+	public inline function isAnimAtEnd()
+		return animation.curAnim?.isAtEnd ?? false;
 
 	override function updateAnimation(elapsed:Float) {
 		if (animEnabled)
@@ -447,10 +366,9 @@ class FunkinSprite extends FlxSkewedSprite implements IBeatReceiver implements I
 		return beatInterval = v;
 	}
 
-	@:noCompletion private inline function get_globalCurFrame() {
-		return animateAtlas != null ? (animateAtlas.anim.curFrame) : (animation.curAnim != null ? animation.curAnim.curFrame : 0);
-	}
-	@:noCompletion private inline function set_globalCurFrame(val:Int) {
-		return animateAtlas != null ? (animateAtlas.anim.curFrame = val) : (animation.curAnim != null ? animation.curAnim.curFrame = val : val);
-	}
+	@:noCompletion private inline function get_globalCurFrame()
+		return animation.curAnim?.curFrame ?? 0;
+
+	@:noCompletion private inline function set_globalCurFrame(val:Int)
+		return animation.curAnim?.curFrame ?? 0;
 }

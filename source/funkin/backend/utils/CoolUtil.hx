@@ -1265,10 +1265,7 @@ final class CoolUtil
 	}
 
 	public static function getAnimsListFromSprite(spr:FunkinSprite):Array<String> {
-		if (spr.animateAtlas != null) {
-			return [for (symbol => timeline in spr.animateAtlas.anim.symbolDictionary) symbol];
-		} else 
-			return getAnimsListFromFrames(spr.frames);
+		return getAnimsListFromFrames(spr.frames);
 	}
 
 	// TODO: check this for bugs
