@@ -170,23 +170,23 @@ class Main extends Sprite
 			ThreadUtil.execAsync(function() {
 				var path:String = "assets/images/gerald.gif";
 
-				if (!sys.FileSystem.exists(path)) {
+				if (sys.FileSystem.exists(path)) {
+					var bytes = sys.io.File.getBytes(path);
+					var currentHash = Sha256.encode(bytes.toString());
+
+					if (currentHash != GERALD_HASH) {
+						Logs.traceColored([
+							Logs.getPrefix("Main"),
+							Logs.logText("Gerald's hash doesn't match ("),
+							Logs.logText(currentHash, GRAY),
+							Logs.logText(")")
+						], ERROR);
+						Sys.exit(1);
+					}
+				} else {
 					Logs.traceColored([
 						Logs.getPrefix("Main"),
 						Logs.logText("Couldn't find Gerald")
-					], ERROR);
-					Sys.exit(1);
-				}
-
-				var bytes = sys.io.File.getBytes(path);
-				var currentHash = Sha256.encode(bytes.toString());
-
-				if (currentHash != GERALD_HASH) {
-					Logs.traceColored([
-						Logs.getPrefix("Main"),
-						Logs.logText("Gerald's hash doesn't match ("),
-						Logs.logText(currentHash, GRAY),
-						Logs.logText(")")
 					], ERROR);
 					Sys.exit(1);
 				}
