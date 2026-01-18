@@ -32,6 +32,8 @@
 		<lib global="true" name="format" /> <lib name="format" />
 
 		<git name="hxcpp" url="https://github.com/CodenameCrew/cne-hxcpp" />
+
+		<git name="flixel-animate" url="https://github.com/MaybeMaru/flixel-animate/" ref="flixel-5.3.0" skipDeps="true"/>
 	</if>
 
 	<!-- Hxcpp Building -->
