@@ -21,7 +21,6 @@ import flixel.util.FlxAxes;
 import flixel.util.FlxColor;
 import flixel.util.typeLimit.OneOfThree;
 import flixel.util.typeLimit.OneOfTwo;
-import flxanimate.data.AnimationData.AnimAtlas;
 import funkin.backend.system.Conductor;
 import funkin.backend.utils.XMLUtil.TextFormat;
 import haxe.CallStack;
@@ -34,6 +33,7 @@ import haxe.xml.Access;
 import lime.utils.Assets;
 import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
+import animate.FlxAnimateJson;
 
 using StringTools;
 
@@ -1252,13 +1252,13 @@ final class CoolUtil
 		return animsList;
 	}
 
-	public static function getAnimsListFromAtlas(atlas:AnimAtlas):Array<String> {
+	public static function getAnimsListFromAtlas(atlas:AnimationJson):Array<String> {
 		if (atlas == null) return [];
 
 		var animsList:Array<String> = [];
 		if (atlas.AN.SN != null) animsList.push(atlas.AN.SN);
 		if (atlas.SD != null)
-			for (symbol in atlas.SD.S)
+			for (symbol in atlas.SD)
 				if (symbol.SN != null) animsList.push(symbol.SN);
 
 		return animsList;

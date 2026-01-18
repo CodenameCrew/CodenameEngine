@@ -16,6 +16,8 @@ import funkin.backend.utils.XMLUtil.AnimData;
 import funkin.backend.utils.XMLUtil.BeatAnim;
 import funkin.backend.utils.XMLUtil.IXMLEvents;
 import haxe.io.Path;
+import flixel.graphics.frames.FlxFrame;
+import flixel.math.FlxAngle;
 
 enum abstract XMLAnimType(Int)
 {
@@ -372,5 +374,47 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 		if (animation.curAnim != null)
 			animation.curAnim.curFrame = val;
 		return val;
+	}
+
+	override function drawComplex(camera:FlxCamera):Void
+	{
+		#if (flixel < "6.1.0") final frame = this._frame; #end
+		final matrix = this._matrix; // TODO: Just use local?
+
+		frame.prepareMatrix(matrix, FlxFrameAngle.ANGLE_0, checkFlipX() != camera.flipX, checkFlipY() != camera.flipY);
+		matrix.translate(-origin.x, -origin.y);
+
+		if (frameOffsetAngle != null && frameOffsetAngle != angle)
+		{
+			var angleOff = (frameOffsetAngle - angle) * FlxAngle.TO_RAD;
+			var cos = Math.cos(angleOff);
+			var sin = Math.sin(angleOff);
+			// cos doesnt need to be negated
+			_matrix.rotateWithTrig(cos, -sin);
+			_matrix.translate(-frameOffset.x, -frameOffset.y);
+			_matrix.rotateWithTrig(cos, sin);
+		}
+		else
+			_matrix.translate(-frameOffset.x, -frameOffset.y);
+
+		matrix.scale(scale.x, scale.y);
+		if (bakedRotationAngle <= 0)
+		{
+			updateTrig();
+			if (angle != 0)
+				matrix.rotateWithTrig(_cosAngle, _sinAngle);
+		}
+		if (skew.x != 0 || skew.y != 0)
+		{
+			updateSkew();
+			_matrix.concat(FlxAnimate._skewMatrix);
+		}
+		getScreenPosition(_point, camera);
+		_point.x += origin.x - offset.x;
+		_point.y += origin.y - offset.y;
+		matrix.translate(_point.x, _point.y);
+		if (isPixelPerfectRender(camera))
+			preparePixelPerfectMatrix(matrix);
+		camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
 	}
 }

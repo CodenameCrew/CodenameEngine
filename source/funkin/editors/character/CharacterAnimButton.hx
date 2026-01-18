@@ -2,12 +2,6 @@ package funkin.editors.character;
 
 import flixel.text.FlxText.FlxTextFormat;
 import flixel.text.FlxText.FlxTextFormatMarkerPair;
-import flxanimate.animate.FlxAnim.FlxSymbolAnimation;
-import flxanimate.animate.FlxSymbol;
-import flxanimate.animate.FlxElement;
-import flxanimate.animate.SymbolParameters;
-import flxanimate.animate.FlxKeyFrame;
-import flxanimate.animate.FlxTimeline;
 import flixel.graphics.frames.FlxFrame;
 import flixel.animation.FlxAnimation;
 import openfl.geom.Rectangle;
