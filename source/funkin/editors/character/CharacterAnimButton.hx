@@ -264,7 +264,19 @@ class CharacterAnimButton extends UIButton {
 		var oldAnim:String = animData.anim;
 		animData.anim = newAnim;
 
-		__refreshAnimation();
+		var flxAnimation:FlxAnimation = __getFlxAnimation();
+		flxAnimation.prefix = newAnim;
+
+		refreshFlxAnimationFrames(flxAnimation, animData);
+
+		if (valid) {
+			parent.buildAnimDisplay(anim, data);
+			animationDisplayBG.alpha = 1;
+		} else {
+			parent.removeAnimDisplay(anim);
+			animationDisplayBG.alpha = 0.4;
+		}
+
 
 		if (parent.character.getAnimName() == anim)
 			CharacterEditor.instance.playAnimation(anim);

@@ -376,6 +376,30 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 		return val;
 	}
 
+	override function draw():Void {
+		if (isAnimate) {
+			var posOffset:FlxPoint = FlxPoint.get(-frameOffset.x * scale.x, -frameOffset.y * scale.y);
+
+			var angleOff = angle;
+			if (frameOffsetAngle != null) 
+				angleOff = frameOffsetAngle;
+			angleOff *= FlxAngle.TO_RAD;
+
+			posOffset.rotateWithTrig(Math.sin(angleOff), Math.cos(angleOff));
+
+			x += posOffset.x;
+			y += posOffset.y;
+
+			super.draw();
+
+			x -= posOffset.x;
+			y -= posOffset.y;
+
+			posOffset.put();
+		} else
+			super.draw();
+	}
+
 	override function drawComplex(camera:FlxCamera):Void
 	{
 		#if (flixel < "6.1.0") final frame = this._frame; #end
