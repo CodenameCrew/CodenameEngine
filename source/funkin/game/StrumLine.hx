@@ -312,11 +312,11 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 				if (!ghostTapping) for (k => pr in __justPressed) if (pr && __notePerStrum[k] == null)
 					PlayState.instance.noteMiss(this, null, k, ID); // FUCK YOU
-			}
 
-			for (e in __notePerStrum)
-				if (e != null)
-					PlayState.instance.goodNoteHit(this, e);
+				for (e in __notePerStrum)
+					if (e != null)
+						PlayState.instance.goodNoteHit(this, e);
+			}
 
 			for (c in characters)
 				if (c.lastAnimContext != DANCE)
