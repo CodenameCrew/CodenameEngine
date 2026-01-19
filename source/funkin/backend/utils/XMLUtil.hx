@@ -131,6 +131,10 @@ final class XMLUtil {
 		if (node.has.applyStageMatrix) {
 			spr.applyStageMatrix = node.att.applyStageMatrix == "true";
 		}
+
+		if (node.has.useRenderTexture) {
+			spr.useRenderTexture = node.att.useRenderTexture == "true";
+		}
 		
 		if(node.has.x) {
 			var x:Null<Float> = Std.parseFloat(node.att.x);
