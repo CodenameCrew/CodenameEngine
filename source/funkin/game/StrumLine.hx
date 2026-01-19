@@ -284,9 +284,11 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 		if (cpu) return;
 
-		__pressed.resize(members.length);
-		__justPressed.resize(members.length);
-		__justReleased.resize(members.length);
+		if (__pressed.length != members.length) {
+			__pressed.resize(members.length);
+			__justPressed.resize(members.length);
+			__justReleased.resize(members.length);
+		}
 
 		for (i in 0...members.length) {
 			__pressed[i] = members[i].__getPressed(this);
