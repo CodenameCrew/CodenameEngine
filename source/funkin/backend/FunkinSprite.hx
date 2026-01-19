@@ -59,6 +59,9 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 	public var animEnabled:Bool = true;
 	public var zoomFactorEnabled:Bool = true;
 
+	//Backwards compatibility
+	public var animateAtlas(get, never):FunkinSprite;
+
 	public var globalCurFrame(get, set):Int;
 
 	/**
@@ -365,6 +368,13 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 			v = 1;
 
 		return beatInterval = v;
+	}
+
+	@:noCompletion
+	@:deprecated("`FunkinSprite.animateAtlas` is deprecated, just use `FunkinSprite` instead")
+	public function get_animateAtlas():FunkinSprite {
+		trace(isAnimate, isAnimate ? this : null);
+    	return isAnimate ? this : null;
 	}
 
 	@:noCompletion private inline function get_globalCurFrame()
