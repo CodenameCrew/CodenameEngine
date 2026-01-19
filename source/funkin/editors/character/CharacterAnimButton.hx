@@ -267,7 +267,7 @@ class CharacterAnimButton extends UIButton {
 		var flxAnimation:FlxAnimation = __getFlxAnimation();
 		flxAnimation.prefix = newAnim;
 
-		refreshFlxAnimationFrames(flxAnimation, animData);
+		refreshAnimation(__getFlxAnimation(), data);
 
 		if (valid) {
 			parent.buildAnimDisplay(anim, data);
@@ -378,32 +378,6 @@ class CharacterAnimButton extends UIButton {
 			CharacterEditor.undos.addToUndo(CAnimEditIndices(ID, oldIndices, indicies));
 	}
 
-
-	public inline function refreshFlxAnimationFrames(flxAnimation:FlxAnimation, animData:AnimData) @:privateAccess {
-		try {
-			if (animData.indices.length > 0) {
-				var frameIndices:Array<Int> = new Array<Int>();
-				parent.character.animation.byIndicesHelper(frameIndices, flxAnimation.prefix, animData.indices, "");
-
-				flxAnimation.frames = frameIndices;
-			} else {
-				final animFrames:Array<FlxFrame> = new Array<FlxFrame>();
-				parent.character.animation.findByPrefix(animFrames, flxAnimation.prefix);
-
-				final frameIndices:Array<Int> = [];
-				parent.character.animation.byPrefixHelper(frameIndices, animFrames, flxAnimation.prefix);
-
-				flxAnimation.frames = frameIndices;
-			}
-
-			if (flxAnimation.frames.length <= 0) invalidate();
-			else validate();
-		} catch (e) {
-			trace('ERROR REFRESHING FLXANIMATION FRAMES: $e');
-			invalidate();
-		}
-	}
-
 	public function toggleGhost() {
 		if (valid && parent.ghosts.indexOf(anim) == -1) {
 			FlxG.sound.play(Paths.sound(Flags.DEFAULT_CHARACTER_GHOSTENABLE_SOUND)); 
@@ -421,6 +395,9 @@ class CharacterAnimButton extends UIButton {
 	public override function draw() {
 		updateButtonsPos();
 		super.draw();
+
+		if (parent.character.isAnimate) // TODO: displayWindowSprite for atlases
+			return;
 
 		if (!closed && parent.displayAnimsFramesList.exists(anim)) {
 			var displayData:{frame:Int, scale:Float, animBounds:Rectangle} = parent.displayAnimsFramesList.get(anim);
@@ -478,9 +455,28 @@ class CharacterAnimButton extends UIButton {
 		return parent.character.animation._animations[anim];
 	}
 
-	@:noCompletion function __refreshAnimation() @:privateAccess {
-		refreshFlxAnimationFrames(__getFlxAnimation(), data);
+	public inline function refreshAnimation(anim:FlxAnimation, animData:AnimData) @:privateAccess {
+		var refreshed:Bool = false;
 
+		parent.character.animation.remove(animData.name);
+		parent.character.animation._curAnim = null;
+
+		XMLUtil.addAnimToSprite(parent.character, animData);
+
+		var anim = parent.character.animation.getByName(animData.name);
+		
+		if (anim != null && anim.frames.length > 0) {
+			validate();
+			parent.character.animation.play(animData.name);
+		}
+		else
+			invalidate();
+	}
+
+	@:noCompletion function __refreshAnimation() @:privateAccess {
+		refreshAnimation(__getFlxAnimation(), data);
+
+		// TODO: displayWindowSprite for atlases
 		if (valid) {
 			parent.buildAnimDisplay(anim, data);
 			animationDisplayBG.alpha = 1;

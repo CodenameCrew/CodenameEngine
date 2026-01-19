@@ -4,6 +4,7 @@ import funkin.backend.system.FakeCamera.FakeCallCamera;
 import openfl.geom.ColorTransform;
 import flixel.animation.FlxAnimation;
 import funkin.game.Character;
+import haxe.xml.Access;
 
 typedef AtlasState = {
 	var oldAnim:String;
@@ -14,6 +15,13 @@ typedef AtlasState = {
 
 class CharacterGhost extends Character {
 	public var ghosts:Array<String> = [];
+
+
+	public override function buildCharacter(xml:Access) {
+		useRenderTexture = true; // per request from maru heh, still overridable
+		super.buildCharacter(xml);
+	}
+
 	public override function draw() @:privateAccess {
 		ghostDraw = FakeCallCamera.instance.ignoreDraws = true;
 

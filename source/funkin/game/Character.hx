@@ -352,7 +352,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		buildCharacter(xml);
 	}
 
-	public inline function buildCharacter(xml:Access) {
+	public function buildCharacter(xml:Access) {
 		for(node in xml.elements)
 			switch(node.name) {
 				case "use-extension" | "extension" | "ext":
