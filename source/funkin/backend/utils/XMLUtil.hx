@@ -128,13 +128,8 @@ final class XMLUtil {
 			spr.spriteAnimType = XMLAnimType.fromString(node.att.type, spr.spriteAnimType);
 		}
 
-		if (node.has.applyStageMatrix) {
-			spr.applyStageMatrix = node.att.applyStageMatrix == "true";
-		}
-
-		if (node.has.useRenderTexture) {
-			spr.useRenderTexture = node.att.useRenderTexture == "true";
-		}
+		if (node.has.applyStageMatrix) spr.applyStageMatrix = node.att.applyStageMatrix == "true";
+		if (node.has.useRenderTexture) spr.useRenderTexture = node.att.useRenderTexture == "true";
 		
 		if(node.has.x) {
 			var x:Null<Float> = Std.parseFloat(node.att.x);
