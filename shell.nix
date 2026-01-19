@@ -1,25 +1,5 @@
 {
-  pkgs ? import <nixpkgs> {
-    overlays = [
-      (final: prev: {
-        # Haxe does not compile properly using the overlay
-        # below, due to an OCaml error. Do note that the patches
-        # have been removed as a result of an outdated patch.
-        #
-        # haxe = prev.haxe.overrideAttrs (old: {
-        #   version = "4.3.7";
-        #   src = prev.fetchgit {
-        #     url = "https://github.com/HaxeFoundation/haxe.git";
-        #     tag = "4.3.7";
-        #     hash = "sha256-sQb7MCoH2dZOvNmDQ9P0yFYrSXYOMn4FS/jlyjth39Y=";
-        #     fetchSubmodules = true;
-        #   };
-        #   patches = [ ];
-        # });
-      })
-    ];
-    config = { };
-  },
+  pkgs ? import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/14e02be4774fdb74b2d81ab2beb7a15b1e6eda07.tar.gz") { },
 }:
 let
   libs =
