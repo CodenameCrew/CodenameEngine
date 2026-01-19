@@ -20,12 +20,15 @@ class CharacterGhost extends Character {
 		var wasInvalidFrame:Bool = !colorTransform.__isDefault(false);
 		colorTransform.__identity();
 
+		var animName = animation.curAnim?.name ?? null;
+		var animFrame = animation.curAnim?.curFrame ?? 0;
+		var animFrameTimer = animation.curAnim?._frameTimer ?? 0;
+
 		for (anim in ghosts) @:privateAccess {
 			alpha = 0.4; color = 0xFFAEAEAE;
 
 			var flxanim:FlxAnimation = animation._animations.get(anim);
-			var frameIndex:Int = flxanim.frames.getDefault([0])[flxanim.frames.length - 1];
-			frame = frames.frames[frameIndex];
+			animation.play(anim, true, false, flxanim.frames.length - 1);
 
 			setAnimOffset(anim);
 			super.draw();
@@ -40,8 +43,12 @@ class CharacterGhost extends Character {
 			frameOffset.set(0, 0); 
 			offset.set(globalOffset.x * (isPlayer != playerOffsets ? 1 : -1), -globalOffset.y);
 			colorTransform.color = 0xFFEF0202;
-		} else
-			setAnimOffset(animation.name);
+		} else {
+			animation.play(animName, true, false, animFrame);
+			setAnimOffset(animName);
+			if (animation.curAnim != null)
+				animation.curAnim._frameTimer = animFrameTimer;
+		}
 		
 		super.draw();
 	}
