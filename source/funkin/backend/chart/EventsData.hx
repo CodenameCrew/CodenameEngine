@@ -179,7 +179,8 @@ class EventsData {
 						finalParams.push({
 							name: paramData.name,
 							type: hscriptInterp.expr(hscriptParser.parseString(paramData.type)),
-							defValue: paramData.defaultValue
+							defValue: paramData.defaultValue,
+							saveIfDefault: paramData.saveIfDefault
 						});
 					} catch (e) {trace('Error parsing event param ${paramData.name} - ${eventName}: $e'); finalParams.push(null);}
 				}
@@ -196,6 +197,7 @@ typedef EventInfoFile = {
 		var name:String;
 		var type:String;
 		var defaultValue:Dynamic;
+		var ?saveIfDefault:Bool;
 	}>;
 }
 

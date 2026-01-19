@@ -184,7 +184,7 @@ jobs:
           name: Release ${{ github.event.inputs.tag_name }}
           draft: true
           prerelease: ${{ github.event.inputs.prerelease }}
-          body: ${{ steps.build_body.outputs.body }} 
+          body: ${{ steps.build_body.outputs.body }}
           generate_release_notes: true
           files: |
             renamed/Codename Engine-Windows.zip
