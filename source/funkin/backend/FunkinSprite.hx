@@ -372,10 +372,8 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 
 	@:noCompletion
 	@:deprecated("`FunkinSprite.animateAtlas` is deprecated, just use `FunkinSprite` instead")
-	public function get_animateAtlas():FunkinSprite {
-		trace(isAnimate, isAnimate ? this : null);
+	public function get_animateAtlas():FunkinSprite
     	return isAnimate ? this : null;
-	}
 
 	@:noCompletion private inline function get_globalCurFrame()
 		return animation.curAnim?.curFrame ?? 0;
