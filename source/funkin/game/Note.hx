@@ -311,7 +311,7 @@ class Note extends FlxSprite
 	}
 
 	public function updateSustainClip() if (wasGoodHit && !noSustainClip) {
-		var t = FlxMath.bound((Conductor.songPosition - strumTime) / height * 0.45 * lastScrollSpeed, 0, 1);
+		var t = CoolUtil.bound((Conductor.songPosition - strumTime) / height * 0.45 * lastScrollSpeed, 0, 1);
 		var rect = clipRect == null ? FlxRect.get() : clipRect;
 		clipRect = rect.set(0, frameHeight * t, frameWidth, frameHeight * (1 - t));
 	}
