@@ -66,7 +66,7 @@ class EventsData {
 			{name: "Tween Time (Steps)", type: TFloat(0.25, 9999, 0.25, 2), defValue: 4},
 			{
 				name: "Tween Ease (ex: circ, quad, cube)",
-				type: TDropDown(['linear', 'back', 'bounce', 'circ', 'cube', 'elastic', 'expo', 'quad', 'quart', 'quint', 'sine', 'smoothStep', 'smootherStep']),
+				type: TDropDown(['SET', 'linear', 'back', 'bounce', 'circ', 'cube', 'elastic', 'expo', 'quad', 'quart', 'quint', 'sine', 'smoothStep', 'smootherStep']),
 				defValue: "linear"
 			},
 			{
