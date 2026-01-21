@@ -84,9 +84,11 @@ class CharacterGhost extends Character {
 
 		var oldRenderTexture:RenderTexture = this._renderTexture;
 		var oldRenderTextureDirty = _renderTextureDirty;
+		var oldAlpha = alpha;
 
 		this._renderTexture = null;
 		this._renderTextureDirty = true;
+		this.alpha = 256.0/257.0;
 
 		animation.play(anim, true, false, 0);
 
@@ -96,6 +98,7 @@ class CharacterGhost extends Character {
 
 		this._renderTexture = oldRenderTexture;
 		this._renderTextureDirty = oldRenderTextureDirty;
+		this.alpha = oldAlpha;
 
 		if (wasInvalidFrame) {
 			colorTransform.color = 0xFFEF0202;

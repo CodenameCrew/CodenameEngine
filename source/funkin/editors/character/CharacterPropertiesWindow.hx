@@ -183,7 +183,7 @@ class CharacterPropertiesWindow extends UISliceSprite {
 		character.sprite = sprite;
 
 		animsWindow.displayWindowSprite.animation.reset();
-		animsWindow.displayAnimsFramesList.clear();
+		animsWindow.clearDisplayAnims();
 		if (animsWindow.displayWindowGraphic != null) 
 			animsWindow.displayWindowGraphic.destroy();
 

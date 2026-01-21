@@ -8,6 +8,7 @@ import openfl.geom.Rectangle;
 import funkin.backend.utils.XMLUtil.AnimData;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
+import funkin.editors.character.CharacterAnimsWindow;
 
 using StringTools;
 
@@ -242,7 +243,7 @@ class CharacterAnimButton extends UIButton {
 		parent.character.animOffsets.remove(anim);
 		parent.character.animOffsets.set(newName, animOffset);
 
-		var displayFrame:{scale:Float, animBounds:Rectangle, frame:Int} = parent.displayAnimsFramesList[anim];
+		var displayFrame:DisplayAnimFrameEntry = parent.displayAnimsFramesList[anim];
 		parent.displayAnimsFramesList.remove(anim);
 		parent.displayAnimsFramesList.set(newName, displayFrame);
 
@@ -396,12 +397,9 @@ class CharacterAnimButton extends UIButton {
 		updateButtonsPos();
 		super.draw();
 
-		if (parent.character.isAnimate) // TODO: displayWindowSprite for atlases
-			return;
-
 		if (!closed && parent.displayAnimsFramesList.exists(anim)) {
-			var displayData:{frame:Int, scale:Float, animBounds:Rectangle} = parent.displayAnimsFramesList.get(anim);
-			parent.displayWindowSprite.frame = parent.displayWindowSprite.frames.frames[displayData.frame];
+			var displayData:DisplayAnimFrameEntry = parent.displayAnimsFramesList.get(anim);
+			parent.displayWindowSprite.frame = displayData.frame;
 
 			parent.displayWindowSprite.scale.x = parent.displayWindowSprite.scale.y = displayData.scale;
 			parent.displayWindowSprite.updateHitbox();
@@ -476,7 +474,6 @@ class CharacterAnimButton extends UIButton {
 	@:noCompletion function __refreshAnimation() @:privateAccess {
 		refreshAnimation(__getFlxAnimation(), data);
 
-		// TODO: displayWindowSprite for atlases
 		if (valid) {
 			parent.buildAnimDisplay(anim, data);
 			animationDisplayBG.alpha = 1;

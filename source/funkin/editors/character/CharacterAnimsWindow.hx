@@ -8,15 +8,24 @@ import openfl.geom.Rectangle;
 import flixel.graphics.frames.FlxFrame;
 import funkin.game.Character;
 import flixel.animation.FlxPrerotatedAnimation;
+import animate.internal.RenderTexture;
+import flixel.graphics.frames.FlxFrame;
+import funkin.backend.system.Logs;
 
 using funkin.backend.utils.BitmapUtil;
+
+typedef DisplayAnimFrameEntry = {
+	scale:Float,
+	frame:FlxFrame,
+	renderTexture:RenderTexture
+}
 
 class CharacterAnimsWindow extends UIButtonList<CharacterAnimButton> {
 	public var character:CharacterGhost;
 
 	public var displayWindowSprite:FlxSprite;
 	public var displayWindowGraphic:FlxGraphic;
-	public var displayAnimsFramesList:Map<String, {scale:Float, animBounds:Rectangle, frame:OneOfTwo<Int, String>}> = [];
+	public var displayAnimsFramesList:Map<String, DisplayAnimFrameEntry> = [];
 
 	public var animButtons:Map<String, CharacterAnimButton> = [];
 	public var animsList:Array<String> = [];
@@ -70,20 +79,45 @@ class CharacterAnimsWindow extends UIButtonList<CharacterAnimButton> {
 
 	public function buildAnimDisplay(name:String, anim:AnimData) @:privateAccess {
 		var anim:FlxAnimation = character.animation._animations[anim.name];
-		if (anim == null || anim.frames.length <= 0) return;
+		if (anim == null) return;
 
-		var frameIndex:Int = anim.frames.getDefault([0])[0];
-		var frame:FlxFrame = displayWindowSprite.frames.frames[frameIndex];
+		if (character.isAnimate) {
+			var renderTex = character.generateRenderTextureForAnim(name);
+			var frame = renderTex.graphic.imageFrame.frame;
 
-		var frameRect:Rectangle = new Rectangle(frame.offset.x, frame.offset.y, frame.sourceSize.x, frame.sourceSize.y);
-		var animBounds:Rectangle = displayWindowGraphic != null ? displayWindowGraphic.bitmap.bounds(frameRect) : frameRect;
+			trace('Created anim display for ${name} with size ${frame.frame.width}, ${frame.frame.height} (${renderTex.graphic.width}, ${renderTex.graphic.height})');
 
-		displayAnimsFramesList.set(name, {frame: anim.frames.getDefault([0])[0], scale: 104/Math.max(animBounds.width, animBounds.height), animBounds: animBounds});
+			displayAnimsFramesList.set(name, {
+				frame: frame,
+				scale: 104/Math.max(frame.frame.width, frame.frame.height),
+				renderTexture: renderTex
+			});
+		} else {
+			var frameIndex:Int = anim.frames.getDefault([0])[0];
+			var frame:FlxFrame = displayWindowSprite.frames.frames[frameIndex];
+	
+			var frameRect:Rectangle = new Rectangle(frame.offset.x, frame.offset.y, frame.sourceSize.x, frame.sourceSize.y);
+			var animBounds:Rectangle = displayWindowGraphic != null ? displayWindowGraphic.bitmap.bounds(frameRect) : frameRect;
+	
+			displayAnimsFramesList.set(name, {
+				frame: character.frames.frames[anim.frames.getDefault([0])[0]],
+				scale: 104/Math.max(animBounds.width, animBounds.height),
+				renderTexture: null
+			});
+		}
+
 	}
 
 	public function removeAnimDisplay(name:String) {
-		
+		if (displayAnimsFramesList.exists(name))
+			displayAnimsFramesList[name].renderTexture?.destroy();
 		displayAnimsFramesList.remove(name);
+	}
+
+	public function clearDisplayAnims() {
+		for(k=>e in displayAnimsFramesList)
+			e.renderTexture?.destroy();
+		displayAnimsFramesList.clear();
 	}
 
 	public function deleteAnimation(button:CharacterAnimButton, addToUndo:Bool = true) {
