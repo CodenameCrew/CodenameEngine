@@ -229,7 +229,8 @@ final class XMLUtil {
 				animType: spr.spriteAnimType,
 				x: 0,
 				y: 0,
-				indices: [for(i in 0...spr.frames.frames.length) i]
+				indices: [for(i in 0...spr.frames.frames.length) i],
+				label: false
 			});
 		}
 
@@ -265,7 +266,8 @@ final class XMLUtil {
 			animType: animType,
 			x: 0,
 			y: 0,
-			indices: []
+			indices: [],
+			label: false
 		};
 
 		if (anim.has.name) animData.name = anim.att.name;
@@ -277,6 +279,7 @@ final class XMLUtil {
 		if (anim.has.loop) animData.loop = anim.att.loop == "true";
 		if (anim.has.forced) animData.forced = anim.att.forced == "true";
 		if (anim.has.indices) animData.indices = CoolUtil.parseNumberRange(anim.att.indices);
+		if (anim.has.label) animData.label = anim.att.label == "true";
 
 		return animData;
 	}
@@ -309,10 +312,17 @@ final class XMLUtil {
 
 				var animateAnim = cast(sprite, FunkinSprite).anim;
 
-				if (animData.indices != null && animData.indices.length > 0)
-					animateAnim.addBySymbolIndices(animData.name, animData.anim, animData.indices, animData.fps, animData.loop);
-				else
-					animateAnim.addBySymbol(animData.name, animData.anim, animData.fps, animData.loop);
+				if (animData.label) {
+					if (animData.indices != null && animData.indices.length > 0)
+						animateAnim.addByFrameLabelIndices(animData.name, animData.anim, animData.indices, animData.fps, animData.loop);
+					else
+						animateAnim.addByFrameLabel(animData.name, animData.anim, animData.fps, animData.loop);
+				} else {
+					if (animData.indices != null && animData.indices.length > 0)
+						animateAnim.addBySymbolIndices(animData.name, animData.anim, animData.indices, animData.fps, animData.loop);
+					else
+						animateAnim.addBySymbol(animData.name, animData.anim, animData.fps, animData.loop);
+				}
 			} else {
 				if (animData.indices != null && animData.indices.length > 0) {
 					if (animData.anim == null)
@@ -468,6 +478,7 @@ typedef AnimData = {
 	var y:Float;
 	var indices:Array<Int>;
 	var animType:XMLAnimType;
+	var label:Bool;
 	var ?forced:Bool;
 }
 

@@ -85,8 +85,6 @@ class CharacterAnimsWindow extends UIButtonList<CharacterAnimButton> {
 			var renderTex = character.generateRenderTextureForAnim(name);
 			var frame = renderTex.graphic.imageFrame.frame;
 
-			trace('Created anim display for ${name} with size ${frame.frame.width}, ${frame.frame.height} (${renderTex.graphic.width}, ${renderTex.graphic.height})');
-
 			displayAnimsFramesList.set(name, {
 				frame: frame,
 				scale: 104/Math.max(frame.frame.width, frame.frame.height),
@@ -156,6 +154,7 @@ class CharacterAnimsWindow extends UIButtonList<CharacterAnimButton> {
 			x: 0, y: 0,
 			indices: [],
 			animType: NONE,
+			label: false
 		};
 		addAnimation(animData);
 	}

@@ -252,6 +252,7 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 	{
 		// no need to...
 		//super.doAdditionalMatrixStuff(matrix, camera);
+
 		if(__shouldDoZoomFactor()) {
 			__prepareZoomFactor(_rect, camera);
 			matrix.setTo(
@@ -260,100 +261,6 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 				(matrix.tx - _rect.x) * _rect.width + _rect.x,
 				(matrix.ty - _rect.y) * _rect.height + _rect.y,
 			);
-		}
-	}
-
-	override function drawAnimate(camera:FlxCamera):Void
-	{
-		// TODO: Possible macro that makes it maintainable in case FlxAnimate gets updated
-		#if flash
-		var willUseRenderTexture:Bool = false;
-		#else
-		var willUseRenderTexture:Bool = useRenderTexture && (alpha != 1 || shader != null || (blend != null && blend != NORMAL));
-		#end
-
-		var matrix = _matrix;
-		matrix.identity();
-
-		@:privateAccess
-		var bounds = timeline._bounds;
-		if (!willUseRenderTexture)
-			matrix.translate(-bounds.x, -bounds.y);
-
-		if (checkFlipX())
-		{
-			matrix.scale(-1, 1);
-			matrix.translate(bounds.width, 0);
-		}
-
-		if (checkFlipY())
-		{
-			matrix.scale(1, -1);
-			matrix.translate(0, bounds.height);
-		}
-
-		if (applyStageMatrix)
-		{
-			matrix.concat(library.matrix);
-			matrix.translate(-library.matrix.tx, -library.matrix.ty);
-		}
-
-		matrix.translate(-origin.x, -origin.y);
-		matrix.scale(scale.x, scale.y);
-
-		if (angle != 0)
-		{
-			updateTrig();
-			matrix.rotateWithTrig(_cosAngle, _sinAngle);
-		}
-
-		if (skew.x != 0 || skew.y != 0)
-		{
-			updateSkew();
-			@:privateAccess
-			matrix.concat(FlxAnimate._skewMatrix);
-		}
-
-		getScreenPosition(_point, camera);
-		_point.x += origin.x - offset.x;
-		_point.y += origin.y - offset.y;
-		matrix.translate(_point.x, _point.y);
-
-		if (isPixelPerfectRender(camera))
-			preparePixelPerfectMatrix(matrix);
-
-		doAdditionalMatrixStuff(matrix, camera);
-
-		if (renderStage)
-			drawStage(camera);
-
-		timeline.currentFrame = animation.frameIndex;
-
-		#if !flash
-		if (willUseRenderTexture)
-		{
-			if (_renderTexture == null)
-				_renderTexture = new RenderTexture(Math.ceil(bounds.width), Math.ceil(bounds.height));
-
-			if (_renderTextureDirty)
-			{
-				_renderTexture.init(Math.ceil(bounds.width), Math.ceil(bounds.height));
-				_renderTexture.drawToCamera((camera, matrix) ->
-				{
-					matrix.translate(-bounds.x, -bounds.y);
-					timeline.draw(camera, matrix, null, null, antialiasing, null);
-				});
-				_renderTexture.render();
-
-				_renderTextureDirty = false;
-			}
-
-			camera.drawPixels(_renderTexture.graphic.imageFrame.frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
-		}
-		else
-		#end
-		{
-			timeline.draw(camera, matrix, colorTransform, blend, antialiasing, shader);
 		}
 	}
 
@@ -397,7 +304,7 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 		lastAnimContext = Context;
 	}
 
-	public inline function addAnim(name:String, prefix:String, frameRate:Float = 24, ?looped:Bool, ?forced:Bool, ?indices:Array<Int>, x:Float = 0, y:Float = 0, animType:XMLAnimType = NONE)
+	public inline function addAnim(name:String, prefix:String, frameRate:Float = 24, ?looped:Bool, ?forced:Bool, ?indices:Array<Int>, x:Float = 0, y:Float = 0, animType:XMLAnimType = NONE, animateAtlasLabel:Bool = false)
 	{
 		return XMLUtil.addAnimToSprite(this, {
 			name: name,
@@ -408,7 +315,8 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 			x: x,
 			y: y,
 			indices: indices,
-			forced: forced
+			forced: forced,
+			label: animateAtlasLabel
 		});
 	}
 
@@ -482,36 +390,10 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 		return val;
 	}
 
-	override function draw():Void {
-		if (isAnimate) {
-			var posOffset:FlxPoint = FlxPoint.get(-frameOffset.x * scale.x, -frameOffset.y * scale.y);
+	override function draw():Void
+		super.draw();
 
-			var angleOff = angle;
-			if (frameOffsetAngle != null) 
-				angleOff = frameOffsetAngle;
-			angleOff *= FlxAngle.TO_RAD;
-
-			posOffset.rotateWithTrig(Math.sin(angleOff), Math.cos(angleOff));
-
-			x += posOffset.x;
-			y += posOffset.y;
-
-			super.draw();
-
-			x -= posOffset.x;
-			y -= posOffset.y;
-
-			posOffset.put();
-		} else
-			super.draw();
-	}
-
-	override function drawComplex(camera:FlxCamera):Void
-	{
-		#if (flixel < "6.1.0") final frame = this._frame; #end
-		final matrix = this._matrix; // TODO: Just use local?
-
-		frame.prepareMatrix(matrix, FlxFrameAngle.ANGLE_0, checkFlipX() != camera.flipX, checkFlipY() != camera.flipY);
+	override function prepareDrawMatrix(matrix:FlxMatrix, camera:FlxCamera):Void {
 		matrix.translate(-origin.x, -origin.y);
 
 		if (frameOffsetAngle != null && frameOffsetAngle != angle)
@@ -520,34 +402,24 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 			var cos = Math.cos(angleOff);
 			var sin = Math.sin(angleOff);
 			// cos doesnt need to be negated
-			_matrix.rotateWithTrig(cos, -sin);
-			_matrix.translate(-frameOffset.x, -frameOffset.y);
-			_matrix.rotateWithTrig(cos, sin);
+			matrix.rotateWithTrig(cos, -sin);
+			matrix.translate(-frameOffset.x, -frameOffset.y);
+			matrix.rotateWithTrig(cos, sin);
 		}
 		else
-			_matrix.translate(-frameOffset.x, -frameOffset.y);
+			matrix.translate(-frameOffset.x, -frameOffset.y);
 
-		matrix.scale(scale.x, scale.y);
-		if (bakedRotationAngle <= 0)
-		{
-			updateTrig();
-			if (angle != 0)
-				matrix.rotateWithTrig(_cosAngle, _sinAngle);
-		}
-		if (skew.x != 0 || skew.y != 0)
-		{
-			updateSkew();
-			_matrix.concat(FlxAnimate._skewMatrix);
-		}
-		getScreenPosition(_point, camera);
-		_point.x += origin.x - offset.x;
-		_point.y += origin.y - offset.y;
-		matrix.translate(_point.x, _point.y);
-		if (isPixelPerfectRender(camera))
-			preparePixelPerfectMatrix(matrix);
+		matrix.translate(origin.x, origin.y);
+
+		super.prepareDrawMatrix(matrix, camera);
 
 		doAdditionalMatrixStuff(matrix, camera);
+	}
 
-		camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
+	override function checkFlipX() {
+		return super.checkFlipX() != camera.flipX;
+	}
+	override function checkFlipY() {
+		return super.checkFlipY() != camera.flipY;
 	}
 }
