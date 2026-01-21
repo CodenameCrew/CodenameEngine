@@ -231,7 +231,7 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 
 	override public function isOnScreen(?camera:FlxCamera):Bool
 	{
-		if (forceIsOnScreen)
+		if (isAnimate || forceIsOnScreen)
 			return true;
 
 		if (camera == null)
@@ -447,6 +447,9 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 		matrix.translate(_point.x, _point.y);
 		if (isPixelPerfectRender(camera))
 			preparePixelPerfectMatrix(matrix);
+
+		doAdditionalMatrixStuff(matrix, camera);
+
 		camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
 	}
 }
