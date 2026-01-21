@@ -34,6 +34,7 @@ import lime.utils.Assets;
 import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
 import animate.FlxAnimateJson;
+import flixel.animation.FlxAnimationController;
 
 using StringTools;
 
@@ -572,6 +573,29 @@ final class CoolUtil
 		var old = anim1.frames;
 		anim1.frames = anim2.frames;
 		anim2.frames = old;
+	}
+
+	/**
+	 * Swaps two animations on an animation controller.
+	 * @param animation Animation controller
+	 * @param anim1 First animation
+	 * @param anim2 Second animation
+	 */
+	public static function swapAnims(animation:FlxAnimationController, anim1:String, anim2:String) @:privateAccess {
+		var flxAnim1 = animation.getByName(anim1);
+		animation._animations.remove(anim1);
+
+		var flxAnim2 = animation.getByName(anim2);
+		animation._animations.remove(anim2);
+
+		if (flxAnim1 != null) {
+			flxAnim1.name = anim2;
+			animation._animations.set(anim2, flxAnim1);
+		}
+		if (flxAnim2 != null) {
+			flxAnim2.name = anim1;
+			animation._animations.set(anim1, flxAnim2);
+		}
 	}
 
 	/**

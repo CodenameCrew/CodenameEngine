@@ -119,7 +119,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		}
 
 		for (i in variants) {
-			CoolUtil.switchAnimFrames(animation.getByName('singRIGHT$i'), animation.getByName('singLEFT$i'));
+			CoolUtil.swapAnims(animation, 'singLEFT$i', 'singRIGHT$i');
 			switchOffset('singLEFT$i', 'singRIGHT$i');
 		}
 
