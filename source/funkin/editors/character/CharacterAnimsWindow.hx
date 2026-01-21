@@ -81,8 +81,10 @@ class CharacterAnimsWindow extends UIButtonList<CharacterAnimButton> {
 		displayAnimsFramesList.set(name, {frame: anim.frames.getDefault([0])[0], scale: 104/Math.max(animBounds.width, animBounds.height), animBounds: animBounds});
 	}
 
-	public function removeAnimDisplay(name:String)
+	public function removeAnimDisplay(name:String) {
+		
 		displayAnimsFramesList.remove(name);
+	}
 
 	public function deleteAnimation(button:CharacterAnimButton, addToUndo:Bool = true) {
 		FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_DELETE_SOUND));

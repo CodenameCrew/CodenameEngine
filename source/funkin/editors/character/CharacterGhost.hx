@@ -5,6 +5,7 @@ import openfl.geom.ColorTransform;
 import flixel.animation.FlxAnimation;
 import funkin.game.Character;
 import haxe.xml.Access;
+import animate.internal.RenderTexture;
 
 typedef AtlasState = {
 	var oldAnim:String;
@@ -69,6 +70,42 @@ class CharacterGhost extends Character {
 		}
 
 		offset.set(globalOffset.x * (isPlayer != playerOffsets ? 1 : -1), -globalOffset.y);
+	}
+
+	public function generateRenderTextureForAnim(anim:String):RenderTexture @:privateAccess {
+		if (!isAnimate) return null;
+
+		var wasInvalidFrame:Bool = !colorTransform.__isDefault(false);
+		colorTransform.__identity();
+		
+		var animName = animation.curAnim?.name ?? null;
+		var animFrame = animation.curAnim?.curFrame ?? 0;
+		var animFrameTimer = animation.curAnim?._frameTimer ?? 0;
+
+		var oldRenderTexture:RenderTexture = this._renderTexture;
+		var oldRenderTextureDirty = _renderTextureDirty;
+
+		this._renderTexture = null;
+		this._renderTextureDirty = true;
+
+		animation.play(anim, true, false, 0);
+
+		drawAnimate(FakeCallCamera.instance);
+
+		var renderTex = this._renderTexture;
+
+		this._renderTexture = oldRenderTexture;
+		this._renderTextureDirty = oldRenderTextureDirty;
+
+		if (wasInvalidFrame) {
+			colorTransform.color = 0xFFEF0202;
+		} else {
+			animation.play(animName, true, false, animFrame);
+			if (animation.curAnim != null)
+				animation.curAnim._frameTimer = animFrameTimer;
+		}
+
+		return renderTex;
 	}
 
 	// This gets annoying lmao -lunar
