@@ -1,0 +1,11 @@
+<!DOCTYPE codename-engine-game-mode>
+<mode name="Co-Op Mode (Switched)" id="codename.coop-opponent">
+	<script>coop</script>
+	<script>opponent</script>
+
+	<!--
+	just a small example of what you could do with fields!!
+	<field name="switchStrums" type="bool" val="true"/>
+	<field name="strumSize" type="float" val="0.6"/>
+	-->
+</mode>
