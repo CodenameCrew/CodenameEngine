@@ -21,6 +21,7 @@ class CharacterAnimButton extends UIButton {
 	public var animationDisplayBG:UISliceSprite;
 	public var nameTextBox:UITextBox;
 	public var animTextBox:UIAutoCompleteTextBox;
+	public var animLabelCheckbox:UICheckbox;
 	public var positionXStepper:UINumericStepper;
 	public var positionYStepper:UINumericStepper;
 	public var fpsStepper:UINumericStepper;
@@ -111,12 +112,19 @@ class CharacterAnimButton extends UIButton {
 		foldableButtons.push(fpsStepper);
 		addLabelOn(fpsStepper, translate("fps"), 12);
 
-		loopedCheckbox = new UICheckbox(fpsStepper.x + 82 - 32 + 26, fpsStepper.y, "Looping?", animData.loop, 0, true);
+		loopedCheckbox = new UICheckbox(fpsStepper.x + 82 - 32 + 26, fpsStepper.y, translate("looping"), animData.loop, 0, true);
 		loopedCheckbox.onChecked = (newLooping:Bool) -> {this.changeLooping(newLooping);};
 		members.push(loopedCheckbox);
 		foldableButtons.push(loopedCheckbox);
 
 		loopedCheckbox.x += 8; loopedCheckbox.y += 6;
+
+		if (parent.character.isAnimate) {
+			animLabelCheckbox = new UICheckbox(loopedCheckbox.x, animTextBox.y + 26, translate("label"), animData.label, 0, true);
+			animLabelCheckbox.onChecked = (newLabel:Bool) -> {this.changeLabel(newLabel);};
+			members.push(animLabelCheckbox);
+			foldableButtons.push(animLabelCheckbox);
+		}
 
 		indicesTextBox = new UITextBox(nameTextBox.x, nameTextBox.y, CoolUtil.formatNumberRange(animData.indices.getDefault([]), ", "), 278, 22, false, true);
 		indicesTextBox.onChange = (text:String) -> {
@@ -199,6 +207,7 @@ class CharacterAnimButton extends UIButton {
 
 		fpsStepper.follow(this, 282, 118);
 		loopedCheckbox.follow(this, 336, 122);
+		animLabelCheckbox?.follow(this, 336, 98);
 
 		indicesTextBox.follow(this, 158, 164);
 
@@ -341,6 +350,19 @@ class CharacterAnimButton extends UIButton {
 		loopedCheckbox.checked = newLooping;
 
 		if (addToUndo) CharacterEditor.undos.addToUndo(CAnimEditLooping(ID, newLooping));
+	}
+
+	public function changeLabel(newLabel:Bool, addToUndo:Bool = true) @:privateAccess {
+		var animData:AnimData = parent.character.animDatas[anim];
+
+		animData.label = newLabel;
+
+		if (animLabelCheckbox != null)
+			animLabelCheckbox.checked = newLabel;
+
+		__refreshAnimation();
+
+		if (addToUndo) CharacterEditor.undos.addToUndo(CAnimEditLabel(ID, newLabel));
 	}
 
 	public function changeIndicies(indicies:Array<Int>, addToUndo:Bool = true) @:privateAccess {

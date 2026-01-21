@@ -439,7 +439,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		"color", "gameOverChar", "holdTime"
 	];
 	public static var characterAnimProperties:Array<String> = [
-		"name", "anim", "x", "y", "fps", "loop", "indices"
+		"name", "anim", "label", "x", "y", "fps", "loop", "indices"
 	];
 
 	public inline function buildXML(?animsOrder:Array<String>):Xml {
@@ -490,6 +490,9 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 			if (anim.indices.length > 0)
 				animXml.set("indices", CoolUtil.formatNumberRange(anim.indices));
+
+			if (anim.label)
+				animXml.set("label", "true");
 
 			xml.addChild(animXml);
 		}
