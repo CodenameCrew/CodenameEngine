@@ -26,6 +26,7 @@ import haxe.Exception;
 import haxe.io.Path;
 import haxe.xml.Access;
 import openfl.geom.ColorTransform;
+import animate.FlxAnimateFrames;
 
 using StringTools;
 
@@ -383,6 +384,20 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		}
 		if (xml.x.exists("antialiasing")) antialiasing = (xml.x.get("antialiasing") == "true");
 		if (xml.x.exists("sprite")) sprite = xml.x.get("sprite");
+		if (xml.x.exists("swfMode")) animateSettings.swfMode = (xml.x.get("swfMode") == "true");
+		if (xml.x.exists("cacheOnLoad")) animateSettings.cacheOnLoad = (xml.x.get("cacheOnLoad") == "true");
+		if (xml.x.exists("filterQuality")) {
+			var val = xml.x.get("filterQuality");
+			var qualityInt = Std.parseInt(val);
+			if (qualityInt != null) {
+				animateSettings.filterQuality = cast(qualityInt, FilterQuality);
+			} else {
+				var values = ["high", "medium", "low", "rudy"];
+				var index = values.indexOf(val.toLowerCase());
+				if (index > -1)
+					animateSettings.filterQuality = cast(index, FilterQuality);
+			}
+		}
 
 		var hasInterval:Bool = xml.x.exists("interval");
 		if (hasInterval) beatInterval = Std.parseInt(xml.x.get("interval"));

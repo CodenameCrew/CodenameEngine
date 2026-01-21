@@ -19,6 +19,7 @@ import haxe.io.Path;
 import flixel.graphics.frames.FlxFrame;
 import flixel.math.FlxAngle;
 import animate.internal.RenderTexture;
+import animate.FlxAnimateFrames;
 
 enum abstract XMLAnimType(Int)
 {
@@ -72,6 +73,8 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 	public var beatInterval(default, set):Int = 2;
 	public var beatOffset:Int = 0;
 	public var skipNegativeBeats:Bool = false;
+
+	public var animateSettings:FlxAnimateSettings = {};
 
 	var _rect2:FlxRect;
 
@@ -140,7 +143,7 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 	public function loadSprite(path:String, Unique:Bool = false, Key:String = null)
 	{
 		var noExt = Path.withoutExtension(path);
-		frames = Paths.getFrames(path, true);
+		frames = Paths.getFrames(path, true, null, null, animateSettings);
 		return this;
 	}
 
