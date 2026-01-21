@@ -19,7 +19,7 @@ class FlagMacro {
 		return false;
 	}
 
-	public static function build():Array<Field> {
+	public static function build(resetCallback:String):Array<Field> {
 		var fields = Context.getBuildFields();
 
 		var clRef = Context.getLocalClass();
@@ -248,7 +248,10 @@ class FlagMacro {
 			access: [APublic, AStatic],
 			kind: FFun({
 				args: [],
-				expr: macro $b{resetExprs},
+				expr: macro {
+					$b{resetExprs};
+					$i{resetCallback}();
+				},
 				ret: macro: Void
 			}),
 			pos: Context.currentPos(),

@@ -342,10 +342,17 @@ class StoryWeeklist {
 	public function new() {}
 
 	public function getWeeksFromSource(source:funkin.backend.assets.AssetSource, useTxt:Bool = true, loadCharactersData:Bool = true) {
-		var path:String = Paths.txt('weeks/weeks');
-		var weeksFound:Array<String> = useTxt && Paths.assetsTree.existsSpecific(path, "TEXT", source) ? CoolUtil.coolTextFile(path) :
-			[for (c in Paths.getFolderContent('data/weeks/weeks/', false, source)) if (Path.extension(c).toLowerCase() == "xml") Path.withoutExtension(c)];
-
+		var weeksFound:Array<String> = null;
+		if (useTxt) {
+			var oldPath:String = Paths.txt('weeks/weeks');
+			var newPath:String = Paths.txt('config/weeks');
+			if (Paths.assetsTree.existsSpecific(newPath, "TEXT", source)) weeksFound = CoolUtil.coolTextFile(newPath);
+			else if (Paths.assetsTree.existsSpecific(oldPath, "TEXT", source)) {
+				Logs.warn("data/weeks/weeks.txt is deprecated and will be removed in the future. Please move the file to data/config/", DARKYELLOW, "StoryWeeklist");
+				weeksFound = CoolUtil.coolTextFile(oldPath);
+			}
+		}
+		if (weeksFound == null) weeksFound = [for (c in Paths.getFolderContent('data/weeks/weeks/', false, source)) if (Path.extension(c).toLowerCase() == "xml") Path.withoutExtension(c)];
 		if (weeksFound.length > 0) {
 			for (w in weeksFound) {
 				var week = Week.loadWeek(w, loadCharactersData);

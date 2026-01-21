@@ -1,0 +1,8 @@
+# THIS FILE ISN'T NECESSARY,
+# BUT YOU CAN USE IT TO SORT AND WHITELIST GAME MODES
+
+solo
+opponent
+coop
+coop-switched
+botplay

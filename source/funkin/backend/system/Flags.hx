@@ -13,7 +13,7 @@ import lime.utils.AssetType;
 /**
  * A class that reads the `flags.ini` file, allowing to read settable Flags (customs too).
  */
-@:build(funkin.backend.system.macros.FlagMacro.build())
+@:build(funkin.backend.system.macros.FlagMacro.build("onReset"))
 class Flags {
 	public static var overridenFlags:Map<String, Bool> = [];
 
@@ -157,7 +157,7 @@ class Flags {
 	public static var DEFAULT_HUD_ZOOM_LERP:Float = 0.05;
 
 	public static var USE_LEGACY_ZOOM_FACTOR:Null<Bool> = null;
-	
+
 	// Font configuration
 	public static var DEFAULT_FONT:String = "vcr.ttf";
 	public static var DEFAULT_FONT_SIZE:Int = 16;
@@ -310,6 +310,11 @@ class Flags {
 		if (USE_LEGACY_TIMING == null) USE_LEGACY_TIMING = MOD_API_VERSION < 2;
 		if (USE_LEGACY_ZOOM_FACTOR == null) USE_LEGACY_ZOOM_FACTOR = MOD_API_VERSION < 2;
 		if (SUSTAINS_AS_ONE_NOTE == null) SUSTAINS_AS_ONE_NOTE = MOD_API_VERSION >= 2;
+	}
+
+	private static function onReset() {
+		var currentModFolder = ModsFolder.currentModFolder;
+		if (currentModFolder != null) SAVE_NAME = currentModFolder;
 	}
 
 	public static function loadFromDatas(datas:Array<String>):Map<String, String> {

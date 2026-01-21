@@ -71,11 +71,11 @@ _**QOL = Quality of Life**_
         - Characters are located in `data/weeks/characters`.
         - Weeks are located in `data/weeks/weeks/`
         - If you need to rearrange the weeks in-game, you can use the `data/weeks/weeks.txt` file.
-	- Editors for Charts and Characters (Stage coming soon)
+	- Editors for Charts and Characters
 		- Undos/Redos supported
 		- Warning on closing unsaved work
 		- Clean UI (for ocd freaks)
-		- Mature Chart editor (Character editor rework soon)
+		- Mature Chart editor
 		- Features not found in other editors!
     - Every single state & substate can be modified via HScript (`data/states/StateName.hx`)
 - **Instances launched via `lime test windows` will automatically use assets from source.**
