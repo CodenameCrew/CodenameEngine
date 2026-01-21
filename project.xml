@@ -234,9 +234,10 @@
 	<haxedef name="HXCPP_CHECK_POINTER" />
 	<haxedef name="HXCPP_STACK_LINE" />
 	<haxedef name="HXCPP_CATCH_SEGV" />
-	<!-- <haxedef name="HXCPP_GC_GENERATIONAL" /> -->
+	<haxedef name="HXCPP_GC_GENERATIONAL" />
 	<haxedef name="HXCPP_GC_DYNAMIC_SIZE" />
 	<haxedef name="HXCPP_CPP17" />
+	<haxedef name="HXCPP_GC_BIG_BLOCKS" />
 	<haxedef name="HXCPP_ALIGN_ALLOC" />
 
 	<haxedef name="hscriptPos" /> <!-- for logging -->
