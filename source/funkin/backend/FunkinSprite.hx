@@ -18,6 +18,7 @@ import funkin.backend.utils.XMLUtil.IXMLEvents;
 import haxe.io.Path;
 import flixel.graphics.frames.FlxFrame;
 import flixel.math.FlxAngle;
+import animate.internal.RenderTexture;
 
 enum abstract XMLAnimType(Int)
 {
@@ -231,7 +232,7 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 
 	override public function isOnScreen(?camera:FlxCamera):Bool
 	{
-		if (isAnimate || forceIsOnScreen)
+		if (isAnimate || forceIsOnScreen) // FIXME: Proper isOnScreen for isAnimate
 			return true;
 
 		if (camera == null)
@@ -256,6 +257,100 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 				(matrix.tx - _rect.x) * _rect.width + _rect.x,
 				(matrix.ty - _rect.y) * _rect.height + _rect.y,
 			);
+		}
+	}
+
+	override function drawAnimate(camera:FlxCamera):Void
+	{
+		// TODO: Possible macro that makes it maintainable in case FlxAnimate gets updated
+		#if flash
+		var willUseRenderTexture:Bool = false;
+		#else
+		var willUseRenderTexture:Bool = useRenderTexture && (alpha != 1 || shader != null || (blend != null && blend != NORMAL));
+		#end
+
+		var matrix = _matrix;
+		matrix.identity();
+
+		@:privateAccess
+		var bounds = timeline._bounds;
+		if (!willUseRenderTexture)
+			matrix.translate(-bounds.x, -bounds.y);
+
+		if (checkFlipX())
+		{
+			matrix.scale(-1, 1);
+			matrix.translate(bounds.width, 0);
+		}
+
+		if (checkFlipY())
+		{
+			matrix.scale(1, -1);
+			matrix.translate(0, bounds.height);
+		}
+
+		if (applyStageMatrix)
+		{
+			matrix.concat(library.matrix);
+			matrix.translate(-library.matrix.tx, -library.matrix.ty);
+		}
+
+		matrix.translate(-origin.x, -origin.y);
+		matrix.scale(scale.x, scale.y);
+
+		if (angle != 0)
+		{
+			updateTrig();
+			matrix.rotateWithTrig(_cosAngle, _sinAngle);
+		}
+
+		if (skew.x != 0 || skew.y != 0)
+		{
+			updateSkew();
+			@:privateAccess
+			matrix.concat(FlxAnimate._skewMatrix);
+		}
+
+		getScreenPosition(_point, camera);
+		_point.x += origin.x - offset.x;
+		_point.y += origin.y - offset.y;
+		matrix.translate(_point.x, _point.y);
+
+		if (isPixelPerfectRender(camera))
+			preparePixelPerfectMatrix(matrix);
+
+		doAdditionalMatrixStuff(matrix, camera);
+
+		if (renderStage)
+			drawStage(camera);
+
+		timeline.currentFrame = animation.frameIndex;
+
+		#if !flash
+		if (willUseRenderTexture)
+		{
+			if (_renderTexture == null)
+				_renderTexture = new RenderTexture(Math.ceil(bounds.width), Math.ceil(bounds.height));
+
+			if (_renderTextureDirty)
+			{
+				_renderTexture.init(Math.ceil(bounds.width), Math.ceil(bounds.height));
+				_renderTexture.drawToCamera((camera, matrix) ->
+				{
+					matrix.translate(-bounds.x, -bounds.y);
+					timeline.draw(camera, matrix, null, null, antialiasing, null);
+				});
+				_renderTexture.render();
+
+				_renderTextureDirty = false;
+			}
+
+			camera.drawPixels(_renderTexture.graphic.imageFrame.frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
+		}
+		else
+		#end
+		{
+			timeline.draw(camera, matrix, colorTransform, blend, antialiasing, shader);
 		}
 	}
 
