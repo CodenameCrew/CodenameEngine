@@ -9,6 +9,6 @@
 	<anim name="danceRight" anim="GF Dancing Beat" x="0" y="0" fps="24" loop="false" indices="15..30"/>
 	<anim name="hairBlow" anim="GF Dancing Beat Hair blowing" x="0" y="0" fps="24" loop="true" indices="0,1,2,3"/>
 	<anim name="hairFall" anim="GF Dancing Beat Hair Landing" x="0" y="0" fps="24" loop="false" indices="0..11"/>
-	<anim name="scared" anim="GF FEAR" x="0" y="0" fps="24" loop="true"/>
+	<anim name="scared" anim="GF FEAR " x="0" y="0" fps="24" loop="true"/>
 	<anim name="sad" anim="gf sad" x="0" y="0" fps="24" loop="true" indices="0..12"/>
 </character>
