@@ -214,28 +214,9 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 			);
 	}
 
-	public override function getScreenBounds(?newRect:FlxRect, ?camera:FlxCamera):FlxRect
-	{
-		if (camera == null)
-			camera = FlxG.camera;
-
-		newRect = super.getScreenBounds(newRect, camera);
-
-		if(__shouldDoZoomFactor()) {
-			__prepareZoomFactor(_rect2, camera);
-			newRect.set(
-				(newRect.x - _rect2.x) * _rect2.width + _rect2.x,
-				(newRect.y - _rect2.y) * _rect2.height + _rect2.y,
-				newRect.width * _rect2.width,
-				newRect.height * _rect2.height,
-			);
-		}
-		return newRect;
-	}
-
 	override public function isOnScreen(?camera:FlxCamera):Bool
 	{
-		if (isAnimate || forceIsOnScreen) // FIXME: Proper isOnScreen for isAnimate
+		if (forceIsOnScreen)
 			return true;
 
 		if (camera == null)
@@ -245,23 +226,6 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 		if (bounds.width == 0 && bounds.height == 0)
 			return false;
 		return camera.containsRect(bounds);
-	}
-
-	// ZOOM FACTOR RENDERING
-	public override function doAdditionalMatrixStuff(matrix:FlxMatrix, camera:FlxCamera)
-	{
-		// no need to...
-		//super.doAdditionalMatrixStuff(matrix, camera);
-
-		if(__shouldDoZoomFactor()) {
-			__prepareZoomFactor(_rect, camera);
-			matrix.setTo(
-				matrix.a * _rect.width, matrix.b * _rect.height,
-				matrix.c * _rect.width, matrix.d * _rect.height,
-				(matrix.tx - _rect.x) * _rect.width + _rect.x,
-				(matrix.ty - _rect.y) * _rect.height + _rect.y,
-			);
-		}
 	}
 
 	// OFFSETTING
@@ -390,9 +354,6 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 		return val;
 	}
 
-	override function draw():Void
-		super.draw();
-
 	override function prepareDrawMatrix(matrix:FlxMatrix, camera:FlxCamera):Void {
 		matrix.translate(-origin.x, -origin.y);
 
@@ -413,7 +374,15 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 
 		super.prepareDrawMatrix(matrix, camera);
 
-		doAdditionalMatrixStuff(matrix, camera);
+		if(__shouldDoZoomFactor()) {
+			__prepareZoomFactor(_rect2, camera);
+			matrix.setTo(
+				matrix.a * _rect2.width, matrix.b * _rect2.height,
+				matrix.c * _rect2.width, matrix.d * _rect2.height,
+				(matrix.tx - _rect2.x) * _rect2.width + _rect2.x,
+				(matrix.ty - _rect2.y) * _rect2.height + _rect2.y,
+			);
+		}
 	}
 
 	override function checkFlipX() {
