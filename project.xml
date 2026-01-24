@@ -1,81 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project>
-	<!-- _________________________ Application Settings _________________________ -->
-	<app
-		title="Friday Night Funkin' - Codename Engine" main="funkin.backend.system.Main"
-		file="CodenameEngine" packageName="com.yoshman29.codenameengine"
-		package="com.yoshman29.codenameengine"
-		version="1.0.1" company="Yoshman29" />
+<project xmlns="http://lime.software/project/1.0.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://lime.software/project/1.0.4 http://lime.software/xsd/project-1.0.4.xsd">
+	<!-- ____________________________ Window Settings ___________________________ -->
 
-	<!--
-		CHANGE THE SAVE PATH & NAME FOR YOUR MOD HERE!
-	-->
+	<!-- CHANGE THE SAVE PATH & NAME FOR YOUR MOD HERE! -->
 	<haxedef name="SAVE_PATH" value="CodenameEngine"/>
 	<haxedef name="SAVE_NAME" value="save-default"/>
 
 	<haxedef name="SAVE_OPTIONS_PATH" value="CodenameEngine"/>
 	<haxedef name="SAVE_OPTIONS_NAME" value="options"/>
 
-	<!--Switch Export with Unique ApplicationID and Icon-->
-	<set name="APP_ID" value="0x0100f6c013bbc000" />
+	<!-- Comment this out to disable commit number on FPS -->
+	<define name="SHOW_BUILD_ON_FPS"/>
 
-	<!-- DO NOT REMOVE!! ALLOWS ME TO DO REGIONS LIKE IN C# AND KEEP CODE ORGANIZED. REMOVING IT WOULD BREAK THE ENGINE -->
-	<haxedef name="REGION" />
+	<!-- Comment this out to disable dark mode windows -->
+	<define name="DARK_MODE_WINDOW"/>
 
-	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
-		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
-	<app preloader="flixel.system.FlxPreloader" />
+	<!-- Should it checks for updates? -->
+	<define name="UPDATE_CHECKING" if="desktop" unless="hl || debug"/>
 
-	<!--Minimum without FLX_NO_GAMEPAD: 11.8, without FLX_NO_NATIVE_CURSOR: 11.2-->
-	<set name="SWF_VERSION" value="11.8" />
-
-	<!-- ____________________________ Window Settings ___________________________ -->
-
-	<!--These window settings apply to all targets-->
-	<window width="1280" height="720" background="#000000" hardware="true" vsync="false" />
-
-	<!--HTML5-specific-->
-	<window if="html5" resizable="true" />
-
-	<!--Desktop-specific-->
-	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
-	<window if="mac" allow-high-dpi="true" />
-
-	<!--Mobile-specific-->
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false"/>
-
-	<!--Switch-specific-->
-	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
-
-	<!-- _________________________________ Engine Settings _______________________________ -->
-
-	<!-- Comment this out to disable updates !-->
-	<define name="UPDATE_CHECKING" unless="web || hl || neko || debug"/>
-
-	<!-- Comment this out to disable Discord RPC !-->
 	<section if="cpp">
+		<!-- Compile With Discord Rich Presence -->
 		<define name="DISCORD_RPC" if="desktop"/>
+
+		<!-- Compile with video support (hxvlc) -->
+		<define name="VIDEO_CUTSCENES" if="desktop || android"/>
 	</section>
 
 	<!-- Uncomment this to achive faster compile times, will strip extraneous and commonly unused features. -->
 	<!-- <define name="STRIPPED_COMPILE" unless="debug"/> -->
 
-	<!-- Comment this out to disable modcharting features -->
-	<define name="MODCHARTING_FEATURES" unless="STRIPPED_COMPILE" />
+	<!-- Compile with _theo0p's modcharting tools -->
+	<define name="MODCHARTING_FEATURES" unless="STRIPPED_COMPILE"/>
 
 	<!-- Comment this out to disable GitHub API integration !-->
 	<define name="GITHUB_API" unless="web || hl"/>
 
 	<!-- Comment this out to prevent unused classes from being compiled.
 		 Reduces compilation time at the cost of limited HScript flexibility. !-->
-	<define name="COMPILE_ALL_CLASSES" unless="STRIPPED_COMPILE" />
+	<define name="COMPILE_ALL_CLASSES" unless="STRIPPED_COMPILE"/>
 
 	<!-- Comment this out to prevent extending classes in hscript.
 		 Reduces compilation time at the cost of limited HScript flexibility. !-->
-	<define name="CUSTOM_CLASSES" unless="STRIPPED_COMPILE" />
+	<define name="CUSTOM_CLASSES" unless="STRIPPED_COMPILE"/>
 
 	<!-- Comment this out to disable multithreading !-->
-	<haxedef name="ALLOW_MULTITHREADING" unless="web || flash" />
+	<haxedef name="ALLOW_MULTITHREADING" if="cpp"/>
 
 	<!-- Comment this out to disable mods folder !-->
 	<haxedef name="MOD_SUPPORT" unless="web"/>
@@ -84,36 +53,60 @@
 	<haxedef name="TRANSLATIONS_SUPPORT"/>
 
 	<!-- Comment this out to disable global scripts !-->
-	<haxedef name="GLOBAL_SCRIPT" />
+	<haxedef name="GLOBAL_SCRIPT"/>
 
 	<!-- Comment this out to disable softcoded states and state scripting !-->
-	<haxedef name="SOFTCODED_STATES" />
+	<haxedef name="SOFTCODED_STATES"/>
 
 	<!-- Comment this out to disable support for custom ndlls. !-->
-	<haxedef name="NDLLS_SUPPORTED" unless="web || iphonesim || hl" />
+	<haxedef name="NDLLS_SUPPORTED" unless="web || iphonesim || hl"/>
 
 	<!-- Comment this out to use the default OpenFL assets system for the assets/ folder. !-->
-	<define name="USE_ADAPTED_ASSETS" unless="web" />
+	<define name="USE_ADAPTED_ASSETS" unless="web"/>
 
 	<!-- Comment this out to disable support for Away3D Flixel Integration (reduces compile times) !-->
-	<define name="THREE_D_SUPPORT" unless="STRIPPED_COMPILE" />
+	<define name="THREE_D_SUPPORT" unless="STRIPPED_COMPILE"/>
 
 	<!-- Comment this out to disable support for Nape integration (flixel.addons.nape) (reduces compile times) !-->
-	<define name="NAPE_ENABLED" unless="STRIPPED_COMPILE" />
-
-	<!-- Comment this out to disable video cutscene support, in case of compilation errors. !-->
-	<section if="cpp">
-		<define name="VIDEO_CUTSCENES" if="desktop || android" />
-	</section>
-
-	<!-- Comment this out to disable commit number on FPS -->
-	<define name="SHOW_BUILD_ON_FPS" />
-
-	<!-- Comment this out to disable dark mode windows -->
-	<define name="DARK_MODE_WINDOW"/>
+	<define name="NAPE_ENABLED" unless="STRIPPED_COMPILE"/>
 
 	<!-- Disable a optimization, to allow reflection to use more functions -->
-	<define name="FLX_NO_GENERIC" />
+	<define name="FLX_NO_GENERIC"/>
+
+	<!-- _________________________ Application Settings _________________________ -->
+	<app
+		title="Friday Night Funkin' - Codename Engine"
+		file="CodenameEngine" packageName="com.yoshman29.codenameengine"
+		package="com.yoshman29.codenameengine"
+		version="1.0.1" company="Yoshman29"/>
+
+	<!--Switch Export with Unique ApplicationID and Icon-->
+	<set name="APP_ID" value="0x0100f6c013bbc000"/>
+
+	<!--<set name="SWF_VERSION" value="11.8"/>-->
+
+	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
+	<icon path="art/icon16.png" size='16'/>
+	<icon path="art/icon32.png" size='24'/>
+	<icon path="art/icon32.png" size='32'/>
+	<icon path="art/icon64.png" size='40'/>
+	<icon path="art/icon64.png" size='48'/>
+	<icon path="art/icon64.png" size='64'/>
+	<icon path="art/iconOG.png" size='96'/>
+	<icon path="art/iconOG.png" size='128'/>
+	<icon path="art/iconOG.png" size='196'/>
+	<icon path="art/iconOG.png" size='256'/>
+	<icon path="art/iconOG.png" size='512'/>
+	<icon path="art/iconOG.png" size='768'/>
+	<icon path="art/iconOG.png" size='1024'/>
+
+	<!-- ____________________________ Window Settings ___________________________ -->
+
+	<window hardware="true" colorDepth="32" background="" fps="0" orientation="landscape"/>
+	<window unless="desktop" width="0" height="0" vsync="true" fullscreen="true"/>
+	<window if="desktop" type="opengles" width="1280" height="720" fullscreen="false" resizable="true" vsync="false" allowHighDPI="true"/>
+	<window if="mobile" resizable="false"/>
+	<window if="html5 || switch" resizable="true"/>
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
@@ -121,32 +114,46 @@
 	<define name="disable-version-check"/>
 	<haxedef name="disable-version-check"/>
 
-	<haxedef name="no-deprecation-warnings"/>
-	<haxedef name="DISCORD_DISABLE_IO_THREAD" if="DISCORD_RPC"/>
+	<haxelib name="flixel"/>
 
-	<haxelib name="flixel" />
-	<haxelib name="flixel-addons" />
+	<haxelib name="flixel-addons"/>
+	<haxelib name="flixel-animate"/>
 
-	<haxelib name="hxvlc" if="VIDEO_CUTSCENES" />
-	<haxelib name="away3d" if="THREE_D_SUPPORT" />
-	<haxelib name="format" />
-	<haxelib name="flixel-animate" />
+	<haxelib name="hscript-improved"/>
+
+	<haxelib name="format" unless="STRIPPED_COMPILE"/>
+	<haxelib name="markdown" unless="STRIPPED_COMPILE"/>
+
+	<haxelib name="hxvlc" if="VIDEO_CUTSCENES"/>
+	<haxelib name="hxdiscord_rpc" if="DISCORD_RPC"/>
+	<haxelib name="away3d" if="THREE_D_SUPPORT"/>
 	<haxelib name="nape-haxe4" if="NAPE_ENABLED"/>
 
-	<haxelib name="hscript-improved" />
-	<haxelib name="hxdiscord_rpc" if="DISCORD_RPC"/>
-	<haxelib name="markdown" />
-	<haxelib name="hxcpp-debug-server" if="TEST_BUILD debug" />
+	<haxelib name="hxcpp-debug-server" if="debug"/>
 
-	<!-- _____________________________ Path Settings ____________________________ -->
+	<!-- ____________________________ Source Settings ___________________________ -->
 
-	<set name="BUILD_DIR" value="export/debug" if="debug" />
-	<set name="BUILD_DIR" value="export/release" unless="debug" />
-	<set name="BUILD_DIR" value="export/debug-32bit" if="debug 32bit" />
-	<set name="BUILD_DIR" value="export/release-32bit" if="32bit" unless="debug" />
-	<set name="BUILD_DIR" value="latest/" if="beta" />
+	<!-- DO NO REMOVE THIS -->
+	<haxedef name="REGION"/>
 
-	<source name="source" />
+	<set name="BUILD_DIR" value="export/debug" if="debug"/>
+	<set name="BUILD_DIR" value="export/release" unless="debug"/>
+	<set name="BUILD_DIR" value="export/debug-32bit" if="debug 32bit"/>
+	<set name="BUILD_DIR" value="export/release-32bit" if="32bit" unless="debug"/>
+	<set name="BUILD_DIR" value="latest/" if="beta"/>
+
+	<app main="funkin.backend.system.Main" preloader="flixel.system.FlxPreloader"/>
+	<source name="source"/>
+
+	<section if="MODCHARTING_FEATURES">
+		<haxedef name="FM_ENGINE" value="CODENAME"/>
+		<haxedef name="FM_ENGINE_VERSION" value="1.0"/>
+
+		<haxelib name="funkin-modchart" />
+		<haxeflag name="--macro" value="modchart.backend.macros.Macro.includeFiles()"/>
+	</section>
+
+	<!-- ____________________________ Assets Settings ___________________________ -->
 
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
@@ -162,7 +169,7 @@
 		<assets path='mods' rename='mods' embed='false' />
 	</section>
 
-	<assets path='art/readme.txt' rename='do NOT readme.txt' />
+	<!-- <assets path='art/readme.txt' rename='do NOT readme.txt' /> -->
 
 	<!-- OpenAL config -->
 	<section if="desktop">
@@ -172,71 +179,57 @@
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
-	<haxeflag name="--macro" value="funkin.backend.system.macros.BuildInfo.printBuildInfo()" />
+	<haxeflag name="--macro" value="funkin.backend.system.macros.Macros.initMacros()"/>
 
-	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
+	<haxedef name="VIDEO_CUTSCENES" if="VIDEO_CUTSCENES"/>
+	<haxedef name="UPDATE_CHECKING" if="UPDATE_CHECKING"/>
+	<haxedef name="DISCORD_RPC" if="DISCORD_RPC"/>
+	<haxedef name="SHOW_BUILD_ON_FPS" if="SHOW_BUILD_ON_FPS"/>
+	<haxedef name="SOFTCODED_CLASSES" if="SOFTCODED_CLASSES"/>
+	<haxedef name="USE_ADAPTED_ASSETS" if="USE_ADAPTED_ASSETS"/>
 
-	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
-	<haxedef name="FLX_NO_DEBUG" unless="debug" />
+	<!-- EXPERMENTAL FEATURES -->
+	<haxedef name="EXPERIMENTAL_FLXGRAPHIC_DESTROY_FIX" />
 
-	<haxedef name="analyzer-optimize" unless="debug" />
-
-	<haxedef name="VIDEO_CUTSCENES" if="VIDEO_CUTSCENES" />
-	<haxedef name="UPDATE_CHECKING" if="UPDATE_CHECKING" />
-	<haxedef name="DISCORD_RPC" if="DISCORD_RPC" />
-	<haxedef name="SHOW_BUILD_ON_FPS" if="SHOW_BUILD_ON_FPS" />
-	<haxedef name="SOFTCODED_CLASSES" if="SOFTCODED_CLASSES" />
-	<haxedef name="USE_ADAPTED_ASSETS" if="USE_ADAPTED_ASSETS" />
-	<haxedef name="openfl_dpi_aware" if="openfl_dpi_aware" />
-
-	<!-- Disable it for more concise compilation errors. -->
-	<haxedef name="message.reporting" value="pretty" />
-
-	<!-- _________________________________ Custom _______________________________ -->
-
-	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
-	<icon path="art/icon16.png" size='16'/>
-	<icon path="art/icon32.png" size='24'/>
-	<icon path="art/icon32.png" size='32'/>
-	<icon path="art/icon64.png" size='40'/>
-	<icon path="art/icon64.png" size='48'/>
-	<icon path="art/icon64.png" size='64'/>
-	<icon path="art/iconOG.png" size='96' />
-	<icon path="art/iconOG.png" size='128' />
-	<icon path="art/iconOG.png" size='196' />
-	<icon path="art/iconOG.png" size='256' />
-	<icon path="art/iconOG.png" size='512' />
-	<icon path="art/iconOG.png" size='768' />
-	<icon path="art/iconOG.png" size='1024' />
-
-	<!-- _________________________________ Additional stuff _______________________________ -->
-
-	<section if="MODCHARTING_FEATURES">
-		<haxedef name="FM_ENGINE" value="CODENAME"/>
-		<haxedef name="FM_ENGINE_VERSION" value="1.0"/>
-
-		<haxelib name="funkin-modchart" />
-		<haxeflag name="--macro" value="modchart.backend.macros.Macro.includeFiles()"/>
-	</section>
-
-	<section if="COMPILE_ALL_CLASSES">
-		<haxeflag name="-dce" value="no" />
-		<haxeflag name="--macro" value="funkin.backend.system.macros.Macros.addAdditionalClasses()" />
-	</section>
-
-	<haxeflag name="--macro" value="funkin.backend.system.macros.Macros.initMacros()" />
+	<!-- <haxedef name="no-deprecation-warnings"/> -->
 
 	<!-- Fix compiling issues -->
 	<setenv name="HAXEPATH" value="./"/>
 
-	<haxedef name="HXCPP_M32" if="32bit" />
-	<haxedef name="HXCPP_DEBUG_LINK" if="debug" />
-	<haxedef name="HXCPP_CHECK_POINTER" />
-	<haxedef name="HXCPP_STACK_LINE" />
-	<haxedef name="HXCPP_CATCH_SEGV" />
+	<!-- Haxe 4.3.0+: Enable pretty syntax errors and stuff. -->
+	<haxedef name="message.reporting" value="pretty"/>
 
-	<haxedef name="hscriptPos" /> <!-- for logging -->
+	<!-- for logging -->
+	<haxedef name="hscriptPos"/>
 
-	<!-- EXPERMENTAL FEATURES -->
-	<haxedef name="EXPERIMENTAL_FLXGRAPHIC_DESTROY_FIX" />
+	<section if="COMPILE_ALL_CLASSES">
+		<haxeflag name="-dce" value="no"/>
+		<haxeflag name="--macro" value="funkin.backend.system.macros.Macros.addAdditionalClasses()"/>
+	</section>
+
+	<haxeflag name="--macro" value="funkin.backend.system.macros.BuildInfo.printBuildInfo()"/>
+
+	<haxedef name="openfl_dpi_aware"/>
+	<haxedef name="openfl_pool_events"/>
+	<haxedef name="openfl-enable-handle-error"/>
+	<haxedef name="openfl_no_custom_render_event"/>
+
+	<haxedef name="DISCORD_DISABLE_IO_THREAD" if="DISCORD_RPC"/>
+
+	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN"/>
+	<haxedef name="FLX_NO_DEBUG" unless="debug"/>
+
+	<haxedef name="HXCPP_M32" if="32bit"/>
+	<haxedef name="HXCPP_DEBUG_LINK" if="debug"/>
+	<!--<haxedef name="HXCPP_CLANG"/>-->
+	<haxedef name="HXCPP_MSVC"/>
+	<!--<haxedef name="HXCPP_GC_BIG_BLOCKS"/>-->
+	<haxedef name="HXCPP_CHECK_POINTER"/>
+	<haxedef name="HXCPP_STACK_LINE"/>
+	<haxedef name="HXCPP_STACK_TRACE"/>
+	<haxedef name="HXCPP_CATCH_SEGV"/>
+	<!--<haxedef name="HXCPP_ALIGN_ALLOC"/>-->
+	<!--<haxedef name="HXCPP_DEBUG_LINK"/>-->
+
+	<haxedef name="analyzer-optimize" unless="debug"/>
 </project>

@@ -3,36 +3,31 @@
 	<if cond="update || all">
 		<print pretty="true">Preparing installation...</print>
 
-		<!-- OpenFL & Lime (Required for Flixel) -->
-		<git name="openfl" url="https://github.com/CodenameCrew/cne-openfl" />
-		<lib name="lime" version="8.1.2" />
-		<!-- <git name="lime" url="https://github.com/CodenameCrew/cne-lime" />  disabled for now until fixed -->
+		<!-- Hxcpp & OpenFL & Lime (Required for Flixel) -->
+		<git name="hxcpp" url="https://github.com/CodenameCrew/cne-hxcpp"/>
+		<git name="openfl" url="https://github.com/CodenameCrew/cne-openfl"/>
+		<git name="lime" url="https://github.com/CodenameCrew/cne-lime"/>
 
 		<!-- Flixel -->
-		<git name="flixel" url="https://github.com/CodenameCrew/cne-flixel" />
-		<git name="flixel-addons" url="https://github.com/CodenameCrew/cne-flixel-addons" />
+		<git name="flixel" url="https://github.com/CodenameCrew/cne-flixel"/>
+		<git name="flixel-addons" url="https://github.com/CodenameCrew/cne-flixel-addons"/>
+
+		<!-- CNE Core Libraries -->
+		<git name="flixel-animate" url="https://github.com/MaybeMaru/flixel-animate/" skipDeps="true"/>
+		<git name="hscript-improved" url="https://github.com/CodenameCrew/hscript-improved" ref="codename-dev"/>
+		<git name="away3d" url="https://github.com/CodenameCrew/away3d"/>
 
 		<!-- Other Libraries -->
-		<git name="hscript-improved" url="https://github.com/CodenameCrew/hscript-improved" ref="codename-dev" />
-		<git name="hxdiscord_rpc" url="https://github.com/CodenameCrew/cne-hxdiscord_rpc" skipDeps="true" />
-		<lib name="funkin-modchart" version="1.2.4" skipDeps="true" />
-		<lib name="hxvlc" version="1.9.3" skipDeps="true" />
-
-		<!-- Documentation and other features -->
-		<git name="away3d" url="https://github.com/CodenameCrew/away3d" />
-		<!-- <lib name="dox" /> -->
-		<lib name="markdown" />
-		<lib name="hxcpp-debug-server" />
-
-		<lib name="nape-haxe4" />
+		<git name="hxdiscord_rpc" url="https://github.com/CodenameCrew/cne-hxdiscord_rpc" skipDeps="true"/>
+		<lib name="funkin-modchart" version="1.2.4" skipDeps="true"/>
+		<lib name="hxvlc" version="2.2.5" skipDeps="true"/>
+		<lib name="hxcpp-debug-server"/>
+		<lib name="markdown"/>
+		<lib name="nape-haxe4"/>
 
 		<!-- For building lime -->
-		<lib global="true" name="hxp" /> <lib name="hxp" />
-		<lib global="true" name="format" /> <lib name="format" />
-
-		<git name="hxcpp" url="https://github.com/CodenameCrew/cne-hxcpp" />
-
-		<git name="flixel-animate" url="https://github.com/MaybeMaru/flixel-animate/" skipDeps="true"/>
+		<!-- <lib global="true" name="hxp"/> <lib name="hxp"/> -->
+		<!-- <lib global="true" name="format"/> <lib name="format"/> -->
 	</if>
 
 	<!-- Hxcpp Building -->
@@ -44,12 +39,12 @@
 	</if>
 
 	<!-- Lime Building -->
-	<!-- <if cond="build-lime || all">
+	<if cond="build-lime || all">
 		<print pretty="true">Rebuilding Lime...</print>
 
-		<!- - Build lime - ->
-		<cmd inLib="lime" cmd="haxelib run lime rebuild . $PLATFORM -release -clean" />
-		<cmd inLib="lime" dir="tools" cmd="haxe tools.hxml" />
-	</if> -->
+		<!-- Build lime -->
+		<cmd inLib="lime" dir="tools" cmd="haxe tools.hxml"/>
+		<cmd inLib="lime" cmd="haxelib run lime rebuild $PLATFORM -nocolor -nocffi -release"/>
+	</if>
 
 </libraries>
