@@ -31,7 +31,7 @@
 	</if>
 
 	<!-- Hxcpp Building -->
-	<if cond="build-hxcpp || all">
+	<if cond="build-hxcpp">
 		<print pretty="true">Rebuilding Hxcpp...</print>
 
 		<!-- Build hxcpp -->
@@ -39,7 +39,7 @@
 	</if>
 
 	<!-- Lime Building -->
-	<if cond="build-lime || all">
+	<if cond="build-lime">
 		<print pretty="true">Rebuilding Lime...</print>
 
 		<!-- Build lime -->
