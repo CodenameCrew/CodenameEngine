@@ -22,12 +22,13 @@
 		<lib name="funkin-modchart" version="1.2.4" skipDeps="true"/>
 		<lib name="hxvlc" version="2.2.5" skipDeps="true"/>
 		<lib name="hxcpp-debug-server"/>
+		<lib name="format"/>
 		<lib name="markdown"/>
 		<lib name="nape-haxe4"/>
 
 		<!-- For building lime -->
 		<!-- <lib global="true" name="hxp"/> <lib name="hxp"/> -->
-		<!-- <lib global="true" name="format"/> <lib name="format"/> -->
+		<!-- <lib global="true" name="format"/> -->
 	</if>
 
 	<!-- Hxcpp Building -->
