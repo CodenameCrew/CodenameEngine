@@ -506,8 +506,8 @@ final class CoolUtil
 	 * @param menuSFX Menu SFX to play
 	 * @param volume At which volume it should play
 	 */
-	@:noUsing public static inline function playMenuSFX(menuSFX:CoolSfx = SCROLL, volume:Float = 1):FlxSound {
-		return FlxG.sound.play(Paths.sound(switch(menuSFX) {
+	@:noUsing public static inline function playMenuSFX(menuSFX:CoolSfx = SCROLL, volume:Float = 1, persist = false):FlxSound {
+		var menuSFX = new FlxSound().loadEmbedded(Paths.sound(switch(menuSFX) {
 			case CONFIRM:	Flags.DEFAULT_MENU_CONFIRM_SOUND;
 			case CANCEL:	Flags.DEFAULT_MENU_CANCEL_SOUND;
 			case SCROLL:	Flags.DEFAULT_MENU_SCROLL_SOUND;
@@ -515,7 +515,10 @@ final class CoolUtil
 			case UNCHECKED:	Flags.DEFAULT_EDITOR_CHECKBOXUNCHECKED_SOUND;
 			case WARNING:	Flags.DEFAULT_EDITOR_WARNING_SOUND;
 			default: 		Flags.DEFAULT_MENU_SCROLL_SOUND;
-		}), volume * Options.volumeSFX);
+		}));
+		menuSFX.volume = volume * Options.volumeSFX;
+		menuSFX.persist = persist;
+		return menuSFX;
 	}
 
 	/**
