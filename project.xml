@@ -23,7 +23,7 @@
 		<define name="DISCORD_RPC" if="desktop"/>
 
 		<!-- Compile with video support (hxvlc) -->
-		<define name="VIDEO_CUTSCENES" if="desktop || android"/>
+		<define name="VIDEO_CUTSCENES" if="desktop || mobile"/>
 	</section>
 
 	<!-- Uncomment this to achive faster compile times, will strip extraneous and commonly unused features. -->
