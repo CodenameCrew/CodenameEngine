@@ -73,7 +73,7 @@ _**QOL = Quality of Life**_
         - If you need to rearrange the weeks in-game, you can use the `data/weeks/weeks.txt` file.
 	- Editors for Charts and Characters (Stage coming soon)
 		- Undos/Redos supported
-		- Warning on closing unsaved work
+		- Warning on closing unsaved work.
 		- Clean UI (for ocd freaks)
 		- Mature Chart editor (Character editor rework soon)
 		- Features not found in other editors!
