@@ -294,7 +294,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 		super.playAnim(event.animName, event.force, event.context, event.reverse, event.startingFrame);
 
-		offset.set(globalOffset.x * (isPlayer != playerOffsets ? 1 : -1), -globalOffset.y);
+		offset.set((isPlayer != playerOffsets) ? globalOffset.x : -globalOffset.x, -globalOffset.y);
 		if (event.context == SING || event.context == MISS)
 			lastHit = Conductor.songPosition;
 	}
@@ -385,6 +385,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 			updateHitbox();
 		}
 		if (xml.x.exists("antialiasing")) antialiasing = (xml.x.get("antialiasing") == "true");
+		if (xml.x.exists("applyStageMatrix")) applyStageMatrix = (xml.x.get("applyStageMatrix") == "true");
 		if (xml.x.exists("sprite")) sprite = xml.x.get("sprite");
 		if (xml.x.exists("swfMode")) animateSettings.swfMode = (xml.x.get("swfMode") == "true");
 		if (xml.x.exists("cacheOnLoad")) animateSettings.cacheOnLoad = (xml.x.get("cacheOnLoad") == "true");
