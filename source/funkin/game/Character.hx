@@ -204,9 +204,11 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 	@:noCompletion var __reverseDrawProcedure:Bool = false;
 	public override function getScreenBounds(?newRect:FlxRect, ?camera:FlxCamera):FlxRect {
-		if (__reverseDrawProcedure) {
+		if (isFlippedOffsets()) {
+			flipX = !flipX;
 			scale.x *= -1;
 			var bounds:FlxRect = super.getScreenBounds(newRect, camera);
+			flipX = !flipX;
 			scale.x *= -1;
 			return bounds;
 		}
