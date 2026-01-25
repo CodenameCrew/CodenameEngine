@@ -439,7 +439,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	public static var characterProperties:Array<String> = [
 		"x", "y", "sprite", "scale", "antialiasing",
 		"flipX", "camx", "camy", "isPlayer", "icon",
-		"color", "gameOverChar", "holdTime"
+		"color", "gameOverChar", "holdTime", "applyStageMatrix"
 	];
 	public static var characterAnimProperties:Array<String> = [
 		"name", "anim", "label", "x", "y", "fps", "loop", "indices"
@@ -469,6 +469,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		if (!antialiasing) xml.set("antialiasing", antialiasing == true ? "true" : "false");
 
 		if (isPlayer) xml.set("isPlayer", isPlayer == true ? "true" : "false");
+		if (isAnimate) xml.set("applyStageMatrix", applyStageMatrix ? "true" : "false");
 
 		var anims:Array<AnimData> = [];
 		if (animsOrder != null) {
