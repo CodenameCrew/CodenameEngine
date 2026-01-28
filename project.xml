@@ -115,6 +115,11 @@
 	<!-- Disable a optimization, to allow reflection to use more functions -->
 	<define name="FLX_NO_GENERIC" />
 
+	<!-- Comment this out to disable opus audio !-->
+	<section if="cpp">
+		<define name="OPUS_AUDIO_PLAYBACK" />
+	</section>
+
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<!-- KEEP BOTH OF THESE AS THERE ARE SOME PARTICULAR CASES! -->
@@ -126,6 +131,8 @@
 
 	<haxelib name="flixel" />
 	<haxelib name="flixel-addons" />
+
+	<haxelib name="hxopus" if="OPUS_AUDIO_PLAYBACK"/>
 
 	<haxelib name="hxvlc" if="VIDEO_CUTSCENES" />
 	<haxelib name="away3d" if="THREE_D_SUPPORT" />
