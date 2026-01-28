@@ -253,7 +253,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	var __notePerStrum:Array<Note> = [];
 
 	function __inputProcessPressed(note:Note) {
-		if (__pressed[note.strumID] && note.isSustainNote && note.sustainParent.wasGoodHit && note.strumTime < __updateNote_songPos && !note.wasGoodHit) {
+		if (__pressed[note.strumID] && note.isSustainNote && note.strumTime < __updateNote_songPos && !note.wasGoodHit && note.sustainParent.wasGoodHit) {
 			PlayState.instance.goodNoteHit(this, note);
 		}
 	}
@@ -284,9 +284,11 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 		if (cpu) return;
 
-		__pressed.resize(members.length);
-		__justPressed.resize(members.length);
-		__justReleased.resize(members.length);
+		if (__pressed.length != members.length) {
+			__pressed.resize(members.length);
+			__justPressed.resize(members.length);
+			__justReleased.resize(members.length);
+		}
 
 		for (i in 0...members.length) {
 			__pressed[i] = members[i].__getPressed(this);
@@ -304,17 +306,17 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 		__notePerStrum = cast new haxe.ds.Vector(members.length); // [for(_ in 0...members.length) null];
 
-		if (__justPressed.contains(true)) {
-			notes.forEachAlive(__inputProcessJustPressed);
-
-			if (!ghostTapping) for (k => pr in __justPressed) if (pr && __notePerStrum[k] == null)
-				PlayState.instance.noteMiss(this, null, k, ID); // FUCK YOU
-		}
-
 		if (__pressed.contains(true)) {
-			for (e in __notePerStrum)
-				if (e != null)
-					PlayState.instance.goodNoteHit(this, e);
+			if (__justPressed.contains(true)) {
+				notes.forEachAlive(__inputProcessJustPressed);
+
+				if (!ghostTapping) for (k => pr in __justPressed) if (pr && __notePerStrum[k] == null)
+					PlayState.instance.noteMiss(this, null, k, ID); // FUCK YOU
+
+				for (e in __notePerStrum)
+					if (e != null)
+						PlayState.instance.goodNoteHit(this, e);
+			}
 
 			for (c in characters)
 				if (c.lastAnimContext != DANCE)
@@ -324,7 +326,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		}
 
 		forEach(function(str:Strum) {
-			str.updatePlayerInput(str.__getPressed(this), str.__getJustPressed(this), str.__getJustReleased(this));
+			str.updatePlayerInput(__pressed[str.ID], __justPressed[str.ID], __justReleased[str.ID]);
 		});
 
 		PlayState.instance.gameAndCharsCall("onPostInputUpdate");
