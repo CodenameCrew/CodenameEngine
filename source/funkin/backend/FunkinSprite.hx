@@ -374,6 +374,10 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 
 		super.prepareDrawMatrix(matrix, camera);
 
+		applyZoomFactor(matrix, camera);
+	}
+
+	function applyZoomFactor(matrix:FlxMatrix, camera:FlxCamera) {
 		if(__shouldDoZoomFactor()) {
 			__prepareZoomFactor(_rect2, camera);
 			matrix.setTo(

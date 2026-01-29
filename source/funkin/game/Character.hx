@@ -1,6 +1,5 @@
 package funkin.game;
 
-import sys.FileSystem;
 import flixel.util.FlxSpriteUtil;
 import openfl.display.Graphics;
 import flixel.util.typeLimit.OneOfTwo;
@@ -90,6 +89,8 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		scripts.call("create");
 		buildCharacter(xml);
 		scripts.call("postCreate");
+
+		
 	}
 
 	@:noCompletion var __swappedLeftRightAnims:Bool = false;
@@ -158,9 +159,9 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		if (event.cancelled) return;
 
 		if (isDanceLeftDanceRight)
-			playAnim(((danced = !danced) ? 'danceLeft' : 'danceRight') + idleSuffix, DANCE);
+			playAnim(((danced = !danced) ? 'danceLeft' : 'danceRight') + idleSuffix, false, DANCE);
 		else
-			playAnim('idle' + idleSuffix, DANCE);
+			playAnim('idle' + idleSuffix, false, DANCE);
 	}
 
 	public function tryDance() {

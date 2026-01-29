@@ -19,7 +19,7 @@
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
 
-	<!-- DO NOT REMOVE!! ALLOWS ME TO DO REGIONS LIKE IN C# AND KEEP CODE ORGANIZED. REMOVING IT WOULD BREAK THE ENGINE -->
+	<!-- DO NOT REMOVE!! -->
 	<haxedef name="REGION" />
 
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
@@ -72,7 +72,11 @@
 
 	<!-- Comment this out to prevent extending classes in hscript.
 		 Reduces compilation time at the cost of limited HScript flexibility. !-->
-	<define name="CUSTOM_CLASSES" unless="STRIPPED_COMPILE" />
+	<define name="CUSTOM_CLASSES" unless="STRIPPED_COMPILE"/>
+
+	<!-- Comment this out to disable support for abstracts in hscript.
+		 Reduces compilation time at the cost of limited HScript flexibility. !-->
+	<define name="HSCRIPT_ABSTRACT_SUPPORT" unless="STRIPPED_COMPILE"/>
 
 	<!-- Comment this out to disable multithreading !-->
 	<haxedef name="ALLOW_MULTITHREADING" unless="web || flash" />
@@ -114,6 +118,24 @@
 
 	<!-- Disable a optimization, to allow reflection to use more functions -->
 	<define name="FLX_NO_GENERIC" />
+
+	<!-- _______________________________ Display Server ______________________________ -->
+
+	<haxedef name="LIME_CMD" value="${project.command}"/>
+	<define name="LIME_DISPLAY" if="${project.command == update} || ${project.command == display} || display || display_details" />
+	<haxedef name="LIME_DISPLAY" if="LIME_DISPLAY" />
+
+	<section if="LIME_DISPLAY">
+		<!-- For display server -->	
+		<undefine name="COMPILE_ALL_CLASSES" />
+		<unset name="COMPILE_ALL_CLASSES" />
+		
+		<undefine name="HSCRIPT_ABSTRACT_SUPPORT" />
+		<unset name="HSCRIPT_ABSTRACT_SUPPORT" />
+
+		<undefine name="CUSTOM_CLASSES" />
+		<unset name="CUSTOM_CLASSES" />
+	</section>
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
@@ -172,7 +194,7 @@
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
-	<haxeflag name="--macro" value="funkin.backend.system.macros.BuildInfo.printBuildInfo()" />
+	<haxeflag name="--macro" value="funkin.backend.system.macros.BuildInfo.printBuildInfo()" unless="display" />
 
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
 
@@ -219,8 +241,10 @@
 		<haxeflag name="--macro" value="modchart.backend.macros.Macro.includeFiles()"/>
 	</section>
 
+
 	<section if="COMPILE_ALL_CLASSES">
 		<haxeflag name="-dce" value="no" />
+		
 		<haxeflag name="--macro" value="funkin.backend.system.macros.Macros.addAdditionalClasses()" />
 	</section>
 

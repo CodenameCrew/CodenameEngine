@@ -19,9 +19,9 @@ class DefinesMacro {
 
 	// INTERNAL MACROS
 	#if REGION
-	private static macro function __getDefines() {
+	private static macro function __getDefines():Expr {
 		#if display
-		return macro $v{[]};
+		return macro $v{([]:Map<String, Dynamic>)};
 		#else
 		return macro $v{Context.getDefines()};
 		#end

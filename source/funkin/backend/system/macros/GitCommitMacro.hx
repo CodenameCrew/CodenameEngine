@@ -64,7 +64,7 @@ class GitCommitMacro {
 	// INTERNAL MACROS
 	#if REGION
 	private static macro function __getCommitHash() {
-		#if display
+		#if LIME_DISPLAY
 		return macro $v{"-"};
 		#else
 		try {
@@ -78,7 +78,7 @@ class GitCommitMacro {
 	}
 
 	private static macro function __getCommitNumber() {
-		#if display
+		#if LIME_DISPLAY
 		return macro $v{0};
 		#else
 		try {
@@ -92,7 +92,7 @@ class GitCommitMacro {
 	}
 
 	private static macro function __getCommitHashLong() {
-		#if display
+		#if LIME_DISPLAY
 		return macro $v{"-"};
 		#else
 		try {
@@ -106,7 +106,7 @@ class GitCommitMacro {
 	}
 
 	private static macro function __getCommitMessage() {
-		#if display
+		#if LIME_DISPLAY
 		return macro $v{"-"};
 		#else
 		try {
@@ -124,7 +124,7 @@ class GitCommitMacro {
 	}
 
 	private static macro function __getCommitAuthor() {
-		#if display
+		#if LIME_DISPLAY
 		return macro $v{"-"};
 		#else
 		try {
@@ -138,8 +138,8 @@ class GitCommitMacro {
 	}
 
 	private static macro function __getCommitDate() {
-		#if display
-		return macro $v{Date.now()};
+		#if LIME_DISPLAY
+		return macro Date.now();
 		#else
 		try {
 			// get the time in UTC format
@@ -164,7 +164,7 @@ class GitCommitMacro {
 	}
 
 	private static macro function __getCurrentBranch() {
-		#if display
+		#if LIME_DISPLAY
 		return macro $v{"-"};
 		#else
 		try {
@@ -179,7 +179,7 @@ class GitCommitMacro {
 	}
 
 	private static macro function __getHasUncommittedChanges() {
-		#if display
+		#if LIME_DISPLAY
 		return macro $v{false};
 		#else
 		try {

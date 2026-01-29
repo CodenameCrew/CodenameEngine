@@ -25,7 +25,7 @@ class AliasMacro {
     }];
 
     public static function build():Array<Field> {
-        #if display
+        #if LIME_DISPLAY
         return Context.getBuildFields();
         #end
         
