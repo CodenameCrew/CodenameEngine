@@ -435,8 +435,9 @@ private class ExtractShader extends BitmapFilterShader
 	public function new()
 	{
 		super();
+
 		#if !macro
-		uThreshold.value = [0.5];
+		uThreshold.value = [0.6];
 		#end
 	}
 }
@@ -476,10 +477,11 @@ private class CombineShader extends BitmapFilterShader
 	public function new()
 	{
 		super();
+
 		#if !macro
 		offset.value = [0, 0];
 		uStrength.value = [1.0];
-		uThreshold.value = [0.5];
+		uThreshold.value = [0.6];
 		#end
 	}
 }
