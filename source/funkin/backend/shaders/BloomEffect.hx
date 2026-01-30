@@ -9,10 +9,6 @@ import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-#if lime
-import lime._internal.graphics.ImageDataUtil; // TODO
-
-#end
 
 /**
 	The BlurFilter class lets you apply a blur visual effect to display
@@ -206,7 +202,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
 	{
 		trace('BloomEffect does not support bitmapData rendering functionality.')
-		return;
+		return sourceBitmapData;
 	}
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
