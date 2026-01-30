@@ -201,7 +201,7 @@ import openfl.geom.Rectangle;
 
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
 	{
-		trace('BloomEffect does not support bitmapData rendering functionality.')
+		trace('BloomEffect does not support bitmapData rendering functionality.');
 		return sourceBitmapData;
 	}
 
@@ -339,17 +339,13 @@ private class BlurShader extends BitmapFilterShader
 		varying vec2 vBlurCoord2;
 		varying vec2 vBlurCoord3;
 		varying vec2 vBlurCoord4;
-		varying vec2 vBlurCoord5;
-		varying vec2 vBlurCoord6;
 
 		void main(void) {
-			vec4 sum = texture2D(openfl_Texture, vBlurCoord0) * 0.00443;
-			sum += texture2D(openfl_Texture, vBlurCoord1) * 0.05399;
-			sum += texture2D(openfl_Texture, vBlurCoord2) * 0.24197;
-			sum += texture2D(openfl_Texture, vBlurCoord3) * 0.39894;
-			sum += texture2D(openfl_Texture, vBlurCoord4) * 0.24197;
-			sum += texture2D(openfl_Texture, vBlurCoord5) * 0.05399;
-			sum += texture2D(openfl_Texture, vBlurCoord6) * 0.00443;
+			vec4 sum = texture2D(openfl_Texture, vBlurCoord0) * 0.05449;
+			sum += texture2D(openfl_Texture, vBlurCoord1) * 0.24420;
+			sum += texture2D(openfl_Texture, vBlurCoord2) * 0.40262;
+			sum += texture2D(openfl_Texture, vBlurCoord3) * 0.24420;
+			sum += texture2D(openfl_Texture, vBlurCoord4) * 0.05449;
 
 			gl_FragColor = sum;
 		}
@@ -368,20 +364,16 @@ private class BlurShader extends BitmapFilterShader
 		varying vec2 vBlurCoord2;
 		varying vec2 vBlurCoord3;
 		varying vec2 vBlurCoord4;
-		varying vec2 vBlurCoord5;
-		varying vec2 vBlurCoord6;
 
 		void main(void) {
 			gl_Position = openfl_Matrix * openfl_Position;
 
 			vec2 r = uRadius / uTextureSize;
 			vBlurCoord0 = openfl_TextureCoord - r;
-			vBlurCoord1 = openfl_TextureCoord - r * 0.75;
-			vBlurCoord2 = openfl_TextureCoord - r * 0.5;
-			vBlurCoord3 = openfl_TextureCoord;
-			vBlurCoord4 = openfl_TextureCoord + r * 0.5;
-			vBlurCoord5 = openfl_TextureCoord + r * 0.75;
-			vBlurCoord6 = openfl_TextureCoord + r;
+			vBlurCoord1 = openfl_TextureCoord - r * 0.5;
+			vBlurCoord2 = openfl_TextureCoord;
+			vBlurCoord3 = openfl_TextureCoord + r * 0.5;
+			vBlurCoord4 = openfl_TextureCoord + r;
 		}
 	")
 	public function new()
