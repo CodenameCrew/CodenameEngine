@@ -202,7 +202,7 @@ class OptionsMenu extends TreeMenu {
 						Logs.warn("A radio option requires an \"id\" for option saving.");
 						continue;
 					}
-					var v:Dynamic = Std.parseFloat(node.att.value);
+					var v:Dynamic = Std.string(Std.parseFloat(node.att.value)) == "nan" ? node.att.value : Std.parseFloat(node.att.value);
 					options.push(new RadioButton(screen, name, desc, node.att.id, v != null ? v : node.att.value, null, FlxG.save.data, node.has.forId ? node.att.forId : null));
 				case 'slider':
 					if (!node.has.id) {
