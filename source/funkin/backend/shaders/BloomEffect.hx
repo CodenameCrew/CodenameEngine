@@ -181,9 +181,9 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 						 more slowly.
 		@param strength The intensity of the bloom effect. Default is 1.0.
 		@param threshold The brightness threshold for bloom. Pixels brighter than
-						 this value will bloom. Default is 0.5.
+						 this value will bloom. Default is 0.6.
 	**/
-	public function new(blurX:Float = 4, blurY:Float = 4, quality:Float = 1, strength:Float = 1.0, threshold:Float = 0.5)
+	public function new(blurX:Float = 4, blurY:Float = 4, quality:Float = 0.5, strength:Float = 1.0, threshold:Float = 0.6)
 	{
 		super();
 
