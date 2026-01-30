@@ -160,28 +160,28 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		create a soft, unfocused image.
 
 		@param blurX   The amount to blur horizontally. Valid values are from 0 to
-					   255.0(floating-point value).
+						 255.0(floating-point value).
 		@param blurY   The amount to blur vertically. Valid values are from 0 to
-					   255.0(floating-point value).
+						 255.0(floating-point value).
 		@param quality The number of times to apply the filter. You can specify
-					   the quality using the BitmapFilterQuality constants:
+						 the quality using the BitmapFilterQuality constants:
 
 
-					  * `openfl.filters.BitmapFilterQuality.LOW`
+						* `openfl.filters.BitmapFilterQuality.LOW`
 
-					  * `openfl.filters.BitmapFilterQuality.MEDIUM`
+						* `openfl.filters.BitmapFilterQuality.MEDIUM`
 
-					  * `openfl.filters.BitmapFilterQuality.HIGH`
+						* `openfl.filters.BitmapFilterQuality.HIGH`
 
 
-					   High quality approximates a Gaussian blur. For most
-					   applications, these three values are sufficient. Although
-					   you can use additional numeric values up to 15 to achieve
-					   different effects, be aware that higher values are rendered
-					   more slowly.
+						 High quality approximates a Gaussian blur. For most
+						 applications, these three values are sufficient. Although
+						 you can use additional numeric values up to 15 to achieve
+						 different effects, be aware that higher values are rendered
+						 more slowly.
 		@param strength The intensity of the bloom effect. Default is 1.0.
 		@param threshold The brightness threshold for bloom. Pixels brighter than
-					   this value will bloom. Default is 0.5.
+						 this value will bloom. Default is 0.5.
 	**/
 	public function new(blurX:Float = 4, blurY:Float = 4, quality:Float = 1, strength:Float = 1.0, threshold:Float = 0.5)
 	{
@@ -343,45 +343,59 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 #end
 private class BlurShader extends BitmapFilterShader
 {
-	@:glFragmentSource("uniform sampler2D openfl_Texture;
+	@:glFragmentSource("
+		uniform sampler2D openfl_Texture;
 
-		varying vec2 vBlurCoords[7];
+		varying vec2 vBlurCoord0;
+		varying vec2 vBlurCoord1;
+		varying vec2 vBlurCoord2;
+		varying vec2 vBlurCoord3;
+		varying vec2 vBlurCoord4;
+		varying vec2 vBlurCoord5;
+		varying vec2 vBlurCoord6;
 
 		void main(void) {
-			vec4 sum = vec4(0.0);
-			sum += texture2D(openfl_Texture, vBlurCoords[0]) * 0.00443;
-			sum += texture2D(openfl_Texture, vBlurCoords[1]) * 0.05399;
-			sum += texture2D(openfl_Texture, vBlurCoords[2]) * 0.24197;
-			sum += texture2D(openfl_Texture, vBlurCoords[3]) * 0.39894;
-			sum += texture2D(openfl_Texture, vBlurCoords[4]) * 0.24197;
-			sum += texture2D(openfl_Texture, vBlurCoords[5]) * 0.05399;
-			sum += texture2D(openfl_Texture, vBlurCoords[6]) * 0.00443;
+			vec4 sum = texture2D(openfl_Texture, vBlurCoord0) * 0.00443;
+			sum += texture2D(openfl_Texture, vBlurCoord1) * 0.05399;
+			sum += texture2D(openfl_Texture, vBlurCoord2) * 0.24197;
+			sum += texture2D(openfl_Texture, vBlurCoord3) * 0.39894;
+			sum += texture2D(openfl_Texture, vBlurCoord4) * 0.24197;
+			sum += texture2D(openfl_Texture, vBlurCoord5) * 0.05399;
+			sum += texture2D(openfl_Texture, vBlurCoord6) * 0.00443;
 
 			gl_FragColor = sum;
-		}")
-	@:glVertexSource("attribute vec4 openfl_Position;
+		}
+	")
+	@:glVertexSource("
+		attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
 
 		uniform mat4 openfl_Matrix;
 
 		uniform vec2 uRadius;
-		varying vec2 vBlurCoords[7];
 		uniform vec2 uTextureSize;
 
-		void main(void) {
+		varying vec2 vBlurCoord0;
+		varying vec2 vBlurCoord1;
+		varying vec2 vBlurCoord2;
+		varying vec2 vBlurCoord3;
+		varying vec2 vBlurCoord4;
+		varying vec2 vBlurCoord5;
+		varying vec2 vBlurCoord6;
 
+		void main(void) {
 			gl_Position = openfl_Matrix * openfl_Position;
 
 			vec2 r = uRadius / uTextureSize;
-			vBlurCoords[0] = openfl_TextureCoord - r;
-			vBlurCoords[1] = openfl_TextureCoord - r * 0.75;
-			vBlurCoords[2] = openfl_TextureCoord - r * 0.5;
-			vBlurCoords[3] = openfl_TextureCoord;
-			vBlurCoords[4] = openfl_TextureCoord + r * 0.5;
-			vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
-			vBlurCoords[6] = openfl_TextureCoord + r;
-
-		}")
+			vBlurCoord0 = openfl_TextureCoord - r;
+			vBlurCoord1 = openfl_TextureCoord - r * 0.75;
+			vBlurCoord2 = openfl_TextureCoord - r * 0.5;
+			vBlurCoord3 = openfl_TextureCoord;
+			vBlurCoord4 = openfl_TextureCoord + r * 0.5;
+			vBlurCoord5 = openfl_TextureCoord + r * 0.75;
+			vBlurCoord6 = openfl_TextureCoord + r;
+		}
+	")
 	public function new()
 	{
 		super();
