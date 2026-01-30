@@ -183,7 +183,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		@param threshold The brightness threshold for bloom. Pixels brighter than
 						 this value will bloom. Default is 0.6.
 	**/
-	public function new(blurX:Float = 10, blurY:Float = 10, quality:Float = 0.5, strength:Float = 1.0, threshold:Float = 0.6)
+	public function new(blurX:Float = 10, blurY:Float = 10, quality:Float = 0.5, strength:Float = 1, threshold:Float = 0.6)
 	{
 		super();
 
@@ -203,18 +203,10 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		return new BloomEffect(__blurX, __blurY, __quality, __strength, __threshold);
 	}
 
-	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
-			destPoint:Point):BitmapData
+	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
 	{
-		#if lime
-		var time = Timer.stamp();
-		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(),
-			__blurX, __blurY, __quality);
-		var elapsed = Timer.stamp() - time;
-		// trace("blurX: " + __blurX + " blurY: " + __blurY + " quality: " + __quality + " elapsed: " + elapsed * 1000 + "ms");
-		if (finalImage == bitmapData.image) return bitmapData;
-		#end
-		return sourceBitmapData;
+		trace('BloomEffect does not support bitmapData rendering functionality.')
+		return;
 	}
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
