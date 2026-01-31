@@ -109,7 +109,7 @@ import openfl.geom.Rectangle;
 		* `BitmapFilterQuality.MEDIUM`
 		* `BitmapFilterQuality.HIGH`
 	**/
-	public var quality(get, set):Float;
+	public var quality(get, set):Int;
 
 	public var strength(get, set):Float;
 
@@ -118,7 +118,7 @@ import openfl.geom.Rectangle;
 	@:noCompletion private var __blurX:Float;
 	@:noCompletion private var __blurY:Float;
 	@:noCompletion private var __horizontalPasses:Int;
-	@:noCompletion private var __quality:Float;
+	@:noCompletion private var __quality:Int;
 	@:noCompletion private var __verticalPasses:Int;
 	@:noCompletion private var __strength:Float;
 	@:noCompletion private var __threshold:Float;
@@ -179,7 +179,7 @@ import openfl.geom.Rectangle;
 		@param threshold The brightness threshold for bloom. Pixels brighter than
 						 this value will bloom. Default is 0.6.
 	**/
-	public function new(blurX:Float = 10, blurY:Float = 10, quality:Float = 0.5, strength:Float = 1, threshold:Float = 0.6)
+	public function new(blurX:Float = 10, blurY:Float = 10, quality:Int = 4, strength:Float = 1, threshold:Float = 0.6)
 	{
 		super();
 
@@ -253,8 +253,12 @@ import openfl.geom.Rectangle;
 		{
 			__blurX = value;
 			__renderDirty = true;
-			__leftExtension = (value > 0 ? Math.ceil(value) : 0);
-			__rightExtension = __leftExtension;
+			// __leftExtension = (value > 0 ? Math.ceil(value) : 0);
+			// __rightExtension = __leftExtension;
+
+			__horizontalPasses = (__blurX <= 0) ? 0 : Math.round(__blurX * (0.5 / 4)) + 1;
+
+			__numShaderPasses = __horizontalPasses + __verticalPasses + 2;
 		}
 		return value;
 	}
@@ -270,18 +274,22 @@ import openfl.geom.Rectangle;
 		{
 			__blurY = value;
 			__renderDirty = true;
-			__topExtension = (value > 0 ? Math.ceil(value) : 0);
-			__bottomExtension = __topExtension;
+			// __topExtension = (value > 0 ? Math.ceil(value) : 0);
+			// __bottomExtension = __topExtension;
+
+			__verticalPasses = (__blurY <= 0) ? 0 : Math.round(__blurY * (0.5 / 4)) + 1;
+
+			__numShaderPasses = __horizontalPasses + __verticalPasses + 2;
 		}
 		return value;
 	}
 
-	@:noCompletion private function get_quality():Float
+	@:noCompletion private function get_quality():Int
 	{
 		return __quality;
 	}
 
-	@:noCompletion private function set_quality(value:Float):Float
+	@:noCompletion private function set_quality(value:Int):Int
 	{
 		// TODO: Quality effect with fewer passes?
 
