@@ -405,6 +405,7 @@ private class BlurShader extends BitmapFilterShader
 
 		void main(void) {
 			if ((all(greaterThanEqual(vBlurCoord2, vec2(0.0))) && all(lessThanEqual(vBlurCoord2, vec2(1.0)))) == false) return;
+
 			vec4 sum = texture2D(openfl_Texture, vBlurCoord0[0]) * 0.028532;
 			sum += texture2D(openfl_Texture, vBlurCoord0[1]) * 0.067234;
 			sum += texture2D(openfl_Texture, vBlurCoord1[0]) * 0.124009;
@@ -483,6 +484,7 @@ private class ExtractShader extends BitmapFilterShader
 
 		void main(void) {
 			if ((all(greaterThanEqual(vTexCoord, vec2(0.0))) && all(lessThanEqual(vTexCoord, vec2(1.0)))) == false) return;
+
 			vec4 texel = texture2D(openfl_Texture, vTexCoord);
 			float brightness = max(max(texel.r, texel.g), texel.b);
 			float mask = smoothstep(uThreshold, uThreshold + 0.1, brightness);
