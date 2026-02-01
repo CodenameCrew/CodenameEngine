@@ -173,6 +173,17 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 	{
 	}
 
+	public override function draw() {
+		// re-implementing the `onDraw` functionality from `FlxSprite` since `FlxAnimate` didn't have this, so we have to add it back in ourselves
+	    if (this.isAnimate && this.__drawOverrided) {
+	        this.__drawOverrided = false;
+	        this.onDraw(this);
+	        this.__drawOverrided = true;
+			return;
+	    }
+	    super.draw();
+	}
+
 	// ANIMATE ATLAS DRAWING
 	#if REGION
 
