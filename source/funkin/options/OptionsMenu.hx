@@ -203,7 +203,7 @@ class OptionsMenu extends TreeMenu {
 						continue;
 					}
 					var f = Std.parseFloat(node.att.value);
-					options.push(new RadioButton(screen, name, desc, node.att.id, f == Math.NaN ? node.att.value : f, null, FlxG.save.data, node.has.forId ? node.att.forId : null));
+					options.push(new RadioButton(screen, name, desc, node.att.id, Math.isNaN(f) ? node.att.value : f, null, FlxG.save.data, node.has.forId ? node.att.forId : null));
 				case 'slider':
 					if (!node.has.id) {
 						Logs.warn("A slider option requires an \"id\" for option saving.");
