@@ -75,6 +75,10 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	 */
 	public var animSuffix(default, set):String = "";
 	/**
+	 * The current animation suffix the strumline should use. Note that setting this will only take effect upon the alt. animation being reset.
+	 */
+	public var defaultAnimSuffix:String = Flags.DEFAULT_ALT_ANIM_SUFFIX;
+	/**
 	 * TODO: Write documentation about this being a variable that can help when making multi key
 	 */
 	public var strumAnimPrefix = ["left", "down", "up", "right"];
@@ -451,11 +455,11 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		return animSuffix = str;
 	}
 	private inline function set_altAnim(b:Bool):Bool {
-		animSuffix = b ? "-alt" : "";
+		animSuffix = b ? defaultAnimSuffix : "";
 		return b;
 	}
 	private inline function get_altAnim():Bool {
-		return animSuffix == "-alt";
+		return animSuffix == defaultAnimSuffix;
 	}
 	#end
 }
