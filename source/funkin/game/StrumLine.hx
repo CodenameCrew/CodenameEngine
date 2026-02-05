@@ -258,21 +258,28 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		}
 	}
 	function __inputProcessJustPressed(note:Note) {
-		if (__justPressed[note.strumID] && !note.isSustainNote && !note.wasGoodHit && note.canBeHit) {
-			var cur = __notePerStrum[note.strumID];
-			var songPos = __updateNote_songPos;
-
-			var noteDist = Math.abs(note.strumTime - songPos);
-			var curDist = cur != null ? Math.abs(cur.strumTime - songPos) : 999999;
-
-			var notePenalty = note.avoid ? 1 : 0;
-			var curPenalty = (cur != null && cur.avoid) ? 1 : 0;
-
-			if (cur == null
-				|| notePenalty < curPenalty
-				|| (notePenalty == curPenalty && noteDist < curDist))
-				__notePerStrum[note.strumID] = note;
+		var strumID = note.strumID;
+		if (!__justPressed[strumID] || note.isSustainNote || note.wasGoodHit || !note.canBeHit) return;
+		
+		var cur = __notePerStrum[strumID];
+		if (cur == null) {
+			__notePerStrum[strumID] = note;
+			return;
 		}
+
+		var songPos = __updateNote_songPos;
+		var noteDist = Math.abs(note.strumTime - songPos);
+
+		var noteShouldAvoid = note.avoid;
+		var curShouldAvoid = cur.avoid;
+		if (!noteShouldAvoid && curShouldAvoid) {
+			__notePerStrum[strumID] = note;
+			return;
+		}
+
+		var curDist = Math.abs(cur.strumTime - songPos);
+		if (noteShouldAvoid == curShouldAvoid && noteDist < curDist)
+			__notePerStrum[strumID] = note;
 	}
 
 	/**
