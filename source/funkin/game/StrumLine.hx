@@ -290,6 +290,9 @@ class StrumLine extends FlxTypedGroup<Strum> {
 			__justReleased.resize(members.length);
 		}
 
+		if (__notePerStrum.length != members.length)
+			__notePerStrum = cast new haxe.ds.Vector(members.length); // [for(_ in 0...members.length) null];
+
 		for (i in 0...members.length) {
 			__pressed[i] = members[i].__getPressed(this);
 			__justPressed[i] = members[i].__getJustPressed(this);
@@ -304,8 +307,6 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		__justPressed = CoolUtil.getDefault(event.justPressed, []);
 		__justReleased = CoolUtil.getDefault(event.justReleased, []);
 
-		__notePerStrum = cast new haxe.ds.Vector(members.length); // [for(_ in 0...members.length) null];
-
 		if (__pressed.contains(true)) {
 			if (__justPressed.contains(true)) {
 				notes.forEachAlive(__inputProcessJustPressed);
@@ -313,9 +314,11 @@ class StrumLine extends FlxTypedGroup<Strum> {
 				if (!ghostTapping) for (k => pr in __justPressed) if (pr && __notePerStrum[k] == null)
 					PlayState.instance.noteMiss(this, null, k, ID); // FUCK YOU
 
-				for (e in __notePerStrum)
-					if (e != null)
+				for (n => e in __notePerStrum)
+					if (e != null) {
 						PlayState.instance.goodNoteHit(this, e);
+						__notePerStrum[n] = null;
+					}
 			}
 
 			for (c in characters)
