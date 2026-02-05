@@ -284,16 +284,18 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 		if (cpu) return;
 
-		if (__pressed.length != members.length) {
-			__pressed.resize(members.length);
-			__justPressed.resize(members.length);
-			__justReleased.resize(members.length);
+		final membersLength = members.length;
+
+		if (__pressed.length != membersLength) {
+			__pressed.resize(membersLength);
+			__justPressed.resize(membersLength);
+			__justReleased.resize(membersLength);
 		}
 
-		if (__notePerStrum.length != members.length)
-			__notePerStrum = cast new haxe.ds.Vector(members.length); // [for(_ in 0...members.length) null];
+		if (__notePerStrum.length != membersLength)
+			__notePerStrum = cast new haxe.ds.Vector(membersLength); // [for(_ in 0...members.length) null];
 
-		for (i in 0...members.length) {
+		for (i in 0...membersLength) {
 			__pressed[i] = members[i].__getPressed(this);
 			__justPressed[i] = members[i].__getJustPressed(this);
 			__justReleased[i] = members[i].__getJustReleased(this);
