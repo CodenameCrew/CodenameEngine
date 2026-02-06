@@ -320,14 +320,16 @@ class StrumLine extends FlxTypedGroup<Strum> {
 			if (__justPressed.contains(true)) {
 				notes.forEachAlive(__inputProcessJustPressed);
 
-				if (!ghostTapping) for (k => pr in __justPressed) if (pr && __notePerStrum[k] == null)
-					PlayState.instance.noteMiss(this, null, k, ID); // FUCK YOU
+				for (k => pr in __justPressed)
+				{
+					var note = __notePerStrum[k];
 
-				for (n => e in __notePerStrum)
-					if (e != null) {
-						PlayState.instance.goodNoteHit(this, e);
-						__notePerStrum[n] = null;
-					}
+					if (note != null) {
+						PlayState.instance.goodNoteHit(this, note);
+						__notePerStrum[k] = null;
+					} else if (pr && !ghostTapping)
+						PlayState.instance.noteMiss(this, null, k, ID);
+				}
 			}
 
 			for (c in characters)
