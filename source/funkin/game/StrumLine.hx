@@ -258,21 +258,28 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		}
 	}
 	function __inputProcessJustPressed(note:Note) {
-		if (__justPressed[note.strumID] && !note.isSustainNote && !note.wasGoodHit && note.canBeHit) {
-			var cur = __notePerStrum[note.strumID];
-			var songPos = __updateNote_songPos;
-
-			var noteDist = Math.abs(note.strumTime - songPos);
-			var curDist = cur != null ? Math.abs(cur.strumTime - songPos) : 999999;
-
-			var notePenalty = note.avoid ? 1 : 0;
-			var curPenalty = (cur != null && cur.avoid) ? 1 : 0;
-
-			if (cur == null
-				|| notePenalty < curPenalty
-				|| (notePenalty == curPenalty && noteDist < curDist))
-				__notePerStrum[note.strumID] = note;
+		var strumID = note.strumID;
+		if (!__justPressed[strumID] || note.isSustainNote || note.wasGoodHit || !note.canBeHit) return;
+		
+		var cur = __notePerStrum[strumID];
+		if (cur == null) {
+			__notePerStrum[strumID] = note;
+			return;
 		}
+
+		var songPos = __updateNote_songPos;
+		var noteDist = Math.abs(note.strumTime - songPos);
+
+		var noteShouldAvoid = note.avoid;
+		var curShouldAvoid = cur.avoid;
+		if (!noteShouldAvoid && curShouldAvoid) {
+			__notePerStrum[strumID] = note;
+			return;
+		}
+
+		var curDist = Math.abs(cur.strumTime - songPos);
+		if (noteShouldAvoid == curShouldAvoid && noteDist < curDist)
+			__notePerStrum[strumID] = note;
 	}
 
 	/**
@@ -284,13 +291,18 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 		if (cpu) return;
 
-		if (__pressed.length != members.length) {
-			__pressed.resize(members.length);
-			__justPressed.resize(members.length);
-			__justReleased.resize(members.length);
+		final membersLength = members.length;
+
+		if (__pressed.length != membersLength) {
+			__pressed.resize(membersLength);
+			__justPressed.resize(membersLength);
+			__justReleased.resize(membersLength);
 		}
 
-		for (i in 0...members.length) {
+		if (__notePerStrum.length != membersLength)
+			__notePerStrum = cast new haxe.ds.Vector(membersLength); // [for(_ in 0...members.length) null];
+
+		for (i in 0...membersLength) {
 			__pressed[i] = members[i].__getPressed(this);
 			__justPressed[i] = members[i].__getJustPressed(this);
 			__justReleased[i] = members[i].__getJustReleased(this);
@@ -304,18 +316,20 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		__justPressed = CoolUtil.getDefault(event.justPressed, []);
 		__justReleased = CoolUtil.getDefault(event.justReleased, []);
 
-		__notePerStrum = cast new haxe.ds.Vector(members.length); // [for(_ in 0...members.length) null];
-
 		if (__pressed.contains(true)) {
 			if (__justPressed.contains(true)) {
 				notes.forEachAlive(__inputProcessJustPressed);
 
-				if (!ghostTapping) for (k => pr in __justPressed) if (pr && __notePerStrum[k] == null)
-					PlayState.instance.noteMiss(this, null, k, ID); // FUCK YOU
+				for (k => pr in __justPressed)
+				{
+					var note = __notePerStrum[k];
 
-				for (e in __notePerStrum)
-					if (e != null)
-						PlayState.instance.goodNoteHit(this, e);
+					if (note != null) {
+						PlayState.instance.goodNoteHit(this, note);
+						__notePerStrum[k] = null;
+					} else if (pr && !ghostTapping)
+						PlayState.instance.noteMiss(this, null, k, ID);
+				}
 			}
 
 			for (c in characters)
