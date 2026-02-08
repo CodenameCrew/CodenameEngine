@@ -1,7 +1,6 @@
 package funkin.backend.shaders;
 
 import haxe.Timer;
-#if !flash
 import openfl.filters.BitmapFilter;
 import openfl.filters.BitmapFilterShader;
 import openfl.display.BitmapData;
@@ -11,59 +10,44 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 /**
-	The BlurFilter class lets you apply a blur visual effect to display
-	objects. A blur effect softens the details of an image. You can produce
-	blurs that range from a softly unfocused look to a Gaussian blur, a hazy
-	appearance like viewing an image through semi-opaque glass. When the
-	`quality` property of this filter is set to low, the result is a
-	softly unfocused look. When the `quality` property is set to
-	high, it approximates a Gaussian blur filter. You can apply the filter to
-	any display object(that is, objects that inherit from the DisplayObject
-	class), such as MovieClip, SimpleButton, TextField, and Video objects, as
-	well as to BitmapData objects.
+	The BloomEffect class applies a bloom/glow visual effect to display objects. 
+	A bloom effect extracts bright areas from an image, blurs them, and combines 
+	them back to create a glowing halo around bright objects. This effect is 
+	commonly used to simulate intense light, emissive materials, or to add a 
+	dreamy, atmospheric quality to scenes.
+	
+	The effect consists of three stages:
+	1. Extraction - Bright pixels above a threshold are extracted
+	2. Blurring - The extracted bright areas are blurred horizontally and vertically
+	3. Combination - The blurred result is blended back with the original image
+	
+	You can apply the filter to any display object (objects that inherit from 
+	DisplayObject), such as MovieClip, SimpleButton, TextField, and Video objects, 
+	as well as to BitmapData objects.
 
-	To create a new filter, use the constructor `new
-	BlurFilter()`. The use of filters depends on the object to which you
-	apply the filter:
-
-
-	* To apply filters to movie clips, text fields, buttons, and video, use
-	the `filters` property(inherited from DisplayObject). Setting
-	the `filters` property of an object does not modify the object,
-	and you can remove the filter by clearing the `filters`
-	property.
-	* To apply filters to BitmapData objects, use the
-	`BitmapData.applyFilter()` method. Calling
-	`applyFilter()` on a BitmapData object takes the source
-	BitmapData object and the filter object and generates a filtered image as a
-	result.
-
-
-	If you apply a filter to a display object, the
-	`cacheAsBitmap` property of the display object is set to
-	`true`. If you remove all filters, the original value of
-	`cacheAsBitmap` is restored.
-
-	This filter supports Stage scaling. However, it does not support general
-	scaling, rotation, and skewing. If the object itself is scaled
-	(`scaleX` and `scaleY` are not set to 100%), the
-	filter effect is not scaled. It is scaled only when the user zooms in on
-	the Stage.
-
-	A filter is not applied if the resulting image exceeds the maximum
-	dimensions. In AIR 1.5 and Flash Player 10, the maximum is 8,191 pixels in
-	width or height, and the total number of pixels cannot exceed 16,777,215
-	pixels.(So, if an image is 8,191 pixels wide, it can only be 2,048 pixels
-	high.) In Flash Player 9 and earlier and AIR 1.1 and earlier, the
-	limitation is 2,880 pixels in height and 2,880 pixels in width. If, for
-	example, you zoom in on a large movie clip with a filter applied, the
-	filter is turned off if the resulting image exceeds the maximum
-	dimensions.
+	To create a new filter, use the constructor `new BloomEffect()`. The usage 
+	depends on the target object:
+	
+	* For display objects: Use the `filters` property (inherited from DisplayObject).
+	  Setting `filters` doesn't modify the object, and filters can be removed by 
+	  clearing the `filters` property.
+	* For BitmapData objects: Use the `BitmapData.applyFilter()` method, which 
+	  takes the source BitmapData and filter object, generating a filtered result.
+	
+	Applying a filter to a display object sets its `cacheAsBitmap` property to 
+	`true`. Removing all filters restores the original `cacheAsBitmap` value.
+	
+	This filter supports Stage scaling but not general scaling, rotation, or skewing. 
+	If the object itself is scaled (`scaleX` and `scaleY` ≠ 100%), the filter 
+	effect doesn't scale—it only scales when the Stage is zoomed.
+	
+	A filter won't be applied if the resulting image exceeds maximum dimensions:
+	* AIR 1.5/Flash Player 10+: 8,191px width/height, 16,777,215 total pixels
+	* Flash Player 9/AIR 1.1-: 2,880px width/height
+	
+	For example, zooming into a large filtered movie clip may disable the filter 
+	if the resulting image exceeds these limits.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
 @:final class BloomEffect extends BitmapFilter
@@ -71,51 +55,49 @@ import openfl.geom.Rectangle;
 	@:noCompletion private static var __blurShader:BlurShader = new BlurShader();
 	@:noCompletion private static var __combineShader:CombineShader = new CombineShader();
 	@:noCompletion private static var __extractShader:ExtractShader = new ExtractShader();
+	@:noCompletion private static var __extractLowShader:ExtractLowShader = new ExtractLowShader();
 
 	/**
-		The amount of horizontal blur. Valid values are from 0 to 255(floating
-		point). The default value is 4. Values that are a power of 2(such as 2,
-		4, 8, 16 and 32) are optimized to render more quickly than other values.
+		Values that are a power of 2 (such as 2, 4, 8, 16 and 32) are optimized to render 
+		more quickly than other values.
 	**/
 	public var blurX(get, set):Float;
 
 	/**
-		The amount of vertical blur. Valid values are from 0 to 255(floating
-		point). The default value is 4. Values that are a power of 2(such as 2,
-		4, 8, 16 and 32) are optimized to render more quickly than other values.
+		Values that are a power of 2 (such as 2, 4, 8, 16 and 32) are optimized to render 
+		more quickly than other values.
 	**/
 	public var blurY(get, set):Float;
 
 	/**
-		The number of times to perform the blur. The default value is
-		`BitmapFilterQuality.LOW`, which is equivalent to applying the
-		filter once. The value `BitmapFilterQuality.MEDIUM` applies the
-		filter twice; the value `BitmapFilterQuality.HIGH` applies it
-		three times and approximates a Gaussian blur. Filters with lower values
-		are rendered more quickly.
-
-		For most applications, a `quality` value of low, medium, or
-		high is sufficient. Although you can use additional numeric values up to
-		15 to increase the number of times the blur is applied, higher values are
-		rendered more slowly. Instead of increasing the value of
-		`quality`, you can often get a similar effect, and with faster
-		rendering, by simply increasing the values of the `blurX` and
-		`blurY` properties.
-
-		You can use the following BitmapFilterQuality constants to specify
-		values of the `quality` property:
-
-		* `BitmapFilterQuality.LOW`
-		* `BitmapFilterQuality.MEDIUM`
-		* `BitmapFilterQuality.HIGH`
+		The downscaling factor for bloom rendering. Higher values significantly reduce 
+		GPU performance cost, but setting values too high may cause noticeable flickering. 
+		Recommended range is 8-24.
 	**/
 	public var quality(get, set):Float;
 
+	/**
+		The intensity of the bloom effect. Higher values produce more pronounced bloom.
+	**/
 	public var strength(get, set):Float;
 
+	/**
+		The brightness threshold for bloom extraction. Pixels brighter than this value 
+		will contribute to the bloom effect. Value range is 0.0 to 1.0.
+	**/
 	public var threshold(get, set):Float;
 
+	/**
+		Enables extended rendering area to avoid edge artifacts. Enabling this option 
+		will increase performance cost. Generally not required when rendering to camera.
+	**/
 	public var extension(get, set):Bool;
+
+	/**
+		Enables low-quality extraction to reduce performance cost. When disabled, 
+		reduces flickering but has higher performance impact on non-desktop platforms.
+	**/
+	public var useLowQualityExtract(get, set):Bool;
 
 	@:noCompletion private var __blurX:Float;
 	@:noCompletion private var __blurY:Float;
@@ -125,6 +107,7 @@ import openfl.geom.Rectangle;
 	@:noCompletion private var __strength:Float;
 	@:noCompletion private var __threshold:Float;
 	@:noCompletion private var __extension:Bool;
+	@:noCompletion private var __useLowQualityExtract:Bool;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -150,39 +133,27 @@ import openfl.geom.Rectangle;
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_threshold (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_threshold (v); }")
 			},
+			"useLowQualityExtract": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_useLowQualityExtract (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_useLowQualityExtract (v); }")
+			},
 		});
 	}
 	#end
 
 	/**
-		Initializes the filter with the specified parameters. The default values
-		create a soft, unfocused image.
+		Initializes the bloom filter with the specified parameters.
 
-		@param blurX   The amount to blur horizontally. Valid values are from 0 to
-						 255.0(floating-point value).
-		@param blurY   The amount to blur vertically. Valid values are from 0 to
-						 255.0(floating-point value).
-		@param quality The number of times to apply the filter. You can specify
-						 the quality using the BitmapFilterQuality constants:
-
-
-						* `openfl.filters.BitmapFilterQuality.LOW`
-
-						* `openfl.filters.BitmapFilterQuality.MEDIUM`
-
-						* `openfl.filters.BitmapFilterQuality.HIGH`
-
-
-						 High quality approximates a Gaussian blur. For most
-						 applications, these three values are sufficient. Although
-						 you can use additional numeric values up to 15 to achieve
-						 different effects, be aware that higher values are rendered
-						 more slowly.
-		@param strength The intensity of the bloom effect. Default is 1.0.
-		@param threshold The brightness threshold for bloom. Pixels brighter than
-						 this value will bloom. Default is 0.6.
+		@param blurX   The amount to blur horizontally.
+		@param blurY   The amount to blur vertically.
+		@param quality The downscaling factor for bloom rendering (higher values reduce 
+					   GPU cost but may cause flickering if too high).
+		@param strength The intensity of the bloom effect.
+		@param threshold The brightness threshold for bloom extraction (0.0 to 1.0).
+		@param useLowQualityExtract Enables performance-optimized extraction with 
+									potentially more flickering.
 	**/
-	public function new(blurX:Float = 10, blurY:Float = 10, quality:Float = 8, strength:Float = 1, threshold:Float = 0.6)
+	public function new(blurX:Float = 10, blurY:Float = 10, quality:Float = #if desktop 24 #else 8 #end, strength:Float = 1, threshold:Float = 0.6, useLowQualityExtract:Bool = #if desktop false #else true #end)
 	{
 		super();
 
@@ -192,6 +163,7 @@ import openfl.geom.Rectangle;
 		this.strength = strength;
 		this.threshold = threshold;
 		this.extension = false;
+		this.useLowQualityExtract = useLowQualityExtract;
 
 		__needSecondBitmapData = true;
 		__preserveObject = true;
@@ -200,7 +172,7 @@ import openfl.geom.Rectangle;
 
 	public override function clone():BitmapFilter
 	{
-		return new BloomEffect(__blurX, __blurY, __quality, __strength, __threshold);
+		return new BloomEffect(__blurX, __blurY, __quality, __strength, __threshold, __useLowQualityExtract);
 	}
 
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
@@ -217,9 +189,18 @@ import openfl.geom.Rectangle;
 		switch pass
 		{
 			case 0:
-				__extractShader.uThreshold.value = [__threshold];
-				__extractShader.uQuality.value = [__quality];
-				return __extractShader;
+				if (__useLowQualityExtract)
+				{
+					__extractLowShader.uThreshold.value = [__threshold];
+					__extractLowShader.uQuality.value = [__quality];
+					return __extractLowShader;
+				}
+				else
+				{
+					__extractShader.uThreshold.value = [__threshold];
+					__extractShader.uQuality.value = [__quality];
+					return __extractShader;
+				}
 
 			case _ if (pass <= numBlurPasses):
 				final blurPass = pass - 1;
@@ -386,12 +367,23 @@ import openfl.geom.Rectangle;
 		}
 		return value;
 	}
+
+	@:noCompletion private function get_useLowQualityExtract():Bool
+	{
+		return __useLowQualityExtract;
+	}
+
+	@:noCompletion private function set_useLowQualityExtract(value:Bool):Bool
+	{
+		if (value != __useLowQualityExtract)
+		{
+			__useLowQualityExtract = value;
+			__renderDirty = true;
+		}
+		return value;
+	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 private class BlurShader extends BitmapFilterShader
 {
 	@:glFragmentSource("
@@ -471,11 +463,7 @@ private class BlurShader extends BitmapFilterShader
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
-private class ExtractShader extends BitmapFilterShader
+private class ExtractLowShader extends BitmapFilterShader
 {
 	@:glFragmentSource("
 		uniform sampler2D openfl_Texture;
@@ -516,10 +504,67 @@ private class ExtractShader extends BitmapFilterShader
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
+private class ExtractShader extends BitmapFilterShader
+{
+	@:glFragmentSource("
+    uniform sampler2D openfl_Texture;
+		uniform vec2 openfl_TextureSize;
+    uniform float uThreshold;
+    uniform float uQuality;
+    varying vec2 vTexCoord;
+
+    void main(void) {
+			if ((all(greaterThanEqual(vTexCoord, vec2(0.0))) && all(lessThanEqual(vTexCoord, vec2(1.0)))) == false) return;
+			
+			float quality = floor(uQuality) / 2.0;
+			vec2 texelSize = 1.0 / openfl_TextureSize;
+			
+			vec4 accumulated = vec4(0.0);
+			int sampleCount = 0;
+
+
+			for (float dx = -quality; dx <= quality; dx += 2.0) {
+				for (float dy = -quality; dy <= quality; dy += 2.0) {
+					vec2 sampleCoord = vTexCoord + vec2(dx, dy) * texelSize;
+
+					if ((all(greaterThanEqual(sampleCoord, vec2(0.0))) && all(lessThanEqual(sampleCoord, vec2(1.0)))) == false) continue;
+
+					vec4 texel = texture2D(openfl_Texture, sampleCoord);
+					float brightness = max(max(texel.r, texel.g), texel.b);
+					float mask = smoothstep(uThreshold, uThreshold + 0.1, brightness);
+					accumulated += texel * mask;
+					sampleCount++;
+				}
+			}
+
+			gl_FragColor = accumulated / float(sampleCount);
+    }
+	")
+	@:glVertexSource("
+		attribute vec4 openfl_Position;
+		attribute vec2 openfl_TextureCoord;
+		uniform mat4 openfl_Matrix;
+		uniform vec2 openfl_TextureSize;
+		uniform float uQuality;
+		varying vec2 vTexCoord;
+
+		void main(void) {
+			vec4 pos = openfl_Position;
+			pos.xy /= uQuality;
+			gl_Position = openfl_Matrix * pos;
+			vTexCoord = openfl_TextureCoord;
+		}
+	")
+	public function new()
+	{
+		super();
+
+		#if !macro
+		uThreshold.value = [0.6];
+		#end
+	}
+}
+
 private class CombineShader extends BitmapFilterShader
 {
 	@:glFragmentSource("
@@ -560,6 +605,3 @@ private class CombineShader extends BitmapFilterShader
 		#end
 	}
 }
-#else
-typedef BlurFilter = flash.filters.BlurFilter;
-#end
