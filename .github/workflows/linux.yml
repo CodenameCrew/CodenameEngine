@@ -1,22 +1,23 @@
+name: Linux Builds
 
-name: Linux Build
 on:
   push:
   workflow_dispatch:
+
 jobs:
   build:
     name: Linux Build
     permissions: write-all
     runs-on: ubuntu-24.04
     steps:
-      - name: Pulling the source
-        uses: actions/checkout@v2
+      - name: Pulling the new commit
+        uses: actions/checkout@v4
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
           haxe-version: 4.3.7
       - name: Restore existing build cache for faster compilation
-        uses: actions/cache@v3
+        uses: actions/cache@v4.2.3
         with:
           # not caching the bin folder to prevent asset duplication and stuff like that
           key: cache-build-linux
@@ -24,8 +25,8 @@ jobs:
             .haxelib/
             export/release/linux/haxe/
             export/release/linux/obj/
-          restore-keys: |
-            cache-build-linux
+      - run: |
+          echo "HXCPP_COMPILE_CACHE=~/.hxcpp" >> $GITHUB_ENV
       - name: Installing LibVLC
         run: |
           sudo apt-get install libvlc-dev libvlccore-dev
@@ -67,7 +68,7 @@ jobs:
               }
             }
       - name: Uploading new cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4.2.3
         with:
           # caching again since for some reason it doesnt work with the first post cache shit
           key: cache-build-linux
@@ -75,5 +76,72 @@ jobs:
             .haxelib/
             export/release/linux/haxe/
             export/release/linux/obj/
-          restore-keys: |
-            cache-build-linux
+
+# didnt compile debug in the same job or github would have said that job wasn't completed until debug was done too (debug uploads are not essential)
+  debug_build:
+    name: Linux Debug Build
+    permissions: write-all
+    runs-on: ubuntu-24.04
+    needs: build # since its low priority, it'll run after, so actions will concentrate first on normal builds
+    steps:
+      - name: Pulling the new commit
+        uses: actions/checkout@v4
+      - name: Setting up Haxe
+        uses: krdlab/setup-haxe@v2
+        with:
+          haxe-version: 4.3.7
+      - name: Restore existing build cache for faster compilation
+        uses: actions/cache@v4.2.3
+        with:
+          # not caching the bin folder to prevent asset duplication and stuff like that
+          key: cache-build-linux-debug
+          path: |
+            .haxelib/
+            export/debug/linux/haxe/
+            export/debug/linux/obj/
+      - run: |
+          echo "HXCPP_COMPILE_CACHE=~/.hxcpp" >> $GITHUB_ENV
+      - name: Installing LibVLC
+        run: |
+          sudo apt-get install libvlc-dev libvlccore-dev
+      - name: Installing/Updating libraries
+        run: |
+          haxe -cp commandline -D analyzer-optimize --run Main setup -s
+      - name: Building the game
+        run: |
+          haxelib run lime build linux -debug
+      # - name: Tar files
+      #   run: tar -zcvf CodenameEngine.tar.gz -C export/debug/linux/bin .
+      - name: Uploading artifact (entire build)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Codename Engine Debug
+          path: export/debug/linux/bin/
+      - name: Clearing already existing cache
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const caches = await github.rest.actions.getActionsCacheList({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+            for (const cache of caches.data.actions_caches) {
+              if (cache.key == "cache-build-linux-debug") {
+                console.log('Clearing ' + cache.key + '...')
+                await github.rest.actions.deleteActionsCacheById({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  cache_id: cache.id,
+                })
+                console.log("Cache cleared.")
+              }
+            }
+      - name: Uploading new cache
+        uses: actions/cache@v4.2.3
+        with:
+          # caching again since for some reason it doesnt work with the first post cache shit
+          key: cache-build-linux-debug
+          path: |
+            .haxelib/
+            export/debug/linux/haxe/
+            export/debug/linux/obj/
