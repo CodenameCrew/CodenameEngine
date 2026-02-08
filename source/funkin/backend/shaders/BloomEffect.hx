@@ -15,42 +15,42 @@ import openfl.geom.Rectangle;
 	them back to create a glowing halo around bright objects. This effect is 
 	commonly used to simulate intense light, emissive materials, or to add a 
 	dreamy, atmospheric quality to scenes.
-	
+
 	The effect consists of three stages:
 	1. Extraction - Bright pixels above a threshold are extracted
 	2. Blurring - The extracted bright areas are blurred horizontally and vertically
 	3. Combination - The blurred result is blended back with the original image
-	
+
 	You can apply the filter to any display object (objects that inherit from 
 	DisplayObject), such as MovieClip, SimpleButton, TextField, and Video objects, 
 	as well as to BitmapData objects.
 
 	To create a new filter, use the constructor `new BloomEffect()`. The usage 
 	depends on the target object:
-	
+
 	* For display objects: Use the `filters` property (inherited from DisplayObject).
 	  Setting `filters` doesn't modify the object, and filters can be removed by 
 	  clearing the `filters` property.
 	* For BitmapData objects: Use the `BitmapData.applyFilter()` method, which 
 	  takes the source BitmapData and filter object, generating a filtered result.
-	
+
 	Applying a filter to a display object sets its `cacheAsBitmap` property to 
 	`true`. Removing all filters restores the original `cacheAsBitmap` value.
-	
+
 	This filter supports Stage scaling but not general scaling, rotation, or skewing. 
 	If the object itself is scaled (`scaleX` and `scaleY` ≠ 100%), the filter 
 	effect doesn't scale—it only scales when the Stage is zoomed.
-	
+
 	A filter won't be applied if the resulting image exceeds maximum dimensions:
 	* AIR 1.5/Flash Player 10+: 8,191px width/height, 16,777,215 total pixels
 	* Flash Player 9/AIR 1.1-: 2,880px width/height
-	
+
 	For example, zooming into a large filtered movie clip may disable the filter 
 	if the resulting image exceeds these limits.
 **/
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
-@:final class BloomEffect extends BitmapFilter
+class BloomEffect extends BitmapFilter
 {
 	@:noCompletion private static var __blurShader:BlurShader = new BlurShader();
 	@:noCompletion private static var __combineShader:CombineShader = new CombineShader();
@@ -153,7 +153,8 @@ import openfl.geom.Rectangle;
 		@param useLowQualityExtract Enables performance-optimized extraction with 
 									potentially more flickering.
 	**/
-	public function new(blurX:Float = 10, blurY:Float = 10, quality:Float = #if desktop 24 #else 8 #end, strength:Float = 1, threshold:Float = 0.6, useLowQualityExtract:Bool = #if desktop false #else true #end)
+	public function new(blurX:Float = 10, blurY:Float = 10, quality:Float = #if desktop 24 #else 8 #end, strength:Float = 1, threshold:Float = 0.6,
+			useLowQualityExtract:Bool = #if desktop false #else true #end)
 	{
 		super();
 
@@ -474,7 +475,7 @@ private class ExtractLowShader extends BitmapFilterShader
 			if ((all(greaterThanEqual(vTexCoord, vec2(0.0))) && all(lessThanEqual(vTexCoord, vec2(1.0)))) == false) return;
 
 			vec4 texel = texture2D(openfl_Texture, vTexCoord);
-			float brightness = max(max(texel.r, texel.g), texel.b);
+			float brightness = dot(texel.rgb, vec3(0.2126, 0.7152, 0.0722));
 			float mask = smoothstep(uThreshold, uThreshold + 0.1, brightness);
 			gl_FragColor = texel * mask;
 		}
@@ -512,9 +513,10 @@ private class ExtractShader extends BitmapFilterShader
     uniform float uThreshold;
     uniform float uQuality;
     varying vec2 vTexCoord;
+		varying vec4 border;
 
     void main(void) {
-			if ((all(greaterThanEqual(vTexCoord, vec2(0.0))) && all(lessThanEqual(vTexCoord, vec2(1.0)))) == false) return;
+			if ((all(greaterThanEqual(vTexCoord, border.xy)) && all(lessThanEqual(vTexCoord, border.zw))) == false) return;
 			
 			float quality = floor(uQuality) / 2.0;
 			vec2 texelSize = 1.0 / openfl_TextureSize;
@@ -527,10 +529,8 @@ private class ExtractShader extends BitmapFilterShader
 				for (float dy = -quality; dy <= quality; dy += 2.0) {
 					vec2 sampleCoord = vTexCoord + vec2(dx, dy) * texelSize;
 
-					if ((all(greaterThanEqual(sampleCoord, vec2(0.0))) && all(lessThanEqual(sampleCoord, vec2(1.0)))) == false) continue;
-
 					vec4 texel = texture2D(openfl_Texture, sampleCoord);
-					float brightness = max(max(texel.r, texel.g), texel.b);
+					float brightness = dot(texel.rgb, vec3(0.2126, 0.7152, 0.0722));
 					float mask = smoothstep(uThreshold, uThreshold + 0.1, brightness);
 					accumulated += texel * mask;
 					sampleCount++;
@@ -547,10 +547,15 @@ private class ExtractShader extends BitmapFilterShader
 		uniform vec2 openfl_TextureSize;
 		uniform float uQuality;
 		varying vec2 vTexCoord;
+		varying vec4 border;
 
 		void main(void) {
 			vec4 pos = openfl_Position;
 			pos.xy /= uQuality;
+
+			vec2 size = 1.0 / openfl_TextureSize * uQuality;
+			border = vec4(size, vec2(1.0) - size);
+
 			gl_Position = openfl_Matrix * pos;
 			vTexCoord = openfl_TextureCoord;
 		}
