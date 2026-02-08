@@ -171,8 +171,9 @@ class Strum extends FlxSprite {
 			} else {
 				final speed = getScrollSpeed(daNote);
 				final distance = (daNote.strumTime - Conductor.songPosition) * 0.45 * speed;
-				final angleX = Math.cos((daNote.__noteAngle + 90) * FlxAngle.TO_RAD);
-				final angleY = Math.sin((daNote.__noteAngle + 90) * FlxAngle.TO_RAD);
+				final __noteAngle = FlxMath.fastSinCos((daNote.__noteAngle + 90) * FlxAngle.TO_RAD);
+				final angleX = __noteAngle.cos;
+				final angleY = __noteAngle.sin;
 				final _noteOffset = FlxPoint.get(angleX * distance, angleY * distance);
 				_noteOffset.x += -daNote.origin.x + daNote.offset.x;
 				_noteOffset.y += -daNote.origin.y + daNote.offset.y;

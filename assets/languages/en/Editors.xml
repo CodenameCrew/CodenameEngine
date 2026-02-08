@@ -433,6 +433,8 @@
 					<str id="position">Position (X, Y)</str>
 					<str id="fps">FPS</str>
 					<str id="indices">Indices (Frames)</str>
+					<str id="looping">Looping?</str>
+					<str id="label">Label</str>
 				</group>
 
 				<group name="CharacterSpriteScreen" prefix="characterSpriteScreen.">

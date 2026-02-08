@@ -332,8 +332,9 @@ class Flags {
 				if (!(parsed = parse(name, value))) customFlags.set(name, value);
 				if (!overridenFlags.exists(name)) overridenFlags.set(name, parsed);
 		}
-
+		#if MODCHARTING_FEATURES
 		Options.modchartingHoldSubdivisions = DEFAULT_MODCHART_HOLD_SUBDIVISIONS;
+		#end
 	}
 
 	/**

@@ -4,7 +4,7 @@
 		<print pretty="true">Preparing installation...</print>
 
 		<!-- OpenFL & Lime (Required for Flixel) -->
-		<git name="openfl" url="https://github.com/CodenameCrew/cne-openfl" />
+		<git name="openfl" url="https://github.com/CodenameCrew/cne-openfl" ref="old" />
 		<lib name="lime" version="8.1.2" />
 		<!-- <git name="lime" url="https://github.com/CodenameCrew/cne-lime" />  disabled for now until fixed -->
 
@@ -14,9 +14,8 @@
 
 		<!-- Other Libraries -->
 		<git name="hscript-improved" url="https://github.com/CodenameCrew/hscript-improved" ref="codename-dev" />
-		<git name="flxanimate" url="https://github.com/CodenameCrew/cne-flxanimate" />
 		<git name="hxdiscord_rpc" url="https://github.com/CodenameCrew/cne-hxdiscord_rpc" skipDeps="true" />
-		<lib name="funkin-modchart" version="1.2.4" skipDeps="true" />
+		<lib name="funkin-modchart" skipDeps="true" />
 		<lib name="hxvlc" version="1.9.3" skipDeps="true" />
 
 		<!-- Documentation and other features -->
@@ -32,6 +31,8 @@
 		<lib global="true" name="format" /> <lib name="format" />
 
 		<git name="hxcpp" url="https://github.com/CodenameCrew/cne-hxcpp" />
+
+		<git name="flixel-animate" url="https://github.com/MaybeMaru/flixel-animate/" skipDeps="true"/>
 	</if>
 
 	<!-- Hxcpp Building -->
