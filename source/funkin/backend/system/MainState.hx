@@ -57,12 +57,29 @@ class MainState extends FlxState {
 		var _highPriorityAddons:Array<AddonInfo> = [];
 		var _noPriorityAddons:Array<AddonInfo> = [];
 
+		var quick_modsPath = ModsFolder.modsPath + ModsFolder.currentModFolder;
+
+		var isCneMod = false;
+		for (ext in Flags.ALLOWED_ZIP_EXTENSIONS) {
+			if (!FileSystem.exists(quick_modsPath+"/cnemod."+ext)) continue;
+			isCneMod = true;
+			break;
+		}
+
+		// handing if the loading mod, before it's properly loaded, is a compressed mod
+		// we just need to use `Paths.assetsTree.hasCompressedLibrary` to complete valid checks for actual loaded compressed mods
+		var isZipMod = false;
+		for (ext in Flags.ALLOWED_ZIP_EXTENSIONS) {
+			if (!FileSystem.exists(quick_modsPath+"."+ext)) continue;
+			isZipMod = true;
+			break;
+		}
+
+		// Now here is a conundrum, if it's a compressed mod you can't really uncompress it yet, since it's not loaded as a library, so we need to skip it.
 		var addonPaths = [
 			ModsFolder.addonsPath,
-			(
-				ModsFolder.currentModFolder != null ?
-					ModsFolder.modsPath + ModsFolder.currentModFolder + "/addons/" :
-					null
+			( (ModsFolder.currentModFolder != null && !isZipMod) ?
+				quick_modsPath + "/addons/" : null
 			)
 		];
 
@@ -72,12 +89,8 @@ class MainState extends FlxState {
 
 			for (addon in FileSystem.readDirectory(path)) {
 				if (!FileSystem.isDirectory(path + addon)) {
-					switch(Path.extension(addon).toLowerCase()) {
-						case 'zip':
-							addon = Path.withoutExtension(addon);
-						default:
-							continue;
-					}
+					if (Flags.ALLOWED_ZIP_EXTENSIONS.contains(Path.extension(addon).toLowerCase())) addon = Path.withoutExtension(addon);
+					else continue;
 				}
 
 				var data:AddonInfo = {
@@ -100,9 +113,13 @@ class MainState extends FlxState {
 		#if MOD_SUPPORT
 		for (addon in _lowPriorityAddons)
 			loadLib(addon.path, ltrim(addon.name, "[LOW]"));
-
-		if (ModsFolder.currentModFolder != null)
-			loadLib(ModsFolder.modsPath + ModsFolder.currentModFolder, ModsFolder.currentModFolder);
+		
+		if (ModsFolder.currentModFolder != null) {
+			if (isCneMod)
+				loadLib(quick_modsPath + "/cnemod", ModsFolder.currentModFolder);
+			else
+				loadLib(quick_modsPath, ModsFolder.currentModFolder);
+		}
 
 		for (addon in _noPriorityAddons)
 			loadLib(addon.path, addon.name);
@@ -136,7 +153,7 @@ class MainState extends FlxState {
 
 		var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
 
-		if (Options.devMode && Options.allowConfigWarning) {
+		if (Options.devMode && Options.allowConfigWarning && !Paths.assetsTree.hasCompressedLibrary) { // because it's a zip file, you can't edit a zip file without decompiling it
 			var lib:ModsFolderLibrary;
 			for (e in Paths.assetsTree.libraries) if ((lib = cast AssetsLibraryList.getCleanLibrary(e)) is ModsFolderLibrary
 				&& lib.modName == ModsFolder.currentModFolder)
