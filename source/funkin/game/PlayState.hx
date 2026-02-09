@@ -643,7 +643,7 @@ class PlayState extends MusicBeatState
 	public inline function callOnCharacters(func:String, ?parameters:Array<Dynamic>) {
 		if(strumLines != null) strumLines.forEachAlive(function (strLine:StrumLine) {
 			if (strLine.characters != null) for (character in strLine.characters)
-				if (character != null) character.script.call(func, parameters);
+				if (character != null) character.scripts.call(func, parameters);
 		});
 	}
 
