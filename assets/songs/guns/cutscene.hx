@@ -12,7 +12,7 @@ function create() {
 	tankman = new FunkinSprite(game.dad.x + game.dad.globalOffset.x + 520, game.dad.y + game.dad.globalOffset.y + 225);
 	tankman.antialiasing = true;
 	tankman.loadSprite(Paths.image('game/cutscenes/tank/guns-tankman'));
-	tankman.animateAtlas.anim.addBySymbol('tank', 'TANK TALK 2', 0, false);
+	tankman.addAnim('tank', 'TANK TALK 2', 0, false);
 
 	game.insert(game.members.indexOf(game.dad), tankman);
 	game.dad.visible = false;
