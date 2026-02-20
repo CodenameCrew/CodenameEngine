@@ -1,9 +1,7 @@
-{ }:
+{
+  pkgs ? import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/14e02be4774fdb74b2d81ab2beb7a15b1e6eda07.tar.gz") { },
+}:
 let
-  pkgs = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/c407032be28ca2236f45c49cfb2b8b3885294f7f.tar.gz";
-  }) { };
-
   libs =
     with pkgs;
     [
@@ -29,7 +27,7 @@ pkgs.mkShell {
   packages = with pkgs; [
     haxe
     neko
-    libsForQt5.qttools
+    kdePackages.qttools
   ];
 
   buildInputs = libs;
@@ -37,6 +35,6 @@ pkgs.mkShell {
   LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath libs;
 
   shellHook = ''
-    source update.sh
+    ./building/setup-unix.sh
   '';
 }
