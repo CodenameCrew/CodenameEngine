@@ -7,7 +7,7 @@ final class StageXMLEvent extends CancellableEvent {
 	/**
 	 * The stage instance
 	 */
-	public var stage:Stage;
+	public var stage:Dynamic;
 
 	/**
 	 * The xml

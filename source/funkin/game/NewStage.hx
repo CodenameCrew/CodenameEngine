@@ -1,5 +1,6 @@
 package funkin.game;
 
+import funkin.backend.scripting.events.stage.StageXMLEvent;
 import hscript.IHScriptCustomBehaviour;
 import funkin.backend.scripting.ScriptPack;
 import funkin.game.Stage.StageCharPos;
@@ -15,6 +16,9 @@ import haxe.xml.Access;
 
 using StringTools;
 
+/**
+ * A class that handles loading a stage and putting the sprites into the state.
+**/
 class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implements IHScriptCustomBehaviour {
 	private static final __instanceFields = Type.getInstanceFields(StageLayer);
 
@@ -25,6 +29,14 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 
 	public var onAddSprite:FlxObject -> Void = null;
 	public var onAddLayer:StageLayer -> Void = null;
+
+	public inline function getSprite(name:String):Null<Dynamic> {
+		return stageSprites.exists(name) ? this.members[stageSprites[name]] : null;
+	}
+
+	public inline function getLayer(name:String):Null<StageLayer> {
+		return stageLayers.exists(name) ? cast this.members[stageLayers[name]] : null;
+	}
 
 	public function new(name:String = "stage") {
 		super();
@@ -118,12 +130,12 @@ class NewStage extends StageLayer {
 	public var onStartCamSet:FlxPoint -> Float -> Void;
 	public var onPrepareInfo:Access -> XMLImportedScriptInfo;
 	public var onRemoveInfo:Script -> Void;
-	public var onXMLLoaded:(Access, Array<Access>)->Array<Access> = null;
+	public var onXMLLoaded:(StageXMLEvent)->Array<Access> = null;
 	public var onNodeLoaded:(Access, Dynamic)->Dynamic = null;
 	public var onNodeFinished:(Access, Dynamic)->Void = null;
 	public var onXMLPostLoaded:(Access, Array<Access>)->Array<Access> = null;
 	public var onRatingSet:Float->Float->FlxBasic;
-	public var onPostStageCreation:(Access, Array<Access>)->Array<Access>;
+	public var onPostStageCreation:StageXMLEvent->Void;
 	public var onStageDestroy:NewStage -> Void;
 	public var onSilentDestroy:Script -> Void;
 
@@ -149,6 +161,8 @@ class NewStage extends StageLayer {
 		if(load)
 			loadStage();
 	}
+
+	private var stageEvent:StageXMLEvent;
 
 	private function loadStage(loadAll:Bool = false) {
 		if(allowScripts) {
@@ -207,7 +221,8 @@ class NewStage extends StageLayer {
 		}
 		*/
 		if(onXMLLoaded != null) {
-			elems = onXMLLoaded(xmlFile, elems);
+			stageEvent = EventManager.get(StageXMLEvent).recycle(this, xmlFile, elems);
+			elems = onXMLLoaded(stageEvent);
 		}
 		
 		loadLayer(this, elems);
@@ -239,7 +254,7 @@ class NewStage extends StageLayer {
 	private function loadLayer(layer:StageLayer, elems:Array<Access>) {
 		for(node in elems) {
 			var sprite = switch(node.name) {
-				case "layer": // TODO
+				case "layer":
 					if (!node.has.name) continue;
 					var layerName = node.att.name;
 					var layer = new StageLayer(layerName);
@@ -258,13 +273,14 @@ class NewStage extends StageLayer {
 					var isSolid = node.name == "solid";
 
 					var spr = new FunkinSprite();
-					(isSolid ? spr.makeSolid : spr.makeGraphic)(Std.parseInt(node.att.width), Std.parseInt(node.att.height),
-						(node.has.color) ? CoolUtil.getColorFromDynamic(node.att.color) : -1);
+					var w:Int = Std.parseInt(node.att.width);
+					var h:Int = Std.parseInt(node.att.height);
+					var c:flixel.util.FlxColor = (node.has.color) ? CoolUtil.getColorFromDynamic(node.att.color) : -1;
+					if(isSolid) spr.makeSolid(w, h, c);
+					else spr.makeGraphic(w, h, c);
 
-					if (isSolid)
-						node.x.remove("updateHitbox");
-					for (a in ["width", "height", "color"])
-						node.x.remove(a);
+					if (isSolid) node.x.remove("updateHitbox");
+					node.x.remove("width"); node.x.remove("height"); node.x.remove("color");
 					XMLUtil.loadSpriteFromXML(spr, node, "", NONE, false);
 					addSprite(spr.name, spr);
 				case "boyfriend" | "bf" | "player":
@@ -323,8 +339,8 @@ class NewStage extends StageLayer {
 
 			// idk lemme check anyways just in case scripts did smth  - Nex
 			//if (event != null) PlayState.instance.gameAndCharsEvent("onPostStageCreation", event);
-			if(onPostStageCreation != null)
-				onPostStageCreation(xmlFile, elems);
+			if(onPostStageCreation != null && stageEvent != null)
+				onPostStageCreation(stageEvent);
 
 			// shortlived scripts destroy when the stage finishes setting up  - Nex
 			for (info in xmlImportedScripts) if (info.shortLived) {
@@ -505,5 +521,37 @@ class NewStage extends StageLayer {
 			return val;
 		}
 		return super.hset(name, val);
+	}
+
+	// Backwards compatibility
+	public var stagePath(get, never):String;
+	public var stageFile(get, never):String;
+	public var stageName(get, set):String;
+	public var stageScript(get, never):Script;
+
+	public var characterPoses(get, never):Map<String, StageCharPos>;
+
+	function get_stageScript():Script {
+		return this.script;
+	}
+
+	function get_stagePath():String {
+		return this.xmlFilePath;
+	}
+
+	function get_stageFile():String {
+		return this.fileName;
+	}
+
+	function get_stageName():String {
+		return this.name;
+	}
+
+	function set_stageName(name:String):String {
+		return this.name = name;
+	}
+
+	function get_characterPoses():Map<String, StageCharPos> {
+		return this.characterPosLookup;
 	}
 }

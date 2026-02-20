@@ -22,8 +22,10 @@ import funkin.backend.scripting.ScriptPack;
 import funkin.backend.scripting.events.*;
 import funkin.backend.scripting.events.gameplay.*;
 import funkin.backend.scripting.events.note.*;
+import funkin.backend.scripting.events.stage.*;
 import funkin.backend.system.Conductor;
 import funkin.backend.system.RotatingSpriteGroup;
+import funkin.backend.utils.XMLUtil.XMLImportedScriptInfo;
 import funkin.editors.SaveWarning;
 import funkin.editors.charter.Charter;
 import funkin.editors.charter.CharterSelection;
@@ -122,7 +124,7 @@ class PlayState extends MusicBeatState
 	/**
 	 * Current Stage.
 	 */
-	public var stage:Stage;
+	public var stage(default, set):NewStage;
 	/**
 	 * Whenever the score will save when you beat the song.
 	 */
@@ -713,7 +715,7 @@ class PlayState extends MusicBeatState
 		add(camFollow);
 
 		if (SONG.stage == null || SONG.stage.trim() == "") SONG.stage = Flags.DEFAULT_STAGE;
-		add(stage = new Stage(SONG.stage));
+		add(stage = new NewStage(SONG.stage));
 
 		if (!chartingMode || Options.charterEnablePlaytestScripts) {
 			switch(SONG.meta.name) {
@@ -786,7 +788,7 @@ class PlayState extends MusicBeatState
 			}) : strumLine.position;
 			if (strumLine.characters != null) for(k=>charName in strumLine.characters) {
 				var char = new Character(0, 0, charName, stage.isCharFlipped(stage.characterPoses[charName] != null ? charName : charPosName, strumLine.type == 1));
-				stage.applyCharStuff(char, charPosName, k);
+				stage.applyCharPos(char, charPosName, k);
 				chars.push(char);
 			}
 
@@ -2191,6 +2193,46 @@ class PlayState extends MusicBeatState
 
 	private inline static function get_campaignAccuracy()
 		return campaignAccuracyCount == 0 ? 0 : campaignAccuracyTotal / campaignAccuracyCount;
+
+	private function set_stage(stage:NewStage):NewStage {
+		stage.onStageScriptLoad = (script) -> {scripts.add(script);}
+		stage.onStartCamSet = (startCam, defaultZoom) -> {
+			camFollow.x = startCam.x;
+			camFollow.y = startCam.y;
+			defaultCamZoom = defaultZoom;
+		}
+		stage.onXMLLoaded = (stageEvent) -> {
+			return this.gameAndCharsEvent("onStageXMLParsed", stageEvent).elems;
+		}
+		stage.onRatingSet = (x, y) -> {
+			comboGroup.setPosition(x, y);
+			add(comboGroup);
+			return comboGroup;
+		}
+		stage.onPrepareInfo = (node) -> {
+			return XMLImportedScriptInfo.prepareInfos(node, this.scripts, (infos) -> {
+				stage.xmlImportedScripts.push(infos);
+			});
+		}
+		stage.onRemoveInfo = (script) -> {
+			scripts.remove(script);
+		}
+		stage.onNodeLoaded = (node, sprite) -> {
+			return this.gameAndCharsEvent("onStageNodeParsed", EventManager.get(StageNodeEvent).recycle(stage, node, sprite, node.name)).sprite;
+		}
+		stage.onPostStageCreation = (stageEvent) -> {
+			this.gameAndCharsEvent("onPostStageCreation", stageEvent);
+		}
+		stage.onSilentDestroy = (script) -> {
+			if(this.scripts != null)
+				scripts.remove(script);
+		}
+		stage.onStageDestroy = (stage) -> {
+			this.gameAndCharsCall("onStageDestroy", [stage]);
+		}
+		
+		return this.stage = stage;
+	}
 	#end
 
 	/**

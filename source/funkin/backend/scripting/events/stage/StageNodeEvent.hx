@@ -7,7 +7,7 @@ final class StageNodeEvent extends CancellableEvent {
 	/**
 	 * The stage instance
 	 */
-	public var stage:Stage;
+	public var stage:Dynamic;
 
 	/**
 	 * The node which is currently being parsed
