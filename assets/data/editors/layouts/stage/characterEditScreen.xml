@@ -74,6 +74,19 @@
 		<exec>
 			self.windowSpr.bHeight -= 170;
 		</exec>
+
+	</section>
+
+	<section>
+		<label name="curCharLabel" text="Character (XML)" x="col(2)" y="curY - 52" size="15" />
+		 <exec>
+			import funkin.editors.ui.UIAutoCompleteTextBox;
+			import funkin.game.Character;
+
+			var curCharBox = new UIAutoCompleteTextBox(col(2), curY - 52, char.curCharacter, 148, 32);
+			curCharBox.suggestItems = Character.getList(false);
+			self.add(curCharBox);
+		 </exec>
 	</section>
 
 	<exec>
@@ -121,6 +134,20 @@
 			}
 			char.zoomFactor = zoomFactorStepper.value;
 			char.angle = angleStepper.value;
+
+			var newCharName = curCharBox.label.text;
+			if (newCharName != char.curCharacter) {
+				char.curCharacter = newCharName;
+				char.xml = Character.getXMLFromCharName(newCharName);
+				char.applyXML(char.xml);
+
+				var anim = char.getAnimOrder()[0];
+				char.playAnim(anim, true);
+				var lastIndx = char.animation.curAnim.numFrames - 1;
+				char.playAnim(anim, true, null, false, lastIndx);
+				char.stopAnimation();
+			}
+
 		}
 	</exec>
 </window>
