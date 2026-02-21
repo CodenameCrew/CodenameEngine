@@ -1,18 +1,24 @@
 package funkin.game;
 
-import funkin.backend.scripting.events.stage.StageXMLEvent;
+import haxe.xml.Access;
+
 import hscript.IHScriptCustomBehaviour;
-import funkin.backend.scripting.ScriptPack;
+
 import funkin.game.Stage.StageCharPos;
 import funkin.game.Stage.StageCharPosInfo;
-import funkin.backend.scripting.Script;
+
 import funkin.backend.utils.XMLUtil;
+
+import funkin.backend.scripting.Script;
+import funkin.backend.scripting.ScriptPack;
+import funkin.backend.scripting.events.stage.StageXMLEvent;
+
 import funkin.backend.system.interfaces.IBeatReceiver;
 
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
 
-import haxe.xml.Access;
+import flixel.util.FlxSignal.FlxTypedSignal;
 
 using StringTools;
 
@@ -27,8 +33,8 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	private var stageSprites:Map<String, Int> = [];
 	private var stageLayers:Map<String, Int> = [];
 
-	public var onAddSprite:FlxObject -> Void = null;
-	public var onAddLayer:StageLayer -> Void = null;
+	public var onAddSprite:FlxTypedSignal<FlxObject -> Void> = new FlxTypedSignal();
+	public var onAddLayer:FlxTypedSignal<StageLayer -> Void> = new FlxTypedSignal();
 
 	public inline function getSprite(name:String):Null<Dynamic> {
 		return stageSprites.exists(name) ? this.members[stageSprites[name]] : null;
@@ -46,16 +52,18 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	public function addSprite(name:String, spr:FlxObject):FlxObject {
 		this.add(spr);
 		stageSprites.set(name, this.members.indexOf(spr)); // TODO: faster way to set the index
-		if(onAddSprite != null)
-			onAddSprite(spr);
+
+		onAddSprite.dispatch(spr);
+
 		return spr;
 	}
 
 	public function addLayer(name:String, layer:StageLayer):StageLayer {
 		this.add(layer);
 		stageLayers.set(name, this.members.indexOf(layer));
-		if(onAddLayer != null)
-			onAddLayer(layer);
+		
+		onAddLayer.dispatch(layer);
+
 		return layer;
 	}
 
@@ -70,7 +78,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	}
 
 	public function hget(name:String):Dynamic {
-		if (__instanceFields.contains(name) || __instanceFields.contains('get_${name}'))
+		if (__instanceFields.contains(name) || __instanceFields.contains('get_$name'))
 			return Reflect.getProperty(this, name);
 		if(stageSprites.exists(name)) return this.members[stageSprites[name]];
 		if(stageLayers.exists(name)) return this.members[stageLayers[name]];
@@ -78,7 +86,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	}
 
 	public function hset(name:String, val:Dynamic):Dynamic {
-		if (__instanceFields.contains(name) || __instanceFields.contains('set_${name}')) {
+		if (__instanceFields.contains(name) || __instanceFields.contains('set_$name')) {
 			Reflect.setProperty(this, name, val);
 			return val;
 		}
@@ -127,15 +135,19 @@ class NewStage extends StageLayer {
 
 	// Callbacks
 	public var onStageScriptLoad:Script -> Void;
-	public var onStartCamSet:FlxPoint -> Float -> Void;
+	public var onPostStageCreation:StageXMLEvent->Void;
+	
 	public var onPrepareInfo:Access -> XMLImportedScriptInfo;
 	public var onRemoveInfo:Script -> Void;
+	
 	public var onXMLLoaded:(StageXMLEvent)->Array<Access> = null;
 	public var onNodeLoaded:(Access, Dynamic)->Dynamic = null;
 	public var onNodeFinished:(Access, Dynamic)->Void = null;
 	public var onXMLPostLoaded:(Access, Array<Access>)->Array<Access> = null;
+
+	public var onStartCamSet:FlxPoint -> Float -> Void;
 	public var onRatingSet:Float->Float->FlxBasic;
-	public var onPostStageCreation:StageXMLEvent->Void;
+	
 	public var onStageDestroy:NewStage -> Void;
 	public var onSilentDestroy:Script -> Void;
 
@@ -153,28 +165,26 @@ class NewStage extends StageLayer {
 		fileName = stage;
 		xmlFilePath = Paths.xml('stages/$fileName');
 		scriptFilePath = Paths.script('data/stages/$fileName');
-		if(Assets.exists(xmlFilePath)) {
+		if (Assets.exists(xmlFilePath)) {
 			try xmlFile = new Access(Xml.parse(Assets.getText(xmlFilePath)).firstElement())
 			catch (e) Logs.trace('Couldn\'t load stage "$xmlFilePath": ${e.message}', ERROR);
 		}
 
-		if(load)
-			loadStage();
+		if (load) loadStage();
 	}
 
 	private var stageEvent:StageXMLEvent;
 
 	private function loadStage(loadAll:Bool = false) {
-		if(allowScripts) {
+		if (allowScripts) {
 			script = Script.create(scriptFilePath);
 			// Performed by "onStageScriptLoad"
 			// PlayState.instance.scripts.add(stageScript);
-			if (onStageScriptLoad != null)
-				onStageScriptLoad(script);
+			if (onStageScriptLoad != null) onStageScriptLoad(script);
 			script.load();
 		}
 
-		if(xmlFile == null) {
+		if (xmlFile == null) {
 			postLoadStage(null);
 			return;
 		}
@@ -183,7 +193,7 @@ class NewStage extends StageLayer {
 
 		this.name = xmlFile.getAtt("name").getDefault(fileName);
 
-		if(onStartCamSet != null) 
+		if (onStartCamSet != null) 
 			onStartCamSet(startCam, defaultZoom);
 
 		if (xmlFile.has.folder) {
@@ -276,12 +286,13 @@ class NewStage extends StageLayer {
 					var w:Int = Std.parseInt(node.att.width);
 					var h:Int = Std.parseInt(node.att.height);
 					var c:flixel.util.FlxColor = (node.has.color) ? CoolUtil.getColorFromDynamic(node.att.color) : -1;
-					if(isSolid) spr.makeSolid(w, h, c);
+					if (isSolid) spr.makeSolid(w, h, c);
 					else spr.makeGraphic(w, h, c);
 
 					if (isSolid) node.x.remove("updateHitbox");
 					node.x.remove("width"); node.x.remove("height"); node.x.remove("color");
 					XMLUtil.loadSpriteFromXML(spr, node, "", NONE, false);
+
 					addSprite(spr.name, spr);
 				case "boyfriend" | "bf" | "player":
 					setCharPos("boyfriend", node, getDefaultPos("boyfriend"));
@@ -370,66 +381,39 @@ class NewStage extends StageLayer {
 			charPos.flipX = defaultCharPos.flip;
 		}
 
-		if(node != null) {
+		if (node != null) {
 			charPos.x = Std.parseFloat(node.getAtt("x")).getDefault(charPos.x);
 			charPos.y = Std.parseFloat(node.getAtt("y")).getDefault(charPos.y);
+
 			charPos.charSpacingX = Std.parseFloat(node.getAtt("spacingx")).getDefault(charPos.charSpacingX);
 			charPos.charSpacingY = Std.parseFloat(node.getAtt("spacingy")).getDefault(charPos.charSpacingY);
+
 			charPos.camxoffset = Std.parseFloat(node.getAtt("camxoffset")).getDefault(charPos.camxoffset);
 			charPos.camyoffset = Std.parseFloat(node.getAtt("camyoffset")).getDefault(charPos.camyoffset);
+
 			charPos.skewX = Std.parseFloat(node.getAtt("skewx")).getDefault(charPos.skewX);
 			charPos.skewY = Std.parseFloat(node.getAtt("skewy")).getDefault(charPos.skewY);
+
 			charPos.alpha = Std.parseFloat(node.getAtt("alpha")).getDefault(charPos.alpha);
 			charPos.angle = Std.parseFloat(node.getAtt("angle")).getDefault(charPos.angle);
 			charPos.flipX = (node.has.flip || node.has.flipX) ? (node.getAtt("flip") == "true" || node.getAtt("flipX") == "true") : charPos.flipX;
 			charPos.zoomFactor = Std.parseFloat(node.getAtt("zoomfactor")).getDefault(charPos.zoomFactor);
+
 			// Scaling
 			if (node.has.scale) {
-				/*
-				var scale:Null<Float> = Std.parseFloat(node.att.scale);
-				if (scale.isNotNull()) charPos.scale.set(scale, scale);
-				*/
 				var scale:Float = Std.parseFloat(node.att.scale).getDefaultFloat(1);
 				charPos.scale.set(scale, scale);
 			}
-			if (node.has.scalex) {
-				/*
-				var scale:Null<Float> = Std.parseFloat(node.att.scalex);
-				if (scale.isNotNull()) charPos.scale.x = scale;
-				*/
-				charPos.scale.x = Std.parseFloat(node.att.scalex).getDefaultFloat(1);
-			}
-			if (node.has.scaley) {
-				/*
-				var scale:Null<Float> = Std.parseFloat(node.att.scaley);
-				if (scale.isNotNull()) charPos.scale.y = scale;
-				*/
-				charPos.scale.y = Std.parseFloat(node.att.scaley).getDefaultFloat(1);
-			}
+			if (node.has.scalex) charPos.scale.x = Std.parseFloat(node.att.scalex).getDefaultFloat(1);
+			if (node.has.scaley) charPos.scale.y = Std.parseFloat(node.att.scaley).getDefaultFloat(1);
 
 			// Scroll Factor
 			if (node.has.scroll) {
-				/*
-				var scroll:Null<Float> = Std.parseFloat(node.att.scroll);
-				if (scroll != null) charPos.scrollFactor.set(scroll, scroll);
-				*/
 				var scroll:Float = Std.parseFloat(node.att.scroll).getDefaultFloat(1);
 				charPos.scrollFactor.set(scroll, scroll);
 			}
-			if (node.has.scrollx) {
-				/*
-				var scroll:Null<Float> = Std.parseFloat(node.att.scrollx);
-				if (scroll != null) charPos.scrollFactor.x = scroll;
-				*/
-				charPos.scrollFactor.x = Std.parseFloat(node.att.scrollx).getDefaultFloat(1);
-			}
-			if (node.has.scrolly) {
-				/*
-				var scroll:Null<Float> = Std.parseFloat(node.att.scrolly);
-				if (scroll != null) charPos.scrollFactor.y = scroll;
-				*/
-				charPos.scrollFactor.y = Std.parseFloat(node.att.scrolly).getDefaultFloat(1);
-			}
+			if (node.has.scrollx) charPos.scrollFactor.x = Std.parseFloat(node.att.scrollx).getDefaultFloat(1);
+			if (node.has.scrolly) charPos.scrollFactor.y = Std.parseFloat(node.att.scrolly).getDefaultFloat(1);
 		}
 		return add(characterPosLookup[name] = charPos);
 	}
@@ -442,6 +426,12 @@ class NewStage extends StageLayer {
 	public inline function isCharFlipped(posName:String, isPlayer:Bool = false)
 		return characterPosLookup.exists(posName) ? characterPosLookup[posName].flipX : isPlayer;
 
+	/**
+	 * Applies the character position to the character.
+	 * @param char The character to apply the position to.
+	 * @param posName The name of the character position.
+	 * @param id ?????? no fucking clue why does it have an ID it's never used!!!!!!!!!!!!!!!!
+	**/
 	public function applyCharPos(char:Character, posName:String, id:Float = 0) {
 		// Should I add the characters to the "stageSprites" list?
 		var charName:String = char.curCharacter;
@@ -460,28 +450,21 @@ class NewStage extends StageLayer {
 	 * @param destroyScript Whether the stage script should be destroyed
 	**/
 	public function destroySilently(destroySprites:Bool = true, destroyScript:Bool = true) {
-		if(destroyScript && script != null) {
+		if (destroyScript && script != null) {
 			// if (PlayState.instance == state && PlayState.instance.scripts != null) PlayState.instance.scripts.remove(stageScript);
-			if(onSilentDestroy != null)
-				onSilentDestroy(this.script);
+			if (onSilentDestroy != null) onSilentDestroy(this.script);
 			script.destroy();
 		}
 
-		// Not need to destroy the sprites manually since "destroy" does it. - Jamextreme140
-		/*
-		if(destroySprites)
-			this.forEach((spr) -> {
-				spr.destroy();
-			}, true);
-		*/
 		startCam.put();
+		
+		// Properly destroy the sprites here.
 		super.destroy();
 	}
 
 	override function destroy() {
 		// if (PlayState.instance == state && PlayState.instance.scripts != null) PlayState.instance.gameAndCharsCall("onStageDestroy", [this]);
-		if(onStageDestroy != null)
-			onStageDestroy(this);
+		if (onStageDestroy != null) onStageDestroy(this);
 		script?.call("destroy");
 		destroySilently();
 	}
@@ -504,19 +487,19 @@ class NewStage extends StageLayer {
 	@:dox(hide) private function pushNode(node:Access, elems:Array<Access>) {
 		elems.push(node);
 		if ((node.name == "use-extension" || node.name == "extension" || node.name == "ext") && XMLImportedScriptInfo.shouldLoadBefore(node))
-			if(onPrepareInfo != null) // :3
+			if (onPrepareInfo != null) // :3
 				onPrepareInfo(node);
 	}
 
 	// bruh...
 	override function hget(name:String):Dynamic {
-		if (__instanceFields.contains(name) || __instanceFields.contains('get_${name}'))
+		if (__instanceFields.contains(name) || __instanceFields.contains('get_$name'))
 			return Reflect.getProperty(this, name);
 		return super.hget(name);
 	}
 
 	override function hset(name:String, val:Dynamic):Dynamic {
-		if (__instanceFields.contains(name) || __instanceFields.contains('set_${name}')) {
+		if (__instanceFields.contains(name) || __instanceFields.contains('set_$name')) {
 			Reflect.setProperty(this, name, val);
 			return val;
 		}
@@ -531,27 +514,15 @@ class NewStage extends StageLayer {
 
 	public var characterPoses(get, never):Map<String, StageCharPos>;
 
-	function get_stageScript():Script {
-		return this.script;
-	}
+	function get_stageScript():Script { return this.script; }
 
-	function get_stagePath():String {
-		return this.xmlFilePath;
-	}
+	function get_stagePath():String { return this.xmlFilePath; }
 
-	function get_stageFile():String {
-		return this.fileName;
-	}
+	function get_stageFile():String { return this.fileName; }
 
-	function get_stageName():String {
-		return this.name;
-	}
+	function get_stageName():String { return this.name; }
 
-	function set_stageName(name:String):String {
-		return this.name = name;
-	}
+	function set_stageName(name:String):String { return this.name = name; }
 
-	function get_characterPoses():Map<String, StageCharPos> {
-		return this.characterPosLookup;
-	}
+	function get_characterPoses():Map<String, StageCharPos> { return this.characterPosLookup; }
 }
