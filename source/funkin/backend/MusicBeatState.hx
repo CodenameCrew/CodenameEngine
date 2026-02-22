@@ -12,6 +12,7 @@ import funkin.backend.system.GraphicCacheSprite;
 import funkin.backend.system.framerate.Framerate;
 import funkin.backend.system.interfaces.IBeatReceiver;
 import funkin.backend.system.interfaces.IBeatCancellableReceiver;
+import funkin.menus.MainMenuState;
 import funkin.options.PlayerSettings;
 
 /**
@@ -164,6 +165,11 @@ class MusicBeatState extends FlxState implements IBeatCancellableReceiver
 		if (/*subState == null && */(ALLOW_DEV_RELOAD && controls.DEV_RELOAD)) {
 			Logs.trace("Reloading Current State...", INFO, YELLOW);
 			FlxG.resetState();
+		}
+
+		if (FlxG.keys.justPressed.F1 && FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT) {
+			Logs.trace("Returning to Main Menu...", INFO, YELLOW);
+			FlxG.switchState(new MainMenuState());
 		}
 
 		if (subState != null)
