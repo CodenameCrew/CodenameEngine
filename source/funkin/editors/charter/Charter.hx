@@ -130,7 +130,7 @@ class Charter extends UIState {
 	public override function create() {
 		super.create();
 
-		WindowUtils.suffix = " (" + TU.translate("editor.chart.name") + ")";
+		WindowUtils.suffix = " (" + TU.translate("editor.chart.name", true) + ")";
 		SaveWarning.selectionClass = CharterSelection;
 		SaveWarning.saveFunc = () -> saveEverything();
 
@@ -1293,6 +1293,12 @@ class Charter extends UIState {
 
 		updateNoteLogic(elapsed);
 		updateAutoSaving(elapsed);
+		/*
+		if (FlxG.keys.justPressed.ZERO) {
+			autoSaveTimer = 15;
+			autoSaveNotif.cancelled = false;
+		}
+		*/
 
 		for (bs in __bookmarkObjects)
 		{
@@ -2352,7 +2358,7 @@ class Charter extends UIState {
 					case CCreateSelection(selection):
 						newChanges[i] = CCreateSelection(__relinkSelection(selection));
 					case CDeleteSelection(selection):
-					 	newChanges[i] = CDeleteSelection(__relinkSelection(selection));
+						newChanges[i] = CDeleteSelection(__relinkSelection(selection));
 					case CSelectionDrag(selectionDrags):
 						newChanges[i] = CSelectionDrag([
 							for (selectionDrag in selectionDrags)
