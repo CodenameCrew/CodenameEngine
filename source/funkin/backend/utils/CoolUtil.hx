@@ -1456,6 +1456,7 @@ final class CoolUtil
 
 		return toProperty.setValue(fromProperty.getValue());
 	}
+
 }
 
 class PropertyInfo {
