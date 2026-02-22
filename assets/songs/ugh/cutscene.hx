@@ -12,8 +12,8 @@ function create() {
 	tankman = new FunkinSprite(game.dad.x + game.dad.globalOffset.x + 520, game.dad.y + game.dad.globalOffset.y + 225);
 	tankman.antialiasing = true;
 	tankman.loadSprite(Paths.image('game/cutscenes/tank/ugh-tankman'));
-	tankman.animateAtlas.anim.addBySymbol('1', 'TANK TALK 1 P1', 0, false);
-	tankman.animateAtlas.anim.addBySymbol('2', 'TANK TALK 1 P2', 0, false);
+	tankman.addAnim('1', 'TANK TALK 1 P1', 0, false);
+	tankman.addAnim('2', 'TANK TALK 1 P2', 0, false);
 
 	game.insert(game.members.indexOf(game.dad), tankman);
 	game.dad.visible = false;
