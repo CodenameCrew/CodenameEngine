@@ -222,6 +222,128 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 		}
 
 		switch(event.name) {
+			case "Camera Movement":
+				// camera movement, use health icon
+				if(event.params != null) {
+					if (inMenu) {
+						var icon = getIconFromStrumline(event.params[0]);
+						if (icon != null) return icon;
+					} else {
+						var group = new EventIconGroup();
+						var icon = getIconFromStrumline(event.params[0]);
+						if (icon != null) { // had to do this, otherwise the icon is offsetd down right for some reason :sob:
+							icon.x -= 8;
+							icon.y -= 8;
+							group.add(icon);
+						}
+						if (event.params[1] && event.params[3] != 'CLASSIC')
+							generateEventIconDurationArrow(group, event.params[2]);
+						return group;
+					}
+				}
+
+			case "Camera Position":
+				if(event.params != null) {
+					if (!inMenu) {
+						var group = new EventIconGroup();
+						group.add(generateDefaultIcon(event.name));
+						if (event.params[2] && event.params[4] != 'CLASSIC')
+							generateEventIconDurationArrow(group, event.params[3]);
+						return group;
+					}
+				}
+
+			case "Add Camera Zoom":
+				if(event.params != null) {
+					if (!inMenu) {
+						var group = new EventIconGroup();
+						group.add(generateDefaultIcon(event.name));
+						group.members[0].y -= 2;
+						generateEventIconNumbers(group, event.params[0]);
+						return group;
+					}
+				}
+
+			case "Camera Bop":
+				if(event.params != null) {
+					if (!inMenu) {
+						var group = new EventIconGroup();
+						group.add(generateDefaultIcon(event.name));
+						group.members[0].y -= 2;
+						generateEventIconNumbers(group, event.params[0]);
+						return group;
+					}
+				}
+
+			case "Camera Zoom":
+				if(event.params != null) {
+					if (!inMenu) {
+						var group = new EventIconGroup();
+						group.add(generateDefaultIcon(event.name));
+						if (event.params[0] && event.params[4] != 'SET')
+							generateEventIconDurationArrow(group, event.params[3]);
+						group.members[0].y -= 2;
+						generateEventIconNumbers(group, event.params[1]);
+						return group;
+					}
+				}
+
+			case "Camera Modulo Change":
+				if(event.params != null) {
+					if (!inMenu) {
+						var group = new EventIconGroup();
+						group.add(generateDefaultIcon(event.name));
+						group.add({ // top
+							var num = new EventNumber(14, -1, event.params[0], EventNumber.ALIGN_CENTER);
+							num.active = false;
+							num;
+						});
+						group.add({ // bottom
+							var num = new EventNumber(14, 10, event.params[1], EventNumber.ALIGN_CENTER);
+							num.active = false;
+							num;
+						});
+						return group;
+					}
+				}
+
+			case "Camera Flash":
+				if(event.params != null) {
+					if (!inMenu) {
+						var group = new EventIconGroup();
+						group.add(generateDefaultIcon(event.name));
+						generateEventIconDurationArrow(group, event.params[2]);
+						return group;
+					}
+				}
+
+			case "BPM Change":
+				if(event.params != null && event.params[0] != null) {
+					var group = new EventIconGroup();
+					group.add(generateDefaultIcon(event.name));
+					if (!inMenu) {
+						group.members[0].y -= 2;
+						generateEventIconNumbers(group, event.params[0], 3);
+					}
+					if (Conductor.invalidEvents.contains(event)) generateEventIconWarning(group);
+					return group;
+				}
+
+			case "Continuous BPM Change":
+				if(event.params != null && event.params[1] != null) {
+					var group = new EventIconGroup();
+					group.add(generateDefaultIcon("BPM Change Start"));
+					if (!inMenu) {
+						generateEventIconDurationArrow(group, event.params[1]);
+						group.members[0].y -= 2;
+						generateEventIconNumbers(group, event.params[0], 3);
+					}
+					if (Conductor.invalidEvents.contains(event)) generateEventIconWarning(group);
+					return group;
+				} else {
+					return generateDefaultIcon("BPM Change Start");
+				}
+
 			case "Time Signature Change":
 				if(event.params != null && (event.params[0] >= 0 || event.params[1] >= 0)) {
 					var group = new EventIconGroup();
@@ -239,31 +361,6 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 					if (Conductor.invalidEvents.contains(event)) generateEventIconWarning(group);
 					return group;
 				}
-			case "Continuous BPM Change":
-				if(event.params != null && event.params[1] != null) {
-					var group = new EventIconGroup();
-					group.add(generateDefaultIcon("BPM Change Start"));
-					if (!inMenu) {
-						generateEventIconDurationArrow(group, event.params[1]);
-						group.members[0].y -= 2;
-						generateEventIconNumbers(group, event.params[0], 3);
-					}
-					if (Conductor.invalidEvents.contains(event)) generateEventIconWarning(group);
-					return group;
-				} else {
-					return generateDefaultIcon("BPM Change Start");
-				}
-			case "BPM Change":
-				if(event.params != null && event.params[0] != null) {
-					var group = new EventIconGroup();
-					group.add(generateDefaultIcon(event.name));
-					if (!inMenu) {
-						group.members[0].y -= 2;
-						generateEventIconNumbers(group, event.params[0], 3);
-					}
-					if (Conductor.invalidEvents.contains(event)) generateEventIconWarning(group);
-					return group;
-				}
 
 			case "Scroll Speed Change":
 				if(event.params != null && !inMenu) {
@@ -272,50 +369,6 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 					if (event.params[0]) generateEventIconDurationArrow(group, event.params[2]);
 					group.members[0].y -= 2;
 					generateEventIconNumbers(group, event.params[1]);
-					return group;
-				}
-
-			case "Camera Movement":
-				var shouldDoArrow:Bool = false;
-				var icon:Null<FlxSprite> = null;
-				if (event.params != null) {
-					shouldDoArrow = event.params[1] && event.params[3] != "CLASSIC"; // is Tweened and isnt Lerped
-					icon = getIconFromStrumline(event.params[0]); // camera movement, use health icon
-				}
-				
-				if (icon == null) icon = generateDefaultIcon(event.name);
-				
-				if(event.params != null && shouldDoArrow && !inMenu) {
-					var group = new EventIconGroup();
-					group.add(icon);
-					group.members[0].x -= 8;
-					group.members[0].y -= 8;
-					generateEventIconDurationArrow(group, event.params[2]);
-					return group;
-				} else
-					return icon;
-
-			case "Camera Position":
-				var shouldDoArrow:Bool = false;
-				if (event.params != null)
-					shouldDoArrow = event.params[2] && event.params[4] != "CLASSIC"; // is Tweened and isnt Lerped
-
-				if(event.params != null && shouldDoArrow && !inMenu) {
-					var group = new EventIconGroup();
-					group.add(generateDefaultIcon(event.name));
-					generateEventIconDurationArrow(group, event.params[3]);
-					return group;
-				}
-
-			case "Camera Zoom":
-				var shouldDoArrow:Bool = false;
-				if (event.params != null)
-					shouldDoArrow = event.params[0];
-
-				if(event.params != null && shouldDoArrow && !inMenu) {
-					var group = new EventIconGroup();
-					group.add(generateDefaultIcon(event.name));
-					generateEventIconDurationArrow(group, event.params[3]);
 					return group;
 				}
 		}
