@@ -1,5 +1,6 @@
 package funkin.game;
 
+import flixel.math.FlxRect;
 import haxe.xml.Access;
 import hscript.IHScriptCustomBehaviour;
 
@@ -23,6 +24,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	private static final __instanceFields = Type.getInstanceFields(StageLayer);
 
 	public var name:String;
+	public var bounds(get, never):FlxRect;
 
 	private var stageSprites:Map<String, Int> = [];
 	private var stageLayers:Map<String, Int> = [];
@@ -46,7 +48,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	public function addSprite(name:String, spr:FlxObject):FlxObject {
 		this.add(spr);
 		stageSprites.set(name, this.members.indexOf(spr)); // TODO: faster way to set the index
-
+		updateBounds();
 		onAddSprite.dispatch(spr);
 
 		return spr;
@@ -55,7 +57,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	public function addLayer(name:String, layer:StageLayer):StageLayer {
 		this.add(layer);
 		stageLayers.set(name, this.members.indexOf(layer));
-		
+		updateBounds();
 		onAddLayer.dispatch(layer);
 
 		return layer;
@@ -87,6 +89,102 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		if(stageSprites.exists(name)) return this.members[stageSprites[name]] = val;
 		if(stageLayers.exists(name)) return this.members[stageLayers[name]] = val;
 		return null;
+	}
+
+	override function destroy() {
+		super.destroy();
+		_bounds.put();
+	}
+
+	private var _bounds:FlxRect = FlxRect.get();
+	private function get_bounds():FlxRect {
+		return _bounds;
+	}
+
+	private function updateBounds() {
+		if(this.length == 0) return;
+		var x = findMinX();
+		var y = findMinY();
+		var width = findMaxX() - x;
+		var height = findMaxY() - y;
+
+		_bounds.set(x, y, width, height);
+	}
+
+	// From FlxSpriteGroup
+
+	private function findMinX():Float {
+		if(this.length == 0) return 0;
+		var value = Math.POSITIVE_INFINITY;
+
+		for(m in this.members) {
+			if(m == null) continue;
+
+			var minX:Float;
+			if(m is StageLayer) minX = cast(m, StageLayer).findMinX();
+			else minX = cast(m, FlxObject).x;
+
+			if (minX < value) value = minX;
+		}
+
+		return value;
+	}
+
+	private function findMaxX():Float {
+		if(this.length == 0) return 0;
+		var value = Math.NEGATIVE_INFINITY;
+
+		for(m in this.members) {
+			if(m == null) continue;
+
+			var maxX:Float;
+			if(m is StageLayer) maxX = cast(m, StageLayer).findMaxX();
+			else {
+				var obj:FlxObject = cast m;
+				maxX = obj.x + obj.width;
+			}
+
+			if (maxX > value) value = maxX;
+		}
+
+		return value;
+	}
+
+	private function findMinY():Float {
+		if(this.length == 0) return 0;
+		var value = Math.POSITIVE_INFINITY;
+
+		for(m in this.members) {
+			if(m == null) continue;
+
+			var minY:Float;
+			if(m is StageLayer) minY = cast(m, StageLayer).findMinY();
+			else minY = cast(m, FlxObject).y;
+
+			if (minY < value) value = minY;
+		}
+
+		return value;
+	}
+
+	private function findMaxY():Float {
+		if(this.length == 0) return 0;
+		var value = Math.NEGATIVE_INFINITY;
+
+		for(m in this.members) {
+			if(m == null) continue;
+
+			var maxY:Float;
+			if(m is StageLayer) maxY = cast(m, StageLayer).findMaxY();
+			else {
+				var obj:FlxObject = cast m;
+				maxY = obj.y + obj.height;
+			}
+
+			if (maxY > value) value = maxY;
+		}
+
+		return value;
 	}
 }
 
