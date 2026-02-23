@@ -1,24 +1,18 @@
 package funkin.game;
 
 import haxe.xml.Access;
-
 import hscript.IHScriptCustomBehaviour;
 
 import funkin.game.Stage.StageCharPos;
 import funkin.game.Stage.StageCharPosInfo;
-
 import funkin.backend.utils.XMLUtil;
-
 import funkin.backend.scripting.Script;
-import funkin.backend.scripting.ScriptPack;
 import funkin.backend.scripting.events.stage.StageXMLEvent;
-
 import funkin.backend.system.interfaces.IBeatReceiver;
 
+import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
-
-import flixel.util.FlxSignal.FlxTypedSignal;
 
 using StringTools;
 
@@ -175,7 +169,7 @@ class NewStage extends StageLayer {
 
 	private var stageEvent:StageXMLEvent;
 
-	private function loadStage(loadAll:Bool = false) {
+	public function loadStage(loadAll:Bool = false) {
 		if (allowScripts) {
 			script = Script.create(scriptFilePath);
 			// Performed by "onStageScriptLoad"

@@ -2230,6 +2230,8 @@ class PlayState extends MusicBeatState
 		stage.onStageDestroy = (stage) -> {
 			this.gameAndCharsCall("onStageDestroy", [stage]);
 		}
+
+		stage.loadStage();
 		
 		return this.stage = stage;
 	}
