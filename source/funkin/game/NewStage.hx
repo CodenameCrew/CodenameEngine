@@ -24,10 +24,11 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	private static final __instanceFields = Type.getInstanceFields(StageLayer);
 
 	public var name:String;
+	public var x(get, never):Float;
+	public var y(get, never):Float;
+	public var width(get, never):Float;
+	public var height(get, never):Float;
 	public var bounds(get, never):FlxRect;
-
-	private var stageSprites:Map<String, Int> = [];
-	private var stageLayers:Map<String, Int> = [];
 
 	public var onAddSprite:FlxTypedSignal<FlxObject -> Void> = new FlxTypedSignal();
 	public var onAddLayer:FlxTypedSignal<StageLayer -> Void> = new FlxTypedSignal();
@@ -45,7 +46,11 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		this.name = name;
 	}
 
+	private var stageSprites:Map<String, Int> = [];
+	private var stageLayers:Map<String, Int> = [];
+
 	public function addSprite(name:String, spr:FlxObject):FlxObject {
+		if(stageSprites.exists(name)) return spr;
 		this.add(spr);
 		stageSprites.set(name, this.members.indexOf(spr)); // TODO: faster way to set the index
 		updateBounds();
@@ -55,6 +60,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	}
 
 	public function addLayer(name:String, layer:StageLayer):StageLayer {
+		if(stageLayers.exists(name)) return layer;
 		this.add(layer);
 		stageLayers.set(name, this.members.indexOf(layer));
 		updateBounds();
@@ -186,6 +192,15 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 
 		return value;
 	}
+
+	private function get_x():Float 
+		return _bounds.x;
+	private function get_y():Float 
+		return _bounds.y;
+	private function get_width():Float
+		return _bounds.width;
+	private function get_height():Float 
+		return _bounds.height;
 }
 
 class NewStage extends StageLayer {
@@ -529,23 +544,18 @@ class NewStage extends StageLayer {
 	@:dox(hide) private function checkMemoryMode(xml:Access, loadAll:Bool, elems:Array<Access>) {
 		for(node in xml.elements) {
 			if (node.name == "high-memory" && (!Options.lowMemoryMode || loadAll))
-				for (e in node.elements)
-					pushNode(e, elems);
+				for (e in node.elements) pushNode(e, elems);
 			else if (node.name == "low-memory" && (Options.lowMemoryMode || loadAll))
-				for (e in node.elements)
-					pushNode(e, elems);
-			else if (node.name == "layer")
-				checkMemoryMode(node, loadAll, elems); // recursive check in layers
-			else
-				pushNode(node, elems);
+				for (e in node.elements) pushNode(e, elems);
+			else if (node.name == "layer") checkMemoryMode(node, loadAll, elems); // recursive check in layers
+			else pushNode(node, elems);
 		}
 	}
 
 	@:dox(hide) private function pushNode(node:Access, elems:Array<Access>) {
 		elems.push(node);
 		if ((node.name == "use-extension" || node.name == "extension" || node.name == "ext") && XMLImportedScriptInfo.shouldLoadBefore(node))
-			if (onPrepareInfo != null) // :3
-				onPrepareInfo(node);
+			if (onPrepareInfo != null) onPrepareInfo(node);
 	}
 
 	// bruh...
@@ -568,18 +578,12 @@ class NewStage extends StageLayer {
 	public var stageFile(get, never):String;
 	public var stageName(get, set):String;
 	public var stageScript(get, never):Script;
-
 	public var characterPoses(get, never):Map<String, StageCharPos>;
 
 	function get_stageScript():Script { return this.script; }
-
 	function get_stagePath():String { return this.xmlFilePath; }
-
 	function get_stageFile():String { return this.fileName; }
-
 	function get_stageName():String { return this.name; }
-
 	function set_stageName(name:String):String { return this.name = name; }
-
 	function get_characterPoses():Map<String, StageCharPos> { return this.characterPosLookup; }
 }
