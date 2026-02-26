@@ -1,9 +1,5 @@
 package funkin.game;
 
-import flixel.math.FlxRect;
-import haxe.xml.Access;
-import hscript.IHScriptCustomBehaviour;
-
 import funkin.game.Stage.StageCharPos;
 import funkin.game.Stage.StageCharPosInfo;
 import funkin.backend.utils.XMLUtil;
@@ -11,9 +7,13 @@ import funkin.backend.scripting.Script;
 import funkin.backend.scripting.events.stage.StageXMLEvent;
 import funkin.backend.system.interfaces.IBeatReceiver;
 
-import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
+import flixel.util.FlxSignal.FlxTypedSignal;
+
+import haxe.xml.Access;
+import hscript.IHScriptCustomBehaviour;
 
 using StringTools;
 
@@ -270,8 +270,6 @@ class NewStage extends StageLayer {
 	public function loadStage(loadAll:Bool = false) {
 		if (allowScripts) {
 			script = Script.create(scriptFilePath);
-			// Performed by "onStageScriptLoad"
-			// PlayState.instance.scripts.add(stageScript);
 			if (onStageScriptLoad != null) onStageScriptLoad(script);
 			script.load();
 		}
@@ -301,27 +299,7 @@ class NewStage extends StageLayer {
 
 		// some way to tag that the sprites are from the group
 		checkMemoryMode(xmlFile, loadAll, elems);
-		/*
-		for (node in xmlFile.elements)
-		{
-			if (node.name == "high-memory" && (!Options.lowMemoryMode || forceLoadAll))
-				for (e in node.elements)
-					__pushNcheckNode(elems, e);
-			else if (node.name == "low-memory" && (Options.lowMemoryMode || forceLoadAll))
-				for (e in node.elements)
-					__pushNcheckNode(elems, e);
-			else
-				__pushNcheckNode(elems, node);
-		}
-		*/
 
-		// This should be performed by the "onXMLLoaded" callback
-		/*
-		if (PlayState.instance == state) {
-			event = EventManager.get(StageXMLEvent).recycle(this, stageXML, elems);
-			elems = PlayState.instance.gameAndCharsEvent("onStageXMLParsed", event).elems;
-		}
-		*/
 		if(onXMLLoaded != null) {
 			stageEvent = EventManager.get(StageXMLEvent).recycle(this, xmlFile, elems);
 			elems = onXMLLoaded(stageEvent);
@@ -336,15 +314,6 @@ class NewStage extends StageLayer {
 		startCam.x = Std.parseFloat(xmlFile.getAtt("startCamPosX")).getDefaultFloat(0);
 		startCam.y = Std.parseFloat(xmlFile.getAtt("startCamPosY")).getDefaultFloat(0);
 		defaultZoom = Std.parseFloat(xmlFile.getAtt("zoom")).getDefaultFloat(1.05);
-		/*
-		var parsed:Null<Float>;
-		if ((parsed = Std.parseFloat(xmlFile.getAtt("startCamPosX"))).isNotNull())
-			startCam.x = parsed;
-		if ((parsed = Std.parseFloat(xmlFile.getAtt("startCamPosY"))).isNotNull())
-			startCam.y = parsed;
-		if ((parsed = Std.parseFloat(xmlFile.getAtt("zoom"))).isNotNull())
-			defaultZoom = parsed;
-		*/
 	}
 
 	private inline function loadCustomAttributes() {
@@ -441,7 +410,6 @@ class NewStage extends StageLayer {
 			}
 
 			// idk lemme check anyways just in case scripts did smth  - Nex
-			//if (event != null) PlayState.instance.gameAndCharsEvent("onPostStageCreation", event);
 			if(onPostStageCreation != null && stageEvent != null)
 				onPostStageCreation(stageEvent);
 
@@ -450,7 +418,6 @@ class NewStage extends StageLayer {
 				var script = info.getScript();
 				if (script == null) continue;
 
-				//PlayState.instance.scripts.remove(script);
 				if(onRemoveInfo != null)
 					onRemoveInfo(script);
 				script.destroy();
@@ -543,7 +510,6 @@ class NewStage extends StageLayer {
 	**/
 	public function destroySilently(destroySprites:Bool = true, destroyScript:Bool = true) {
 		if (destroyScript && script != null) {
-			// if (PlayState.instance == state && PlayState.instance.scripts != null) PlayState.instance.scripts.remove(stageScript);
 			if (onSilentDestroy != null) onSilentDestroy(this.script);
 			script.destroy();
 		}
@@ -555,7 +521,6 @@ class NewStage extends StageLayer {
 	}
 
 	override function destroy() {
-		// if (PlayState.instance == state && PlayState.instance.scripts != null) PlayState.instance.gameAndCharsCall("onStageDestroy", [this]);
 		if (onStageDestroy != null) onStageDestroy(this);
 		script?.call("destroy");
 		destroySilently();
