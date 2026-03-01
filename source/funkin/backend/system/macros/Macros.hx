@@ -58,6 +58,8 @@ class Macros {
 
 		final macroPath = 'funkin.backend.system.macros.Macros';
 		Compiler.addMetadata('@:build($macroPath.buildLimeAssetLibrary())', 'lime.utils.AssetLibrary');
+		Compiler.addMetadata('@:build($macroPath.buildLimeApplication())', 'lime.app.Application');
+		Compiler.addMetadata('@:build($macroPath.buildLimeWindow())', 'lime.ui.Window');
 
 		//Adds Compat for #if hscript blocks when you have hscript improved
 		if (Context.defined("hscript_improved") && !Context.defined("hscript")) {
@@ -70,6 +72,38 @@ class Macros {
 
 		fields.push({name: 'tag', access: [APublic], pos: pos, kind: FVar(macro :funkin.backend.assets.AssetSource)});
 		fields.push({name: 'isCompressed', access: [APublic], pos: pos, kind: FVar(macro :Bool, macro false)});
+
+		return fields;
+	}
+
+	public static function buildLimeApplication():Array<Field> {
+		final fields:Array<Field> = Context.getBuildFields(), pos:Position = Context.currentPos();
+		for (f in fields) switch (f.kind) {
+			case FFun(func): switch (f.name) {
+				case "exec": switch (func.expr.expr) {
+					case EBlock(exprs): exprs.insert(1, macro funkin.backend.system.Main.preInit());
+					default:
+				}
+			}
+			default:
+		}
+
+		return fields;
+	}
+
+	public static function buildLimeWindow():Array<Field> {
+		final fields:Array<Field> = Context.getBuildFields(), pos:Position = Context.currentPos();
+		if (!Context.defined("DARK_MODE_WINDOW")) return fields;
+
+		for (f in fields) switch (f.kind) {
+			case FFun(func): switch (f.name) {
+				case "new": switch (func.expr.expr) {
+					case EBlock(exprs): exprs.push(macro funkin.backend.utils.NativeAPI.setDarkMode(title, true));
+					default:
+				}
+			}
+			default:
+		}
 
 		return fields;
 	}

@@ -58,9 +58,11 @@ class Main extends Sprite
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
 	public static function preInit() {
+		#if sys
 		funkin.backend.utils.NativeAPI.registerAsDPICompatible();
 		funkin.backend.system.CommandLineHandler.parseCommandLine(Sys.args());
 		funkin.backend.system.Main.fixWorkingDirectory();
+		#end
 	}
 
 	public function new()
@@ -134,7 +136,6 @@ class Main extends Sprite
 		FlxG.scaleMode = scaleMode = new FunkinRatioScaleMode();
 
 		Conductor.init();
-		AudioSwitchFix.init();
 		EventManager.init();
 		FlxG.signals.focusGained.add(onFocus);
 		FlxG.signals.preStateSwitch.add(onStateSwitch);
@@ -205,16 +206,6 @@ class Main extends Sprite
 	private static function onStateSwitchPost() {
 		// manual asset clearing since base openfl one does'nt clear lime one
 		// does'nt clear bitmaps since flixel fork does it auto
-
-		@:privateAccess {
-			// clear uint8 pools
-			for(length=>pool in openfl.display3D.utils.UInt8Buff._pools) {
-				for(b in pool.clear())
-					b.destroy();
-			}
-
-			openfl.display3D.utils.UInt8Buff._pools.clear();
-		}
 
 		MemoryUtil.clearMajor();
 	}

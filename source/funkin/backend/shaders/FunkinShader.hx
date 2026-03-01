@@ -1,17 +1,20 @@
 package funkin.backend.shaders;
 
+import haxe.Exception;
+import haxe.io.Path;
 import flixel.graphics.FlxGraphic;
 import flixel.system.FlxAssets.FlxShader;
 import flixel.util.FlxSignal.FlxTypedSignal;
-import haxe.Exception;
+import flixel.util.FlxStringUtil;
 import hscript.IHScriptCustomBehaviour;
-import lime.utils.Float32Array;
 import openfl.display.BitmapData;
 import openfl.display.ShaderInput;
 import openfl.display.ShaderParameter;
 import openfl.display.ShaderParameterType;
+import openfl.display.Shader;
 import openfl.display3D._internal.GLProgram;
 import openfl.display3D._internal.GLShader;
+import openfl.display3D.Program3D;
 import openfl.utils._internal.Log;
 
 using StringTools;
@@ -20,14 +23,94 @@ using StringTools;
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
 class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
+	#if REGION /* Backward Compatibility */
 	private static var __instanceFields = Type.getInstanceFields(FunkinShader);
 	private static var FRAGMENT_SHADER = 0;
 	private static var VERTEX_SHADER = 1;
 
-	public var onGLUpdate:FlxTypedSignal<Void->Void> = new FlxTypedSignal<Void->Void>();
-	public var onProcessGLData:FlxTypedSignal<(String, String)->Void> = new FlxTypedSignal<(String, String)->Void>();
+	public var glslVer(get, set):String;
+	inline function get_glslVer():String return glVersion;
+	inline function set_glslVer(v:String):String return glVersion = v;
 
-	public var glslVer:String = Flags.DEFAULT_GLSL_VERSION;
+	public var glRawFragmentSource(get, set):String;
+	inline function get_glRawFragmentSource():String return __glFragmentSourceRaw;
+	inline function set_glRawFragmentSource(v:String):String return __glFragmentSourceRaw = v;
+
+	public var glRawVertexSource(get, set):String;
+	inline function get_glRawVertexSource():String return __glVertexSourceRaw;
+	inline function set_glRawVertexSource(v:String):String return __glVertexSourceRaw = v;
+
+	// Unused... cne-openfl uses a different system
+	var __cancelNextProcessGLData:Bool = false;
+	public var onProcessGLData:FlxTypedSignal<(String, String)->Void> = new FlxTypedSignal<(String, String)->Void>();
+	#end
+
+	public static function getShaderCode(key:String, isFragment = true):Null<String> {
+		var path = "shaders/" + key;
+		key = Path.withoutExtension(key);
+
+		final ext = Path.extension(path);
+		if (ext == "") path = path + (isFragment ? ".frag" : ".vert");
+		else isFragment = ext != "vert";
+
+		path = Paths.getPath(path);
+		return Assets.exists(path) ? Assets.getText(path) : null;
+	}
+
+	private static function processGLSLText(source:String, glVersion:String, isFragment:Bool, ?pragmas:Map<String, String>):String
+		return Shader.processGLSLText(_processGLSLText(source, glVersion, isFragment, pragmas), glVersion, isFragment);
+
+	private static function _processGLSLText(source:String, glVersion:String, isFragment:Bool, ?pragmas:Map<String, String>):String {
+		var injectedFragColor = StringTools.contains(source, "out vec4"), canInjectFragColorFix = switch (glVersion) {
+			case "300 es", "330", "400", "410", "420", "430", "440", "450", "460": isFragment;
+			default: false;
+		};
+		if (pragmas != null) {
+			final pragmaKeyword = ~/#pragma (\w+)/g;
+			source = pragmaKeyword.map(source, (_) -> {
+				var name = pragmaKeyword.matched(1);
+				if (!pragmas.exists(name)) return '#pragma $name';
+
+				var pragma = pragmas.get(name);
+				if (name == "header" && canInjectFragColorFix && !injectedFragColor) {
+					injectedFragColor = true;
+					if (!StringTools.contains(pragma, "out vec4")) return processGLSLText(Shader.fragColorHeaderFix + pragma, glVersion, isFragment, pragmas);
+				}
+				return processGLSLText(pragma, glVersion, isFragment, pragmas);
+			});
+		}
+
+		inline function tryGetShaderCode(key:String) {
+			final s = getShaderCode(key, isFragment);
+			if (s == null) {
+				Logs.traceColored([
+					Logs.logText('[Shader] ', RED),
+					Logs.logText('Failed to import shader $key', RED),
+				]);
+				return "";
+			}
+			return s;
+		}
+
+		final includeKeyword = ~/#include ['"](.+)['"]/g;
+		final importKeyword = ~/#import\s+<(.*)>/g;
+		source = importKeyword.map(source, (_) ->
+			return processGLSLText(tryGetShaderCode(importKeyword.matched(1)), glVersion, isFragment, pragmas) ?? "");
+
+		return source = includeKeyword.map(source, (_) ->
+			return processGLSLText(tryGetShaderCode(includeKeyword.matched(1)), glVersion, isFragment, pragmas) ?? "");
+	}
+
+	private static var __defaultsAvailable:Bool;
+	private static var __glFragmentSourceDefault:String;
+	private static var __glVertexSourceDefault:String;
+	private static var __glFragmentPragmasDefault:Map<String, String>;
+	private static var __glVertexPragmasDefault:Map<String, String>;
+	private static var __glFragmentExtensionsDefault:Array<ShaderExtension>;
+	private static var __glVertexExtensionsDefault:Array<ShaderExtension>;
+
+	public var onGLUpdate:FlxTypedSignal<Void->Void> = new FlxTypedSignal<Void->Void>();
+
 	public var fileName:String = "FunkinShader";
 	public var fragFileName:String = "FunkinShader";
 	public var vertFileName:String = "FunkinShader";
@@ -36,221 +119,54 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 	public var fragmentPrefix:String = "";
 	public var vertexPrefix:String = "";
 
-	/**
-	 * Creates a new shader from the specified fragment and vertex source.
-	 * Accepts `#pragma header`.
-	 * @param frag Fragment source (pass `null` to use default)
-	 * @param vert Vertex source (pass `null` to use default)
-	 * @param glslVer Version of GLSL to use (defaults to 120)
-	 */
-	public override function new(frag:String, vert:String, glslVer:String = null) {
-		if (glslVer == null) glslVer = Flags.DEFAULT_GLSL_VERSION;
-		if (frag == null) frag = ShaderTemplates.defaultFragmentSource;
-		if (vert == null) vert = ShaderTemplates.defaultVertexSource;
-		this.glFragmentSource = frag;
-		this.glVertexSource = vert;
+	private var __immediate:Bool;
 
-		this.glslVer = glslVer;
+	public function new(?fragmentSource:String, ?vertexSource:String, ?version:String,
+		?fragmentExtensions:Array<ShaderExtension>, ?vertexExtensions:Array<ShaderExtension>, immediate = false
+	) {
+		if (!__defaultsAvailable) {
+			__glFragmentSourceDefault = __glFragmentSourceRaw;
+			__glVertexSourceDefault = __glVertexSourceRaw;
+			__glFragmentPragmasDefault = __glFragmentPragmas.copy();
+			__glVertexPragmasDefault = __glVertexPragmas.copy();
+			__glFragmentExtensionsDefault = __glFragmentExtensions ?? [];
+			__glVertexExtensionsDefault = __glVertexExtensions ?? [];
+			__defaultsAvailable = true;
+		}
+
+		__immediate = immediate;
+
+		if (version != null) glVersion = version;
+		if (vertexExtensions != null) glVertexExtensions = vertexExtensions;
+		if (fragmentExtensions != null) glFragmentExtensions = fragmentExtensions;
+		if (vertexSource != null) glVertexSource = vertexSource;
+		if (fragmentSource != null) glFragmentSource = fragmentSource;
+
 		super();
+
+		if (!__isGenerated) {
+			__isGenerated = true;
+			__init();
+		}
 	}
 
-	static var IMPORT_REGEX = ~/#import\s+<(.*)>/;
+	public function loadShader(name:String, ?version:String, immediate = false):FunkinShader {
+		final fragment = getShaderCode(name, true), vertex = getShaderCode(name, false);
 
-	private function processImports(value:String, type:Int):String
-	{
-		while(IMPORT_REGEX.match(value))
-		{
-			var importPath = IMPORT_REGEX.matched(1);
-			var importSource = Assets.getText("assets/shaders/" + importPath);
-			if(importSource == null) {
-				var fileName = type == FRAGMENT_SHADER ? fragFileName : vertFileName;
-				Logs.traceColored([
-					Logs.logText('[Shader] ', RED),
-					Logs.logText('Failed to import shader ${importPath} in ${fileName}', RED),
-				]);
-			} else {
-				value = value.replace(IMPORT_REGEX.matched(0), importSource);
-			}
-		}
-		return value;
+		glVersion = version;
+		glVertexSource = vertex ?? __glVertexSourceDefault;
+		glFragmentSource = fragment ?? __glFragmentSourceDefault;
+
+		if (immediate) __init();
+		return this;
 	}
 
-	static var ERROR_POS_REGEX = ~/(\d+):(\d+): (.*)/g;
-	static var ERROR_REGEX = ~/ERROR: (\d+):(\d+): (.*)/g;
-	static var ERROR_REGEX_2 = ~/(\d+)\((\d+)\) : error ([^:]+): (.*)/g;
-	@:noCompletion private override function __createGLShader(source:String, type:Int):GLShader
-	{
-		var gl = __context.gl;
-
-		var shader = gl.createShader(type);
-		gl.shaderSource(shader, source);
-		gl.compileShader(shader);
-		var shaderInfoLog = gl.getShaderInfoLog(shader);
-		var hasInfoLog = shaderInfoLog != null && StringTools.trim(shaderInfoLog) != "";
-		var compileStatus = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-
-		if (hasInfoLog || compileStatus == 0)
-		{
-			var isVertexShader = type == gl.VERTEX_SHADER;
-			var messageBuf = new StringBuf();
-			messageBuf.add((compileStatus == 0) ? "Error" : "Info");
-			if(isVertexShader) {
-				messageBuf.add(" compiling vertex shader");
-				if(vertFileName != null && vertFileName.length > 0) {
-					messageBuf.add(" (" + vertFileName + ")");
-				}
-			} else {
-				messageBuf.add(" compiling fragment shader");
-				if(fragFileName != null && fragFileName.length > 0) {
-					messageBuf.add(" (" + fragFileName + ")");
-				}
-			}
-			messageBuf.add("\n");
-			var errorPositions = [];
-			var regex = null;
-			var tmp = shaderInfoLog;
-			if(shaderInfoLog.contains(" : error ")) {
-				regex = ERROR_REGEX_2;
-
-				while(regex.match(tmp)) {
-					errorPositions.push(new ShaderErrorPosition(regex.matched(2), regex.matched(1), regex.matched(4)));
-					tmp = regex.matchedRight();
-				}
-			} else if(shaderInfoLog.contains("ERROR: ")) {
-				regex = ERROR_REGEX;
-
-				while(regex.match(tmp)) {
-					errorPositions.push(new ShaderErrorPosition(regex.matched(2), regex.matched(1), regex.matched(3)));
-					tmp = regex.matchedRight();
-				}
-			} else {
-				regex = ERROR_POS_REGEX;
-
-				while(regex.match(tmp)) {
-					errorPositions.push(new ShaderErrorPosition(regex.matched(2), regex.matched(1), regex.matched(3)));
-					tmp = regex.matchedRight();
-				}
-			}
-			var splitSource = source.split("\n");
-			for(error in errorPositions) {
-				messageBuf.add("ERROR: Line: " + error.line);
-				if(error.column > 0) {
-					messageBuf.add(", Column: " + error.column);
-				}
-				messageBuf.add(", " + error.message);
-				if(error.line < splitSource.length) {
-					messageBuf.add("\nLine: ");
-					messageBuf.add(splitSource[error.line-1].trim());
-				}
-				messageBuf.add("\n\n");
-			}
-			var hasErrorPosition = errorPositions.length > 0;
-			if(hasErrorPosition) {
-				messageBuf.add("Raw shader info log:\n");
-			}
-			messageBuf.add(shaderInfoLog);
-			messageBuf.add("\n");
-			messageBuf.add(source);
-
-			var message = messageBuf.toString();
-			if (compileStatus == 0) Log.error(message);
-			else if (hasInfoLog) Log.debug(message);
+	override function __initGL():Void {
+		if (__immediate) {
+			__context = FlxG.stage.context3D;
+			__enable();
 		}
-
-		return shader;
-	}
-
-	@:noCompletion private override function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
-	{
-		var program:GLProgram = null;
-		try
-		{
-			var gl = __context.gl;
-
-			var vertexShader = __createGLShader(vertexSource, gl.VERTEX_SHADER);
-			var fragmentShader = __createGLShader(fragmentSource, gl.FRAGMENT_SHADER);
-
-			program = gl.createProgram();
-
-			// Fix support for drivers that don't draw if attribute 0 is disabled
-			for (param in __paramFloat)
-			{
-				if (param.name.indexOf("Position") > -1 && StringTools.startsWith(param.name, "openfl_"))
-				{
-					gl.bindAttribLocation(program, 0, param.name);
-					break;
-				}
-			}
-
-			gl.attachShader(program, vertexShader);
-			gl.attachShader(program, fragmentShader);
-			gl.linkProgram(program);
-
-			if (gl.getProgramParameter(program, gl.LINK_STATUS) == 0)
-			{
-				var messageBuf = new StringBuf();
-				messageBuf.add("Unable to initialize the shader program");
-				messageBuf.add("\n");
-				messageBuf.add(gl.getProgramInfoLog(program));
-				var message = messageBuf.toString();
-				Log.error(message);
-			}
-		}
-		catch (error:Dynamic)
-		{
-			Logs.traceColored([
-				Logs.logText('[Shader] ', BLUE),
-				Logs.logText('Failed to compile shader ${fileName}: ', RED),
-				Logs.logText(Std.string(error))
-			], TRACE);
-		}
-		return program;
-
-		return program;
-	}
-
-	var glRawFragmentSource:String;
-	var glRawVertexSource:String;
-
-	@:noCompletion override private function set_glFragmentSource(value:String):String
-	{
-		if(value == null)
-			value = ShaderTemplates.defaultFragmentSource;
-		glRawFragmentSource = value;
-		value = processImports(value, FRAGMENT_SHADER);
-		value = value.replace("#pragma header", ShaderTemplates.fragHeader).replace("#pragma body", ShaderTemplates.fragBody);
-		if (value != __glFragmentSource)
-		{
-			__glSourceDirty = true;
-		}
-
-		return __glFragmentSource = value;
-	}
-
-	@:noCompletion override private function set_glVertexSource(value:String):String
-	{
-		if(value == null)
-			value = ShaderTemplates.defaultVertexSource;
-		glRawVertexSource = value;
-		value = processImports(value, VERTEX_SHADER);
-
-		var useBackCompat:Bool = true;
-		for (regex in ShaderTemplates.vertBackCompatVarList) if (!regex.match(value)) {
-			useBackCompat = false;
-			break;
-		}
-
-		var header = useBackCompat ? ShaderTemplates.vertHeaderBackCompat : ShaderTemplates.vertHeader;
-		var body = useBackCompat ? ShaderTemplates.vertBodyBackCompat : ShaderTemplates.vertBody;
-
-		value = value.replace("#pragma header", header).replace("#pragma body", body);
-
-		if (value != __glVertexSource)
-		{
-			__glSourceDirty = true;
-		}
-
-		return __glVertexSource = value;
+		super.__initGL();
 	}
 
 	override function __updateGL():Void {
@@ -258,276 +174,14 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 		super.__updateGL();
 	}
 
-	@:noCompletion private override function __initGL():Void
-	{
-		if (__glSourceDirty || __paramBool == null)
-		{
-			__glSourceDirty = false;
-			program = null;
-
-			__inputBitmapData = new Array();
-			__paramBool = new Array();
-			__paramFloat = new Array();
-			__paramInt = new Array();
-
-			__processGLData(glVertexSource, "attribute");
-			__processGLData(glVertexSource, "uniform");
-			__processGLData(glFragmentSource, "uniform");
-		}
-
-		if (__context != null && program == null)
-		{
-			var prefixBuf = new StringBuf();
-			prefixBuf.add('#version ${glslVer}\n');
-			prefixBuf.add(shaderPrefix);
-
-			var gl = __context.gl;
-
-			prefixBuf.add("#ifdef GL_ES\n");
-			if (precisionHint == FULL) {
-				prefixBuf.add("#ifdef GL_FRAGMENT_PRECISION_HIGH\n");
-				prefixBuf.add("precision highp float;\n");
-				prefixBuf.add("#else\n");
-				prefixBuf.add("precision mediump float;\n");
-				prefixBuf.add("#endif\n");
-			} else {
-				prefixBuf.add("precision lowp float;\n");
-			}
-			prefixBuf.add("#endif\n");
-
-			var prefix = prefixBuf.toString();
-
-			var vertex = prefix + vertexPrefix + glVertexSource;
-			var fragment = prefix + fragmentPrefix + glFragmentSource;
-
-			var id = vertex + fragment;
-
-			if (__context.__programs.exists(id))
-			{
-				program = __context.__programs.get(id);
-			}
-			else
-			{
-				program = __context.createProgram(GLSL);
-				program.__glProgram = __createGLProgram(vertex, fragment);
-				__context.__programs.set(id, program);
-			}
-
-			if (program != null)
-			{
-				glProgram = program.__glProgram;
-
-				for (input in __inputBitmapData) {
-
-					if (input.__isUniform) {
-						input.index = gl.getUniformLocation(glProgram, input.name);
-					} else {
-						input.index = gl.getAttribLocation(glProgram, input.name);
-					}
-				}
-
-				for (parameter in __paramBool) {
-					if (parameter.__isUniform) {
-						parameter.index = gl.getUniformLocation(glProgram, parameter.name);
-					} else {
-						parameter.index = gl.getAttribLocation(glProgram, parameter.name);
-					}
-				}
-
-				for (parameter in __paramFloat) {
-					if (parameter.__isUniform) {
-						parameter.index = gl.getUniformLocation(glProgram, parameter.name);
-					} else {
-						parameter.index = gl.getAttribLocation(glProgram, parameter.name);
-					}
-				}
-
-				for (parameter in __paramInt) {
-					if (parameter.__isUniform) {
-						parameter.index = gl.getUniformLocation(glProgram, parameter.name);
-					} else {
-						parameter.index = gl.getAttribLocation(glProgram, parameter.name);
-					}
-				}
-			}
-			// initInstance(vertex, fragment); // btw make sure to disable the prefixes for ._isInstance
-		}
-	}
-
-	var __cancelNextProcessGLData:Bool = false;
-	@:noCompletion private override function __processGLData(source:String, storageType:String):Void
-	{
-		onProcessGLData.dispatch(source, storageType);
-		if (__cancelNextProcessGLData != (__cancelNextProcessGLData = false))
-			return;
-		var lastMatch = 0, position, regex, name, type;
-
-		if (storageType == "uniform")
-		{
-			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
-		}
-		else
-		{
-			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
-		}
-
-		while (regex.matchSub(source, lastMatch))
-		{
-			type = regex.matched(1);
-			name = regex.matched(2);
-
-			if (StringTools.startsWith(name, "gl_"))
-			{
-				continue;
-			}
-
-			var isUniform = (storageType == "uniform");
-			registerParameter(name, type, isUniform);
-
-			position = regex.matchedPos();
-			lastMatch = position.pos + position.len;
-		}
-	}
-
-	function registerParameter(name:String, type:String, isUniform:Bool):Void
-	{
-		if (StringTools.startsWith(type, "sampler"))
-		{
-			var input = new ShaderInput<BitmapData>();
-			input.name = name;
-			input.__isUniform = isUniform;
-			__inputBitmapData.push(input);
-
-			switch (name)
-			{
-				case "openfl_Texture":
-					__texture = input;
-				case "bitmap":
-					__bitmap = input;
-				default:
-			}
-
-			Reflect.setField(__data, name, input);
-			try{Reflect.setField(this, name, input);} catch(e) {}
-		}
-		else if (!Reflect.hasField(__data, name) || Reflect.field(__data, name) == null)
-		{
-			var parameterType:ShaderParameterType = switch (type)
-			{
-				case "bool": BOOL;
-				case "double", "float": FLOAT;
-				case "int", "uint": INT;
-				case "bvec2": BOOL2;
-				case "bvec3": BOOL3;
-				case "bvec4": BOOL4;
-				case "ivec2", "uvec2": INT2;
-				case "ivec3", "uvec3": INT3;
-				case "ivec4", "uvec4": INT4;
-				case "vec2", "dvec2": FLOAT2;
-				case "vec3", "dvec3": FLOAT3;
-				case "vec4", "dvec4": FLOAT4;
-				case "mat2", "mat2x2": MATRIX2X2;
-				case "mat2x3": MATRIX2X3;
-				case "mat2x4": MATRIX2X4;
-				case "mat3x2": MATRIX3X2;
-				case "mat3", "mat3x3": MATRIX3X3;
-				case "mat3x4": MATRIX3X4;
-				case "mat4x2": MATRIX4X2;
-				case "mat4x3": MATRIX4X3;
-				case "mat4", "mat4x4": MATRIX4X4;
-				default: null;
-			}
-
-			var length = switch (parameterType)
-			{
-				case BOOL2, INT2, FLOAT2: 2;
-				case BOOL3, INT3, FLOAT3: 3;
-				case BOOL4, INT4, FLOAT4, MATRIX2X2: 4;
-				case MATRIX3X3: 9;
-				case MATRIX4X4: 16;
-				default: 1;
-			}
-
-			var arrayLength = switch (parameterType)
-			{
-				case MATRIX2X2: 2;
-				case MATRIX3X3: 3;
-				case MATRIX4X4: 4;
-				default: 1;
-			}
-
-			switch (parameterType)
-			{
-				case BOOL, BOOL2, BOOL3, BOOL4:
-					var parameter = new ShaderParameter<Bool>();
-					parameter.name = name;
-					parameter.type = parameterType;
-					parameter.__arrayLength = arrayLength;
-					parameter.__isBool = true;
-					parameter.__isUniform = isUniform;
-					parameter.__length = length;
-					__paramBool.push(parameter);
-
-					if (name == "openfl_HasColorTransform")
-					{
-						__hasColorTransform = parameter;
-					}
-
-					Reflect.setField(__data, name, parameter);
-					try{Reflect.setField(this, name, parameter);} catch(e) {}
-
-				case INT, INT2, INT3, INT4:
-					var parameter = new ShaderParameter<Int>();
-					parameter.name = name;
-					parameter.type = parameterType;
-					parameter.__arrayLength = arrayLength;
-					parameter.__isInt = true;
-					parameter.__isUniform = isUniform;
-					parameter.__length = length;
-					__paramInt.push(parameter);
-					Reflect.setField(__data, name, parameter);
-					try{Reflect.setField(this, name, parameter);} catch(e) {}
-
-				default:
-					var parameter = new ShaderParameter<Float>();
-					parameter.name = name;
-					parameter.type = parameterType;
-					parameter.__arrayLength = arrayLength;
-					#if lime
-					if (arrayLength > 0) parameter.__uniformMatrix = new Float32Array(arrayLength * arrayLength);
-					#end
-					parameter.__isFloat = true;
-					parameter.__isUniform = isUniform;
-					parameter.__length = length;
-					__paramFloat.push(parameter);
-
-					if (StringTools.startsWith(name, "openfl_"))
-					{
-						switch (name)
-						{
-							case "openfl_Alpha": __alpha = parameter;
-							case "openfl_ColorMultiplier": __colorMultiplier = parameter;
-							case "openfl_ColorOffset": __colorOffset = parameter;
-							case "openfl_Matrix": __matrix = parameter;
-							case "openfl_Position": __position = parameter;
-							case "openfl_TextureCoord": __textureCoord = parameter;
-							case "openfl_TextureSize": __textureSize = parameter;
-							default:
-						}
-					}
-
-					Reflect.setField(__data, name, parameter);
-					try{Reflect.setField(this, name, parameter);} catch(e) {}
-			}
-		}
-	}
-
 	public function hget(name:String):Dynamic {
-		if (__instanceFields.contains(name) || __instanceFields.contains('get_${name}'))
-			return Reflect.getProperty(this, name);
-		if (!Reflect.hasField(data, name))
-			return null;
-		var field:Dynamic = Reflect.field(data, name);
+		if (__glSourceDirty || __data == null) __init();
+
+		if (thisHasField(name) || thisHasField('get_${name}')) return Reflect.getProperty(this, name);
+		else if (!Reflect.hasField(__data, name)) return null;
+
+		final field:Dynamic = Reflect.field(__data, name);
+
 		var cl:String = Type.getClassName(Type.getClass(field));
 
 		// little problem we are facing boys...
@@ -546,17 +200,19 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 	}
 
 	public function hset(name:String, val:Dynamic):Dynamic {
-		if (__instanceFields.contains(name) || __instanceFields.contains('set_${name}')) {
+		if (__glSourceDirty || __data == null) __init();
+
+		if (thisHasField(name) || thisHasField('set_${name}')) {
 			Reflect.setProperty(this, name, val);
 			return val;
 		}
-
-		if (!Reflect.hasField(data, name)) {
-			Reflect.setField(data, name, val);
+		else if (!Reflect.hasField(__data, name)) {
+			// ??? huh
+			Reflect.setField(__data, name, val);
 			return val;
 		}
 
-		var field = Reflect.field(data, name);
+		var field = Reflect.field(__data, name);
 		var cl = Type.getClassName(Type.getClass(field));
 		var isNotNull = val != null;
 		// cant do "field is ShaderInput" for some reason
@@ -598,9 +254,133 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 
 		return val;
 	}
+
+	override function __buildSourcePrefix(isFragment:Bool):String {
+		var result = super.__buildSourcePrefix(isFragment) + '\n$shaderPrefix';
+		return isFragment ? result + '\n$fragmentPrefix' : result + '\n$vertexPrefix';
+	}
+
+	override function set_glFragmentExtensions(value:Array<ShaderExtension>):Array<ShaderExtension> {
+		if (value == null) value = __glFragmentExtensionsDefault;
+		if (value != __glFragmentExtensions) __glSourceDirty = true;
+		return __glFragmentExtensions = value;
+	}
+
+	override function set_glVertexExtensions(value:Array<ShaderExtension>):Array<ShaderExtension> {
+		if (value == null) value = __glVertexExtensionsDefault;
+		if (value != __glVertexExtensions) __glSourceDirty = true;
+		return __glVertexExtensions = value;
+	}
+
+	override function set_glVersion(value:Null<String>):String {
+		if (value == null || value == "") value = Flags.DEFAULT_GLSL_VERSION;
+		if ((__glVersionRaw = value) != __glVersion) {
+			__glSourceDirty = true;
+			if (__glVertexSourceRaw != null) __glVertexSource = processGLSLText(__glVertexSourceRaw, value, false, __glVertexPragmas);
+			if (__glFragmentSourceRaw != null) __glFragmentSource = processGLSLText(__glFragmentSourceRaw, value, true, __glFragmentPragmas);
+		}
+
+		return __glVersion = value;
+	}
+
+	override function set_glFragmentSource(value:String):String {
+		if (value == null || value == "") value = __glFragmentSourceDefault;
+		if ((__glFragmentSourceRaw = value) != null) {
+			if (__glVersion != (__glVersion = Shader.getGLSLTextVersion(value, __glVersionRaw)))
+				__glSourceDirty = true;
+
+			value = processGLSLText(value, __glVersion, true, __glFragmentPragmas);
+		}
+
+		if (value != __glFragmentSource) __glSourceDirty = true;
+		return __glFragmentSource = value;
+	}
+
+	override function set_glVertexSource(value:String):String {
+		if (value == null || value == "") value = __glVertexSourceDefault;
+		if ((__glVertexSourceRaw = value) != null) {
+			if (__glVersion != (__glVersion = Shader.getGLSLTextVersion(value, __glVersionRaw)))
+				__glSourceDirty = true;
+
+			value = processGLSLText(value, __glVersion, false, __glVertexPragmas);
+		}
+
+		if (value != __glVertexSource) __glSourceDirty = true;
+		return __glVertexSource = value;
+	}
+
+	override function set_glFragmentPragmas(value:Map<String, String>):Map<String, String> {
+		if (value == null) value = __glFragmentPragmasDefault;
+		if (value != __glFragmentPragmas)
+			__glSourceDirty = true;
+
+		return __glFragmentPragmas = value;
+	}
+
+	override function set_glVertexPragmas(value:Map<String, String>):Map<String, String> {
+		if (value == null) value = __glVertexPragmasDefault;
+		if (value != __glVertexPragmas)
+			__glSourceDirty = true;
+
+		return __glVertexPragmas = value;
+	}
+
+	function registerParameter(name:String, type:String, isUniform:Bool):Void {
+		__registerParameter(name, Program3D.getParameterTypeFromGLString(type, 1), 1, -1, isUniform, false, null);
+	}
+
+	public function toString():String
+		return FlxStringUtil.getDebugString([for (field in Reflect.fields(data)) LabelValuePair.weak(field, Reflect.field(data, field))]);
 }
 
 class ShaderTemplates {
+	#if REGION /* Backward Compatibility */
+	public static final vertHeader:String = "attribute float openfl_Alpha;
+attribute vec4 openfl_ColorMultiplier;
+attribute vec4 openfl_ColorOffset;
+attribute vec4 openfl_Position;
+attribute vec2 openfl_TextureCoord;
+
+varying float openfl_Alphav;
+varying vec4 openfl_ColorMultiplierv;
+varying vec4 openfl_ColorOffsetv;
+varying vec2 openfl_TextureCoordv;
+
+uniform mat4 openfl_Matrix;
+uniform bool openfl_HasColorTransform;
+uniform vec2 openfl_TextureSize;
+
+attribute float alpha;
+attribute vec4 colorMultiplier;
+attribute vec4 colorOffset;
+
+uniform bool hasColorTransform;";
+
+	public static final vertBody:String = "openfl_TextureCoordv = openfl_TextureCoord;
+
+if (hasColorTransform) {
+	openfl_Alphav = openfl_Alpha * colorMultiplier.a;
+	if (openfl_HasColorTransform) {
+		openfl_ColorOffsetv = (openfl_ColorOffset / 255.0 * colorMultiplier) + (colorOffset / 255.0);
+		openfl_ColorMultiplierv = openfl_ColorMultiplier * vec4(colorMultiplier.rgb, 1.0);
+	}
+	else {
+		openfl_ColorOffsetv = colorOffset / 255.0;
+		openfl_ColorMultiplierv = vec4(colorMultiplier.rgb, 1.0);
+	}
+}
+else {
+	openfl_Alphav = openfl_Alpha * alpha;
+	if (openfl_HasColorTransform) {
+		openfl_ColorOffsetv = (openfl_ColorOffset + colorOffset) / 255.0;
+		openfl_ColorMultiplierv = openfl_ColorMultiplier;
+	}
+	else {
+		openfl_ColorOffsetv = colorOffset / 255.0;
+		openfl_ColorMultiplierv = vec4(1.0);
+	}
+}";
+
 	public static final fragHeader:String = "varying float openfl_Alphav;
 varying vec4 openfl_ColorMultiplierv;
 varying vec4 openfl_ColorOffsetv;
@@ -613,31 +393,19 @@ uniform sampler2D bitmap;
 uniform bool hasTransform;
 uniform bool hasColorTransform;
 
-vec4 applyFlixelEffects(vec4 color) {
-	if(!hasTransform) {
-		return color;
-	}
+vec4 apply_flixel_transform(vec4 color) {
+	if (!hasTransform) return color;
+	else if (color.a <= 0.0 || openfl_Alphav == 0.0) return vec4(0.0);
 
-	if(color.a == 0.0) {
-		return vec4(0.0, 0.0, 0.0, 0.0);
-	}
-
-	if(!hasColorTransform) {
-		return color * openfl_Alphav;
-	}
-
-	color.rgb = color.rgb / color.a;
+	color.rgb /= color.a;
 	color = clamp(openfl_ColorOffsetv + (color * openfl_ColorMultiplierv), 0.0, 1.0);
-
-	if(color.a > 0.0) {
-		return vec4(color.rgb * color.a * openfl_Alphav, color.a * openfl_Alphav);
-	}
-	return vec4(0.0, 0.0, 0.0, 0.0);
+	return vec4(color.rgb * color.a * openfl_Alphav, color.a * openfl_Alphav);
 }
 
+#define applyFlixelEffects(color) apply_flixel_transform(color)
+
 vec4 flixel_texture2D(sampler2D bitmap, vec2 coord) {
-	vec4 color = texture2D(bitmap, coord);
-	return applyFlixelEffects(color);
+	return apply_flixel_transform(texture2D(bitmap, coord));
 }
 
 uniform vec4 _camSize;
@@ -658,53 +426,17 @@ vec4 textureCam(sampler2D bitmap, vec2 pos) {
 	return flixel_texture2D(bitmap, camToOg(pos));
 }";
 
-	public static final fragBody:String = "gl_FragColor = flixel_texture2D(bitmap, openfl_TextureCoordv);";
-	public static final vertHeader:String = "attribute float openfl_Alpha;
-attribute vec4 openfl_ColorMultiplier;
-attribute vec4 openfl_ColorOffset;
-attribute vec4 openfl_Position;
-attribute vec2 openfl_TextureCoord;
+	public static final fragBody:String = "gl_FragColor = flixel_texture2D(bitmap, openfl_TextureCoordv);
+if (gl_FragColor.a == 0.0) discard;";
 
-varying float openfl_Alphav;
-varying vec4 openfl_ColorMultiplierv;
-varying vec4 openfl_ColorOffsetv;
-varying vec2 openfl_TextureCoordv;
+	public static final vertBackCompatVarList:Array<EReg> = [
+		~/attribute float alpha/,
+		~/attribute vec4 colorMultiplier/,
+		~/attribute vec4 colorOffset/,
+		~/uniform bool hasColorTransform/
+	];
 
-uniform mat4 openfl_Matrix;
-uniform bool openfl_HasColorTransform;
-uniform vec2 openfl_TextureSize;
-
-attribute float alpha;
-attribute vec4 colorMultiplier;
-attribute vec4 colorOffset;
-uniform bool hasColorTransform;";
-
-	public static final vertBody:String = "openfl_Alphav = openfl_Alpha;
-openfl_TextureCoordv = openfl_TextureCoord;
-
-if(openfl_HasColorTransform) {
-	openfl_ColorMultiplierv = openfl_ColorMultiplier;
-	openfl_ColorOffsetv = openfl_ColorOffset / 255.0;
-}
-
-openfl_Alphav = openfl_Alpha * alpha;
-
-if(hasColorTransform) {
-	openfl_ColorOffsetv = colorOffset / 255.0;
-	openfl_ColorMultiplierv = colorMultiplier;
-}
-
-gl_Position = openfl_Matrix * openfl_Position;";
-
-// TODO: make this ignore comments
-public static final vertBackCompatVarList:Array<EReg> = [
-	~/attribute float alpha/,
-	~/attribute vec4 colorMultiplier/,
-	~/attribute vec4 colorOffset/,
-	~/uniform bool hasColorTransform/
-];
-
-public static final vertHeaderBackCompat:String = "attribute float openfl_Alpha;
+	public static final vertHeaderBackCompat:String = "attribute float openfl_Alpha;
 attribute vec4 openfl_ColorMultiplier;
 attribute vec4 openfl_ColorOffset;
 attribute vec4 openfl_Position;
@@ -719,7 +451,7 @@ uniform mat4 openfl_Matrix;
 uniform bool openfl_HasColorTransform;
 uniform vec2 openfl_TextureSize;";
 
-public static final vertBodyBackCompat:String = "openfl_Alphav = openfl_Alpha;
+	public static final vertBodyBackCompat:String = "openfl_Alphav = openfl_Alpha;
 openfl_TextureCoordv = openfl_TextureCoord;
 
 if(openfl_HasColorTransform) {
@@ -728,18 +460,7 @@ if(openfl_HasColorTransform) {
 }
 
 gl_Position = openfl_Matrix * openfl_Position;";
-
-	public static final defaultVertexSource:String = "#pragma header
-
-void main(void) {
-	#pragma body
-}";
-
-	public static final defaultFragmentSource:String = "#pragma header
-
-void main(void) {
-	#pragma body
-}";
+	#end
 }
 
 class ShaderTypeException extends Exception {
@@ -752,17 +473,5 @@ class ShaderTypeException extends Exception {
 		this.want = want;
 		this.name = name;
 		super('ShaderTypeException - Tried to set the shader uniform "${name}" as a ${Type.getClassName(has)}, but the shader uniform is a ${Std.string(want)}.');
-	}
-}
-
-class ShaderErrorPosition {
-	public var column:Int;
-	public var line:Int;
-	public var message:String;
-
-	public function new(line:String, column:String, message:String) {
-		this.line = Std.parseInt(line);
-		this.column = Std.parseInt(column);
-		this.message = message;
 	}
 }
