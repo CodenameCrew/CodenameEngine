@@ -62,14 +62,18 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 
 	private static function _processGLSLText(source:String, glVersion:String, isFragment:Bool, ?pragmas:Map<String, String>):String {
 		var injectedFragColor = StringTools.contains(source, "out vec4"), canInjectFragColorFix = switch (glVersion) {
-			case "300 es", "330", "400", "410", "420", "430", "440", "450", "460": isFragment;
+			case "300 es", "310 es", "320 es", "330", "400", "410", "420", "430", "440", "450", "460": isFragment;
 			default: false;
 		};
 		if (pragmas != null) {
 			final pragmaKeyword = ~/#pragma (\w+)/g;
 			source = pragmaKeyword.map(source, (_) -> {
-				var name = pragmaKeyword.matched(1);
-				if (!pragmas.exists(name)) return '#pragma $name';
+				var name = pragmaKeyword.matched(1), pragma:String;
+				if (pragmas.exists(name)) pragma = pragmas.get(name);
+				else {
+					if (name != "header" && name != "body") return '#pragma $name';
+					pragma = "";
+				}
 
 				var pragma = pragmas.get(name);
 				if (name == "header" && canInjectFragColorFix && !injectedFragColor) {

@@ -1263,11 +1263,6 @@ class PlayState extends MusicBeatState
 	@:dox(hide)
 	override public function onFocus():Void
 	{
-		if (!paused && FlxG.autoPause) {
-			for (strumLine in strumLines.members) strumLine.vocals.resume();
-			inst.resume();
-			vocals.resume();
-		}
 		gameAndCharsCall("onFocus");
 		updateDiscordPresence();
 		super.onFocus();
@@ -1276,11 +1271,6 @@ class PlayState extends MusicBeatState
 	@:dox(hide)
 	override public function onFocusLost():Void
 	{
-		if (!paused && FlxG.autoPause) {
-			for (strumLine in strumLines.members) strumLine.vocals.pause();
-			inst.pause();
-			vocals.pause();
-		}
 		gameAndCharsCall("onFocusLost");
 		updateDiscordPresence();
 		super.onFocusLost();
