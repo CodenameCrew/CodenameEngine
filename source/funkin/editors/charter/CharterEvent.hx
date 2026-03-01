@@ -106,9 +106,8 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 			var packData = getPackData(event.name);
 			if(packData != null) {
 				var scriptFile = packData[4];
-				if(scriptFile != null) {
-					script = Script.fromString(scriptFile, uiScript);
-				}
+				if (scriptFile != null)
+					script = Script.fromString(scriptFile, uiScript+'.hx');
 			}
 		}
 
@@ -282,9 +281,9 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 					shouldDoArrow = event.params[1] && event.params[3] != "CLASSIC"; // is Tweened and isnt Lerped
 					icon = getIconFromStrumline(event.params[0]); // camera movement, use health icon
 				}
-				
+
 				if (icon == null) icon = generateDefaultIcon(event.name);
-				
+
 				if(event.params != null && shouldDoArrow && !inMenu) {
 					var group = new EventIconGroup();
 					group.add(icon);
