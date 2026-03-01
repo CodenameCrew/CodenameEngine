@@ -41,7 +41,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Codename Engine (Executable Only)
-          path: export/release/windows/bin/CodenameEngine.exe
+          path: |
+            export/release/windows/bin/CodenameEngine.exe
+            export/release/windows/bin/lime.ndll
       - name: Uploading artifact (entire build)
         uses: actions/upload-artifact@v4
         with:
