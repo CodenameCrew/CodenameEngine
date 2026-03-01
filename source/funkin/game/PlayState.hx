@@ -1676,6 +1676,8 @@ class PlayState extends MusicBeatState
 						if (char != null && char.hasAnim(event.params[1])) char.playAnim(event.params[1], event.params[2], event.params[3] == "NONE" ? null : event.params[3]);
 			case "Unknown": // nothing
 		}
+		
+		gameAndCharsEvent("onPostEvent", e);
 	}
 
 	@:dox(hide)
