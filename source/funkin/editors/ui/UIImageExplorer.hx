@@ -3,7 +3,6 @@ package funkin.editors.ui;
 import flixel.util.typeLimit.OneOfTwo;
 import flixel.text.FlxText.FlxTextFormat;
 import flixel.text.FlxText.FlxTextFormatMarkerPair;
-import flxanimate.data.SpriteMapData.AnimateAtlas;
 import flixel.graphics.frames.FlxFramesCollection;
 import haxe.Json;
 import haxe.io.Bytes;
@@ -11,6 +10,7 @@ import haxe.io.Path;
 import openfl.display.BitmapData;
 import sys.FileSystem;
 import sys.io.File;
+import animate.FlxAnimateJson;
 
 using StringTools;
 using funkin.backend.utils.BitmapUtil;
@@ -122,7 +122,7 @@ class UIImageExplorer extends UIFileExplorer {
 			for(file in files) {
 				if(SPRITEMAP_JSON_REGEX.match(file)) {
 					var content:String = CoolUtil.removeBOM(File.getContent(Path.join([directoryPath, file])));
-					var json:AnimateAtlas = Json.parse(content);
+					var json:SpritemapJson = Json.parse(content);
 					if(json.meta.image.toLowerCase() == fileName.toLowerCase())
 						foundSpritemapJson = true;
 				} else if(file == "Animation.json")
@@ -147,7 +147,7 @@ class UIImageExplorer extends UIFileExplorer {
 			spritemaps.sort(Reflect.compare);
 			for(spritemap in spritemaps) {
 				var content:String = CoolUtil.removeBOM(File.getContent(Path.join([directoryPath, spritemap])));
-				var json:AnimateAtlas = Json.parse(content);
+				var json:SpritemapJson = Json.parse(content);
 				var imageToFind:String = json.meta.image.toLowerCase();
 				for(file in files) {
 					// lowercase since windows does case insensitive stuff, so we use lowercase to match behavior on mac and linux

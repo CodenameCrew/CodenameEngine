@@ -33,6 +33,9 @@ class ZipFolderLibrary extends AssetLibrary implements IModsAssetLibrary {
 		zip = SysZip.openFromFile(basePath);
 		zip.read();
 		for(entry in zip.entries) {
+			if (entry.fileName.length < 0 || entry.fileName.endsWith("/"))
+				continue;
+
 			lowerCaseAssets[entry.fileName.toLowerCase()] = assets[entry.fileName.toLowerCase()] = assets[entry.fileName] = entry;
 			nameMap.set(entry.fileName.toLowerCase(), entry.fileName);
 		}
@@ -152,6 +155,10 @@ class ZipFolderLibrary extends AssetLibrary implements IModsAssetLibrary {
 			}
 		}
 		return content;
+	}
+
+	public override function list(type:String):Array<String> {
+		return[for(k=>e in nameMap) '$prefix$e'];
 	}
 
 	// Backwards compat

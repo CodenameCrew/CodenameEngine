@@ -163,6 +163,10 @@ class CharterStrumline extends UISprite {
 			highlightColor.brightness = Math.max(highlightColor.brightness, 0.65);
 		}
 	}
+
+	public function updateVoicesVolume() {
+		vocals.volume = (voicesMuted || (Charter.instance?.voicesMuted ?? false)) ? 0 : 1;
+	}
 }
 
 class CharterStrumlineOptions extends UITopMenuButton {

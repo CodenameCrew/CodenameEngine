@@ -5,6 +5,7 @@ import funkin.backend.assets.TranslatedAssetLibrary;
 #end
 import funkin.backend.assets.IModsAssetLibrary;
 import lime.utils.AssetLibrary;
+import haxe.ds.Map;
 
 class AssetsLibraryList extends AssetLibrary {
 	public var libraries:Array<AssetLibrary> = [];
@@ -140,6 +141,16 @@ class AssetsLibraryList extends AssetLibrary {
 	}
 	public override inline function getAsset(id:String, type:String):Dynamic
 		return getSpecificAsset(id, type, BOTH);
+
+	public override function list(type:String):Array<String> {
+		// idk if there's a more efficient way tbh, correct if u find better
+		var files:Map<String, Bool> = [];
+		for(k=>l in libraries) {
+			for(f in l.list(type))
+				files.set(f, false);
+		}
+		return [for(k=>e in files) k];
+	}
 
 	public override function isLocal(id:String, type:String) {
 		return true;

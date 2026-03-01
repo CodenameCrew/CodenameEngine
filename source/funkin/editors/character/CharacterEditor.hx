@@ -554,6 +554,9 @@ class CharacterEditor extends UIState {
 			case CAnimEditLooping(animID, newLooping):
 				var button:CharacterAnimButton = characterAnimsWindow.buttons.members[animID];
 				button.changeLooping(!newLooping, false);
+			case CAnimEditLabel(animID, newLabel):
+				var button:CharacterAnimButton = characterAnimsWindow.buttons.members[animID];
+				button.changeLabel(!newLabel, false);
 			case CAnimEditIndices(animID, oldIndicies, newIndicies):
 				var button:CharacterAnimButton = characterAnimsWindow.buttons.members[animID];
 				button.changeIndicies(oldIndicies, false);
@@ -625,6 +628,9 @@ class CharacterEditor extends UIState {
 			case CAnimEditLooping(animID, newLooping):
 				var button:CharacterAnimButton = characterAnimsWindow.buttons.members[animID];
 				button.changeLooping(newLooping, false);
+			case CAnimEditLabel(animID, newLabel):
+				var button:CharacterAnimButton = characterAnimsWindow.buttons.members[animID];
+				button.changeLabel(newLabel, false);
 			case CAnimEditIndices(animID, oldIndicies, newIndicies):
 				var button:CharacterAnimButton = characterAnimsWindow.buttons.members[animID];
 				button.changeIndicies(newIndicies, false);
@@ -936,6 +942,7 @@ enum CharacterEditorChange {
 	CAnimEditFPS(animID:Int, oldFPS:Float, newFPS:Float);
 	CAnimEditLooping(animID:Int, newLooping:Bool);
 	CAnimEditIndices(animID:Int, oldIndicies:Array<Int>, newIndicies:Array<Int>);
+	CAnimEditLabel(animID:Int, newLabel:Bool);
 
 	CCharClearOffsets(oldOffsets:Map<String, FlxPoint>);
 }

@@ -53,13 +53,6 @@ class Framerate extends Sprite {
 		x = 10;
 		y = 2;
 
-		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, function(e:KeyboardEvent) {
-			switch(e.keyCode) {
-				case #if web Keyboard.NUMBER_3 #else Keyboard.F3 #end: // 3 on web or F3 on windows, linux and other things that runs code
-					debugMode = (debugMode + 1) % 3;
-			}
-		});
-
 		if (__bitmap == null)
 			__bitmap = new BitmapData(1, 1, 0xFF000000);
 

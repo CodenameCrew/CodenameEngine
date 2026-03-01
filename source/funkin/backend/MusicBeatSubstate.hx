@@ -236,6 +236,12 @@ class MusicBeatSubstate extends FlxSubState implements IBeatCancellableReceiver
 			super.openSubState(e.substate is FlxSubState ? cast e.substate : subState);
 	}
 
+	public override function closeSubState() {
+		var e = event("onCloseSubState", EventManager.get(StateEvent).recycle(subState));
+		if (!e.cancelled)
+			super.closeSubState();
+	}
+
 	public override function onResize(w:Int, h:Int) {
 		super.onResize(w, h);
 		event("onResize", EventManager.get(ResizeEvent).recycle(w, h, null, null));

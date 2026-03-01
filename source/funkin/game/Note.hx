@@ -61,6 +61,15 @@ class Note extends FlxSprite
 	public var sustainParent:Null<Note>;
 
 	/**
+	 * Number of active sustain pieces attached to this note
+	 * 
+	 * Increases by 1 every time a hold piece is initialized.
+	 * 
+	 * Decreases by 1 every time a hold piece gets destroyed.
+	 */
+	public var tailCount:Int = 0;
+
+	/**
 	 * Name of the splash.
 	 */
 	public var splash:String = "default";
@@ -74,6 +83,7 @@ class Note extends FlxSprite
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
+	public var noSustainClip:Bool = false;
 	public var flipSustain:Bool = true;
 
 	public var noteTypeID:Int = 0;
@@ -104,6 +114,8 @@ class Note extends FlxSprite
 
 	public var animSuffix:String = null;
 
+	// Deprecated?
+	@:dox(hide) public var tripTimer:Float = 0; // ranges from 0 to 1
 
 	private static function customTypePathExists(path:String) {
 		if (__customNoteTypeExists.exists(path))
@@ -211,6 +223,7 @@ class Note extends FlxSprite
 	public var lastScrollSpeed:Null<Float> = null;
 	public var gapFix:SingleOrFloat = 0;
 	public var useAntialiasingFix(get, set):Bool;
+
 	inline function set_useAntialiasingFix(v:Bool) {
 		if(v != useAntialiasingFix) {
 			gapFix = v ? 1 : 0;
@@ -297,8 +310,8 @@ class Note extends FlxSprite
 		updateSustainClip();
 	}
 
-	public function updateSustainClip() if (wasGoodHit) {
-		var t = FlxMath.bound((Conductor.songPosition - strumTime) / height * 0.45 * lastScrollSpeed, 0, 1);
+	public function updateSustainClip() if (wasGoodHit && !noSustainClip) {
+		var t = CoolUtil.bound((Conductor.songPosition - strumTime) / height * 0.45 * lastScrollSpeed, 0, 1);
 		var rect = clipRect == null ? FlxRect.get() : clipRect;
 		clipRect = rect.set(0, frameHeight * t, frameWidth, frameHeight * (1 - t));
 	}

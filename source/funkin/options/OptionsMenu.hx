@@ -162,6 +162,10 @@ class OptionsMenu extends TreeMenu {
 			}
 			var name = node.getAtt("name");
 			var desc = node.getAtt("desc").getDefault("optionsMenu.desc-missing");
+			if (screen.prefix?.length > 0) {
+				name = screen.prefix + name;
+				if (node.has.desc) desc = screen.prefix + desc;
+			}
 
 			switch(node.name) {
 				case "checkbox":
@@ -198,8 +202,8 @@ class OptionsMenu extends TreeMenu {
 						Logs.warn("A radio option requires an \"id\" for option saving.");
 						continue;
 					}
-					var v:Dynamic = Std.parseFloat(node.att.value);
-					options.push(new RadioButton(screen, name, desc, node.att.id, v != null ? v : node.att.value, null, FlxG.save.data, node.has.forId ? node.att.forId : null));
+					var f = Std.parseFloat(node.att.value);
+					options.push(new RadioButton(screen, name, desc, node.att.id, Math.isNaN(f) ? node.att.value : f, null, FlxG.save.data, node.has.forId ? node.att.forId : null));
 				case 'slider':
 					if (!node.has.id) {
 						Logs.warn("A slider option requires an \"id\" for option saving.");
@@ -210,7 +214,7 @@ class OptionsMenu extends TreeMenu {
 					options.push(new SliderOption(name, desc, Std.parseFloat(node.att.min), Std.parseFloat(node.att.max), step, segments, node.att.id, Std.parseInt(node.att.barWidth), null, FlxG.save.data));
 				case "menu":
 					options.push(new TextOption(name, desc, ' >', () -> {
-						var screen = new TreeMenuScreen(name, desc);
+						var screen = new TreeMenuScreen(name, desc, node.getAtt("prefix").getDefault(""));
 						for (o in parseOptionsFromXML(screen, node)) screen.add(o);
 						addMenu(screen);
 					}));

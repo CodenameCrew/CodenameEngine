@@ -55,9 +55,6 @@ class GlobalScript {
 				reloading = false;
 				MusicBeatState.ALLOW_DEV_RELOAD = _lastAllow_Reload;
 			}
-
-			if (PlayerSettings.solo.controls.DEV_CONSOLE)
-				NativeAPI.allocConsole();
 		});
 		FlxG.signals.preDraw.add(function() {
 			call("preDraw");

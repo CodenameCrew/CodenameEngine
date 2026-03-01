@@ -115,8 +115,7 @@ class SystemInfo extends FramerateCategory {
 					if (vRAMBytes == 1000 || vRAMBytes == 1 || vRAMBytes <= 0)
 						Logs.trace('Unable to grab GPU VRAM', ERROR, RED);
 					else {
-						var vRAMBytesFloat:#if cpp Float64 #else Float #end = vRAMBytes*1024;
-						vRAM = CoolUtil.getSizeString64(vRAMBytesFloat);
+						vRAM = getSizeString(vRAMBytes / 1024);
 					}
 				}
 			} else
@@ -153,6 +152,17 @@ class SystemInfo extends FramerateCategory {
 		}
 		//if (gpuMaxSize != "Unknown") __formattedSysText += '\nMax Bitmap Size: $gpuMaxSize';
 		if (totalMem != "Unknown" && memType != "Unknown") __formattedSysText += '\nTotal MEM: $totalMem $memType';
+	}
+
+	static function getSizeString(size:Float):String {
+		if (size < 1024)
+			return Std.int(size) + " MB";
+		else if (size < 1024 * 1024)
+			return Std.int(size / 1024) + " GB";
+		else {
+			var tb = size / (1024 * 1024);
+			return Std.int(tb) + "." + CoolUtil.addZeros(Std.string(Std.int((tb % 1) * 100)), 2) + " TB";
+		}
 	}
 
 	public function new() {

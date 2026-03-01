@@ -50,7 +50,7 @@
 	<!-- _________________________________ Engine Settings _______________________________ -->
 
 	<!-- Comment this out to disable updates !-->
-	<define name="UPDATE_CHECKING" unless="web || hl || neko"/>
+	<define name="UPDATE_CHECKING" unless="web || hl || neko || debug"/>
 
 	<!-- Comment this out to disable Discord RPC !-->
 	<section if="cpp">
@@ -73,6 +73,9 @@
 	<!-- Comment this out to prevent extending classes in hscript.
 		 Reduces compilation time at the cost of limited HScript flexibility. !-->
 	<define name="CUSTOM_CLASSES" unless="STRIPPED_COMPILE" />
+
+	<!-- Comment this out to disable abstract support in hscript. !-->
+	<haxedef name="HSCRIPT_ABSTRACT_SUPPORT" unless="STRIPPED_COMPILE" />
 
 	<!-- Comment this out to disable multithreading !-->
 	<haxedef name="ALLOW_MULTITHREADING" unless="web || flash" />
@@ -130,7 +133,7 @@
 	<haxelib name="hxvlc" if="VIDEO_CUTSCENES" />
 	<haxelib name="away3d" if="THREE_D_SUPPORT" />
 	<haxelib name="format" />
-	<haxelib name="flxanimate" />
+	<haxelib name="flixel-animate" />
 	<haxelib name="nape-haxe4" if="NAPE_ENABLED"/>
 
 	<haxelib name="hscript-improved" />
@@ -188,6 +191,9 @@
 	<haxedef name="SOFTCODED_CLASSES" if="SOFTCODED_CLASSES" />
 	<haxedef name="USE_ADAPTED_ASSETS" if="USE_ADAPTED_ASSETS" />
 	<haxedef name="openfl_dpi_aware" if="openfl_dpi_aware" />
+
+	<!-- Disable it for more concise compilation errors. -->
+	<haxedef name="message.reporting" value="pretty" />
 
 	<!-- _________________________________ Custom _______________________________ -->
 

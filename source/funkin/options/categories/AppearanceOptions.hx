@@ -48,12 +48,29 @@ class AdvancedAppearanceOptions extends TreeMenuScreen {
 	}
 
 	private function updateQualityOptions() {
-		for (option in qualityOptions) option.locked = Options.quality != 2;
+		for (option in qualityOptions) {
+			option.locked = Options.quality != 2;
+			if (option is Checkbox) {
+				final checkbox:Checkbox = cast option;
+				checkbox.checked = Reflect.field(checkbox.parent, checkbox.optionName);
+			}
+			else if (option is SliderOption) {
+				final slider:SliderOption = cast option;
+				slider.currentValue = Reflect.field(slider.parent, slider.optionName);
+			}
+			else if (option is NumOption) {
+				final num:NumOption = cast option;
+				num.currentValue = Reflect.field(num.parent, num.optionName);
+			}
+			else if (option is ArrayOption) {
+				final array:ArrayOption = cast option;
+				array.currentSelection = Reflect.field(array.parent, array.optionName);
+			}
+		}
 	}
 
 	private function __changeQuality(value:Dynamic) {
-		var antialiasing = value == 0 ? false : (value == 1 ? true : Options.antialiasing);
-		FlxG.game.stage.quality = (FlxG.enableAntialiasing = antialiasing) ? BEST : LOW;
+		Options.applyQuality();
 		updateQualityOptions();
 	}
 

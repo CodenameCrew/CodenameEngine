@@ -25,6 +25,7 @@ enum Control
 	CHANGE_MODE;
 	//CHEAT;
 	SWITCHMOD;
+	FPS_COUNTER;
 
 	// Debugs
 	DEV_ACCESS;
@@ -160,6 +161,11 @@ class Controls extends FlxActionSet
 	@:justPressed("switchmod") public var SWITCHMOD(get, set): Bool;
 	@:pressed("switchmod") public var SWITCHMOD_HOLD(get, set): Bool;
 	@:justReleased("switchmod") public var SWITCHMOD_R(get, set): Bool;
+
+	@:gamepad([])
+	@:justPressed("fps-counter") public var FPS_COUNTER(get, set): Bool;
+	@:pressed("fps-counter") public var FPS_COUNTER_HOLD(get, set): Bool;
+	@:justReleased("fps-counter") public var FPS_COUNTER_R(get, set): Bool;
 
 	@:devModeOnly
 	@:gamepad([])

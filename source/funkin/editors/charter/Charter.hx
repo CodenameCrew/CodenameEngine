@@ -81,6 +81,7 @@ class Charter extends UIState {
 	public var metronome:FlxSound;
 
 	public var vocals:FlxSound;
+	public var voicesMuted:Bool = false;
 
 	public var quant:Int = 16;
 	public var quants:Array<Int> = [4, 8, 12, 16, 20, 24, 32, 48, 64, 192]; // different quants

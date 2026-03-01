@@ -21,7 +21,6 @@ import flixel.util.FlxAxes;
 import flixel.util.FlxColor;
 import flixel.util.typeLimit.OneOfThree;
 import flixel.util.typeLimit.OneOfTwo;
-import flxanimate.data.AnimationData.AnimAtlas;
 import funkin.backend.system.Conductor;
 import funkin.backend.utils.XMLUtil.TextFormat;
 import haxe.CallStack;
@@ -34,6 +33,8 @@ import haxe.xml.Access;
 import lime.utils.Assets;
 import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
+import animate.FlxAnimateJson;
+import flixel.animation.FlxAnimationController;
 
 using StringTools;
 
@@ -575,6 +576,29 @@ final class CoolUtil
 	}
 
 	/**
+	 * Swaps two animations on an animation controller.
+	 * @param animation Animation controller
+	 * @param anim1 First animation
+	 * @param anim2 Second animation
+	 */
+	public static function swapAnims(animation:FlxAnimationController, anim1:String, anim2:String) @:privateAccess {
+		var flxAnim1 = animation.getByName(anim1);
+		animation._animations.remove(anim1);
+
+		var flxAnim2 = animation.getByName(anim2);
+		animation._animations.remove(anim2);
+
+		if (flxAnim1 != null) {
+			flxAnim1.name = anim2;
+			animation._animations.set(anim2, flxAnim1);
+		}
+		if (flxAnim2 != null) {
+			flxAnim2.name = anim1;
+			animation._animations.set(anim1, flxAnim2);
+		}
+	}
+
+	/**
 	 * Allows you to set a graphic size (ex: 150x150), with proper hitbox without a stretched sprite.
 	 * @param sprite Sprite to apply the new graphic size to
 	 * @param width Width
@@ -856,7 +880,7 @@ final class CoolUtil
 	 */
 	public static inline function browsePath(path:String) {
 		var formattedPath:String = Path.normalize(path);
-		
+
 		#if windows
 		formattedPath = formattedPath.replace("/", "\\");
 		Sys.command("explorer", [formattedPath]);
@@ -1004,6 +1028,20 @@ final class CoolUtil
 	}
 
 	/**
+	 * Returns if the mouse is overlapping the sprite on a given camera, taking the camera's position, scroll and zoom into account.
+	 *
+	 * @param   sprite  Any `FlxObject`
+	 * @param   camera  The camera you want to check overlap on. Uses the sprite's camera by default.
+	 * @return  Bool
+	 */
+	public static function mouseOverlaps(sprite:FlxObject, ?camera:FlxCamera) {
+		var camToCheck:FlxCamera = camera ?? sprite.camera;
+		var posthing:FlxPoint = FlxG.mouse.getWorldPosition(camToCheck);
+
+		return posthing != null && FlxMath.inBounds(posthing.x, sprite.x, sprite.x + sprite.width) && FlxMath.inBounds(posthing.y, sprite.y, sprite.y + sprite.height);
+	}
+
+	/**
 	 * Sorts an array alphabetically.
 	 * @param array Array to sort
 	 * @param lowercase Whenever the array should be sorted in lowercase
@@ -1053,7 +1091,7 @@ final class CoolUtil
 			r.add(str);
 		return r.toString();
 	}
-	
+
 	public static inline function bound(Value:Float, Min:Float, Max:Float):Float {
 		#if cpp
 		var _hx_tmp1:Float = Value;
@@ -1200,8 +1238,8 @@ final class CoolUtil
 
 	/**
 	 * ! REQUIRES FULL PATH!!!
-	 * @param path 
-	 * @return Bool 
+	 * @param path
+	 * @return Bool
 	 */
 	public static function imageHasFrameData(path:String):String {
 		if (FileSystem.exists(Path.withExtension(path, "xml"))) return "xml";
@@ -1252,23 +1290,20 @@ final class CoolUtil
 		return animsList;
 	}
 
-	public static function getAnimsListFromAtlas(atlas:AnimAtlas):Array<String> {
+	public static function getAnimsListFromAtlas(atlas:AnimationJson):Array<String> {
 		if (atlas == null) return [];
 
 		var animsList:Array<String> = [];
 		if (atlas.AN.SN != null) animsList.push(atlas.AN.SN);
 		if (atlas.SD != null)
-			for (symbol in atlas.SD.S)
+			for (symbol in atlas.SD)
 				if (symbol.SN != null) animsList.push(symbol.SN);
 
 		return animsList;
 	}
 
 	public static function getAnimsListFromSprite(spr:FunkinSprite):Array<String> {
-		if (spr.animateAtlas != null) {
-			return [for (symbol => timeline in spr.animateAtlas.anim.symbolDictionary) symbol];
-		} else 
-			return getAnimsListFromFrames(spr.frames);
+		return getAnimsListFromFrames(spr.frames);
 	}
 
 	// TODO: check this for bugs

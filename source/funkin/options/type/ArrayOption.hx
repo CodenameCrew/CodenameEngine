@@ -5,12 +5,18 @@ class ArrayOption extends TextOption {
 
 	public var options:Array<Dynamic>;
 	public var displayOptions:Array<String>;
-	public var currentSelection:Int;
+	public var currentSelection(default, set):Int;
 
 	public var parent:Dynamic;
 	public var optionName:String;
 
 	var __selectionText:Alphabet;
+
+	function set_currentSelection(v:Int):Int {
+		currentSelection = v;
+		if (__selectionText != null) __selectionText.text = formatTextOption();
+		return v;
+	}
 
 	override function set_text(v:String) {
 		super.set_text(v);
@@ -53,7 +59,6 @@ class ArrayOption extends TextOption {
 
 	override function changeSelection(change:Int) {
 		if (locked || currentSelection == (currentSelection = CoolUtil.boundInt(currentSelection + change, 0, options.length - 1))) return;
-		__selectionText.text = formatTextOption();
 		CoolUtil.playMenuSFX(SCROLL);
 
 		if (optionName != null) Reflect.setField(parent, optionName, options[currentSelection]);

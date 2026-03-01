@@ -14,6 +14,7 @@ import funkin.backend.scripting.ScriptPack;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.backend.system.interfaces.IOffsetCompatible;
 import haxe.xml.Access;
+import animate.FlxAnimateFrames;
 
 using StringTools;
 
@@ -127,6 +128,9 @@ final class XMLUtil {
 			spr.spriteAnimType = XMLAnimType.fromString(node.att.type, spr.spriteAnimType);
 		}
 
+		if (node.has.applyStageMatrix) spr.applyStageMatrix = node.att.applyStageMatrix == "true";
+		if (node.has.useRenderTexture) spr.useRenderTexture = node.att.useRenderTexture == "true";
+		
 		if(node.has.x) {
 			var x:Null<Float> = Std.parseFloat(node.att.x);
 			if (x.isNotNull()) spr.x = x;
@@ -225,7 +229,8 @@ final class XMLUtil {
 				animType: spr.spriteAnimType,
 				x: 0,
 				y: 0,
-				indices: [for(i in 0...spr.frames.frames.length) i]
+				indices: [for(i in 0...spr.frames.frames.length) i],
+				label: false
 			});
 		}
 
@@ -261,7 +266,8 @@ final class XMLUtil {
 			animType: animType,
 			x: 0,
 			y: 0,
-			indices: []
+			indices: [],
+			label: false
 		};
 
 		if (anim.has.name) animData.name = anim.att.name;
@@ -273,6 +279,7 @@ final class XMLUtil {
 		if (anim.has.loop) animData.loop = anim.att.loop == "true";
 		if (anim.has.forced) animData.forced = anim.att.forced == "true";
 		if (anim.has.indices) animData.indices = CoolUtil.parseNumberRange(anim.att.indices);
+		if (anim.has.label) animData.label = anim.att.label == "true";
 
 		return animData;
 	}
@@ -299,15 +306,23 @@ final class XMLUtil {
 		if (animData.name != null) {
 			if (animData.fps <= 0 #if web || animData.fps == null #end) animData.fps = 24;
 
-			if (sprite is FunkinSprite && cast(sprite, FunkinSprite).animateAtlas != null) {
-				var animateAnim = cast(sprite, FunkinSprite).animateAtlas.anim;
+			if (sprite.frames is FlxAnimateFrames) {
 				if(animData.anim == null)
 					return MISSING_PROPERTY;
 
-				if (animData.indices != null && animData.indices.length > 0)
-					animateAnim.addBySymbolIndices(animData.name, animData.anim, animData.indices, animData.fps, animData.loop);
-				else
-					animateAnim.addBySymbol(animData.name, animData.anim, animData.fps, animData.loop);
+				var animateAnim = cast(sprite, FunkinSprite).anim;
+
+				if (animData.label) {
+					if (animData.indices != null && animData.indices.length > 0)
+						animateAnim.addByFrameLabelIndices(animData.name, animData.anim, animData.indices, animData.fps, animData.loop);
+					else
+						animateAnim.addByFrameLabel(animData.name, animData.anim, animData.fps, animData.loop);
+				} else {
+					if (animData.indices != null && animData.indices.length > 0)
+						animateAnim.addBySymbolIndices(animData.name, animData.anim, animData.indices, animData.fps, animData.loop);
+					else
+						animateAnim.addBySymbol(animData.name, animData.anim, animData.fps, animData.loop);
+				}
 			} else {
 				if (animData.indices != null && animData.indices.length > 0) {
 					if (animData.anim == null)
@@ -463,6 +478,7 @@ typedef AnimData = {
 	var y:Float;
 	var indices:Array<Int>;
 	var animType:XMLAnimType;
+	var label:Bool;
 	var ?forced:Bool;
 }
 
