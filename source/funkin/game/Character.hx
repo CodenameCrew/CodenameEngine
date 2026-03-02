@@ -165,7 +165,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 	public function tryDance() {
 		var event = new CancellableEvent();
-		script.call("onTryDance", [event]);
+		scripts.call("onTryDance", [event]);
 		if (event.cancelled)
 			return;
 
@@ -197,7 +197,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	}
 
 	public override function measureHit(curMeasure:Int)
-		script.call("measureHit", [curMeasure]);
+		scripts.call("measureHit", [curMeasure]);
 
 	public override function stepHit(curStep:Int)
 		scripts.call("stepHit", [curStep]);
@@ -254,13 +254,13 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	public var ghostDraw:Bool = false;
 	public override function draw() {
 		var e = EventManager.get(DrawEvent).recycle();
-		script.call("draw", [e]);
+		scripts.call("draw", [e]);
 
 		preDraw();
 		super.draw();
 		postDraw();
 
-		script.call("postDraw", [e]);
+		scripts.call("postDraw", [e]);
 	}
 
 	public var singAnims = ["singLEFT", "singDOWN", "singUP", "singRIGHT"];
@@ -273,7 +273,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	public function playSingAnim(direction:Int, suffix:String = "", Context:PlayAnimContext = SING, ?Force:Null<Bool> = null, Reversed:Bool = false, Frame:Int = 0)
 	{
 		var event = EventManager.get(DirectionAnimEvent).recycle(getSingAnim(direction, suffix), direction, suffix, Context, Reversed, Frame, Force);
-		script.call("onPlaySingAnim", [event]);
+		scripts.call("onPlaySingAnim", [event]);
 		if (event.cancelled) return;
 
 		playSingAnimUnsafe(event.direction, hasAnimation(event.animName) ? event.suffix : "", event.context, event.force, event.reversed, event.frame);
@@ -281,7 +281,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 	public function playSingAnimUnsafe(direction:Int, suffix:String = "", Context:PlayAnimContext = SING, Force:Bool = true, Reversed:Bool = false, Frame:Int = 0) {
 		var event = EventManager.get(DirectionAnimEvent).recycle(getSingAnim(direction, suffix), direction, suffix, Context, Reversed, Frame, Force);
-		script.call("playSingAnimUnsafe", [event]);
+		scripts.call("playSingAnimUnsafe", [event]);
 		if (event.cancelled) return;
 
 		playAnim(event.animName, event.force, event.context, event.reversed, event.frame);

@@ -173,6 +173,17 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 	{
 	}
 
+	public override function draw() {
+		// re-implementing the `onDraw` functionality from `FlxSprite` since `FlxAnimate` didn't have this, so we have to add it back in ourselves
+	    if (this.isAnimate && this.__drawOverrided) {
+	        this.__drawOverrided = false;
+	        this.onDraw(this);
+	        this.__drawOverrided = true;
+			return;
+	    }
+	    super.draw();
+	}
+
 	// ANIMATE ATLAS DRAWING
 	#if REGION
 
@@ -355,26 +366,9 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 	}
 
 	override function prepareDrawMatrix(matrix:FlxMatrix, camera:FlxCamera):Void {
-		matrix.translate(-origin.x, -origin.y);
-
-		if (frameOffsetAngle != null && frameOffsetAngle != angle)
-		{
-			var angleOff = (frameOffsetAngle - angle) * FlxAngle.TO_RAD;
-			var cos = Math.cos(angleOff);
-			var sin = Math.sin(angleOff);
-			// cos doesnt need to be negated
-			matrix.rotateWithTrig(cos, -sin);
-			matrix.translate(-frameOffset.x, -frameOffset.y);
-			matrix.rotateWithTrig(cos, sin);
-		}
-		else
-			matrix.translate(-frameOffset.x, -frameOffset.y);
-
-		matrix.translate(origin.x, origin.y);
-
 		super.prepareDrawMatrix(matrix, camera);
 
-		if(__shouldDoZoomFactor()) {
+		if (__shouldDoZoomFactor()) {
 			__prepareZoomFactor(_rect2, camera);
 			matrix.setTo(
 				matrix.a * _rect2.width, matrix.b * _rect2.height,

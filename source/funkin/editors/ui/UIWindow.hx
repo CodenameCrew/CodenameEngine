@@ -15,7 +15,7 @@ class UIWindow extends UISliceSprite {
 
 		content = new FlxTypedGroup<FlxBasic>();
 		members.push(content);
-		FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_WINDOWAPPEAR_SOUND));
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_WINDOWAPPEAR_SOUND);
 	}
 
 	public override function update(elapsed:Float) {

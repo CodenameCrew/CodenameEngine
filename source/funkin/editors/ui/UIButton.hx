@@ -30,7 +30,7 @@ class UIButton extends UISliceSprite {
 		super.onHovered();
 		if (FlxG.mouse.justPressed) {
 			hasBeenPressed = true;
-			FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_BUTTONCLICK_SOUND));
+			UIState.playEditorSound(Flags.DEFAULT_EDITOR_BUTTONCLICK_SOUND);
 		}
 		if (FlxG.mouse.justReleased && callback != null && shouldPress && hasBeenPressed) {
 			callback();

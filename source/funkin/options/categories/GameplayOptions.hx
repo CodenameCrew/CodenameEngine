@@ -4,7 +4,7 @@ import flixel.util.FlxTimer;
 import funkin.backend.system.Conductor;
 
 class GameplayOptions extends TreeMenuScreen {
-	var __metronome = FlxG.sound.load(Paths.sound('editors/charter/metronome'));
+	var __metronome = FlxG.sound.load(Paths.sound(Flags.DEFAULT_CHARTER_METRONOME_SOUND));
 	var offsetSetting:NumOption;
 
 	public function new() {
