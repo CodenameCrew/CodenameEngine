@@ -60,6 +60,7 @@ class Macros {
 		Compiler.addMetadata('@:build($macroPath.buildLimeAssetLibrary())', 'lime.utils.AssetLibrary');
 		Compiler.addMetadata('@:build($macroPath.buildLimeApplication())', 'lime.app.Application');
 		Compiler.addMetadata('@:build($macroPath.buildLimeWindow())', 'lime.ui.Window');
+		Compiler.addMetadata('@:build($macroPath.buildOpenflAssets())', 'openfl.utils.Assets');
 
 		//Adds Compat for #if hscript blocks when you have hscript improved
 		if (Context.defined("hscript_improved") && !Context.defined("hscript")) {
@@ -104,6 +105,26 @@ class Macros {
 			}
 			default:
 		}
+
+		return fields;
+	}
+
+	public static function buildOpenflAssets():Array<Field> {
+		final fields:Array<Field> = Context.getBuildFields(), pos:Position = Context.currentPos();
+		for (f in fields) switch (f.name) {
+			case "allowCompressedTextures": fields.remove(f);
+			default:
+		}
+
+		fields.push({name: 'allowCompressedTextures', access: [APublic, AStatic], pos: pos, kind: FProp("get", "set", macro :Null<Bool>), meta: [{pos: pos, name: ":isVar"}]});
+
+		fields.push({name: "get_allowCompressedTextures", access: [APublic, AStatic, AInline], pos: pos, kind: FFun({ret: macro :Bool, args: [], expr: macro {
+			return allowCompressedTextures != null ? allowCompressedTextures : !funkin.backend.system.Main.forceGPUOnlyBitmapsOff && funkin.options.Options.gpuOnlyBitmaps;
+		}})});
+		fields.push({name: "set_allowCompressedTextures", access: [APublic, AStatic, AInline], pos: pos, kind: FFun({ret: macro :Bool, args: [{name: "value", type: macro :Bool}], expr: macro {
+			allowCompressedTextures = value;
+			return get_allowCompressedTextures();
+		}})});
 
 		return fields;
 	}
