@@ -122,7 +122,7 @@ class BloomEffect extends BitmapFilter
 
 	/**
 		The blend mode used when combining the bloom with the original image.
-		Use BlendMode constants (e.g., BlendMode.ADD, BlendMode.SCREEN, BlendMode.ADD).
+		Use BlendMode constants (e.g., BlendMode.ADD, BlendMode.SCREEN).
 		Default is BlendMode.ADD.
 	**/
 	public var blendMode(get, set):BlendMode;
