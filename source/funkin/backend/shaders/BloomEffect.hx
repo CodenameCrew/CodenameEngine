@@ -52,10 +52,15 @@ import openfl.geom.Rectangle;
 @:access(openfl.geom.Rectangle)
 class BloomEffect extends BitmapFilter
 {
-	@:noCompletion private static var __blurShader:BlurShader = new BlurShader();
-	@:noCompletion private static var __combineShader:CombineShader = new CombineShader();
-	@:noCompletion private static var __extractShader:ExtractShader = new ExtractShader();
-	@:noCompletion private static var __extractLowShader:ExtractLowShader = new ExtractLowShader();
+	/**
+		[Warning]
+		You can redefine these shaders, but it is not recommended to modify them without 
+		understanding how they work. You can use CustomShader/FunkinShader to redefine them.
+	**/
+	public var blurShader:BlurShader;
+	public var combineShader:CombineShader;
+	public var extractShader:ExtractShader;
+	public var extractLowShader:ExtractLowShader;
 
 	/**
 		Values that are a power of 2 (such as 2, 4, 8, 16 and 32) are optimized to render 
@@ -99,6 +104,12 @@ class BloomEffect extends BitmapFilter
 	**/
 	public var useLowQualityExtract(get, set):Bool;
 
+	/**
+		The weights for calculating brightness (RGB to grayscale).
+		Order: [Red, Green, Blue]. Default is [0.2126, 0.7152, 0.0722].
+	**/
+	public var weights(get, set):Array<Float>;
+
 	@:noCompletion private var __blurX:Float;
 	@:noCompletion private var __blurY:Float;
 	@:noCompletion private var __horizontalPasses:Int;
@@ -108,6 +119,7 @@ class BloomEffect extends BitmapFilter
 	@:noCompletion private var __threshold:Float;
 	@:noCompletion private var __extension:Bool;
 	@:noCompletion private var __useLowQualityExtract:Bool;
+	@:noCompletion private var __weights:Array<Float>;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -137,6 +149,10 @@ class BloomEffect extends BitmapFilter
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_useLowQualityExtract (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_useLowQualityExtract (v); }")
 			},
+			"weights": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_weights (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_weights (v); }")
+			},
 		});
 	}
 	#end
@@ -158,6 +174,11 @@ class BloomEffect extends BitmapFilter
 	{
 		super();
 
+		blurShader = new BlurShader();
+		combineShader = new CombineShader();
+		extractShader = new ExtractShader();
+		extractLowShader = new ExtractLowShader();
+
 		this.blurX = blurX;
 		this.blurY = blurY;
 		this.quality = quality;
@@ -165,6 +186,7 @@ class BloomEffect extends BitmapFilter
 		this.threshold = threshold;
 		this.extension = false;
 		this.useLowQualityExtract = useLowQualityExtract;
+		this.weights = [0.2126, 0.7152, 0.0722];
 
 		__needSecondBitmapData = true;
 		__preserveObject = true;
@@ -192,15 +214,17 @@ class BloomEffect extends BitmapFilter
 			case 0:
 				if (__useLowQualityExtract)
 				{
-					__extractLowShader.uThreshold.value = [__threshold];
-					__extractLowShader.uQuality.value = [__quality];
-					return __extractLowShader;
+					extractLowShader.uThreshold.value = [__threshold];
+					extractLowShader.uQuality.value = [__quality];
+					extractLowShader.uWeights.value = __weights;
+					return extractLowShader;
 				}
 				else
 				{
-					__extractShader.uThreshold.value = [__threshold];
-					__extractShader.uQuality.value = [__quality];
-					return __extractShader;
+					extractShader.uThreshold.value = [__threshold];
+					extractShader.uQuality.value = [__quality];
+					extractShader.uWeights.value = __weights;
+					return extractShader;
 				}
 
 			case _ if (pass <= numBlurPasses):
@@ -212,18 +236,18 @@ class BloomEffect extends BitmapFilter
 				final scale = Math.pow(0.5, scalePass >> 1);
 				final blurRadius = isHorizontal ? blurX * scale : blurY * scale;
 
-				__blurShader.uRadius.value = isHorizontal ? [blurRadius / __quality, 0.0] : [0.0, blurRadius / __quality];
-				__blurShader.uQuality.value = [__quality];
+				blurShader.uRadius.value = isHorizontal ? [blurRadius / __quality, 0.0] : [0.0, blurRadius / __quality];
+				blurShader.uQuality.value = [__quality];
 
-				return __blurShader;
+				return blurShader;
 
 			default:
-				__combineShader.sourceBitmap.input = sourceBitmapData;
-				__combineShader.offset.value = [0.0, 0.0];
-				__combineShader.uStrength.value = [__strength];
-				__combineShader.uThreshold.value = [__threshold];
-				__combineShader.uQuality.value = [__quality];
-				return __combineShader;
+				combineShader.sourceBitmap.input = sourceBitmapData;
+				combineShader.offset.value = [0.0, 0.0];
+				combineShader.uStrength.value = [__strength];
+				combineShader.uThreshold.value = [__threshold];
+				combineShader.uQuality.value = [__quality];
+				return combineShader;
 		}
 		#else
 		return null;
@@ -383,6 +407,21 @@ class BloomEffect extends BitmapFilter
 		}
 		return value;
 	}
+
+	@:noCompletion private function get_weights():Array<Float>
+	{
+		return __weights;
+	}
+
+	@:noCompletion private function set_weights(value:Array<Float>):Array<Float>
+	{
+		if (value != __weights)
+		{
+			__weights = value;
+			__renderDirty = true;
+		}
+		return value;
+	}
 }
 
 private class BlurShader extends BitmapFilterShader
@@ -469,13 +508,14 @@ private class ExtractLowShader extends BitmapFilterShader
 	@:glFragmentSource("
 		uniform sampler2D openfl_Texture;
 		uniform float uThreshold;
+		uniform vec3 uWeights;
 		varying vec2 vTexCoord;
 
 		void main(void) {
 			if ((all(greaterThanEqual(vTexCoord, vec2(0.0))) && all(lessThanEqual(vTexCoord, vec2(1.0)))) == false) return;
 
 			vec4 texel = texture2D(openfl_Texture, vTexCoord);
-			float brightness = dot(texel.rgb, vec3(0.2126, 0.7152, 0.0722));
+			float brightness = min(dot(texel.rgb, uWeights), 1.0);
 			float mask = smoothstep(uThreshold, uThreshold + 0.1, brightness);
 			gl_FragColor = texel * mask;
 		}
@@ -501,6 +541,7 @@ private class ExtractLowShader extends BitmapFilterShader
 
 		#if !macro
 		uThreshold.value = [0.6];
+		uWeights.value = [0.2126, 0.7152, 0.0722];
 		#end
 	}
 }
@@ -512,6 +553,7 @@ private class ExtractShader extends BitmapFilterShader
 		uniform vec2 openfl_TextureSize;
     uniform float uThreshold;
     uniform float uQuality;
+    uniform vec3 uWeights;
     varying vec2 vTexCoord;
 		varying vec4 border;
 
@@ -530,7 +572,7 @@ private class ExtractShader extends BitmapFilterShader
 					vec2 sampleCoord = vTexCoord + vec2(dx, dy) * texelSize;
 
 					vec4 texel = texture2D(openfl_Texture, sampleCoord);
-					float brightness = dot(texel.rgb, vec3(0.2126, 0.7152, 0.0722));
+					float brightness = min(dot(texel.rgb, uWeights), 1.0);
 					float mask = smoothstep(uThreshold, uThreshold + 0.1, brightness);
 					accumulated += texel * mask;
 					sampleCount++;
@@ -566,6 +608,7 @@ private class ExtractShader extends BitmapFilterShader
 
 		#if !macro
 		uThreshold.value = [0.6];
+		uWeights.value = [0.2126, 0.7152, 0.0722];
 		#end
 	}
 }
