@@ -61,12 +61,8 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 		return Shader.processGLSLText(_processGLSLText(source, glVersion, isFragment, pragmas), glVersion, isFragment);
 
 	private static function _processGLSLText(source:String, glVersion:String, isFragment:Bool, ?pragmas:Map<String, String>):String {
-		var injectedFragColor = StringTools.contains(source, "out vec4"), canInjectFragColorFix = switch (glVersion) {
-			case "300 es", "310 es", "320 es", "330", "400", "410", "420", "430", "440", "450", "460": isFragment;
-			default: false;
-		};
 		if (pragmas != null) {
-			final pragmaKeyword = ~/#pragma (\w+)/g;
+			final pragmaKeyword = ~/#pragma\s+(\w+)/g;
 			source = pragmaKeyword.map(source, (_) -> {
 				var name = pragmaKeyword.matched(1), pragma:String;
 				if (pragmas.exists(name)) pragma = pragmas.get(name);
@@ -74,13 +70,7 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 					if (name != "header" && name != "body") return '#pragma $name';
 					pragma = "";
 				}
-
-				var pragma = pragmas.get(name);
-				if (name == "header" && canInjectFragColorFix && !injectedFragColor) {
-					injectedFragColor = true;
-					if (!StringTools.contains(pragma, "out vec4")) return processGLSLText(Shader.fragColorHeaderFix + pragma, glVersion, isFragment, pragmas);
-				}
-				return processGLSLText(pragma, glVersion, isFragment, pragmas);
+				return _processGLSLText(pragma, glVersion, isFragment, pragmas);
 			});
 		}
 
@@ -99,10 +89,10 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 		final includeKeyword = ~/#include ['"](.+)['"]/g;
 		final importKeyword = ~/#import\s+<(.*)>/g;
 		source = importKeyword.map(source, (_) ->
-			return processGLSLText(tryGetShaderCode(importKeyword.matched(1)), glVersion, isFragment, pragmas) ?? "");
+			return _processGLSLText(tryGetShaderCode(importKeyword.matched(1)), glVersion, isFragment, pragmas) ?? "");
 
 		return source = includeKeyword.map(source, (_) ->
-			return processGLSLText(tryGetShaderCode(includeKeyword.matched(1)), glVersion, isFragment, pragmas) ?? "");
+			return _processGLSLText(tryGetShaderCode(includeKeyword.matched(1)), glVersion, isFragment, pragmas) ?? "");
 	}
 
 	private static var __defaultsAvailable:Bool;
