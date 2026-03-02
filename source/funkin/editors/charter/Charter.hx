@@ -796,6 +796,7 @@ class Charter extends UIState {
 	public var mousePos:FlxPoint = new FlxPoint();
 	public var selectionDragging:Bool = false;
 	public var isSelecting:Bool = false;
+	public var isAltCopyDrag:Bool = false;
 
 	public function updateSelectionLogic() {
 		function select(s:ICharterSelectable) {
@@ -960,10 +961,17 @@ class Charter extends UIState {
 					if (!(verticalChange == 0 && horizontalChange == 0)) {
 						notesGroup.sortNotes();
 
-						undos.addToUndo(CChangeBundle([
-							CSelectionDrag(undoDrags),
-							updateEventsGroups(selection)
-						]));
+						var changes:Array<CharterChange> = [];
+						if (isAltCopyDrag) {
+							changes.push(CCreateSelection(selection.copy()));
+							isAltCopyDrag = false;
+						}
+						changes.push(CSelectionDrag(undoDrags));
+						changes.push(updateEventsGroups(selection));
+						undos.addToUndo(CChangeBundle(changes));
+					} else if (isAltCopyDrag) {
+						undos.addToUndo(CCreateSelection(selection.copy()));
+						isAltCopyDrag = false;
 					}
 
 					gridActionType = NONE;
@@ -1018,7 +1026,32 @@ class Charter extends UIState {
 						}
 
 						if ((Math.abs(mousePos.x - dragStartPos.x) > (noteSusDrag ? 1 : 5) || Math.abs(mousePos.y - dragStartPos.y) > (noteSusDrag ? 1 : 5))) {
-							if (noteHovered) gridActionType = noteHovered ? NOTE_DRAG : INVALID_DRAG;
+							if (noteHovered) {
+								if (FlxG.keys.pressed.ALT && selection.length > 0) {
+									var newSelection:Array<ICharterSelectable> = [];
+									for (s in selection) {
+										if (s is CharterNote) {
+											var n:CharterNote = cast s;
+											var newNote = new CharterNote();
+											newNote.updatePos(n.step, n.id, n.susLength, n.type, n.strumLine);
+											notesGroup.add(newNote);
+											newSelection.push(newNote);
+										} else if (s is CharterEvent) {
+											var e:CharterEvent = cast s;
+											var newEvent = new CharterEvent(e.step, [for (event in e.events) Reflect.copy(event)], e.global);
+											newEvent.refreshEventIcons();
+											(e.global ? rightEventsGroup : leftEventsGroup).add(newEvent);
+											newSelection.push(newEvent);
+										}
+									}
+									for (s in selection) s.selected = false;
+									selection = newSelection;
+									for (s in selection) s.selected = true;
+									isAltCopyDrag = true;
+									UIState.playEditorSound(Flags.DEFAULT_EDITOR_COPY_SOUND);
+								}
+								gridActionType = NOTE_DRAG;
+							}
 							if (noteSusDrag) gridActionType = SUSTAIN_DRAG;
 						}
 					}
@@ -1736,7 +1769,11 @@ class Charter extends UIState {
 			case CEditSpecNotesType(notes, oldTypes, newTypes):
 				for(i=>note in notes) note.updatePos(note.step, note.id, note.susLength, oldTypes[i]);
 			case CChangeBundle(changes):
-				for (change in changes) _undo(change);
+				var i = changes.length - 1;
+				while (i >= 0) {
+					_undo(changes[i]);
+					i--;
+				}
 		}
 	}
 
