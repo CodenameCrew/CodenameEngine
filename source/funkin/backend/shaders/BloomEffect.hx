@@ -5,6 +5,7 @@ import openfl.filters.BitmapFilter;
 import openfl.filters.BitmapFilterShader;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
+import openfl.display.BlendMode;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -56,11 +57,20 @@ class BloomEffect extends BitmapFilter
 		[Warning]
 		You can redefine these shaders, but it is not recommended to modify them without 
 		understanding how they work. You can use CustomShader/FunkinShader to redefine them.
+		Use setShader() to replace a shader with a custom one.
 	**/
-	public var blurShader:BlurShader;
-	public var combineShader:CombineShader;
-	public var extractShader:ExtractShader;
-	public var extractLowShader:ExtractLowShader;
+	@:noCompletion private static var __shaderCache:Map<String, Dynamic> = new Map();
+	// I have no idea why, but not using static variable caching causes memory to skyrocket.
+
+	@:noCompletion private var __blurShader:BlurShader;
+	@:noCompletion private var __combineShader:CombineShader;
+	@:noCompletion private var __extractShader:ExtractShader;
+	@:noCompletion private var __extractLowShader:ExtractLowShader;
+
+	public var blurShader(get, never):BlurShader;
+	public var combineShader(get, never):CombineShader;
+	public var extractShader(get, never):ExtractShader;
+	public var extractLowShader(get, never):ExtractLowShader;
 
 	/**
 		Values that are a power of 2 (such as 2, 4, 8, 16 and 32) are optimized to render 
@@ -110,6 +120,13 @@ class BloomEffect extends BitmapFilter
 	**/
 	public var weights(get, set):Array<Float>;
 
+	/**
+		The blend mode used when combining the bloom with the original image.
+		Use BlendMode constants (e.g., BlendMode.ADD, BlendMode.SCREEN, BlendMode.ADD).
+		Default is BlendMode.ADD.
+	**/
+	public var blendMode(get, set):BlendMode;
+
 	@:noCompletion private var __blurX:Float;
 	@:noCompletion private var __blurY:Float;
 	@:noCompletion private var __horizontalPasses:Int;
@@ -120,6 +137,7 @@ class BloomEffect extends BitmapFilter
 	@:noCompletion private var __extension:Bool;
 	@:noCompletion private var __useLowQualityExtract:Bool;
 	@:noCompletion private var __weights:Array<Float>;
+	@:noCompletion private var __blendMode:BlendMode;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -153,6 +171,10 @@ class BloomEffect extends BitmapFilter
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_weights (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_weights (v); }")
 			},
+			"blendMode": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_blendMode (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_blendMode (v); }")
+			},
 		});
 	}
 	#end
@@ -169,15 +191,19 @@ class BloomEffect extends BitmapFilter
 		@param useLowQualityExtract Enables performance-optimized extraction with 
 									potentially more flickering.
 	**/
-	public function new(blurX:Float = 10, blurY:Float = 10, quality:Float = #if desktop 24 #else 8 #end, strength:Float = 1, threshold:Float = 0.6,
-			useLowQualityExtract:Bool = #if desktop false #else true #end)
+	public function new(blurX:Float = 10, blurY:Float = 10, quality:Float = 8, strength:Float = 1, threshold:Float = 0.6, useLowQualityExtract:Bool = true)
 	{
 		super();
 
-		blurShader = new BlurShader();
-		combineShader = new CombineShader();
-		extractShader = new ExtractShader();
-		extractLowShader = new ExtractLowShader();
+		if (!__shaderCache.exists("blur")) __shaderCache.set("blur", new BlurShader());
+		if (!__shaderCache.exists("combine")) __shaderCache.set("combine", new CombineShader());
+		if (!__shaderCache.exists("extract")) __shaderCache.set("extract", new ExtractShader());
+		if (!__shaderCache.exists("extractLow")) __shaderCache.set("extractLow", new ExtractLowShader());
+
+		__blurShader = __shaderCache.get("blur");
+		__combineShader = __shaderCache.get("combine");
+		__extractShader = __shaderCache.get("extract");
+		__extractLowShader = __shaderCache.get("extractLow");
 
 		this.blurX = blurX;
 		this.blurY = blurY;
@@ -187,6 +213,7 @@ class BloomEffect extends BitmapFilter
 		this.extension = false;
 		this.useLowQualityExtract = useLowQualityExtract;
 		this.weights = [0.2126, 0.7152, 0.0722];
+		this.blendMode = BlendMode.ADD;
 
 		__needSecondBitmapData = true;
 		__preserveObject = true;
@@ -195,7 +222,10 @@ class BloomEffect extends BitmapFilter
 
 	public override function clone():BitmapFilter
 	{
-		return new BloomEffect(__blurX, __blurY, __quality, __strength, __threshold, __useLowQualityExtract);
+		var cloned = new BloomEffect(__blurX, __blurY, __quality, __strength, __threshold, __useLowQualityExtract);
+		cloned.weights = __weights != null ? __weights.copy() : [0.2126, 0.7152, 0.0722];
+		cloned.blendMode = __blendMode;
+		return cloned;
 	}
 
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
@@ -214,17 +244,17 @@ class BloomEffect extends BitmapFilter
 			case 0:
 				if (__useLowQualityExtract)
 				{
-					extractLowShader.uThreshold.value = [__threshold];
-					extractLowShader.uQuality.value = [__quality];
-					extractLowShader.uWeights.value = __weights;
-					return extractLowShader;
+					__extractLowShader.uThreshold.value = [__threshold];
+					__extractLowShader.uQuality.value = [__quality];
+					__extractLowShader.uWeights.value = __weights;
+					return __extractLowShader;
 				}
 				else
 				{
-					extractShader.uThreshold.value = [__threshold];
-					extractShader.uQuality.value = [__quality];
-					extractShader.uWeights.value = __weights;
-					return extractShader;
+					__extractShader.uThreshold.value = [__threshold];
+					__extractShader.uQuality.value = [__quality];
+					__extractShader.uWeights.value = __weights;
+					return __extractShader;
 				}
 
 			case _ if (pass <= numBlurPasses):
@@ -236,18 +266,19 @@ class BloomEffect extends BitmapFilter
 				final scale = Math.pow(0.5, scalePass >> 1);
 				final blurRadius = isHorizontal ? blurX * scale : blurY * scale;
 
-				blurShader.uRadius.value = isHorizontal ? [blurRadius / __quality, 0.0] : [0.0, blurRadius / __quality];
-				blurShader.uQuality.value = [__quality];
+				__blurShader.uRadius.value = isHorizontal ? [blurRadius / __quality, 0.0] : [0.0, blurRadius / __quality];
+				__blurShader.uQuality.value = [__quality];
 
-				return blurShader;
+				return __blurShader;
 
 			default:
-				combineShader.sourceBitmap.input = sourceBitmapData;
-				combineShader.offset.value = [0.0, 0.0];
-				combineShader.uStrength.value = [__strength];
-				combineShader.uThreshold.value = [__threshold];
-				combineShader.uQuality.value = [__quality];
-				return combineShader;
+				__combineShader.sourceBitmap.input = sourceBitmapData;
+				__combineShader.offset.value = [0.0, 0.0];
+				__combineShader.uStrength.value = [__strength];
+				__combineShader.uThreshold.value = [__threshold];
+				__combineShader.uQuality.value = [__quality];
+				__combineShader.uBlendMode.value = [cast __blendMode];
+				return __combineShader;
 		}
 		#else
 		return null;
@@ -421,6 +452,70 @@ class BloomEffect extends BitmapFilter
 			__renderDirty = true;
 		}
 		return value;
+	}
+
+	@:noCompletion private function get_blendMode():BlendMode
+	{
+		return __blendMode;
+	}
+
+	@:noCompletion private function set_blendMode(value:BlendMode):BlendMode
+	{
+		if (value != __blendMode)
+		{
+			__blendMode = value;
+			__renderDirty = true;
+		}
+		return value;
+	}
+
+	@:noCompletion private function get_blurShader():BlurShader
+	{
+		return __blurShader;
+	}
+
+	@:noCompletion private function get_combineShader():CombineShader
+	{
+		return __combineShader;
+	}
+
+	@:noCompletion private function get_extractShader():ExtractShader
+	{
+		return __extractShader;
+	}
+
+	@:noCompletion private function get_extractLowShader():ExtractLowShader
+	{
+		return __extractLowShader;
+	}
+
+	/**
+		Replaces a shader with a custom one.
+
+		@param type The shader type to replace. Valid values: "blur", "combine", "extract", "extractLow"
+		@param shader The new shader instance to use
+
+		Usage:
+		```haxe
+		var bloom = new BloomEffect();
+		bloom.setShader("combine", new MyCustomCombineShader());
+		bloom.setShader("blur", new MyCustomBlurShader());
+		```
+	**/
+	public function setShader(type:String, shader:Dynamic):Void
+	{
+		switch (type)
+		{
+			case "blur":
+				__blurShader = cast shader;
+			case "combine":
+				__combineShader = cast shader;
+			case "extract":
+				__extractShader = cast shader;
+			case "extractLow":
+				__extractLowShader = cast shader;
+		}
+		__renderDirty = true;
 	}
 }
 
@@ -620,13 +715,222 @@ private class CombineShader extends BitmapFilterShader
 		uniform sampler2D sourceBitmap;
 		uniform float uStrength;
 		uniform float uThreshold;
+		uniform int uBlendMode;
 		varying vec4 textureCoords;
+
+		vec4 blendAdd(vec4 src, vec4 bloom) {
+			return src + bloom;
+		}
+
+		vec4 blendScreen(vec4 src, vec4 bloom) {
+			return vec4(1.0) - (vec4(1.0) - src) * (vec4(1.0) - bloom);
+		}
+
+		vec4 blendMultiply(vec4 src, vec4 bloom) {
+			return src * bloom;
+		}
+
+		vec4 blendLighten(vec4 src, vec4 bloom) {
+			return max(src, bloom);
+		}
+
+		vec4 blendDarken(vec4 src, vec4 bloom) {
+			return min(src, bloom);
+		}
+
+		vec4 blendOverlay(vec4 src, vec4 bloom) {
+			vec4 result = vec4(0.0);
+			for(int i = 0; i < 4; i++) {
+				if(src[i] < 0.5) {
+					result[i] = 2.0 * src[i] * bloom[i];
+				} else {
+					result[i] = 1.0 - 2.0 * (1.0 - src[i]) * (1.0 - bloom[i]);
+				}
+			}
+			return result;
+		}
+
+		vec4 blendColorDodge(vec4 src, vec4 bloom) {
+			vec4 result = vec4(0.0);
+			for(int i = 0; i < 4; i++) {
+				if(bloom[i] < 1.0) {
+					result[i] = min(1.0, src[i] / (1.0 - bloom[i]));
+				} else {
+					result[i] = 1.0;
+				}
+			}
+			return result;
+		}
+
+		vec4 blendColorBurn(vec4 src, vec4 bloom) {
+			vec4 result = vec4(0.0);
+			for(int i = 0; i < 4; i++) {
+				if(bloom[i] > 0.0) {
+					result[i] = max(0.0, 1.0 - (1.0 - src[i]) / bloom[i]);
+				} else {
+					result[i] = 0.0;
+				}
+			}
+			return result;
+		}
+
+		vec4 blendSoftLight(vec4 src, vec4 bloom) {
+			vec4 result = vec4(0.0);
+			for(int i = 0; i < 4; i++) {
+				if(bloom[i] < 0.5) {
+					result[i] = src[i] - (1.0 - 2.0 * bloom[i]) * src[i] * (1.0 - src[i]);
+				} else {
+					float d = (src[i] <= 0.25) ? ((16.0 * src[i] - 12.0) * src[i] + 4.0) * src[i] : sqrt(src[i]);
+					result[i] = src[i] + (2.0 * bloom[i] - 1.0) * (d - src[i]);
+				}
+			}
+			return result;
+		}
+
+		vec4 blendHardLight(vec4 src, vec4 bloom) {
+			return blendOverlay(bloom, src);
+		}
+
+		vec4 blendDifference(vec4 src, vec4 bloom) {
+			return abs(src - bloom);
+		}
+
+		vec4 blendExclusion(vec4 src, vec4 bloom) {
+			return src + bloom - 2.0 * src * bloom;
+		}
+
+		vec4 blendAlpha(vec4 src, vec4 bloom) {
+			return src + bloom * (1.0 - src.a);
+		}
+
+		vec3 rgb2hsl(vec3 color) {
+			float maxC = max(max(color.r, color.g), color.b);
+			float minC = min(min(color.r, color.g), color.b);
+			float l = (maxC + minC) / 2.0;
+			float h = 0.0;
+			float s = 0.0;
+			if(maxC != minC) {
+				float d = maxC - minC;
+				s = l > 0.5 ? d / (2.0 - maxC - minC) : d / (maxC + minC);
+				if(maxC == color.r) {
+					h = (color.g - color.b) / d + (color.g < color.b ? 6.0 : 0.0);
+				} else if(maxC == color.g) {
+					h = (color.b - color.r) / d + 2.0;
+				} else {
+					h = (color.r - color.g) / d + 4.0;
+				}
+				h /= 6.0;
+			}
+			return vec3(h, s, l);
+		}
+
+		float hue2rgb(float p, float q, float t) {
+			if(t < 0.0) t += 1.0;
+			if(t > 1.0) t -= 1.0;
+			if(t < 1.0/6.0) return p + (q - p) * 6.0 * t;
+			if(t < 1.0/2.0) return q;
+			if(t < 2.0/3.0) return p + (q - p) * (2.0/3.0 - t) * 6.0;
+			return p;
+		}
+
+		vec3 hsl2rgb(vec3 hsl) {
+			float r, g, b;
+			if(hsl.y == 0.0) {
+				r = g = b = hsl.z;
+			} else {
+				float q = hsl.z < 0.5 ? hsl.z * (1.0 + hsl.y) : hsl.z + hsl.y - hsl.z * hsl.y;
+				float p = 2.0 * hsl.z - q;
+				r = hue2rgb(p, q, hsl.x + 1.0/3.0);
+				g = hue2rgb(p, q, hsl.x);
+				b = hue2rgb(p, q, hsl.x - 1.0/3.0);
+			}
+			return vec3(r, g, b);
+		}
+
+		vec4 blendHue(vec4 src, vec4 bloom) {
+			vec3 srcHSL = rgb2hsl(src.rgb);
+			vec3 bloomHSL = rgb2hsl(bloom.rgb);
+			vec3 resultRGB = hsl2rgb(vec3(bloomHSL.x, srcHSL.y, srcHSL.z));
+			return vec4(resultRGB, src.a);
+		}
+
+		vec4 blendSaturation(vec4 src, vec4 bloom) {
+			vec3 srcHSL = rgb2hsl(src.rgb);
+			vec3 bloomHSL = rgb2hsl(bloom.rgb);
+			vec3 resultRGB = hsl2rgb(vec3(srcHSL.x, bloomHSL.y, srcHSL.z));
+			return vec4(resultRGB, src.a);
+		}
+
+		vec4 blendColor(vec4 src, vec4 bloom) {
+			vec3 srcHSL = rgb2hsl(src.rgb);
+			vec3 bloomHSL = rgb2hsl(bloom.rgb);
+			vec3 resultRGB = hsl2rgb(vec3(bloomHSL.x, bloomHSL.y, srcHSL.z));
+			return vec4(resultRGB, src.a);
+		}
+
+		vec4 blendLuminosity(vec4 src, vec4 bloom) {
+			vec3 srcHSL = rgb2hsl(src.rgb);
+			vec3 bloomHSL = rgb2hsl(bloom.rgb);
+			vec3 resultRGB = hsl2rgb(vec3(srcHSL.x, srcHSL.y, bloomHSL.z));
+			return vec4(resultRGB, src.a);
+		}
 
 		void main(void) {
 			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
-			vec4 bloom = texture2D(openfl_Texture, textureCoords.zw);
+			vec4 bloom = texture2D(openfl_Texture, textureCoords.zw) * uStrength;
 
-			gl_FragColor = src + bloom * uStrength;
+			vec4 result;
+			if(uBlendMode == 0) {
+				result = src + bloom;
+			} else if(uBlendMode == 1) {
+				result = blendAlpha(src, bloom);
+			} else if(uBlendMode == 2) {
+				result = blendDarken(src, bloom);
+			} else if(uBlendMode == 3) {
+				result = blendDifference(src, bloom);
+			} else if(uBlendMode == 4) {
+				result = vec4(src.rgb, src.a - bloom.a);
+			} else if(uBlendMode == 5) {
+				result = blendHardLight(src, bloom);
+			} else if(uBlendMode == 6) {
+				result = vec4(1.0) - src;
+			} else if(uBlendMode == 7) {
+				result = src;
+			} else if(uBlendMode == 8) {
+				result = blendLighten(src, bloom);
+			} else if(uBlendMode == 9) {
+				result = blendMultiply(src, bloom);
+			} else if(uBlendMode == 10) {
+				result = bloom;
+			} else if(uBlendMode == 11) {
+				result = blendOverlay(src, bloom);
+			} else if(uBlendMode == 12) {
+				result = blendScreen(src, bloom);
+			} else if(uBlendMode == 13) {
+				result = src + bloom;
+			} else if(uBlendMode == 14) {
+				result = src + bloom - 1.0;
+			} else if(uBlendMode == 15) {
+				result = blendColorDodge(src, bloom);
+			} else if(uBlendMode == 16) {
+				result = blendColorBurn(src, bloom);
+			} else if(uBlendMode == 17) {
+				result = blendSoftLight(src, bloom);
+			} else if(uBlendMode == 18) {
+				result = blendExclusion(src, bloom);
+			} else if(uBlendMode == 19) {
+				result = blendHue(src, bloom);
+			} else if(uBlendMode == 20) {
+				result = blendSaturation(src, bloom);
+			} else if(uBlendMode == 21) {
+				result = blendColor(src, bloom);
+			} else if(uBlendMode == 22) {
+				result = blendLuminosity(src, bloom);
+			} else {
+				result = src + bloom;
+			}
+
+			gl_FragColor = result;
 		}
 	")
 	@:glVertexSource("attribute vec4 openfl_Position;
@@ -650,6 +954,7 @@ private class CombineShader extends BitmapFilterShader
 		offset.value = [0, 0];
 		uStrength.value = [1.0];
 		uThreshold.value = [0.6];
+		uBlendMode.value = [0];
 		#end
 	}
 }
