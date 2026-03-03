@@ -23,8 +23,6 @@ import openfl.geom.Rectangle;
 	2. Blurring - The extracted bright areas are blurred horizontally and vertically
 	3. Combination - The blurred result is blended back with the original image
 **/
-@:access(openfl.geom.Point)
-@:access(openfl.geom.Rectangle)
 class BloomEffect extends BitmapFilter
 {
 	/**
@@ -212,7 +210,6 @@ class BloomEffect extends BitmapFilter
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
-		#if !macro
 		final numBlurPasses = __horizontalPasses + __verticalPasses;
 
 		switch pass
@@ -255,9 +252,6 @@ class BloomEffect extends BitmapFilter
 				__combineShader.uBlendMode.value[0] = cast __blendMode;
 				return __combineShader;
 		}
-		#else
-		return null;
-		#end
 	}
 
 	// Get & Set Methods
@@ -497,71 +491,69 @@ class BloomEffect extends BitmapFilter
 private class BlurShader extends BitmapFilterShader
 {
 	@:glFragmentSource("
-		uniform sampler2D openfl_Texture;
+uniform sampler2D openfl_Texture;
 
-		varying mat2 vBlurCoord0;
-		varying mat2 vBlurCoord1;
-		varying vec2 vBlurCoord2;
-		varying mat2 vBlurCoord3;
-		varying mat2 vBlurCoord4;
+varying mat2 vBlurCoord0;
+varying mat2 vBlurCoord1;
+varying vec2 vBlurCoord2;
+varying mat2 vBlurCoord3;
+varying mat2 vBlurCoord4;
 
-		void main(void) {
-			if ((all(greaterThanEqual(vBlurCoord2, vec2(0.0))) && all(lessThanEqual(vBlurCoord2, vec2(1.0)))) == false) return;
+void main(void) {
+	if ((all(greaterThanEqual(vBlurCoord2, vec2(0.0))) && all(lessThanEqual(vBlurCoord2, vec2(1.0)))) == false) return;
 
-			vec4 sum = texture2D(openfl_Texture, vBlurCoord0[0]) * 0.028532;
-			sum += texture2D(openfl_Texture, vBlurCoord0[1]) * 0.067234;
-			sum += texture2D(openfl_Texture, vBlurCoord1[0]) * 0.124009;
-			sum += texture2D(openfl_Texture, vBlurCoord1[1]) * 0.179044;
-			sum += texture2D(openfl_Texture, vBlurCoord2) * 0.202360;
-			sum += texture2D(openfl_Texture, vBlurCoord3[0]) * 0.179044;
-			sum += texture2D(openfl_Texture, vBlurCoord3[1]) * 0.124009;
-			sum += texture2D(openfl_Texture, vBlurCoord4[0]) * 0.067234;
-			sum += texture2D(openfl_Texture, vBlurCoord4[1]) * 0.028532;
-			gl_FragColor = sum;
-		}
+	vec4 sum = texture2D(openfl_Texture, vBlurCoord0[0]) * 0.028532;
+	sum += texture2D(openfl_Texture, vBlurCoord0[1]) * 0.067234;
+	sum += texture2D(openfl_Texture, vBlurCoord1[0]) * 0.124009;
+	sum += texture2D(openfl_Texture, vBlurCoord1[1]) * 0.179044;
+	sum += texture2D(openfl_Texture, vBlurCoord2) * 0.202360;
+	sum += texture2D(openfl_Texture, vBlurCoord3[0]) * 0.179044;
+	sum += texture2D(openfl_Texture, vBlurCoord3[1]) * 0.124009;
+	sum += texture2D(openfl_Texture, vBlurCoord4[0]) * 0.067234;
+	sum += texture2D(openfl_Texture, vBlurCoord4[1]) * 0.028532;
+	gl_FragColor = sum;
+}
 	")
 	@:glVertexSource("
-		attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
+attribute vec4 openfl_Position;
+attribute vec2 openfl_TextureCoord;
 
-		uniform mat4 openfl_Matrix;
+uniform mat4 openfl_Matrix;
 
-		uniform vec2 uRadius;
-		uniform vec2 uTextureSize;
-		uniform float uQuality;
+uniform vec2 uRadius;
+uniform vec2 uTextureSize;
+uniform float uQuality;
 
-		varying mat2 vBlurCoord0;
-		varying mat2 vBlurCoord1;
-		varying vec2 vBlurCoord2;
-		varying mat2 vBlurCoord3;
-		varying mat2 vBlurCoord4;
+varying mat2 vBlurCoord0;
+varying mat2 vBlurCoord1;
+varying vec2 vBlurCoord2;
+varying mat2 vBlurCoord3;
+varying mat2 vBlurCoord4;
 
-		void main(void) {
-			vec4 pos = openfl_Position;
-			pos.xy /= uQuality;
-			gl_Position = openfl_Matrix * pos;
+void main(void) {
+	vec4 pos = openfl_Position;
+	pos.xy /= uQuality;
+	gl_Position = openfl_Matrix * pos;
 
-			vec2 r = uRadius / uTextureSize;
-			vec2 coord = openfl_TextureCoord / uQuality;
-			vBlurCoord0[0] = coord - r;
-			vBlurCoord0[1] = coord - r * 0.25;
-			vBlurCoord1[0] = coord - r * 0.5;
-			vBlurCoord1[1] = coord - r * 0.75;
-			vBlurCoord2 = coord;
-			vBlurCoord3[0] = coord + r * 0.25;
-			vBlurCoord3[1] = coord + r * 0.5;
-			vBlurCoord4[0] = coord + r * 0.75;
-			vBlurCoord4[1] = coord + r;
-		}
+	vec2 r = uRadius / uTextureSize;
+	vec2 coord = openfl_TextureCoord / uQuality;
+	vBlurCoord0[0] = coord - r;
+	vBlurCoord0[1] = coord - r * 0.25;
+	vBlurCoord1[0] = coord - r * 0.5;
+	vBlurCoord1[1] = coord - r * 0.75;
+	vBlurCoord2 = coord;
+	vBlurCoord3[0] = coord + r * 0.25;
+	vBlurCoord3[1] = coord + r * 0.5;
+	vBlurCoord4[0] = coord + r * 0.75;
+	vBlurCoord4[1] = coord + r;
+}
 	")
 	public function new()
 	{
 		super();
 
-		#if !macro
 		uRadius.value = [0, 0];
 		uQuality.value = [8];
-		#end
 	}
 
 	@:noCompletion private override function __update():Void
@@ -577,229 +569,223 @@ private class BlurShader extends BitmapFilterShader
 private class ExtractLowShader extends BitmapFilterShader
 {
 	@:glFragmentSource("
-		uniform sampler2D openfl_Texture;
-		uniform float uThreshold;
-		uniform vec3 uWeights;
-		varying vec2 vTexCoord;
+uniform sampler2D openfl_Texture;
+uniform float uThreshold;
+uniform vec3 uWeights;
+varying vec2 vTexCoord;
 
-		void main(void) {
-			if ((all(greaterThanEqual(vTexCoord, vec2(0.0))) && all(lessThanEqual(vTexCoord, vec2(1.0)))) == false) return;
+void main(void) {
+	if ((all(greaterThanEqual(vTexCoord, vec2(0.0))) && all(lessThanEqual(vTexCoord, vec2(1.0)))) == false) return;
 
-			vec4 texel = texture2D(openfl_Texture, vTexCoord);
-			float brightness = min(dot(texel.rgb, uWeights), 1.0);
-			float mask = smoothstep(uThreshold, uThreshold + 0.1, brightness);
-			gl_FragColor = texel * mask;
-		}
+	vec4 texel = texture2D(openfl_Texture, vTexCoord);
+	float brightness = min(dot(texel.rgb, uWeights), 1.0);
+	float mask = smoothstep(uThreshold, uThreshold + 0.1, brightness);
+	gl_FragColor = texel * mask;
+}
 	")
 	@:glVertexSource("
-		attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-		uniform mat4 openfl_Matrix;
-		uniform vec2 openfl_TextureSize;
-		uniform float uQuality;
-		varying vec2 vTexCoord;
+attribute vec4 openfl_Position;
+attribute vec2 openfl_TextureCoord;
+uniform mat4 openfl_Matrix;
+uniform vec2 openfl_TextureSize;
+uniform float uQuality;
+varying vec2 vTexCoord;
 
-		void main(void) {
-			vec4 pos = openfl_Position;
-			pos.xy /= uQuality;
-			gl_Position = openfl_Matrix * pos;
-			vTexCoord = openfl_TextureCoord;
-		}
+void main(void) {
+	vec4 pos = openfl_Position;
+	pos.xy /= uQuality;
+	gl_Position = openfl_Matrix * pos;
+	vTexCoord = openfl_TextureCoord;
+}
 	")
 	public function new()
 	{
 		super();
 
-		#if !macro
 		uThreshold.value = [0.6];
 		uQuality.value = [8];
 		uWeights.value = [0.2126, 0.7152, 0.0722];
-		#end
 	}
 }
 
 private class ExtractShader extends BitmapFilterShader
 {
 	@:glFragmentSource("
-		uniform sampler2D openfl_Texture;
-		uniform vec2 openfl_TextureSize;
-		uniform float uThreshold;
-		uniform float uQuality;
-		uniform vec3 uWeights;
-		varying vec2 vTexCoord;
-		varying vec4 border;
+uniform sampler2D openfl_Texture;
+uniform vec2 openfl_TextureSize;
+uniform float uThreshold;
+uniform float uQuality;
+uniform vec3 uWeights;
+varying vec2 vTexCoord;
+varying vec4 border;
 
-		void main(void) {
-			if ((all(greaterThanEqual(vTexCoord, border.xy)) && all(lessThanEqual(vTexCoord, border.zw))) == false) return;
-			
-			float quality = floor(uQuality) / 2.0;
-			vec2 texelSize = 1.0 / openfl_TextureSize;
-			
-			vec4 accumulated = vec4(0.0);
-			int sampleCount = 0;
+void main(void) {
+	if ((all(greaterThanEqual(vTexCoord, border.xy)) && all(lessThanEqual(vTexCoord, border.zw))) == false) return;
+	
+	float quality = floor(uQuality) / 2.0;
+	vec2 texelSize = 1.0 / openfl_TextureSize;
+	
+	vec4 accumulated = vec4(0.0);
+	int sampleCount = 0;
 
 
-			for (float dx = -quality; dx <= quality; dx += 2.0) {
-				for (float dy = -quality; dy <= quality; dy += 2.0) {
-					vec2 sampleCoord = vTexCoord + vec2(dx, dy) * texelSize;
+	for (float dx = -quality; dx <= quality; dx += 2.0) {
+		for (float dy = -quality; dy <= quality; dy += 2.0) {
+			vec2 sampleCoord = vTexCoord + vec2(dx, dy) * texelSize;
 
-					vec4 texel = texture2D(openfl_Texture, sampleCoord);
-					float brightness = min(dot(texel.rgb, uWeights), 1.0);
-					float mask = smoothstep(uThreshold, uThreshold + 0.1, brightness);
-					accumulated += texel * mask;
-					sampleCount++;
-				}
-			}
-
-			gl_FragColor = accumulated / float(sampleCount);
+			vec4 texel = texture2D(openfl_Texture, sampleCoord);
+			float brightness = min(dot(texel.rgb, uWeights), 1.0);
+			float mask = smoothstep(uThreshold, uThreshold + 0.1, brightness);
+			accumulated += texel * mask;
+			sampleCount++;
 		}
+	}
+
+	gl_FragColor = accumulated / float(sampleCount);
+}
 	")
 	@:glVertexSource("
-		attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-		uniform mat4 openfl_Matrix;
-		uniform vec2 openfl_TextureSize;
-		uniform float uQuality;
-		varying vec2 vTexCoord;
-		varying vec4 border;
+attribute vec4 openfl_Position;
+attribute vec2 openfl_TextureCoord;
+uniform mat4 openfl_Matrix;
+uniform vec2 openfl_TextureSize;
+uniform float uQuality;
+varying vec2 vTexCoord;
+varying vec4 border;
 
-		void main(void) {
-			vec4 pos = openfl_Position;
-			pos.xy /= uQuality;
+void main(void) {
+	vec4 pos = openfl_Position;
+	pos.xy /= uQuality;
 
-			vec2 size = 1.0 / openfl_TextureSize * uQuality;
-			border = vec4(size, vec2(1.0) - size);
+	vec2 size = 1.0 / openfl_TextureSize * uQuality;
+	border = vec4(size, vec2(1.0) - size);
 
-			gl_Position = openfl_Matrix * pos;
-			vTexCoord = openfl_TextureCoord;
-		}
+	gl_Position = openfl_Matrix * pos;
+	vTexCoord = openfl_TextureCoord;
+}
 	")
 	public function new()
 	{
 		super();
 
-		#if !macro
 		uThreshold.value = [0.6];
 		uQuality.value = [8];
 		uWeights.value = [0.2126, 0.7152, 0.0722];
-		#end
 	}
 }
 
 private class CombineShader extends BitmapFilterShader
 {
 	@:glFragmentSource("
-		uniform sampler2D openfl_Texture;
-		uniform sampler2D sourceBitmap;
-		uniform float uStrength;
-		uniform float uThreshold;
-		uniform int uBlendMode;
-		varying vec4 textureCoords;
+uniform sampler2D openfl_Texture;
+uniform sampler2D sourceBitmap;
+uniform float uStrength;
+uniform float uThreshold;
+uniform int uBlendMode;
+varying vec4 textureCoords;
 
-		vec4 blendScreen(vec4 src, vec4 bloom) {
-			return vec4(1.0) - (vec4(1.0) - src) * (vec4(1.0) - bloom);
+vec4 blendScreen(vec4 src, vec4 bloom) {
+	return vec4(1.0) - (vec4(1.0) - src) * (vec4(1.0) - bloom);
+}
+
+vec4 blendMultiply(vec4 src, vec4 bloom) {
+	return src * bloom;
+}
+
+vec4 blendLighten(vec4 src, vec4 bloom) {
+	return max(src, bloom);
+}
+
+vec4 blendOverlay(vec4 src, vec4 bloom) {
+	vec4 result = vec4(0.0);
+	for (int i = 0; i < 4; i++) {
+		if (src[i] < 0.5) {
+			result[i] = 2.0 * src[i] * bloom[i];
+		} else {
+			result[i] = 1.0 - 2.0 * (1.0 - src[i]) * (1.0 - bloom[i]);
 		}
+	}
+	return result;
+}
 
-		vec4 blendMultiply(vec4 src, vec4 bloom) {
-			return src * bloom;
+vec4 blendColorDodge(vec4 src, vec4 bloom) {
+	vec4 result = vec4(0.0);
+	for (int i = 0; i < 4; i++) {
+		if (bloom[i] < 1.0) {
+			result[i] = min(1.0, src[i] / (1.0 - bloom[i]));
+		} else {
+			result[i] = 1.0;
 		}
+	}
+	return result;
+}
 
-		vec4 blendLighten(vec4 src, vec4 bloom) {
-			return max(src, bloom);
+vec4 blendSoftLight(vec4 src, vec4 bloom) {
+	vec4 result = vec4(0.0);
+	for (int i = 0; i < 4; i++) {
+		if (bloom[i] < 0.5) {
+			result[i] = src[i] - (1.0 - 2.0 * bloom[i]) * src[i] * (1.0 - src[i]);
+		} else {
+			float d = (src[i] <= 0.25) ? ((16.0 * src[i] - 12.0) * src[i] + 4.0) * src[i] : sqrt(src[i]);
+			result[i] = src[i] + (2.0 * bloom[i] - 1.0) * (d - src[i]);
 		}
+	}
+	return result;
+}
 
-		vec4 blendOverlay(vec4 src, vec4 bloom) {
-			vec4 result = vec4(0.0);
-			for (int i = 0; i < 4; i++) {
-				if (src[i] < 0.5) {
-					result[i] = 2.0 * src[i] * bloom[i];
-				} else {
-					result[i] = 1.0 - 2.0 * (1.0 - src[i]) * (1.0 - bloom[i]);
-				}
-			}
-			return result;
-		}
+vec4 blendAlpha(vec4 src, vec4 bloom) {
+	return src + bloom * (1.0 - src.a);
+}
 
-		vec4 blendColorDodge(vec4 src, vec4 bloom) {
-			vec4 result = vec4(0.0);
-			for (int i = 0; i < 4; i++) {
-				if (bloom[i] < 1.0) {
-					result[i] = min(1.0, src[i] / (1.0 - bloom[i]));
-				} else {
-					result[i] = 1.0;
-				}
-			}
-			return result;
-		}
+void main(void) {
+	vec4 src = texture2D(sourceBitmap, textureCoords.xy);
+	vec4 bloom = texture2D(openfl_Texture, textureCoords.zw) * uStrength;
 
-		vec4 blendSoftLight(vec4 src, vec4 bloom) {
-			vec4 result = vec4(0.0);
-			for (int i = 0; i < 4; i++) {
-				if (bloom[i] < 0.5) {
-					result[i] = src[i] - (1.0 - 2.0 * bloom[i]) * src[i] * (1.0 - src[i]);
-				} else {
-					float d = (src[i] <= 0.25) ? ((16.0 * src[i] - 12.0) * src[i] + 4.0) * src[i] : sqrt(src[i]);
-					result[i] = src[i] + (2.0 * bloom[i] - 1.0) * (d - src[i]);
-				}
-			}
-			return result;
-		}
+	vec4 result;
+	if(uBlendMode == 0)
+		result = src + bloom;
+	else if(uBlendMode == 1)
+		result = blendAlpha(src, bloom);
+	else if(uBlendMode == 5)
+		result = blendOverlay(src, bloom);
+	else if(uBlendMode == 8)
+		result = blendLighten(src, bloom);
+	else if(uBlendMode == 9)
+		result = blendMultiply(src, bloom);
+	else if(uBlendMode == 11)
+		result = blendOverlay(src, bloom);
+	else if(uBlendMode == 12)
+		result = blendScreen(src, bloom);
+	else if(uBlendMode == 15)
+		result = blendColorDodge(src, bloom);
+	else if(uBlendMode == 17)
+		result = blendSoftLight(src, bloom);
+	else
+		result = src + bloom;
 
-		vec4 blendAlpha(vec4 src, vec4 bloom) {
-			return src + bloom * (1.0 - src.a);
-		}
-
-		void main(void) {
-			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
-			vec4 bloom = texture2D(openfl_Texture, textureCoords.zw) * uStrength;
-
-			vec4 result;
-			if(uBlendMode == 0) {
-				result = src + bloom;
-			} else if(uBlendMode == 1) {
-				result = blendAlpha(src, bloom);
-			} else if(uBlendMode == 5) {
-				result = blendOverlay(src, bloom);
-			} else if(uBlendMode == 8) {
-				result = blendLighten(src, bloom);
-			} else if(uBlendMode == 9) {
-				result = blendMultiply(src, bloom);
-			} else if(uBlendMode == 11) {
-				result = blendOverlay(src, bloom);
-			} else if(uBlendMode == 12) {
-				result = blendScreen(src, bloom);
-			} else if(uBlendMode == 15) {
-				result = blendColorDodge(src, bloom);
-			} else if(uBlendMode == 17) {
-				result = blendSoftLight(src, bloom);
-			} else {
-				result = src + bloom;
-			}
-
-			gl_FragColor = result;
-		}
+	gl_FragColor = result;
+}
 	")
-	@:glVertexSource("attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-		uniform mat4 openfl_Matrix;
-		uniform vec2 openfl_TextureSize;
-		uniform float uQuality;
-		varying vec4 textureCoords;
+	@:glVertexSource("
+attribute vec4 openfl_Position;
+attribute vec2 openfl_TextureCoord;
+uniform mat4 openfl_Matrix;
+uniform vec2 openfl_TextureSize;
+uniform float uQuality;
+varying vec4 textureCoords;
 
-		void main(void) {
-			gl_Position = openfl_Matrix * openfl_Position;
-			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord / uQuality);
-		}
+void main(void) {
+	gl_Position = openfl_Matrix * openfl_Position;
+	textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord / uQuality);
+}
 	")
 	public function new()
 	{
 		super();
 
-		#if !macro
 		uStrength.value = [1.0];
 		uQuality.value = [8];
 		uThreshold.value = [0.6];
 		uBlendMode.value = [0];
-		#end
 	}
 }
