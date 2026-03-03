@@ -4,7 +4,9 @@ import lime.graphics.Image;
 import lime.graphics.cairo.CairoImageSurface;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
+import openfl.utils.BitmapDataUtil;
 
+@:deprecated("Use openfl.utils.BitmapDataUtil.toHardware instead.")
 class OptimizedBitmapData extends BitmapData {
 	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private override function __fromImage(image:#if lime Image #else Dynamic #end):Void
@@ -29,34 +31,8 @@ class OptimizedBitmapData extends BitmapData {
 			__isValid = true;
 			readable = true;
 
-			if(FlxG.stage.context3D != null) {
-				lock();
-				getTexture(FlxG.stage.context3D);
-				getSurface();
-
-				readable = true;
-				this.image = null;
-
-				// @:privateAccess
-				// if (FlxG.bitmap.__doNotDelete)
-				// 	MemoryUtil.clearMinor();
-			}
+			BitmapDataUtil.toHardware(this);
 		}
-		#end
-	}
-
-	@SuppressWarnings("checkstyle:Dynamic")
-	@:dox(hide) public override function getSurface():#if lime CairoImageSurface #else Dynamic #end
-	{
-		#if lime
-		if (__surface == null)
-		{
-			__surface = CairoImageSurface.fromImage(image);
-		}
-
-		return __surface;
-		#else
-		return null;
 		#end
 	}
 }

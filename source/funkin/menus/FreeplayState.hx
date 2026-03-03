@@ -189,37 +189,6 @@ class FreeplayState extends MusicBeatState
 		interpColor = new FlxInterpolateColor(bg.color);
 	}
 
-	#if PRELOAD_ALL
-	/**
-	 * How much time a song stays selected until it autoplays.
-	 */
-	public var timeUntilAutoplay:Float = 1;
-	/**
-	 * Whenever the song autoplays when hovered over.
-	 */
-	public var disableAutoPlay:Bool = false;
-	/**
-	 * Whenever the autoplayed song gets async loaded.
-	 */
-	public var disableAsyncLoading:Bool = #if desktop false #else true #end;
-	/**
-	 * Time elapsed since last autoplay. If this time exceeds `timeUntilAutoplay`, the currently selected song will play.
-	 */
-	public var autoplayElapsed:Float = 0;
-	/**
-	 * Whenever the currently selected song instrumental is playing.
-	 */
-	public var songInstPlaying:Bool = true;
-	/**
-	 * Path to the currently playing song instrumental.
-	 */
-	public var curPlayingInst:String = null;
-	/**
-	 * If it should play the song automatically.
-	 */
-	public var autoplayShouldPlay:Bool = true;
-	#end
-
 	private var TEXT_FREEPLAY_SCORE = TU.getRaw("freeplay.score");
 
 	override function update(elapsed:Float)
@@ -255,46 +224,6 @@ class FreeplayState extends MusicBeatState
 		interpColor.fpsLerpTo(curSong.color, 0.0625);
 		bg.color = interpColor.color;
 
-		#if PRELOAD_ALL
-		var dontPlaySongThisFrame = false;
-		autoplayElapsed += elapsed;
-		if (!disableAutoPlay && !songInstPlaying && (autoplayElapsed > timeUntilAutoplay)) {
-			if (curPlayingInst != (curPlayingInst = Paths.inst(curSong.name, curDifficulties[curDifficulty], curSong.instSuffix))) {
-				var streamed = false;
-				if (Options.streamedMusic) {
-					var sound = Assets.getMusic(curPlayingInst, true, false);
-					streamed = sound != null;
-
-					if (streamed && autoplayShouldPlay) {
-						FlxG.sound.playMusic(sound, 0);
-						Conductor.changeBPM(curSong.bpm, curSong.beatsPerMeasure, curSong.stepsPerBeat);
-					}
-				}
-
-				if (!streamed) {
-					var huh:Void->Void = function() {
-						var soundPath = curPlayingInst;
-						var sound = null;
-						if (Assets.exists(soundPath, SOUND) || Assets.exists(soundPath, MUSIC))
-							sound = Assets.getSound(soundPath);
-						else
-							FlxG.log.error('Could not find a Sound asset with an ID of \'$soundPath\'.');
-
-						if (sound != null && autoplayShouldPlay) {
-							FlxG.sound.playMusic(sound, 0);
-							Conductor.changeBPM(curSong.bpm, curSong.beatsPerMeasure, curSong.stepsPerBeat);
-						}
-					}
-					if (!disableAsyncLoading) Main.execAsync(huh);
-					else huh();
-				}
-			}
-			songInstPlaying = true;
-			if (disableAsyncLoading && !Options.streamedMusic) dontPlaySongThisFrame = true;
-		}
-		#end
-
-
 		if (controls.BACK)
 		{
 			CoolUtil.playMenuSFX(CANCEL, 0.7);
@@ -306,7 +235,7 @@ class FreeplayState extends MusicBeatState
 			convertChart();
 		#end
 
-		if (controls.ACCEPT #if PRELOAD_ALL && !dontPlaySongThisFrame #end)
+		if (controls.ACCEPT)
 			select();
 	}
 
@@ -337,10 +266,6 @@ class FreeplayState extends MusicBeatState
 		var event = event("onSelect", EventManager.get(FreeplaySongSelectEvent).recycle(curSong.name, curDifficulties[curDifficulty], curSong.variant, __opponentMode, __coopMode));
 
 		if (event.cancelled) return;
-
-		#if PRELOAD_ALL
-		autoplayShouldPlay = false;
-		#end
 
 		Options.freeplayLastSong = curSong.name;
 		Options.freeplayLastDifficulty = curDifficulties[curDifficulty];
@@ -376,13 +301,6 @@ class FreeplayState extends MusicBeatState
 		curDifficulty = event.value;
 		updateCurSong();
 		updateScore();
-
-		#if PRELOAD_ALL
-		if (curSong != prevSong) {
-			autoplayElapsed = 0;
-			songInstPlaying = false;
-		}
-		#end
 
 		var text = validDifficulties ? curDifficulties[curDifficulty].toUpperCase() + (curSong != songs[curSelected] ? ' (${curSong.variant.toUpperCase()})' : '') : '-';
 		diffText.text = curDifficulties.length > 1 ? '< $text >' : text;
@@ -466,11 +384,6 @@ class FreeplayState extends MusicBeatState
 
 		changeDiff(0, true);
 
-		#if PRELOAD_ALL
-		autoplayElapsed = 0;
-		songInstPlaying = false;
-		#end
-
 		coopText.visible = curSong.coopAllowed || curSong.opponentModeAllowed;
 	}
 
@@ -478,8 +391,8 @@ class FreeplayState extends MusicBeatState
 		var event = event("onUpdateOptionsAlpha", EventManager.get(FreeplayAlphaUpdateEvent).recycle(0.6, 0.45, 1, 1, 0.25));
 		if (event.cancelled) return;
 
-		final idleAlpha = #if PRELOAD_ALL songInstPlaying ? event.idlePlayingAlpha : #end event.idleAlpha;
-		final selectedAlpha = #if PRELOAD_ALL songInstPlaying ? event.selectedPlayingAlpha : #end event.selectedAlpha;
+		final idleAlpha = event.idleAlpha;
+		final selectedAlpha = event.selectedAlpha;
 
 		for (i in 0...iconArray.length)
 			iconArray[i].alpha = lerp(iconArray[i].alpha, idleAlpha, event.lerp);

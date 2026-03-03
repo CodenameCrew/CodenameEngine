@@ -229,6 +229,7 @@ class Options
 		applyKeybinds();
 		applyQuality();
 
+		flixel.sound.FlxSoundData.allowStreaming = streamedMusic;
 		FlxG.sound.defaultMusicGroup.volume = volumeMusic;
 		FlxG.autoPause = autoPause;
 		if (FlxG.updateFramerate < framerate) FlxG.drawFramerate = FlxG.updateFramerate = framerate;

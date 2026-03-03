@@ -275,7 +275,7 @@ class Flags {
 	public static var DEFAULT_CHARACTER_GHOSTDISABLE_SOUND:String = "editors/character/ghostDisable";
 	public static var DEFAULT_CHARACTER_GHOSTENABLE_SOUND:String = "editors/character/ghostEnable";
 
-	public static var DEFAULT_GLSL_VERSION:String = "120";
+	@:lazy public static var DEFAULT_GLSL_VERSION:String = null;
 	@:also(funkin.backend.utils.HttpUtil.userAgent)
 	public static var USER_AGENT:String = 'request';
 	// -- End of Codename's Default Flags --
@@ -310,6 +310,15 @@ class Flags {
 		if (USE_LEGACY_TIMING == null) USE_LEGACY_TIMING = MOD_API_VERSION < 2;
 		if (USE_LEGACY_ZOOM_FACTOR == null) USE_LEGACY_ZOOM_FACTOR = MOD_API_VERSION < 2;
 		if (SUSTAINS_AS_ONE_NOTE == null) SUSTAINS_AS_ONE_NOTE = MOD_API_VERSION >= 2;
+		if (DEFAULT_GLSL_VERSION == null) {
+			if (MOD_API_VERSION < 2) {
+				DEFAULT_GLSL_VERSION = "120";
+				Logs.warn("Blend Mode Extensions won't work in MOD_API_VERSION below than 2");
+			}
+			else {
+				DEFAULT_GLSL_VERSION = openfl.display.Shader.getDefaultGLVersion();
+			}
+		}
 	}
 
 	public static function loadFromDatas(datas:Array<String>):Map<String, String> {
