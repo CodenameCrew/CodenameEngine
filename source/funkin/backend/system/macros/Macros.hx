@@ -116,13 +116,14 @@ class Macros {
 			default:
 		}
 
-		fields.push({name: 'allowCompressedTextures', access: [APublic, AStatic], pos: pos, kind: FProp("get", "set", macro :Null<Bool>), meta: [{pos: pos, name: ":isVar"}]});
+		fields.push({name: 'allowCompressedTextures', access: [APublic, AStatic], pos: pos, kind: FProp("get", "set", macro :Bool)});
+		fields.push({name: '__allowCompressedTextures', access: [APrivate, AStatic], pos: pos, kind: FVar(macro :Null<Bool>)});
 
 		fields.push({name: "get_allowCompressedTextures", access: [APublic, AStatic, AInline], pos: pos, kind: FFun({ret: macro :Bool, args: [], expr: macro {
-			return allowCompressedTextures != null ? allowCompressedTextures : !funkin.backend.system.Main.forceGPUOnlyBitmapsOff && funkin.options.Options.gpuOnlyBitmaps;
+			return __allowCompressedTextures != null ? __allowCompressedTextures : !funkin.backend.system.Main.forceGPUOnlyBitmapsOff && funkin.options.Options.gpuOnlyBitmaps;
 		}})});
 		fields.push({name: "set_allowCompressedTextures", access: [APublic, AStatic, AInline], pos: pos, kind: FFun({ret: macro :Bool, args: [{name: "value", type: macro :Bool}], expr: macro {
-			allowCompressedTextures = value;
+			__allowCompressedTextures = value;
 			return get_allowCompressedTextures();
 		}})});
 
