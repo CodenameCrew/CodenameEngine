@@ -161,7 +161,7 @@ class BloomEffect extends BitmapFilter
 		@param blurX   The amount to blur horizontally.
 		@param blurY   The amount to blur vertically.
 		@param quality The downscaling factor for bloom rendering (higher values reduce 
-					   GPU cost but may cause flickering if too high).
+						 GPU cost but may cause flickering if too high).
 		@param strength The intensity of the bloom effect.
 		@param threshold The brightness threshold for bloom extraction (0.0 to 1.0).
 		@param useLowQualityExtract Enables performance-optimized extraction with 
@@ -621,15 +621,15 @@ private class ExtractLowShader extends BitmapFilterShader
 private class ExtractShader extends BitmapFilterShader
 {
 	@:glFragmentSource("
-    uniform sampler2D openfl_Texture;
+		uniform sampler2D openfl_Texture;
 		uniform vec2 openfl_TextureSize;
-    uniform float uThreshold;
-    uniform float uQuality;
-    uniform vec3 uWeights;
-    varying vec2 vTexCoord;
+		uniform float uThreshold;
+		uniform float uQuality;
+		uniform vec3 uWeights;
+		varying vec2 vTexCoord;
 		varying vec4 border;
 
-    void main(void) {
+		void main(void) {
 			if ((all(greaterThanEqual(vTexCoord, border.xy)) && all(lessThanEqual(vTexCoord, border.zw))) == false) return;
 			
 			float quality = floor(uQuality) / 2.0;
@@ -652,7 +652,7 @@ private class ExtractShader extends BitmapFilterShader
 			}
 
 			gl_FragColor = accumulated / float(sampleCount);
-    }
+		}
 	")
 	@:glVertexSource("
 		attribute vec4 openfl_Position;
