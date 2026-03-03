@@ -81,8 +81,9 @@ class BloomEffect extends BitmapFilter
 	public var extension(get, set):Bool;
 
 	/**
-		Enables low-quality extraction to reduce performance cost. When disabled, 
-		reduces flickering but has higher performance impact on non-desktop platforms.
+		Low-quality pixel sampling mode. Disabling it significantly reduces screen flickering,
+		with minimal performance impact on desktop platforms but a higher
+		performance cost on non-desktop platforms.
 	**/
 	public var useLowQualityExtract(get, set):Bool;
 
@@ -204,7 +205,7 @@ class BloomEffect extends BitmapFilter
 
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
 	{
-		trace('BloomEffect does not support bitmapData rendering functionality.');
+		trace("Due to technical limitations, I'm unable to implement the bitmapData rendering method. If you know how to implement it, you're welcome to contribute this feature.");
 		return sourceBitmapData;
 	}
 
