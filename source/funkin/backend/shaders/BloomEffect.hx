@@ -11,6 +11,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 /**
+	This BloomEffect was modified by heihua based on openfl.filters.BlurFilter.
 	The BloomEffect class applies a bloom/glow visual effect to display objects. 
 	A bloom effect extracts bright areas from an image, blurs them, and combines 
 	them back to create a glowing halo around bright objects. This effect is 
@@ -21,33 +22,6 @@ import openfl.geom.Rectangle;
 	1. Extraction - Bright pixels above a threshold are extracted
 	2. Blurring - The extracted bright areas are blurred horizontally and vertically
 	3. Combination - The blurred result is blended back with the original image
-
-	You can apply the filter to any display object (objects that inherit from 
-	DisplayObject), such as MovieClip, SimpleButton, TextField, and Video objects, 
-	as well as to BitmapData objects.
-
-	To create a new filter, use the constructor `new BloomEffect()`. The usage 
-	depends on the target object:
-
-	* For display objects: Use the `filters` property (inherited from DisplayObject).
-	  Setting `filters` doesn't modify the object, and filters can be removed by 
-	  clearing the `filters` property.
-	* For BitmapData objects: Use the `BitmapData.applyFilter()` method, which 
-	  takes the source BitmapData and filter object, generating a filtered result.
-
-	Applying a filter to a display object sets its `cacheAsBitmap` property to 
-	`true`. Removing all filters restores the original `cacheAsBitmap` value.
-
-	This filter supports Stage scaling but not general scaling, rotation, or skewing. 
-	If the object itself is scaled (`scaleX` and `scaleY` ≠ 100%), the filter 
-	effect doesn't scale—it only scales when the Stage is zoomed.
-
-	A filter won't be applied if the resulting image exceeds maximum dimensions:
-	* AIR 1.5/Flash Player 10+: 8,191px width/height, 16,777,215 total pixels
-	* Flash Player 9/AIR 1.1-: 2,880px width/height
-
-	For example, zooming into a large filtered movie clip may disable the filter 
-	if the resulting image exceeds these limits.
 **/
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
@@ -122,7 +96,9 @@ class BloomEffect extends BitmapFilter
 
 	/**
 		The blend mode used when combining the bloom with the original image.
-		Use BlendMode constants (e.g., BlendMode.ADD, BlendMode.SCREEN).
+		BlendMode currently supports: (BlendMode.ADD, BlendMode.ALPHA, BlendMode.HARDLIGHT,
+		BlendMode.LIGHTEN, BlendMode.MULTIPLY, BlendMode.OVERLAY, BlendMode.SCREEN,
+		BlendMode.COLORDODGE, BlendMode.SOFTLIGHT).
 		Default is BlendMode.ADD.
 	**/
 	public var blendMode(get, set):BlendMode;
@@ -191,7 +167,7 @@ class BloomEffect extends BitmapFilter
 		@param useLowQualityExtract Enables performance-optimized extraction with 
 									potentially more flickering.
 	**/
-	public function new(blurX:Float = 10, blurY:Float = 10, quality:Float = 8, strength:Float = 1, threshold:Float = 0.6, useLowQualityExtract:Bool = true)
+	public function new(blurX:Float = 50, blurY:Float = 50, quality:Float = 8, strength:Float = 0.6, threshold:Float = 0.6, useLowQualityExtract:Bool = true)
 	{
 		super();
 
@@ -244,15 +220,15 @@ class BloomEffect extends BitmapFilter
 			case 0:
 				if (__useLowQualityExtract)
 				{
-					__extractLowShader.uThreshold.value = [__threshold];
-					__extractLowShader.uQuality.value = [__quality];
+					__extractLowShader.uThreshold.value[0] = __threshold;
+					__extractLowShader.uQuality.value[0] = __quality;
 					__extractLowShader.uWeights.value = __weights;
 					return __extractLowShader;
 				}
 				else
 				{
-					__extractShader.uThreshold.value = [__threshold];
-					__extractShader.uQuality.value = [__quality];
+					__extractShader.uThreshold.value[0] = __threshold;
+					__extractShader.uQuality.value[0] = __quality;
 					__extractShader.uWeights.value = __weights;
 					return __extractShader;
 				}
@@ -267,17 +243,16 @@ class BloomEffect extends BitmapFilter
 				final blurRadius = isHorizontal ? blurX * scale : blurY * scale;
 
 				__blurShader.uRadius.value = isHorizontal ? [blurRadius / __quality, 0.0] : [0.0, blurRadius / __quality];
-				__blurShader.uQuality.value = [__quality];
+				__blurShader.uQuality.value[0] = __quality;
 
 				return __blurShader;
 
 			default:
 				__combineShader.sourceBitmap.input = sourceBitmapData;
-				__combineShader.offset.value = [0.0, 0.0];
-				__combineShader.uStrength.value = [__strength];
-				__combineShader.uThreshold.value = [__threshold];
-				__combineShader.uQuality.value = [__quality];
-				__combineShader.uBlendMode.value = [cast __blendMode];
+				__combineShader.uStrength.value[0] = __strength;
+				__combineShader.uThreshold.value[0] = __threshold;
+				__combineShader.uQuality.value[0] = __quality;
+				__combineShader.uBlendMode.value[0] = cast __blendMode;
 				return __combineShader;
 		}
 		#else
@@ -585,6 +560,7 @@ private class BlurShader extends BitmapFilterShader
 
 		#if !macro
 		uRadius.value = [0, 0];
+		uQuality.value = [8];
 		#end
 	}
 
@@ -636,6 +612,7 @@ private class ExtractLowShader extends BitmapFilterShader
 
 		#if !macro
 		uThreshold.value = [0.6];
+		uQuality.value = [8];
 		uWeights.value = [0.2126, 0.7152, 0.0722];
 		#end
 	}
@@ -703,6 +680,7 @@ private class ExtractShader extends BitmapFilterShader
 
 		#if !macro
 		uThreshold.value = [0.6];
+		uQuality.value = [8];
 		uWeights.value = [0.2126, 0.7152, 0.0722];
 		#end
 	}
@@ -718,10 +696,6 @@ private class CombineShader extends BitmapFilterShader
 		uniform int uBlendMode;
 		varying vec4 textureCoords;
 
-		vec4 blendAdd(vec4 src, vec4 bloom) {
-			return src + bloom;
-		}
-
 		vec4 blendScreen(vec4 src, vec4 bloom) {
 			return vec4(1.0) - (vec4(1.0) - src) * (vec4(1.0) - bloom);
 		}
@@ -734,14 +708,10 @@ private class CombineShader extends BitmapFilterShader
 			return max(src, bloom);
 		}
 
-		vec4 blendDarken(vec4 src, vec4 bloom) {
-			return min(src, bloom);
-		}
-
 		vec4 blendOverlay(vec4 src, vec4 bloom) {
 			vec4 result = vec4(0.0);
-			for(int i = 0; i < 4; i++) {
-				if(src[i] < 0.5) {
+			for (int i = 0; i < 4; i++) {
+				if (src[i] < 0.5) {
 					result[i] = 2.0 * src[i] * bloom[i];
 				} else {
 					result[i] = 1.0 - 2.0 * (1.0 - src[i]) * (1.0 - bloom[i]);
@@ -752,8 +722,8 @@ private class CombineShader extends BitmapFilterShader
 
 		vec4 blendColorDodge(vec4 src, vec4 bloom) {
 			vec4 result = vec4(0.0);
-			for(int i = 0; i < 4; i++) {
-				if(bloom[i] < 1.0) {
+			for (int i = 0; i < 4; i++) {
+				if (bloom[i] < 1.0) {
 					result[i] = min(1.0, src[i] / (1.0 - bloom[i]));
 				} else {
 					result[i] = 1.0;
@@ -762,22 +732,10 @@ private class CombineShader extends BitmapFilterShader
 			return result;
 		}
 
-		vec4 blendColorBurn(vec4 src, vec4 bloom) {
-			vec4 result = vec4(0.0);
-			for(int i = 0; i < 4; i++) {
-				if(bloom[i] > 0.0) {
-					result[i] = max(0.0, 1.0 - (1.0 - src[i]) / bloom[i]);
-				} else {
-					result[i] = 0.0;
-				}
-			}
-			return result;
-		}
-
 		vec4 blendSoftLight(vec4 src, vec4 bloom) {
 			vec4 result = vec4(0.0);
-			for(int i = 0; i < 4; i++) {
-				if(bloom[i] < 0.5) {
+			for (int i = 0; i < 4; i++) {
+				if (bloom[i] < 0.5) {
 					result[i] = src[i] - (1.0 - 2.0 * bloom[i]) * src[i] * (1.0 - src[i]);
 				} else {
 					float d = (src[i] <= 0.25) ? ((16.0 * src[i] - 12.0) * src[i] + 4.0) * src[i] : sqrt(src[i]);
@@ -787,92 +745,8 @@ private class CombineShader extends BitmapFilterShader
 			return result;
 		}
 
-		vec4 blendHardLight(vec4 src, vec4 bloom) {
-			return blendOverlay(bloom, src);
-		}
-
-		vec4 blendDifference(vec4 src, vec4 bloom) {
-			return abs(src - bloom);
-		}
-
-		vec4 blendExclusion(vec4 src, vec4 bloom) {
-			return src + bloom - 2.0 * src * bloom;
-		}
-
 		vec4 blendAlpha(vec4 src, vec4 bloom) {
 			return src + bloom * (1.0 - src.a);
-		}
-
-		vec3 rgb2hsl(vec3 color) {
-			float maxC = max(max(color.r, color.g), color.b);
-			float minC = min(min(color.r, color.g), color.b);
-			float l = (maxC + minC) / 2.0;
-			float h = 0.0;
-			float s = 0.0;
-			if(maxC != minC) {
-				float d = maxC - minC;
-				s = l > 0.5 ? d / (2.0 - maxC - minC) : d / (maxC + minC);
-				if(maxC == color.r) {
-					h = (color.g - color.b) / d + (color.g < color.b ? 6.0 : 0.0);
-				} else if(maxC == color.g) {
-					h = (color.b - color.r) / d + 2.0;
-				} else {
-					h = (color.r - color.g) / d + 4.0;
-				}
-				h /= 6.0;
-			}
-			return vec3(h, s, l);
-		}
-
-		float hue2rgb(float p, float q, float t) {
-			if(t < 0.0) t += 1.0;
-			if(t > 1.0) t -= 1.0;
-			if(t < 1.0/6.0) return p + (q - p) * 6.0 * t;
-			if(t < 1.0/2.0) return q;
-			if(t < 2.0/3.0) return p + (q - p) * (2.0/3.0 - t) * 6.0;
-			return p;
-		}
-
-		vec3 hsl2rgb(vec3 hsl) {
-			float r, g, b;
-			if(hsl.y == 0.0) {
-				r = g = b = hsl.z;
-			} else {
-				float q = hsl.z < 0.5 ? hsl.z * (1.0 + hsl.y) : hsl.z + hsl.y - hsl.z * hsl.y;
-				float p = 2.0 * hsl.z - q;
-				r = hue2rgb(p, q, hsl.x + 1.0/3.0);
-				g = hue2rgb(p, q, hsl.x);
-				b = hue2rgb(p, q, hsl.x - 1.0/3.0);
-			}
-			return vec3(r, g, b);
-		}
-
-		vec4 blendHue(vec4 src, vec4 bloom) {
-			vec3 srcHSL = rgb2hsl(src.rgb);
-			vec3 bloomHSL = rgb2hsl(bloom.rgb);
-			vec3 resultRGB = hsl2rgb(vec3(bloomHSL.x, srcHSL.y, srcHSL.z));
-			return vec4(resultRGB, src.a);
-		}
-
-		vec4 blendSaturation(vec4 src, vec4 bloom) {
-			vec3 srcHSL = rgb2hsl(src.rgb);
-			vec3 bloomHSL = rgb2hsl(bloom.rgb);
-			vec3 resultRGB = hsl2rgb(vec3(srcHSL.x, bloomHSL.y, srcHSL.z));
-			return vec4(resultRGB, src.a);
-		}
-
-		vec4 blendColor(vec4 src, vec4 bloom) {
-			vec3 srcHSL = rgb2hsl(src.rgb);
-			vec3 bloomHSL = rgb2hsl(bloom.rgb);
-			vec3 resultRGB = hsl2rgb(vec3(bloomHSL.x, bloomHSL.y, srcHSL.z));
-			return vec4(resultRGB, src.a);
-		}
-
-		vec4 blendLuminosity(vec4 src, vec4 bloom) {
-			vec3 srcHSL = rgb2hsl(src.rgb);
-			vec3 bloomHSL = rgb2hsl(bloom.rgb);
-			vec3 resultRGB = hsl2rgb(vec3(srcHSL.x, srcHSL.y, bloomHSL.z));
-			return vec4(resultRGB, src.a);
 		}
 
 		void main(void) {
@@ -884,48 +758,20 @@ private class CombineShader extends BitmapFilterShader
 				result = src + bloom;
 			} else if(uBlendMode == 1) {
 				result = blendAlpha(src, bloom);
-			} else if(uBlendMode == 2) {
-				result = blendDarken(src, bloom);
-			} else if(uBlendMode == 3) {
-				result = blendDifference(src, bloom);
-			} else if(uBlendMode == 4) {
-				result = vec4(src.rgb, src.a - bloom.a);
 			} else if(uBlendMode == 5) {
-				result = blendHardLight(src, bloom);
-			} else if(uBlendMode == 6) {
-				result = vec4(1.0) - src;
-			} else if(uBlendMode == 7) {
-				result = src;
+				result = blendOverlay(src, bloom);
 			} else if(uBlendMode == 8) {
 				result = blendLighten(src, bloom);
 			} else if(uBlendMode == 9) {
 				result = blendMultiply(src, bloom);
-			} else if(uBlendMode == 10) {
-				result = bloom;
 			} else if(uBlendMode == 11) {
 				result = blendOverlay(src, bloom);
 			} else if(uBlendMode == 12) {
 				result = blendScreen(src, bloom);
-			} else if(uBlendMode == 13) {
-				result = src + bloom;
-			} else if(uBlendMode == 14) {
-				result = src + bloom - 1.0;
 			} else if(uBlendMode == 15) {
 				result = blendColorDodge(src, bloom);
-			} else if(uBlendMode == 16) {
-				result = blendColorBurn(src, bloom);
 			} else if(uBlendMode == 17) {
 				result = blendSoftLight(src, bloom);
-			} else if(uBlendMode == 18) {
-				result = blendExclusion(src, bloom);
-			} else if(uBlendMode == 19) {
-				result = blendHue(src, bloom);
-			} else if(uBlendMode == 20) {
-				result = blendSaturation(src, bloom);
-			} else if(uBlendMode == 21) {
-				result = blendColor(src, bloom);
-			} else if(uBlendMode == 22) {
-				result = blendLuminosity(src, bloom);
 			} else {
 				result = src + bloom;
 			}
@@ -937,13 +783,12 @@ private class CombineShader extends BitmapFilterShader
 		attribute vec2 openfl_TextureCoord;
 		uniform mat4 openfl_Matrix;
 		uniform vec2 openfl_TextureSize;
-		uniform vec2 offset;
 		uniform float uQuality;
 		varying vec4 textureCoords;
 
 		void main(void) {
 			gl_Position = openfl_Matrix * openfl_Position;
-			textureCoords = vec4(openfl_TextureCoord, (openfl_TextureCoord - offset / openfl_TextureSize) / uQuality);
+			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord / uQuality);
 		}
 	")
 	public function new()
@@ -951,8 +796,8 @@ private class CombineShader extends BitmapFilterShader
 		super();
 
 		#if !macro
-		offset.value = [0, 0];
 		uStrength.value = [1.0];
+		uQuality.value = [8];
 		uThreshold.value = [0.6];
 		uBlendMode.value = [0];
 		#end
