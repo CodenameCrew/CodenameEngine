@@ -156,10 +156,10 @@ class BloomEffect extends BitmapFilter
 	{
 		super();
 
-		__blurShader = new BlurShader();
-		__combineShader = new CombineShader();
-		__extractShader = new ExtractShader();
-		__extractLowShader = new ExtractLowShader();
+		if (__blurShader == null) __blurShader = new BlurShader();
+		if (__combineShader == null) __combineShader = new CombineShader();
+		if (__extractShader == null) __extractShader = new ExtractShader();
+		if (__extractLowShader == null) __extractLowShader = new ExtractLowShader();
 
 		this.blurX = blurX;
 		this.blurY = blurY;
@@ -221,7 +221,16 @@ class BloomEffect extends BitmapFilter
 				final scale = Math.pow(0.5, scalePass >> 1);
 				final blurRadius = isHorizontal ? blurX * scale : blurY * scale;
 
-				__blurShader.uRadius.value = isHorizontal ? [blurRadius / __quality, 0.0] : [0.0, blurRadius / __quality];
+				if (isHorizontal)
+				{
+					__blurShader.uRadius.value[0] = blurRadius / __quality;
+					__blurShader.uRadius.value[1] = 0.0;
+				}
+				else
+				{
+					__blurShader.uRadius.value[0] = 0.0;
+					__blurShader.uRadius.value[1] = blurRadius / __quality;
+				}
 				__blurShader.uQuality.value[0] = __quality;
 				__blurShader.uStrength.value[0] = Math.pow(__strength, 1.0 / numBlurPasses);
 
@@ -487,12 +496,14 @@ void main(void) {
 		uStrength.value = [1.0];
 		uRadius.value = [0, 0];
 		uQuality.value = [8];
+		uTextureSize.value = [1, 1];
 	}
 
 	@:noCompletion private override function __update():Void
 	{
 		#if !macro
-		uTextureSize.value = [__texture.input.width, __texture.input.height];
+		uTextureSize.value[0] = __texture.input.width;
+		uTextureSize.value[1] = __texture.input.height;
 		#end
 
 		super.__update();
