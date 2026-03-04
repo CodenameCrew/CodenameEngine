@@ -25,24 +25,10 @@ import openfl.geom.Rectangle;
 **/
 class BloomEffect extends BitmapFilter
 {
-	/**
-		[Warning]
-		You can redefine these shaders, but it is not recommended to modify them without 
-		understanding how they work. You can use CustomShader/FunkinShader to redefine them.
-		Use setShader() to replace a shader with a custom one.
-	**/
-	@:noCompletion private static var __shaderCache:Map<String, Dynamic> = new Map();
-	// I have no idea why, but not using static variable caching causes memory to skyrocket.
-
-	@:noCompletion private var __blurShader:BlurShader;
-	@:noCompletion private var __combineShader:CombineShader;
-	@:noCompletion private var __extractShader:ExtractShader;
-	@:noCompletion private var __extractLowShader:ExtractLowShader;
-
-	public var blurShader(get, never):BlurShader;
-	public var combineShader(get, never):CombineShader;
-	public var extractShader(get, never):ExtractShader;
-	public var extractLowShader(get, never):ExtractLowShader;
+	@:noCompletion private static var __blurShader:BlurShader;
+	@:noCompletion private static var __combineShader:CombineShader;
+	@:noCompletion private static var __extractShader:ExtractShader;
+	@:noCompletion private static var __extractLowShader:ExtractLowShader;
 
 	/**
 		Values that are a power of 2 (such as 2, 4, 8, 16 and 32) are optimized to render 
@@ -170,15 +156,10 @@ class BloomEffect extends BitmapFilter
 	{
 		super();
 
-		if (!__shaderCache.exists("blur")) __shaderCache.set("blur", new BlurShader());
-		if (!__shaderCache.exists("combine")) __shaderCache.set("combine", new CombineShader());
-		if (!__shaderCache.exists("extract")) __shaderCache.set("extract", new ExtractShader());
-		if (!__shaderCache.exists("extractLow")) __shaderCache.set("extractLow", new ExtractLowShader());
-
-		__blurShader = __shaderCache.get("blur");
-		__combineShader = __shaderCache.get("combine");
-		__extractShader = __shaderCache.get("extract");
-		__extractLowShader = __shaderCache.get("extractLow");
+		__blurShader = new BlurShader();
+		__combineShader = new CombineShader();
+		__extractShader = new ExtractShader();
+		__extractLowShader = new ExtractLowShader();
 
 		this.blurX = blurX;
 		this.blurY = blurY;
@@ -374,19 +355,11 @@ class BloomEffect extends BitmapFilter
 			__extension = value;
 
 			if (!value)
-			{
-				// Setting it to 1 prevents bloom flickering at the screen edges
-				__leftExtension = 1;
-				__rightExtension = 1;
-				__topExtension = 1;
-				__bottomExtension = 1;
-			}
+				__leftExtension = __rightExtension = __topExtension = __bottomExtension = 0;
 			else
 			{
-				__leftExtension = (__blurX > 0 ? Math.ceil(__blurX) : 0);
-				__rightExtension = __leftExtension;
-				__topExtension = (__blurY > 0 ? Math.ceil(__blurY) : 0);
-				__bottomExtension = __topExtension;
+				__leftExtension = __rightExtension = (__blurX > 0 ? Math.ceil(__blurX) : 0);
+				__topExtension = __bottomExtension = (__blurY > 0 ? Math.ceil(__blurY) : 0);
 			}
 
 			__renderDirty = true;
@@ -437,55 +410,6 @@ class BloomEffect extends BitmapFilter
 			__renderDirty = true;
 		}
 		return value;
-	}
-
-	@:noCompletion private function get_blurShader():BlurShader
-	{
-		return __blurShader;
-	}
-
-	@:noCompletion private function get_combineShader():CombineShader
-	{
-		return __combineShader;
-	}
-
-	@:noCompletion private function get_extractShader():ExtractShader
-	{
-		return __extractShader;
-	}
-
-	@:noCompletion private function get_extractLowShader():ExtractLowShader
-	{
-		return __extractLowShader;
-	}
-
-	/**
-		Replaces a shader with a custom one.
-
-		@param type The shader type to replace. Valid values: "blur", "combine", "extract", "extractLow"
-		@param shader The new shader instance to use
-
-		Usage:
-		```haxe
-		var bloom = new BloomEffect();
-		bloom.setShader("combine", new MyCustomCombineShader());
-		bloom.setShader("blur", new MyCustomBlurShader());
-		```
-	**/
-	public function setShader(type:String, shader:Dynamic):Void
-	{
-		switch (type)
-		{
-			case "blur":
-				__blurShader = cast shader;
-			case "combine":
-				__combineShader = cast shader;
-			case "extract":
-				__extractShader = cast shader;
-			case "extractLow":
-				__extractLowShader = cast shader;
-		}
-		__renderDirty = true;
 	}
 }
 
