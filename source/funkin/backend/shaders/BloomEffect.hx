@@ -94,7 +94,6 @@ class BloomEffect extends BitmapFilter
 	@:noCompletion private var __quality:Float;
 	@:noCompletion private var __verticalPasses:Int;
 	@:noCompletion private var __strength:Float;
-	@:noCompletion private var __strengthFactor:Float;
 	@:noCompletion private var __threshold:Float;
 	@:noCompletion private var __extension:Bool;
 	@:noCompletion private var __useLowQualityExtract:Bool;
