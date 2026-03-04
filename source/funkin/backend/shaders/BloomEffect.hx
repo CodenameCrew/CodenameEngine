@@ -94,6 +94,7 @@ class BloomEffect extends BitmapFilter
 	@:noCompletion private var __quality:Float;
 	@:noCompletion private var __verticalPasses:Int;
 	@:noCompletion private var __strength:Float;
+	@:noCompletion private var __strengthFactor:Float;
 	@:noCompletion private var __threshold:Float;
 	@:noCompletion private var __extension:Bool;
 	@:noCompletion private var __useLowQualityExtract:Bool;
@@ -223,12 +224,12 @@ class BloomEffect extends BitmapFilter
 
 				__blurShader.uRadius.value = isHorizontal ? [blurRadius / __quality, 0.0] : [0.0, blurRadius / __quality];
 				__blurShader.uQuality.value[0] = __quality;
+				__blurShader.uStrength.value[0] = Math.pow(__strength, 1.0 / numBlurPasses);
 
 				return __blurShader;
 
 			default:
 				__combineShader.sourceBitmap.input = sourceBitmapData;
-				__combineShader.uStrength.value[0] = __strength;
 				__combineShader.uThreshold.value[0] = __threshold;
 				__combineShader.uQuality.value[0] = __quality;
 				__combineShader.uBlendMode.value[0] = cast __blendMode;
@@ -417,6 +418,7 @@ private class BlurShader extends BitmapFilterShader
 {
 	@:glFragmentSource("
 uniform sampler2D openfl_Texture;
+uniform float uStrength;
 
 varying mat2 vBlurCoord0;
 varying mat2 vBlurCoord1;
@@ -424,19 +426,21 @@ varying vec2 vBlurCoord2;
 varying mat2 vBlurCoord3;
 varying mat2 vBlurCoord4;
 
+varying float invQuality;
+
 void main(void) {
 	if ((all(greaterThanEqual(vBlurCoord2, vec2(0.0))) && all(lessThanEqual(vBlurCoord2, vec2(1.0)))) == false) return;
 
-	vec4 sum = texture2D(openfl_Texture, vBlurCoord0[0]) * 0.028532;
-	sum += texture2D(openfl_Texture, vBlurCoord0[1]) * 0.067234;
-	sum += texture2D(openfl_Texture, vBlurCoord1[0]) * 0.124009;
-	sum += texture2D(openfl_Texture, vBlurCoord1[1]) * 0.179044;
-	sum += texture2D(openfl_Texture, vBlurCoord2) * 0.202360;
-	sum += texture2D(openfl_Texture, vBlurCoord3[0]) * 0.179044;
-	sum += texture2D(openfl_Texture, vBlurCoord3[1]) * 0.124009;
-	sum += texture2D(openfl_Texture, vBlurCoord4[0]) * 0.067234;
-	sum += texture2D(openfl_Texture, vBlurCoord4[1]) * 0.028532;
-	gl_FragColor = sum;
+	vec4 sum = texture2D(openfl_Texture, clamp(vBlurCoord0[0], 0.0, invQuality)) * 0.028532;
+	sum += texture2D(openfl_Texture, clamp(vBlurCoord0[1], 0.0, invQuality)) * 0.067234;
+	sum += texture2D(openfl_Texture, clamp(vBlurCoord1[0], 0.0, invQuality)) * 0.124009;
+	sum += texture2D(openfl_Texture, clamp(vBlurCoord1[1], 0.0, invQuality)) * 0.179044;
+	sum += texture2D(openfl_Texture, clamp(vBlurCoord2, 0.0, invQuality)) * 0.202360;
+	sum += texture2D(openfl_Texture, clamp(vBlurCoord3[0], 0.0, invQuality)) * 0.179044;
+	sum += texture2D(openfl_Texture, clamp(vBlurCoord3[1], 0.0, invQuality)) * 0.124009;
+	sum += texture2D(openfl_Texture, clamp(vBlurCoord4[0], 0.0, invQuality)) * 0.067234;
+	sum += texture2D(openfl_Texture, clamp(vBlurCoord4[1], 0.0, invQuality)) * 0.028532;
+	gl_FragColor = sum * uStrength;
 }
 	")
 	@:glVertexSource("
@@ -455,13 +459,17 @@ varying vec2 vBlurCoord2;
 varying mat2 vBlurCoord3;
 varying mat2 vBlurCoord4;
 
+varying float invQuality;
+
 void main(void) {
 	vec4 pos = openfl_Position;
-	pos.xy /= uQuality;
+	invQuality = 1.0 / uQuality;
+
+	pos.xy *= invQuality;
 	gl_Position = openfl_Matrix * pos;
 
 	vec2 r = uRadius / uTextureSize;
-	vec2 coord = openfl_TextureCoord / uQuality;
+	vec2 coord = openfl_TextureCoord * invQuality;
 	vBlurCoord0[0] = coord - r;
 	vBlurCoord0[1] = coord - r * 0.25;
 	vBlurCoord1[0] = coord - r * 0.5;
@@ -477,6 +485,7 @@ void main(void) {
 	{
 		super();
 
+		uStrength.value = [1.0];
 		uRadius.value = [0, 0];
 		uQuality.value = [8];
 	}
@@ -604,7 +613,6 @@ private class CombineShader extends BitmapFilterShader
 	@:glFragmentSource("
 uniform sampler2D openfl_Texture;
 uniform sampler2D sourceBitmap;
-uniform float uStrength;
 uniform float uThreshold;
 uniform int uBlendMode;
 varying vec4 textureCoords;
@@ -664,7 +672,7 @@ vec4 blendAlpha(vec4 src, vec4 bloom) {
 
 void main(void) {
 	vec4 src = texture2D(sourceBitmap, textureCoords.xy);
-	vec4 bloom = texture2D(openfl_Texture, textureCoords.zw) * uStrength;
+	vec4 bloom = texture2D(openfl_Texture, textureCoords.zw);
 
 	vec4 result;
 	if(uBlendMode == 0)
@@ -708,7 +716,6 @@ void main(void) {
 	{
 		super();
 
-		uStrength.value = [1.0];
 		uQuality.value = [8];
 		uThreshold.value = [0.6];
 		uBlendMode.value = [0];
