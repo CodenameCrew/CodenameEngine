@@ -61,6 +61,13 @@ class BloomEffect extends BitmapFilter
 	public var threshold(get, set):Float;
 
 	/**
+		The smoothness of the threshold transition in blur shader. 
+		Higher values create a smoother transition for brightness correction.
+		Value range is 0.0 to 1.0. Default is 0.1.
+	**/
+	public var smoothness(get, set):Float;
+
+	/**
 		Enables extended rendering area to avoid edge artifacts. Enabling this option 
 		will increase performance cost. Generally not required when rendering to camera.
 	**/
@@ -95,6 +102,7 @@ class BloomEffect extends BitmapFilter
 	@:noCompletion private var __verticalPasses:Int;
 	@:noCompletion private var __strength:Float;
 	@:noCompletion private var __threshold:Float;
+	@:noCompletion private var __smoothness:Float;
 	@:noCompletion private var __extension:Bool;
 	@:noCompletion private var __useLowQualityExtract:Bool;
 	@:noCompletion private var __weights:Array<Float>;
@@ -149,10 +157,11 @@ class BloomEffect extends BitmapFilter
 						 GPU cost but may cause flickering if too high).
 		@param strength The intensity of the bloom effect.
 		@param threshold The brightness threshold for bloom extraction (0.0 to 1.0).
+		@param smoothness The smoothness of threshold transition in blur (0.0 to 1.0).
 		@param useLowQualityExtract Enables performance-optimized extraction with 
 									potentially more flickering.
 	**/
-	public function new(blurX:Float = 50, blurY:Float = 50, quality:Float = 8, strength:Float = 0.6, threshold:Float = 0.6, useLowQualityExtract:Bool = true)
+	public function new(blurX:Float = 50, blurY:Float = 50, quality:Float = 8, strength:Float = 0.6, threshold:Float = 0.6, smoothness:Float = 0.1, useLowQualityExtract:Bool = true)
 	{
 		super();
 
@@ -166,6 +175,7 @@ class BloomEffect extends BitmapFilter
 		this.quality = quality;
 		this.strength = strength;
 		this.threshold = threshold;
+		this.smoothness = smoothness;
 		this.extension = false;
 		this.useLowQualityExtract = useLowQualityExtract;
 		this.weights = [0.2126, 0.7152, 0.0722];
@@ -178,7 +188,7 @@ class BloomEffect extends BitmapFilter
 
 	public override function clone():BitmapFilter
 	{
-		var cloned = new BloomEffect(__blurX, __blurY, __quality, __strength, __threshold, __useLowQualityExtract);
+		var cloned = new BloomEffect(__blurX, __blurY, __quality, __strength, __threshold, __smoothness, __useLowQualityExtract);
 		cloned.weights = __weights != null ? __weights.copy() : [0.2126, 0.7152, 0.0722];
 		cloned.blendMode = __blendMode;
 		return cloned;
@@ -200,6 +210,7 @@ class BloomEffect extends BitmapFilter
 				if (__useLowQualityExtract)
 				{
 					__extractLowShader.uThreshold.value[0] = __threshold;
+					__extractLowShader.uSmoothness.value[0] = __smoothness;
 					__extractLowShader.uQuality.value[0] = __quality;
 					__extractLowShader.uWeights.value = __weights;
 					return __extractLowShader;
@@ -207,6 +218,7 @@ class BloomEffect extends BitmapFilter
 				else
 				{
 					__extractShader.uThreshold.value[0] = __threshold;
+					__extractShader.uSmoothness.value[0] = __smoothness;
 					__extractShader.uQuality.value[0] = __quality;
 					__extractShader.uWeights.value = __weights;
 					return __extractShader;
@@ -347,6 +359,21 @@ class BloomEffect extends BitmapFilter
 		if (value != __threshold)
 		{
 			__threshold = value;
+			__renderDirty = true;
+		}
+		return value;
+	}
+
+	@:noCompletion private function get_smoothness():Float
+	{
+		return __smoothness;
+	}
+
+	@:noCompletion private function set_smoothness(value:Float):Float
+	{
+		if (value != __smoothness)
+		{
+			__smoothness = value;
 			__renderDirty = true;
 		}
 		return value;
@@ -515,6 +542,7 @@ private class ExtractLowShader extends BitmapFilterShader
 	@:glFragmentSource("
 uniform sampler2D openfl_Texture;
 uniform float uThreshold;
+uniform float uSmoothness;
 uniform vec3 uWeights;
 varying vec2 vTexCoord;
 
@@ -523,7 +551,7 @@ void main(void) {
 
 	vec4 texel = texture2D(openfl_Texture, vTexCoord);
 	float brightness = min(dot(texel.rgb, uWeights), 1.0);
-	float mask = smoothstep(uThreshold, uThreshold + 0.1, brightness);
+	float mask = smoothstep(uThreshold, uThreshold + uSmoothness, brightness);
 	gl_FragColor = texel * mask;
 }
 	")
@@ -547,6 +575,7 @@ void main(void) {
 		super();
 
 		uThreshold.value = [0.6];
+		uSmoothness.value = [0.1];
 		uQuality.value = [8];
 		uWeights.value = [0.2126, 0.7152, 0.0722];
 	}
@@ -558,6 +587,7 @@ private class ExtractShader extends BitmapFilterShader
 uniform sampler2D openfl_Texture;
 uniform vec2 openfl_TextureSize;
 uniform float uThreshold;
+uniform float uSmoothness;
 uniform float uQuality;
 uniform vec3 uWeights;
 varying vec2 vTexCoord;
@@ -579,7 +609,7 @@ void main(void) {
 
 			vec4 texel = texture2D(openfl_Texture, sampleCoord);
 			float brightness = min(dot(texel.rgb, uWeights), 1.0);
-			float mask = smoothstep(uThreshold, uThreshold + 0.1, brightness);
+			float mask = smoothstep(uThreshold, uThreshold + uSmoothness, brightness);
 			accumulated += texel * mask;
 			sampleCount++;
 		}
@@ -613,6 +643,7 @@ void main(void) {
 		super();
 
 		uThreshold.value = [0.6];
+		uSmoothness.value = [0.1];
 		uQuality.value = [8];
 		uWeights.value = [0.2126, 0.7152, 0.0722];
 	}
