@@ -715,7 +715,7 @@ class PlayState extends MusicBeatState
 		add(camFollow);
 
 		if (SONG.stage == null || SONG.stage.trim() == "") SONG.stage = Flags.DEFAULT_STAGE;
-		add(stage = new NewStage(SONG.stage));
+		add(stage = NewStage.getStage(SONG.stage));
 
 		if (!chartingMode || Options.charterEnablePlaytestScripts) {
 			switch(SONG.meta.name) {
@@ -780,7 +780,7 @@ class PlayState extends MusicBeatState
 		for(i=>strumLine in SONG.strumLines) {
 			if (strumLine == null) continue;
 
-			var chars = [];
+			var chars:Array<Character> = [];
 			var charPosName:String = strumLine.position == null ? (switch(strumLine.type) {
 				case 0: "dad";
 				case 1: "boyfriend";
@@ -2197,6 +2197,8 @@ class PlayState extends MusicBeatState
 		return campaignAccuracyCount == 0 ? 0 : campaignAccuracyTotal / campaignAccuracyCount;
 
 	private function set_stage(stage:NewStage):NewStage {
+		var replacingStage:Bool = this.stage != null; // check if there is already a stage
+
 		stage.onStageScriptLoad = (script) -> {scripts.add(script);}
 		stage.onStartCamSet = (startCam, defaultZoom) -> {
 			camFollow.x = startCam.x;
@@ -2234,6 +2236,26 @@ class PlayState extends MusicBeatState
 		}
 
 		stage.loadStage();
+
+		if(replacingStage) {
+			// reset the characters positions with the new stage
+			var stageIndex:Int = members.indexOf(this.stage);
+			for(strumline in this.strumLines.members) {
+				if(strumline.characters.length == 0) continue;
+				for(i => char in strumline.characters) {
+					var posName:String = strumline.data.position ?? switch(strumline.data.type) {
+						case 0: "dad";
+						case 1: "boyfriend";
+						case 2: "girlfriend";
+					};
+					// var char = new Character(0, 0, charName, stage.isCharFlipped(stage.characterPoses[charName] != null ? charName : charPosName, strumLine.type == 1));
+					char.isPlayer = stage.isCharFlipped(stage.characterPoses[char.curCharacter] != null ? char.curCharacter : posName, !strumline.opponentSide);
+					stage.applyCharPos(char, posName, i);
+				}
+			}
+
+			replace(this.stage, stage);
+		}
 		
 		return this.stage = stage;
 	}

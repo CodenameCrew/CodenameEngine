@@ -203,6 +203,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		return _bounds.height;
 }
 
+// TODO: make it preload
 class NewStage extends StageLayer {
 	private static final __instanceFields = Type.getInstanceFields(NewStage);
 
