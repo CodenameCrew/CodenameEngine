@@ -23,6 +23,8 @@ import openfl.geom.Rectangle;
 	2. Blurring - The extracted bright areas are blurred horizontally and vertically
 	3. Combination - The blurred result is blended back with the original image
 **/
+
+@:noCustomClass
 class BloomEffect extends BitmapFilter
 {
 	@:noCompletion private static var __blurShader:BlurShader;
