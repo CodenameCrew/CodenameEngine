@@ -7,7 +7,8 @@ import openfl.events.KeyboardEvent;
 
 class FunkinGame extends FlxGame {
 	var skipNextTickUpdate:Bool = false;
-	
+
+	#if desktop
 	var fullscreenListener:KeyboardEvent->Void;
 	
 	public function new(gameWidth:Int, gameHeight:Int, entryState:Class<FlxState>, updateFramerate:Int = 60, drawFramerate:Int = 60, skipSplash:Bool = false, startFullscreen:Bool = false) {
@@ -20,6 +21,7 @@ class FunkinGame extends FlxGame {
 		};
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, fullscreenListener);
 	}
+	#end
 	
 	public override function switchState() {
 		super.switchState();
