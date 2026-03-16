@@ -249,9 +249,10 @@ class Assets
 		}
 		#if (lime_vorbis && lime > "7.9.0" && !macro)
 		if (Options.streamedMusic) {
-			var path = getPath(id);
+			var bytes = getBytes(id);
+			if (bytes == null) return null;
 			// TODO: What if it is a WAV or non-Vorbis file?
-			var vorbisFile = VorbisFile.fromFile(path);
+			var vorbisFile = VorbisFile.fromBytes(bytes);
 			if (vorbisFile != null) return Sound.fromAudioBuffer(AudioBuffer.fromVorbisFile(vorbisFile));
 		}
 		#end
