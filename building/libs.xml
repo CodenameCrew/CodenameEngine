@@ -13,13 +13,13 @@
 		<git name="flixel-addons" url="https://github.com/CodenameCrew/cne-flixel-addons" ref="dev" skipDeps="true"/>
 
 		<!-- CNE Core Libraries -->
-		<git name="flixel-animate" url="https://github.com/CodenameCrew/cne-flixel-animate/" skipDeps="true"/>
+		<git name="flixel-animate" url="https://github.com/CodenameCrew/cne-flixel-animate" skipDeps="true"/>
 		<git name="hscript-improved" url="https://github.com/CodenameCrew/hscript-improved" ref="codename-dev"/>
 		<git name="away3d" url="https://github.com/CodenameCrew/away3d" skipDeps="true"/>
 
 		<!-- Other Libraries -->
 		<git name="hxdiscord_rpc" url="https://github.com/CodenameCrew/cne-hxdiscord_rpc" skipDeps="true"/>
-		<lib name="funkin-modchart" version="1.2.4" skipDeps="true"/>
+		<lib name="funkin-modchart" skipDeps="true"/>
 		<lib name="hxvlc" version="2.2.6" skipDeps="true"/>
 		<lib name="hxcpp-debug-server"/>
 		<lib name="format"/>
