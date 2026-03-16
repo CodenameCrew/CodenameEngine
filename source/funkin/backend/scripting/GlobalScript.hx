@@ -106,12 +106,15 @@ class GlobalScript {
 	public static function onModSwitch(newMod:String) {
 		destroy();
 		scripts = new ScriptPack("GlobalScript");
-		for (i in funkin.backend.assets.ModsFolder.getLoadedMods()) {
-			var path = Paths.script('data/global/LIB_$i');
+		for (lib in funkin.backend.assets.ModsFolder.getLoadedModsLibs()) {
+			var modName = lib.modName;
+			var path = Paths.script('data/global/LIB_$modName');
 			var script = Script.create(path);
-			if (script is DummyScript)
-				continue;
-			script.remappedNames.set(script.fileName, '$i:${script.fileName}');
+			if (script is DummyScript) continue;
+			script.remappedNames.set(script.fileName, '$modName:${script.fileName}');
+			// so you can get the current mod's library in GloablScript :)
+			// you should not make this a static variable then all scripts will try to reference the 1 static variable, which will be overwritten :yoikes:
+			script.set("MOD_LIBRARY", lib);
 			scripts.add(script);
 			script.load();
 		}
