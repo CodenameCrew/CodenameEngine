@@ -68,7 +68,7 @@ class VideoCutscene extends Cutscene {
 			final width = video.bitmap.bitmapData.width;
 			final height = video.bitmap.bitmapData.height;
 			final scale:Float = Math.min(FlxG.width / width, FlxG.height / height);
-			video.setGraphicSize(Std.int(width * scale), Std.int(height * scale));
+			video.setGraphicSize(width * scale, height * scale);
 			video.updateHitbox();
 			video.screenCenter();
 		});
@@ -110,7 +110,7 @@ class VideoCutscene extends Cutscene {
 				File.saveBytes(localPath, Assets.getBytes(path));
 			}
 
-			if (video.load(localPath)) new FlxTimer().start(0.001, function(_) { mutex.acquire(); onReady(); mutex.release(); });
+			if (video.load(localPath)) FlxTimer.wait(0.001, function() { mutex.acquire(); onReady(); mutex.release(); });
 			else { mutex.acquire(); close(); mutex.release(); }
 		});
 
