@@ -35,7 +35,7 @@ jobs:
       - name: Tar files
         run: tar -zcvf CodenameEngine.tar.gz -C export/release/macos/bin .
       - name: Uploading artifact (executable)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Codename Engine (Executable Only)
           path: export/release/macos/bin/CodenameEngine.app/Contents/MacOS/CodenameEngine
