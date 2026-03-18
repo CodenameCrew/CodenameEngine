@@ -11,7 +11,7 @@ jobs:
     runs-on: macos-14
     steps:
       - name: Pulling the new commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
@@ -40,7 +40,7 @@ jobs:
           name: Codename Engine (Executable Only)
           path: export/release/macos/bin/CodenameEngine.app/Contents/MacOS/CodenameEngine
       - name: Uploading artifact (entire build)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Codename Engine
           path: CodenameEngine.tar.gz
@@ -80,7 +80,7 @@ jobs:
     needs: build # since its low priority, it'll run after, so actions will concentrate first on normal builds
     steps:
       - name: Pulling the new commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
@@ -104,7 +104,7 @@ jobs:
       - name: Tar files
         run: tar -zcvf CodenameEngine.tar.gz -C export/debug/macos/bin .
       - name: Uploading artifact (entire build)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Codename Engine Debug
           path: CodenameEngine.tar.gz

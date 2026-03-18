@@ -11,7 +11,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Pulling the new commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
@@ -40,7 +40,7 @@ jobs:
             export/release/windows/bin/CodenameEngine.exe
             export/release/windows/bin/lime.ndll
       - name: Uploading artifact (entire build)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Codename Engine
           path: export/release/windows/bin
