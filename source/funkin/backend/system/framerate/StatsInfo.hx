@@ -11,9 +11,15 @@ class StatsInfo extends FramerateCategory {
 
 	public override function __enterFrame(t:Int) {
 		if (alpha <= 0.05) return;
-		_text = "totalDC: " + Context3DStats.totalDrawCalls();
-		_text += "\nstageDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE);
-		_text += "\nstage3DDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE3D);
+
+		var buf = new StringBuf();
+		buf.add("totalDC: ");
+		buf.add(Context3DStats.totalDrawCalls());
+		buf.add("\nstageDC: ");
+		buf.add(Context3DStats.contextDrawCalls(DrawCallContext.STAGE));
+		buf.add("\nstage3DDC: ");
+		buf.add(Context3DStats.contextDrawCalls(DrawCallContext.STAGE3D));
+		_text = buf.toString();
 
 		this.text.text = _text;
 		super.__enterFrame(t);

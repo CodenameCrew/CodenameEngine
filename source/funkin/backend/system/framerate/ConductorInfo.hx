@@ -7,12 +7,26 @@ class ConductorInfo extends FramerateCategory {
 
 	public override function __enterFrame(t:Int) {
 		if (alpha <= 0.05) return;
-		_text = 'Current Song Position: ${Math.floor(Conductor.songPosition * 1000) / 1000}';
-		_text += '\n - ${Conductor.curBeat} beats';
-		_text += '\n - ${Conductor.curStep} steps';
-		_text += '\n - ${Conductor.curMeasure} measures';
-		_text += '\nCurrent BPM: ${Conductor.bpm}';
-		_text += '\nTime Signature: ${Conductor.beatsPerMeasure}/${Conductor.denominator}';
+
+		var buf = new StringBuf();
+		buf.add("Current Song Position: ");
+		buf.add(Math.floor(Conductor.songPosition * 1000) / 1000);
+		buf.add("\n - ");
+		buf.add(Conductor.curBeat);
+		buf.add(" beats");
+		buf.add("\n - ");
+		buf.add(Conductor.curStep);
+		buf.add(" steps");
+		buf.add("\n - ");
+		buf.add(Conductor.curMeasure);
+		buf.add(" measures");
+		buf.add("\nCurrent BPM: ");
+		buf.add(Conductor.bpm);
+		buf.add("\nTime Signature: ");
+		buf.add(Conductor.beatsPerMeasure);
+		buf.add("/");
+		buf.add(Conductor.denominator);
+		_text = buf.toString();
 
 		this.text.text = _text;
 		super.__enterFrame(t);

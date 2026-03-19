@@ -137,21 +137,43 @@ class SystemInfo extends FramerateCategory {
 	}
 
 	static function formatSysInfo() {
-		__formattedSysText = "";
-		if (osInfo != "Unknown") __formattedSysText += 'System: $osInfo';
-		if (cpuName != "Unknown") __formattedSysText += '\nCPU: $cpuName ${openfl.system.Capabilities.cpuArchitecture} ${(openfl.system.Capabilities.supports64BitProcesses ? '64-Bit' : '32-Bit')}';
+		var buf = new StringBuf();
+		if (osInfo != "Unknown") {
+			buf.add("System: ");
+			buf.add(osInfo);
+		}
+		if (cpuName != "Unknown") {
+			buf.add("\nCPU: ");
+			buf.add(cpuName);
+			buf.add(" ");
+			buf.add(openfl.system.Capabilities.cpuArchitecture);
+			buf.add(" ");
+			buf.add(openfl.system.Capabilities.supports64BitProcesses ? "64-Bit" : "32-Bit");
+		}
 		if (gpuName != cpuName || vRAM != "Unknown") {
 			var gpuNameKnown = gpuName != "Unknown" && gpuName != cpuName;
 			var vramKnown = vRAM != "Unknown";
 
-			if(gpuNameKnown || vramKnown) __formattedSysText += "\n";
+			if(gpuNameKnown || vramKnown) buf.add("\n");
 
-			if(gpuNameKnown) __formattedSysText += 'GPU: $gpuName';
-			if(gpuNameKnown && vramKnown) __formattedSysText += " | ";
-			if(vramKnown) __formattedSysText += 'VRAM: $vRAM'; // 1000 bytes of vram (apus)
+			if(gpuNameKnown) {
+				buf.add("GPU: ");
+				buf.add(gpuName);
+			}
+			if(gpuNameKnown && vramKnown) buf.add(" | ");
+			if(vramKnown) {
+				buf.add("VRAM: ");
+				buf.add(vRAM);
+			}
 		}
-		//if (gpuMaxSize != "Unknown") __formattedSysText += '\nMax Bitmap Size: $gpuMaxSize';
-		if (totalMem != "Unknown" && memType != "Unknown") __formattedSysText += '\nTotal MEM: $totalMem $memType';
+		//if (gpuMaxSize != "Unknown") buf.add('\nMax Bitmap Size: $gpuMaxSize');
+		if (totalMem != "Unknown" && memType != "Unknown") {
+			buf.add("\nTotal MEM: ");
+			buf.add(totalMem);
+			buf.add(" ");
+			buf.add(memType);
+		}
+		__formattedSysText = buf.toString();
 	}
 
 	static function getSizeString(size:Float):String {
@@ -172,8 +194,15 @@ class SystemInfo extends FramerateCategory {
 	public override function __enterFrame(t:Int) {
 		if (alpha <= 0.05) return;
 
-		_text = __formattedSysText;
-		_text += '${__formattedSysText == "" ? "" : "\n"}Garbage Collector: ${MemoryUtil.disableCount > 0 ? "OFF" : "ON"} (${MemoryUtil.disableCount})';
+		var buf = new StringBuf();
+		buf.add(__formattedSysText);
+		if (__formattedSysText != "") buf.add("\n");
+		buf.add("Garbage Collector: ");
+		buf.add(MemoryUtil.disableCount > 0 ? "OFF" : "ON");
+		buf.add(" (");
+		buf.add(MemoryUtil.disableCount);
+		buf.add(")");
+		_text = buf.toString();
 
 		this.text.text = _text;
 		super.__enterFrame(t);
