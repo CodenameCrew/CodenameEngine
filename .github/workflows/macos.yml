@@ -8,7 +8,7 @@ jobs:
   build:
     name: Mac OS Build
     permissions: write-all
-    runs-on: macos-14
+    runs-on: macos-26
     steps:
       - name: Pulling the new commit
         uses: actions/checkout@v6
@@ -76,7 +76,7 @@ jobs:
   debug_build:
     name: Mac OS Debug Build
     permissions: write-all
-    runs-on: macos-14
+    runs-on: macos-26
     needs: build # since its low priority, it'll run after, so actions will concentrate first on normal builds
     steps:
       - name: Pulling the new commit
