@@ -187,7 +187,7 @@ class SystemInfo extends FramerateCategory {
 		var buf = new StringBuf();
 		buf.add(__formattedSysText);
 		if (__formattedSysText != '') buf.add('\n');
-		StringMacro.addLine(buf, 'Garbage Collector: ', MemoryUtil.disableCount > 0 ? 'OFF' : 'ON', '(', MemoryUtil.disableCount, ')');
+		StringMacro.addLine(buf, 'Garbage Collector: ', MemoryUtil.disableCount > 0 ? 'OFF' : 'ON', ' (', MemoryUtil.disableCount, ')');
 		_text = buf.toString();
 
 		this.text.text = _text;
