@@ -139,16 +139,10 @@ class SystemInfo extends FramerateCategory {
 	static function formatSysInfo() {
 		var buf = new StringBuf();
 		if (osInfo != "Unknown") {
-			buf.add("System: ");
-			buf.add(osInfo);
+			addLineMacro(buf, 'System: ', osInfo);
 		}
 		if (cpuName != "Unknown") {
-			buf.add("\nCPU: ");
-			buf.add(cpuName);
-			buf.add(" ");
-			buf.add(openfl.system.Capabilities.cpuArchitecture);
-			buf.add(" ");
-			buf.add(openfl.system.Capabilities.supports64BitProcesses ? "64-Bit" : "32-Bit");
+			addLineMacro(buf, '\nCPU: ', cpuName, ' ', openfl.system.Capabilities.cpuArchitecture, ' ', openfl.system.Capabilities.supports64BitProcesses ? '64-Bit' : '32-Bit');
 		}
 		if (gpuName != cpuName || vRAM != "Unknown") {
 			var gpuNameKnown = gpuName != "Unknown" && gpuName != cpuName;
@@ -157,21 +151,16 @@ class SystemInfo extends FramerateCategory {
 			if(gpuNameKnown || vramKnown) buf.add("\n");
 
 			if(gpuNameKnown) {
-				buf.add("GPU: ");
-				buf.add(gpuName);
+				addLineMacro(buf, 'GPU: ', gpuName);
 			}
 			if(gpuNameKnown && vramKnown) buf.add(" | ");
 			if(vramKnown) {
-				buf.add("VRAM: ");
-				buf.add(vRAM);
+				addLineMacro(buf, 'VRAM: ', vRAM);
 			}
 		}
-		//if (gpuMaxSize != "Unknown") buf.add('\nMax Bitmap Size: $gpuMaxSize');
+		//if (gpuMaxSize != "Unknown") addLineMacro(buf, '\nMax Bitmap Size: ',gpuMaxSize);
 		if (totalMem != "Unknown" && memType != "Unknown") {
-			buf.add("\nTotal MEM: ");
-			buf.add(totalMem);
-			buf.add(" ");
-			buf.add(memType);
+			addLineMacro(buf, '\nTotal MEM: ', totalMem, ' ', memType);
 		}
 		__formattedSysText = buf.toString();
 	}
@@ -196,12 +185,8 @@ class SystemInfo extends FramerateCategory {
 
 		var buf = new StringBuf();
 		buf.add(__formattedSysText);
-		if (__formattedSysText != "") buf.add("\n");
-		buf.add("Garbage Collector: ");
-		buf.add(MemoryUtil.disableCount > 0 ? "OFF" : "ON");
-		buf.add(" (");
-		buf.add(MemoryUtil.disableCount);
-		buf.add(")");
+		if (__formattedSysText != '') buf.add('\n');
+		addLineMacro(buf, 'Garbage Collector: ', MemoryUtil.disableCount > 0 ? 'OFF' : 'ON', '(', MemoryUtil.disableCount, ')');
 		_text = buf.toString();
 
 		this.text.text = _text;

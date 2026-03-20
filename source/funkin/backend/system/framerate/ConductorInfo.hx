@@ -9,23 +9,12 @@ class ConductorInfo extends FramerateCategory {
 		if (alpha <= 0.05) return;
 
 		var buf = new StringBuf();
-		buf.add("Current Song Position: ");
-		buf.add(Math.floor(Conductor.songPosition * 1000) / 1000);
-		buf.add("\n - ");
-		buf.add(Conductor.curBeat);
-		buf.add(" beats");
-		buf.add("\n - ");
-		buf.add(Conductor.curStep);
-		buf.add(" steps");
-		buf.add("\n - ");
-		buf.add(Conductor.curMeasure);
-		buf.add(" measures");
-		buf.add("\nCurrent BPM: ");
-		buf.add(Conductor.bpm);
-		buf.add("\nTime Signature: ");
-		buf.add(Conductor.beatsPerMeasure);
-		buf.add("/");
-		buf.add(Conductor.denominator);
+		addLineMacro(buf, 'Current Song Position: ', Math.floor(Conductor.songPosition * 1000) / 1000, 's');
+		addLineMacro(buf, '\n - ', Conductor.curBeat, ' beats');
+		addLineMacro(buf, '\n - ', Conductor.curStep, ' steps');
+		addLineMacro(buf, '\n - ', Conductor.curMeasure, ' measures');
+		addLineMacro(buf, '\nCurrent BPM: ', Conductor.bpm);
+		addLineMacro(buf, '\nTime Signature: ', Conductor.beatsPerMeasure, '/', Conductor.denominator);
 		_text = buf.toString();
 
 		this.text.text = _text;

@@ -31,47 +31,20 @@ class AssetTreeInfo extends FramerateCategory {
 
 				var tag = l.tag.toString().toUpperCase();
 
-				buf.add("[");
-				buf.add(tag);
-				buf.add("] ");
+				addLineMacro(buf, '[', tag, '] ');
 
 				var className = Type.getClassName(Type.getClass(l));
 				className = className.substr(className.lastIndexOf(".") + 1);
 
 				#if TRANSLATIONS_SUPPORT
 				if (l is TranslatedAssetLibrary) {
-					buf.add(className);
-					buf.add(" - ");
-					buf.add(cast(l, TranslatedAssetLibrary).langFolder);
-					buf.add(" for (");
-					buf.add(cast(l, TranslatedAssetLibrary).forLibrary.modName);
-					buf.add(")\n");
-				}
-				else #end if (l is ScriptedAssetLibrary) {
-					buf.add(className);
-					buf.add(" - ");
-					buf.add(cast(l, ScriptedAssetLibrary).scriptName);
-					buf.add(" (");
-					buf.add(cast(l, ScriptedAssetLibrary).modName);
-					buf.add(" | ");
-					buf.add(cast(l, ScriptedAssetLibrary).libName);
-					buf.add(" | ");
-					buf.add(cast(l, ScriptedAssetLibrary).prefix);
-					buf.add(")\n");
-				}
-				else if (l is IModsAssetLibrary) {
-					buf.add(className);
-					buf.add(" - ");
-					buf.add(cast(l, IModsAssetLibrary).modName);
-					buf.add(" - ");
-					buf.add(cast(l, IModsAssetLibrary).libName);
-					buf.add(" (");
-					buf.add(cast(l, IModsAssetLibrary).prefix);
-					buf.add(")\n");
-				}
-				else {
-					buf.add(Std.string(l));
-					buf.add("\n");
+					addLineMacro(buf, className, ' - ', cast(l, TranslatedAssetLibrary).langFolder, ' for (', cast(l, TranslatedAssetLibrary).forLibrary.modName, ')','\n');
+				} else #end if (l is ScriptedAssetLibrary) {
+					addLineMacro(buf, className, ' - ', cast(l, ScriptedAssetLibrary).scriptName, ' (', cast(l, ScriptedAssetLibrary).modName, ' | ', cast(l, ScriptedAssetLibrary).libName, ' | ', cast(l, ScriptedAssetLibrary).prefix, ')','\n');
+				} else if (l is IModsAssetLibrary) {
+					addLineMacro(buf, className, ' - ', cast(l, IModsAssetLibrary).modName, ' - ', cast(l, IModsAssetLibrary).libName, ' (', cast(l, IModsAssetLibrary).prefix, ')','\n');
+				} else {
+					addLineMacro(buf, Std.string(l), '\n');	
 				}
 			}
 			text = buf.toString();
