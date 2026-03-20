@@ -1,5 +1,7 @@
 package funkin.backend.system.framerate;
 
+import funkin.backend.system.macros.StringMacro;
+
 class ConductorInfo extends FramerateCategory {
 	public function new() {
 		super("Conductor Info");
@@ -9,12 +11,12 @@ class ConductorInfo extends FramerateCategory {
 		if (alpha <= 0.05) return;
 
 		var buf = new StringBuf();
-		addLineMacro(buf, 'Current Song Position: ', Math.floor(Conductor.songPosition * 1000) / 1000, 's');
-		addLineMacro(buf, '\n - ', Conductor.curBeat, ' beats');
-		addLineMacro(buf, '\n - ', Conductor.curStep, ' steps');
-		addLineMacro(buf, '\n - ', Conductor.curMeasure, ' measures');
-		addLineMacro(buf, '\nCurrent BPM: ', Conductor.bpm);
-		addLineMacro(buf, '\nTime Signature: ', Conductor.beatsPerMeasure, '/', Conductor.denominator);
+		StringMacro.addLine(buf, 'Current Song Position: ', Math.floor(Conductor.songPosition * 1000) / 1000);
+		StringMacro.addLine(buf, '\n - ', Conductor.curBeat, ' beats');
+		StringMacro.addLine(buf, '\n - ', Conductor.curStep, ' steps');
+		StringMacro.addLine(buf, '\n - ', Conductor.curMeasure, ' measures');
+		StringMacro.addLine(buf, '\nCurrent BPM: ', Conductor.bpm);
+		StringMacro.addLine(buf, '\nTime Signature: ', Conductor.beatsPerMeasure, '/', Conductor.denominator);
 		_text = buf.toString();
 
 		this.text.text = _text;

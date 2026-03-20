@@ -45,6 +45,7 @@ class MemoryCounter extends Sprite {
 
 		memory = mem;
 		if (memoryPeak < memory) memoryPeak = memory;
+		memoryText.text = CoolUtil.getSizeString(memory);
 		memoryPeakText.text = ' / ${CoolUtil.getSizeString(memoryPeak)}';
 
 		updateLabelPosition();

@@ -1,6 +1,7 @@
 package funkin.backend.system.framerate;
 
 import funkin.backend.scripting.ModState;
+import funkin.backend.system.macros.StringMacro;
 
 class FlixelInfo extends FramerateCategory {
 	public function new() {
@@ -16,22 +17,22 @@ class FlixelInfo extends FramerateCategory {
 
 			if((FlxG.state is ModState)) {
 				var state:ModState = cast FlxG.state;
-				addLineMacro(buf, 'Mod State: ', state.scriptName);
+				StringMacro.addLine(buf, 'Mod State: ', state.scriptName);
 			} else {
-				addLineMacro(buf, 'State: ', Type.getClassName(Type.getClass(FlxG.state)));
+				StringMacro.addLine(buf, 'State: ', Type.getClassName(Type.getClass(FlxG.state)));
 			}
-			addLineMacro(buf, '\nObject Count: ', FlxG.state.members.length);
-			addLineMacro(buf, '\nCamera Count: ', FlxG.cameras.list.length);
-			addLineMacro(buf, '\nBitmaps Count: ', c);
-			addLineMacro(buf, '\nSounds Count: ', FlxG.sound.list.length);
-			addLineMacro(buf, '\nFlxG.game Childs Count: ', FlxG.game.numChildren);
+			StringMacro.addLine(buf, '\nObject Count: ', FlxG.state.members.length);
+			StringMacro.addLine(buf, '\nCamera Count: ', FlxG.cameras.list.length);
+			StringMacro.addLine(buf, '\nBitmaps Count: ', c);
+			StringMacro.addLine(buf, '\nSounds Count: ', FlxG.sound.list.length);
+			StringMacro.addLine(buf, '\nFlxG.game Childs Count: ', FlxG.game.numChildren);
 			if(FlxG.renderBlit) {
-				addLineMacro(buf, '\nBlitting Render: ', true);
+				StringMacro.addLine(buf, '\nBlitting Render: ', true);
 			}
 			#if FLX_POINT_POOL
 			//var points = flixel.math.FlxPoint.FlxBasePoint.pool;
-			//addLineMacro(buf, '\nPoint Count: ', points._count, ' | +', points.made, ' | -', points.gotten, ' | ', points.balance, ' | >', points.putted);
-			//addLineMacro(buf, '\nPoint Count: ', points._count);
+			//StringMacro.addLine(buf, '\nPoint Count: ', points._count, ' | +', points.made, ' | -', points.gotten, ' | ', points.balance, ' | >', points.putted);
+			//StringMacro.addLine(buf, '\nPoint Count: ', points._count);
 			#end
 			_text = buf.toString();
 		}

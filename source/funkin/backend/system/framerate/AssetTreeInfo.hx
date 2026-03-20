@@ -6,6 +6,7 @@ import funkin.backend.assets.TranslatedAssetLibrary;
 import funkin.backend.assets.AssetsLibraryList;
 import funkin.backend.assets.IModsAssetLibrary;
 import funkin.backend.assets.ScriptedAssetLibrary;
+import funkin.backend.system.macros.StringMacro;
 
 class AssetTreeInfo extends FramerateCategory {
 	private var lastUpdateTime:Float = 1;
@@ -31,20 +32,20 @@ class AssetTreeInfo extends FramerateCategory {
 
 				var tag = l.tag.toString().toUpperCase();
 
-				addLineMacro(buf, '[', tag, '] ');
+				StringMacro.addLine(buf, '[', tag, '] ');
 
 				var className = Type.getClassName(Type.getClass(l));
 				className = className.substr(className.lastIndexOf(".") + 1);
 
 				#if TRANSLATIONS_SUPPORT
 				if (l is TranslatedAssetLibrary) {
-					addLineMacro(buf, className, ' - ', cast(l, TranslatedAssetLibrary).langFolder, ' for (', cast(l, TranslatedAssetLibrary).forLibrary.modName, ')','\n');
+					StringMacro.addLine(buf, className, ' - ', cast(l, TranslatedAssetLibrary).langFolder, ' for (', cast(l, TranslatedAssetLibrary).forLibrary.modName, ')','\n');
 				} else #end if (l is ScriptedAssetLibrary) {
-					addLineMacro(buf, className, ' - ', cast(l, ScriptedAssetLibrary).scriptName, ' (', cast(l, ScriptedAssetLibrary).modName, ' | ', cast(l, ScriptedAssetLibrary).libName, ' | ', cast(l, ScriptedAssetLibrary).prefix, ')','\n');
+					StringMacro.addLine(buf, className, ' - ', cast(l, ScriptedAssetLibrary).scriptName, ' (', cast(l, ScriptedAssetLibrary).modName, ' | ', cast(l, ScriptedAssetLibrary).libName, ' | ', cast(l, ScriptedAssetLibrary).prefix, ')','\n');
 				} else if (l is IModsAssetLibrary) {
-					addLineMacro(buf, className, ' - ', cast(l, IModsAssetLibrary).modName, ' - ', cast(l, IModsAssetLibrary).libName, ' (', cast(l, IModsAssetLibrary).prefix, ')','\n');
+					StringMacro.addLine(buf, className, ' - ', cast(l, IModsAssetLibrary).modName, ' - ', cast(l, IModsAssetLibrary).libName, ' (', cast(l, IModsAssetLibrary).prefix, ')','\n');
 				} else {
-					addLineMacro(buf, Std.string(l), '\n');	
+					StringMacro.addLine(buf, Std.string(l), '\n');
 				}
 			}
 			text = buf.toString();

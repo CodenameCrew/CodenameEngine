@@ -56,11 +56,4 @@ class FramerateCategory extends Sprite {
 	public static inline function addLine(buf:StringBuf, ...values:Array<Dynamic>):Void {
 		for (v in values) buf.add(v);
 	}
-
-	@:dox(hide) public static macro function addLineMacro(buf:Expr, args:Array<Expr>):Expr {
-		var exprs = [];
-		for (arg in args)
-			exprs.push(macro $buf.add($arg));
-		return macro $b{exprs};
-	}
 }
