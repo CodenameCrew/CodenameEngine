@@ -32,7 +32,7 @@ jobs:
           haxe -cp commandline -D analyzer-optimize --run Main setup -s
       - name: Building the game
         run: |
-          arch -x86_64 haxelib run lime build mac
+          arch -x86_64 haxelib run lime build mac -DCOMPILE_EXPERIMENTAL
       - name: Tar files
         run: tar -zcvf CodenameEngine.tar.gz -C export/release/macos/bin .
       - name: Uploading artifact (executable)
