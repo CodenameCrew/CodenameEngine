@@ -107,7 +107,7 @@ class VideoCutscene extends Cutscene {
 				File.saveBytes(localPath, Assets.getBytes(path));
 			}
 
-			if (video.load(localPath)) FlxTimer.wait(0.001, function() { mutex.acquire(); onReady(); mutex.release(); });
+			if (video.load(localPath)) new FlxTimer().start(0.001, function(_) { mutex.acquire(); onReady(); mutex.release(); });
 			else { mutex.acquire(); close(); mutex.release(); }
 		});
 
