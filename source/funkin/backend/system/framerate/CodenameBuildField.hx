@@ -17,5 +17,6 @@ class CodenameBuildField extends TextField {
 		#if debug
 		text += '\n${Flags.COMMIT_MESSAGE}';
 		#end
+		// This is where I will add the feature but gonna test Github Actions first
 	}
 }
