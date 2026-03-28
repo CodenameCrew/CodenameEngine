@@ -8,7 +8,19 @@ import lime.utils.AssetLibrary;
 import haxe.ds.Map;
 
 class AssetsLibraryList extends AssetLibrary {
+
 	public var libraries:Array<AssetLibrary> = [];
+	public var cleanLibraries(get, never):Array<AssetLibrary>;
+	function get_cleanLibraries():Array<AssetLibrary> {
+		return [for (l in libraries) getCleanLibrary(l)];
+	}
+	
+	// is true if any library in `libraries` contains some kind of compressed library. 
+	public var hasCompressedLibrary(get, never):Bool;
+	function get_hasCompressedLibrary():Bool {
+		for (l in libraries) if (getCleanLibrary(l).isCompressed) return true;
+		return false;
+	}
 
 	@:allow(funkin.backend.system.Main)
 	@:allow(funkin.backend.system.MainState)
@@ -18,6 +30,8 @@ class AssetsLibraryList extends AssetLibrary {
 	#if TRANSLATIONS_SUPPORT
 	public var transLib:TranslatedAssetLibrary;
 	#end
+
+	private var cachePaths:Map<String, AssetLibrary> = [];
 
 	public function removeLibrary(lib:AssetLibrary) {
 		if (lib != null) {
@@ -42,9 +56,17 @@ class AssetsLibraryList extends AssetLibrary {
 	public function existsSpecific(id:String, type:String, source:AssetSource = BOTH) {
 		if (!id.startsWith("assets/") && existsSpecific('assets/$id', type, source))
 			return true;
+
+		// There's a mod that heavily relies on addons and that can causes lags just to get a path.
+		if (cachePaths.exists(id)) {
+			if (cachePaths.get(id).exists(id, type)) return true;
+			else cachePaths.remove(id);
+		}
+
 		for(k=>l in libraries) {
 			if (shouldSkipLib(l, source)) continue;
 			if (l.exists(id, type)) {
+				cachePaths.set(id, l);
 				return true;
 			}
 		}
@@ -186,6 +208,7 @@ class AssetsLibraryList extends AssetLibrary {
 	public function reset() {
 		unloadLibraries();
 
+		cachePaths.clear();
 		libraries = [];
 
 		// adds default libraries in again

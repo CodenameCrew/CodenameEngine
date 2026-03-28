@@ -82,7 +82,7 @@
 		title="Friday Night Funkin' - Codename Engine"
 		file="CodenameEngine" packageName="com.yoshman29.codenameengine"
 		package="com.yoshman29.codenameengine"
-		version="1.0.1" company="Yoshman29"/>
+		version="1.0.2" company="Yoshman29"/>
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000"/>

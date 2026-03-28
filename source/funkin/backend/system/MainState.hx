@@ -7,11 +7,13 @@ import flixel.FlxState;
 import funkin.backend.assets.AssetsLibraryList;
 import funkin.backend.assets.ModsFolder;
 import funkin.backend.assets.ModsFolderLibrary;
+import funkin.backend.assets.ZipFolderLibrary;
 import funkin.backend.chart.EventsData;
 import funkin.backend.system.framerate.Framerate;
 import funkin.editors.ModConfigWarning;
 import funkin.menus.TitleState;
 import haxe.io.Path;
+
 
 @dox(hide)
 typedef AddonInfo = {
@@ -58,12 +60,32 @@ class MainState extends FlxState {
 		var _highPriorityAddons:Array<AddonInfo> = [];
 		var _noPriorityAddons:Array<AddonInfo> = [];
 
+		var quick_modsPath = ModsFolder.modsPath + ModsFolder.currentModFolder;
+
+		// handing if the loading mod (before it's properly loaded) is a compressed mod
+		// we just need to use `Paths.assetsTree.hasCompressedLibrary` to complete valid checks for actual loaded compressed mods
+		var isZipMod = false;
+		
+		// If we know it's a compressed mod, then we can check if it's using the `cnemod` folder path.
+		// All it is really is a folder with the mod's name, then a compressed file called "cnemod.[zip|7z|rar|etc]"
+		var isCneMod = false;
+
+		// We are doing it like this because think about it: it's 1 for loop lol
+		// We just need to know if any of these values is true, so if only one is true and we are not close to being done in the loop, that's fine.
+		// 
+		for (ext in Flags.ALLOWED_ZIP_EXTENSIONS) {
+			if (FileSystem.exists(quick_modsPath+"."+ext)) isZipMod = true;
+			if (FileSystem.exists(quick_modsPath+"/cnemod."+ext)) isCneMod = true;
+			if (isZipMod && isCneMod) break;
+		}
+		
+		// We get the addons folder from relative space (`./`) and then our mod's addons.
 		var addonPaths = [
 			ModsFolder.addonsPath,
-			(
-				ModsFolder.currentModFolder != null ?
-					ModsFolder.modsPath + ModsFolder.currentModFolder + "/addons/" :
-					null
+			// So to check the mod's addons folder, we need to decompress it. Which is impossible* in this stage of the loading library process.
+			// TODO: Write a function when the library is loaded to decompress the contents and then load the libraries :)
+			( (ModsFolder.currentModFolder != null && !isZipMod) ?
+				quick_modsPath + "/addons/" : null
 			)
 		];
 
@@ -73,12 +95,8 @@ class MainState extends FlxState {
 
 			for (addon in FileSystem.readDirectory(path)) {
 				if (!FileSystem.isDirectory(path + addon)) {
-					switch(Path.extension(addon).toLowerCase()) {
-						case 'zip':
-							addon = Path.withoutExtension(addon);
-						default:
-							continue;
-					}
+					if (Flags.ALLOWED_ZIP_EXTENSIONS.contains(Path.extension(addon))) addon = Path.withoutExtension(addon);
+					else continue;
 				}
 
 				var data:AddonInfo = {
@@ -101,9 +119,14 @@ class MainState extends FlxState {
 		#if MOD_SUPPORT
 		for (addon in _lowPriorityAddons)
 			loadLib(addon.path, ltrim(addon.name, "[LOW]"));
-
-		if (ModsFolder.currentModFolder != null)
-			loadLib(ModsFolder.modsPath + ModsFolder.currentModFolder, ModsFolder.currentModFolder);
+		
+		if (ModsFolder.currentModFolder != null) {
+			// isCneMod is a guarentee to be a zip mod because we just checked for it, so this will always load as a CompressedLibrary
+			if (isCneMod)
+				loadLib(quick_modsPath + "/cnemod", ModsFolder.currentModFolder);
+			else
+				loadLib(quick_modsPath, ModsFolder.currentModFolder);
+		}
 
 		for (addon in _noPriorityAddons)
 			loadLib(addon.path, addon.name);
@@ -135,9 +158,15 @@ class MainState extends FlxState {
 		CoolUtil.safeAddAttributes('./.temp/', NativeAPI.FileAttribute.HIDDEN);
 		#end
 
+		for (lib in ModsFolder.getLoadedModsLibs()) {
+			if (!(lib is ZipFolderLibrary)) continue;
+			if (cast(lib, ZipFolderLibrary).PRELOAD_VIDEOS) cast(lib, ZipFolderLibrary).precacheVideos();
+		}
+
 		var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
 
-		if (Options.devMode && Options.allowConfigWarning) {
+		// In this case if the mod we just loaded a compressed modpack, we can't edit or modify files without decompressing it.
+		if (Options.devMode && Options.allowConfigWarning && !isZipMod) {
 			var lib:ModsFolderLibrary;
 			for (e in Paths.assetsTree.libraries) if ((lib = cast AssetsLibraryList.getCleanLibrary(e)) is ModsFolderLibrary
 				&& lib.modName == ModsFolder.currentModFolder)

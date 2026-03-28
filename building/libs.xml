@@ -9,7 +9,7 @@
 		<git name="lime" url="https://github.com/CodenameCrew/cne-lime" ref="develop" skipDeps="true"/>
 
 		<!-- Flixel -->
-		<git name="flixel" url="https://github.com/CodenameCrew/cne-flixel" ref="feat/update-to-5.9.0" skipDeps="true"/>
+		<git name="flixel" url="https://github.com/CodenameCrew/cne-flixel" ref="dev" skipDeps="true"/>
 		<git name="flixel-addons" url="https://github.com/CodenameCrew/cne-flixel-addons" ref="dev" skipDeps="true"/>
 
 		<!-- CNE Core Libraries -->
