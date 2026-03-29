@@ -201,42 +201,33 @@ class FunkinShaderSourceAssembler extends FlxRuntimeShader.FlxShaderSourceAssemb
 		super(funkinParent = parent);
 	}
 
-	override function assembleSource(source:String, ?pragmas:Map<String, String>, ?extensions:Map<String, String>,
-		?version:String, isVertex:Bool, useCompatibility:Bool = true, precisionHint:ShaderPrecision = FULL):String
+	override function __appendIncludes(source:String, isVertex:Bool, ?includedKeys:Map<String, Bool>):String
 	{
-		if (version == null) version = Flags.DEFAULT_GLSL_VERSION;
+		if (includedKeys == null) includedKeys = [];
 
-		if (source == null) {
-			// There's nothing to assemble with, but just return it with a prefix instead anyway.
-			var dataVersion = GLSLSourceAssembler.__getVersion(version);
-			return __appendPrefix(null, dataVersion.versionNumber, dataVersion.versionProfile, extensions, isVertex, precisionHint);
-		}
+		source = GLSLSourceAssembler.__getIncludeFinder().map(source, (regex:EReg) ->
+		{
+			var key = regex.matched(1);
+			if (includedKeys.get(key)) return '/*Recursive include $key*/\n';
 
-		if (pragmas != null) {
-			source = GLSLSourceAssembler.__getPragmaFinder().map(source, (glPragmaFinder:EReg) -> {
-				var pragma = glPragmaFinder.matched(1);
-				return pragmas.exists(pragma) ? '/*pragma $pragma*/\n' + pragmas.get(pragma) + '\n' : 'pragma $pragma';
-			});
-		}
+			var include = __getIncludeSource(key, isVertex);
+			if (include == null) return '/*Unknown include $key*/\n';
 
-		function includeERegCallback(finder:EReg) {
-			var include = finder.matched(1);
-			var included = __getIncludeSource(include, isVertex);
-			return included != null ? '/*include $include*/\n' + included : '/*Unknown include $include*/\n';
-		}
+			includedKeys.set(key, true);
+			return '/*include $key*/\n' + __appendIncludes(include, isVertex, includedKeys);
+		});
 
-		source = GLSLSourceAssembler.__getIncludeFinder().map(source, includeERegCallback);
-		source = __getImportFinder().map(source, includeERegCallback);
+		return __getImportFinder().map(source, (regex:EReg) ->
+		{
+			var key = regex.matched(1);
+			if (includedKeys.get(key)) return '/*Recursive import $key*/\n';
 
-		var data = GLSLSourceAssembler.__getSource(source, version);
-		extensions = __buildExtensions(GLSLSourceAssembler.__getExtensions(source, extensions == null ? new Map() : extensions.copy()),
-			data.versionNumber, data.versionProfile, isVertex);
+			var include = __getIncludeSource(key, isVertex);
+			if (include == null) return '/*Unknown import $key*/\n';
 
-		if (useCompatibility) {
-			data.source = __applyCompatibility(data.source, data.versionNumber, data.versionProfile, isVertex);
-		}
-
-		return __appendPrefix(data.source, data.versionNumber, data.versionProfile, extensions, isVertex, precisionHint);
+			includedKeys.set(key, true);
+			return '/*import $key*/\n' + __appendIncludes(include, isVertex, includedKeys);
+		});
 	}
 
 	override function __getIncludeSource(include:String, fromVertex:Bool):Null<String> {
