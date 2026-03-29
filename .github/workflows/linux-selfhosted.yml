@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Linux Build
+    name: Linux Build (Self-Hosted)
     permissions: write-all
     runs-on: self-hosted
     steps:
@@ -27,12 +27,12 @@ jobs:
             export/release/linux/obj/
       - run: |
           echo "HXCPP_COMPILE_CACHE=~/.hxcpp" >> $GITHUB_ENV
-      - name: Installing LibVLC
-        run: |
-          sudo apt-get install libvlc-dev libvlccore-dev
       - name: Installing/Updating libraries
         run: |
           haxe -cp commandline -D analyzer-optimize --run Main setup -s
+      - name: Build Lime Debug
+        run: |
+          haxelib run lime rebuild linux -64 -nocffi -release
       - name: Building the game
         run: |
           haxelib run lime build linux -DCOMPILE_EXPERIMENTAL
@@ -101,12 +101,12 @@ jobs:
             export/debug/linux/obj/
       - run: |
           echo "HXCPP_COMPILE_CACHE=~/.hxcpp" >> $GITHUB_ENV
-      - name: Installing LibVLC
-        run: |
-          sudo apt-get install libvlc-dev libvlccore-dev
       - name: Installing/Updating libraries
         run: |
           haxe -cp commandline -D analyzer-optimize --run Main setup -s
+      - name: Build Lime Debug
+        run: |
+          haxelib run lime rebuild linux -64 -nocffi -debug
       - name: Building the game
         run: |
           haxelib run lime build linux -debug
