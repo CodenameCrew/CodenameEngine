@@ -20,6 +20,8 @@ class Log
 		{
 			#if js
 			untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").debug("[" + info.className + "] " + message);
+			#elseif !macro
+			FunkinLogs.trace('[${info.className}] $message', INFO, LIGHTGRAY);
 			#else
 			println("[" + info.className + "] " + Std.string(message));
 			#end
