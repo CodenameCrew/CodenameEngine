@@ -30,7 +30,7 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 	public var onGLUpdate:FlxTypedSignal<Void->Void> = new FlxTypedSignal<Void->Void>();
 
 	public function new(?fragmentSource:String, ?vertexSource:String, ?version:String) {
-		super(fragmentSource, vertexSource, version);
+		super(fragmentSource, vertexSource, version ?? (fragmentSource != null || vertexSource != null ? Flags.DEFAULT_GLSL_VERSION : null));
 	}
 
 	public static function fromFile(fragmentPath:String, ?vertexPath:String, ?version:String):FunkinShader {
@@ -44,7 +44,9 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 			else vertexPath = fragmentPath.substr(0, idx);
 		}
 
-		_fromFile(FlxRuntimeShader._getPath(fragmentPath, false), FlxRuntimeShader._getPath(vertexPath, true), version);
+		fragmentPath = FlxRuntimeShader._getPath(fragmentPath, false);
+		vertexPath = FlxRuntimeShader._getPath(vertexPath, true);
+		_fromFile(fragmentPath, vertexPath, version ?? (fragmentPath != null || vertexPath != null ? Flags.DEFAULT_GLSL_VERSION : null));
 
 		return this;
 	}
@@ -156,6 +158,18 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 	private static var FRAGMENT_SHADER = 0;
 	private static var VERTEX_SHADER = 1;
 
+	public var fileName(get, set):String;
+	inline function get_fileName():String return _fragmentFilePath ?? _vertexFilePath ?? "FunkinShader";
+	inline function set_fileName(v:String):String return _fragmentFilePath = _vertexFilePath = v;
+
+	public var fragFileName(get, set):String;
+	inline function get_fragFileName():String return _fragmentFilePath ?? "FunkinShader";
+	inline function set_fragFileName(v:String):String return _fragmentFilePath = v;
+
+	public var vertFileName(get, set):String;
+	inline function get_vertFileName():String return _vertexFilePath ?? "FunkinShader";
+	inline function set_vertFileName(v:String):String return _vertexFilePath = v;
+
 	public var glslVer(get, set):String;
 	inline function get_glslVer():String return glVersion;
 	inline function set_glslVer(v:String):String return glVersion = v;
@@ -168,17 +182,7 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 	inline function get_glRawVertexSource():String return __glVertexSourceRaw;
 	inline function set_glRawVertexSource(v:String):String return __glVertexSourceRaw = v;
 
-	public var fileName(get, set):String;
-	inline function get_fileName():String return _fragmentFilePath ?? _vertexFilePath ?? "FunkinShader";
-	inline function set_fileName(v:String):String return _fragmentFilePath = _vertexFilePath = v;
-
-	public var fragFileName(get, set):String;
-	inline function get_fragFileName():String return _fragmentFilePath ?? "FunkinShader";
-	inline function set_fragFileName(v:String):String return _fragmentFilePath = v;
-
-	public var vertFileName(get, set):String;
-	inline function get_vertFileName():String return _vertexFilePath ?? "FunkinShader";
-	inline function set_vertFileName(v:String):String return _vertexFilePath = v;
+	function thisHasField(v:String):Bool return __thisHasField(v);
 
 	function registerParameter(name:String, type:String, isUniform:Bool) {
 		__registerParameter(name, Shader.getParameterTypeFromGLSL(type, false), StringTools.startsWith(type, "sampler"), 1, null, isUniform, null);
