@@ -33,7 +33,7 @@ class Main extends Sprite
 	public static var instance:Main;
 
 	public static var modToLoad:String = null;
-	public static var forceGPUOnlyBitmapsOff:Bool = #if desktop false #else true #end;
+	public static var forceGPUOnlyBitmapsOff:Bool = false;
 	public static var noTerminalColor:Bool = false;
 	public static var verbose:Bool = false;
 
