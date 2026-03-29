@@ -30,9 +30,6 @@ jobs:
       - name: Installing/Updating libraries
         run: |
           haxe -cp commandline -D analyzer-optimize --run Main setup -s
-      - name: Build Lime Debug
-        run: |
-          haxelib run lime rebuild linux -64 -nocffi -release
       - name: Building the game
         run: |
           haxelib run lime build linux -DCOMPILE_EXPERIMENTAL
