@@ -2,6 +2,9 @@ package funkin.editors.ui;
 
 import haxe.io.Bytes;
 import lime.ui.FileDialog;
+#if lime_funkin
+import lime.ui.FileDialogFilter;
+#end
 
 class UIFileExplorer extends UISliceSprite {
 	public var uploadButton:UIButton;
@@ -24,10 +27,16 @@ class UIFileExplorer extends UISliceSprite {
 
 		if (onFile != null) this.onFile = onFile;
 
-		uploadButton = new UIButton(x + 8, y+ 8, null, function () {
+		uploadButton = new UIButton(x + 8, y + 8, null, function () {
+			#if lime_funkin
+			FileDialog.openFile(FlxG.stage.window, "Open File", (fileNames:Array<String>, activeFilter:FileDialogFilter) -> {
+				loadFile(fileNames[0]);
+			}, this.fileType != null ? [new FileDialogFilter("Specified File Extension", this.fileType)] : null);
+			#else
 			var fileDialog = new FileDialog();
 			fileDialog.onSelect.add(loadFile);
 			fileDialog.browse(OPEN, this.fileType);
+			#end
 		}, bWidth - 16, bHeight - 16);
 		members.push(uploadButton);
 
