@@ -314,11 +314,11 @@ class Flags {
 		if (SUSTAINS_AS_ONE_NOTE == null) SUSTAINS_AS_ONE_NOTE = MOD_API_VERSION >= 2;
 		if (DEFAULT_GLSL_VERSION == null) {
 			if (MOD_API_VERSION < 2) {
-				DEFAULT_GLSL_VERSION = "120";
+				DEFAULT_GLSL_VERSION = #if (android || mac || web) "100" #else "120" #end;
 				Logs.warn("Blend Mode Extensions won't work in MOD_API_VERSION below than 2");
 			}
 			else {
-				DEFAULT_GLSL_VERSION = openfl.display.Shader.getDefaultGLVersion();
+				DEFAULT_GLSL_VERSION = openfl.utils.GLSLSourceAssembler.getDefaultVersion();
 			}
 		}
 	}

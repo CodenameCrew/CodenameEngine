@@ -1,177 +1,59 @@
 package funkin.backend.shaders;
 
-import haxe.Exception;
 import haxe.io.Path;
-import flixel.graphics.FlxGraphic;
-import flixel.system.FlxAssets.FlxShader;
-import flixel.util.FlxSignal.FlxTypedSignal;
-import flixel.util.FlxStringUtil;
+import haxe.Exception;
+
 import hscript.IHScriptCustomBehaviour;
+
 import openfl.display.BitmapData;
-import openfl.display.ShaderInput;
+import openfl.display.Shader;
 import openfl.display.ShaderParameter;
 import openfl.display.ShaderParameterType;
-import openfl.display.Shader;
+import openfl.display.ShaderPrecision;
+import openfl.display.ShaderInput;
 import openfl.display3D._internal.GLProgram;
 import openfl.display3D._internal.GLShader;
 import openfl.display3D.Program3D;
 import openfl.utils._internal.Log;
+import openfl.utils.GLSLSourceAssembler;
 
-using StringTools;
+import flixel.addons.display.FlxRuntimeShader;
+import flixel.graphics.FlxGraphic;
+import flixel.util.FlxSignal.FlxTypedSignal;
+import flixel.util.FlxStringUtil;
+
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.Program3D)
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
-class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
-	#if REGION /* Backward Compatibility */
-	private static var __instanceFields = Type.getInstanceFields(FunkinShader);
-	private static var FRAGMENT_SHADER = 0;
-	private static var VERTEX_SHADER = 1;
-
-	public var glslVer(get, set):String;
-	inline function get_glslVer():String return glVersion;
-	inline function set_glslVer(v:String):String return glVersion = v;
-
-	public var glRawFragmentSource(get, set):String;
-	inline function get_glRawFragmentSource():String return __glFragmentSourceRaw;
-	inline function set_glRawFragmentSource(v:String):String return __glFragmentSourceRaw = v;
-
-	public var glRawVertexSource(get, set):String;
-	inline function get_glRawVertexSource():String return __glVertexSourceRaw;
-	inline function set_glRawVertexSource(v:String):String return __glVertexSourceRaw = v;
-
-	// Unused... cne-openfl uses a different system
-	var __cancelNextProcessGLData:Bool = false;
-	public var onProcessGLData:FlxTypedSignal<(String, String)->Void> = new FlxTypedSignal<(String, String)->Void>();
-	#end
-
-	public static function getShaderCode(key:String, isFragment = true):Null<String> {
-		var path = "shaders/" + key;
-		key = Path.withoutExtension(key);
-
-		final ext = Path.extension(path);
-		if (ext == "") path = path + (isFragment ? ".frag" : ".vert");
-		else isFragment = ext != "vert";
-
-		path = Paths.getPath(path);
-		return Assets.exists(path) ? Assets.getText(path) : null;
-	}
-
-	private static function processGLSLText(source:String, glVersion:String, isFragment:Bool, ?pragmas:Map<String, String>):String
-		return Shader.processGLSLText(_processGLSLText(source, glVersion, isFragment, pragmas), glVersion, isFragment);
-
-	private static function _processGLSLText(source:String, glVersion:String, isFragment:Bool, ?pragmas:Map<String, String>):String {
-		if (pragmas != null) {
-			final pragmaKeyword = ~/#pragma\s+(\w+)/g;
-			source = pragmaKeyword.map(source, (_) -> {
-				var name = pragmaKeyword.matched(1), pragma:String;
-				if (pragmas.exists(name)) pragma = pragmas.get(name);
-				else {
-					if (name != "header" && name != "body") return '#pragma $name';
-					pragma = "";
-				}
-				return _processGLSLText(pragma, glVersion, isFragment, pragmas);
-			});
-		}
-
-		inline function tryGetShaderCode(key:String) {
-			final s = getShaderCode(key, isFragment);
-			if (s == null) {
-				Logs.traceColored([
-					Logs.logText('[Shader] ', RED),
-					Logs.logText('Failed to import shader $key', RED),
-				]);
-				return "";
-			}
-			return s;
-		}
-
-		final includeKeyword = ~/#include ['"](.+)['"]/g;
-		final importKeyword = ~/#import\s+<(.*)>/g;
-		source = importKeyword.map(source, (_) ->
-			return _processGLSLText(tryGetShaderCode(importKeyword.matched(1)), glVersion, isFragment, pragmas) ?? "");
-
-		return source = includeKeyword.map(source, (_) ->
-			return _processGLSLText(tryGetShaderCode(includeKeyword.matched(1)), glVersion, isFragment, pragmas) ?? "");
-	}
-
-	private static var __defaultsAvailable:Bool;
-	private static var __glFragmentSourceDefault:String;
-	private static var __glVertexSourceDefault:String;
-	private static var __glFragmentPragmasDefault:Map<String, String>;
-	private static var __glVertexPragmasDefault:Map<String, String>;
-	private static var __glFragmentExtensionsDefault:Array<ShaderExtension>;
-	private static var __glVertexExtensionsDefault:Array<ShaderExtension>;
-
+class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 	public var onGLUpdate:FlxTypedSignal<Void->Void> = new FlxTypedSignal<Void->Void>();
 
-	public var fileName:String = "FunkinShader";
-	public var fragFileName:String = "FunkinShader";
-	public var vertFileName:String = "FunkinShader";
-
-	public var shaderPrefix:String = "";
-	public var fragmentPrefix:String = "";
-	public var vertexPrefix:String = "";
-
-	private var __immediate:Bool;
-
-	public function new(?fragmentSource:String, ?vertexSource:String, ?version:String,
-		?fragmentExtensions:Array<ShaderExtension>, ?vertexExtensions:Array<ShaderExtension>, immediate = false
-	) {
-		if (!__defaultsAvailable) {
-			__glFragmentSourceDefault = __glFragmentSourceRaw;
-			__glVertexSourceDefault = __glVertexSourceRaw;
-			__glFragmentPragmasDefault = __glFragmentPragmas.copy();
-			__glVertexPragmasDefault = __glVertexPragmas.copy();
-			__glFragmentExtensionsDefault = __glFragmentExtensions ?? [];
-			__glVertexExtensionsDefault = __glVertexExtensions ?? [];
-			__defaultsAvailable = true;
-		}
-
-		__immediate = immediate;
-
-		if (version != null) glVersion = version;
-		if (vertexExtensions != null) glVertexExtensions = vertexExtensions;
-		if (fragmentExtensions != null) glFragmentExtensions = fragmentExtensions;
-		if (vertexSource != null) glVertexSource = vertexSource;
-		if (fragmentSource != null) glFragmentSource = fragmentSource;
-
-		super();
-
-		if (!__isGenerated) {
-			__isGenerated = true;
-			__init();
-		}
+	public function new(?fragmentSource:String, ?vertexSource:String, ?version:String) {
+		super(fragmentSource, vertexSource, version);
 	}
 
-	public function loadShader(name:String, ?version:String, immediate = false):FunkinShader {
-		final fragment = getShaderCode(name, true), vertex = getShaderCode(name, false);
+	public static function fromFile(fragmentPath:String, ?vertexPath:String, ?version:String):FunkinShader {
+		return new FunkinShader().loadShaderFile(fragmentPath, vertexPath, version);
+	}
 
-		glVersion = version;
-		glVertexSource = vertex ?? __glVertexSourceDefault;
-		glFragmentSource = fragment ?? __glFragmentSourceDefault;
+	public function loadShaderFile(fragmentPath:String, ?vertexPath:String, ?version:String):FunkinShader {
+		if (vertexPath == null) {
+			final idx = fragmentPath.lastIndexOf(".");
+			if (idx == -1) vertexPath = fragmentPath;
+			else vertexPath = fragmentPath.substr(0, idx);
+		}
 
-		if (immediate) __init();
+		_fromFile(FlxRuntimeShader._getPath(fragmentPath, false), FlxRuntimeShader._getPath(vertexPath, true), version);
+
 		return this;
 	}
 
-	override function __initGL():Void {
-		if (__immediate) {
-			__context = FlxG.stage.context3D;
-			__enable();
-		}
-		super.__initGL();
-	}
-
-	override function __updateGL():Void {
-		onGLUpdate.dispatch();
-		super.__updateGL();
-	}
-
+	#if REGION /* IHScriptCustomBehaviour */
 	public function hget(name:String):Dynamic {
-		if (__glSourceDirty || __data == null) __init();
+		if (__glSourceDirty) __init();
 
-		if (thisHasField(name) || thisHasField('get_${name}')) return Reflect.getProperty(this, name);
+		if (__thisHasField(name) || __thisHasField('get_${name}')) return Reflect.getProperty(this, name);
 		else if (!Reflect.hasField(__data, name)) return null;
 
 		final field:Dynamic = Reflect.field(__data, name);
@@ -194,9 +76,9 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 	}
 
 	public function hset(name:String, val:Dynamic):Dynamic {
-		if (__glSourceDirty || __data == null) __init();
+		if (__glSourceDirty) __init();
 
-		if (thisHasField(name) || thisHasField('set_${name}')) {
+		if (__thisHasField(name) || __thisHasField('set_${name}')) {
 			Reflect.setProperty(this, name, val);
 			return val;
 		}
@@ -248,87 +130,149 @@ class FunkinShader extends FlxShader implements IHScriptCustomBehaviour {
 
 		return val;
 	}
+	#end
 
-	override function __buildSourcePrefix(isFragment:Bool):String {
-		var result = super.__buildSourcePrefix(isFragment) + '\n$shaderPrefix';
-		return isFragment ? result + '\n$fragmentPrefix' : result + '\n$vertexPrefix';
+	override function __updateGL():Void {
+		onGLUpdate.dispatch();
+		super.__updateGL();
 	}
 
-	override function set_glFragmentExtensions(value:Array<ShaderExtension>):Array<ShaderExtension> {
-		if (value == null) value = __glFragmentExtensionsDefault;
-		if (value != __glFragmentExtensions) __glSourceDirty = true;
-		return __glFragmentExtensions = value;
+	override function __createAssembler():Void {
+		__glSourceAssembler = new FunkinShaderSourceAssembler(this);
 	}
 
-	override function set_glVertexExtensions(value:Array<ShaderExtension>):Array<ShaderExtension> {
-		if (value == null) value = __glVertexExtensionsDefault;
-		if (value != __glVertexExtensions) __glSourceDirty = true;
-		return __glVertexExtensions = value;
+	override function toString():String {
+		return __cacheProgramId != null ? 'FunkinShader(${__cacheProgramId})' : 'FunkinShader';
 	}
 
-	override function set_glVersion(value:Null<String>):String {
-		if (value == null || value == "") value = Flags.DEFAULT_GLSL_VERSION;
-		if ((__glVersionRaw = value) != __glVersion) {
-			__glSourceDirty = true;
-			if (__glVertexSourceRaw != null) __glVertexSource = processGLSLText(__glVertexSourceRaw, value, false, __glVertexPragmas);
-			if (__glFragmentSourceRaw != null) __glFragmentSource = processGLSLText(__glFragmentSourceRaw, value, true, __glFragmentPragmas);
-		}
+	#if REGION /* Deprecated */
+	public var shaderPrefix:String = "";
+	public var fragmentPrefix:String = "";
+	public var vertexPrefix:String = "";
+	#end
 
-		return __glVersion = value;
+	#if REGION /* Backward Compatibility */
+	private static var __instanceFields = Type.getInstanceFields(FunkinShader);
+	private static var FRAGMENT_SHADER = 0;
+	private static var VERTEX_SHADER = 1;
+
+	public var glslVer(get, set):String;
+	inline function get_glslVer():String return glVersion;
+	inline function set_glslVer(v:String):String return glVersion = v;
+
+	public var glRawFragmentSource(get, set):String;
+	inline function get_glRawFragmentSource():String return __glFragmentSourceRaw;
+	inline function set_glRawFragmentSource(v:String):String return __glFragmentSourceRaw = v;
+
+	public var glRawVertexSource(get, set):String;
+	inline function get_glRawVertexSource():String return __glVertexSourceRaw;
+	inline function set_glRawVertexSource(v:String):String return __glVertexSourceRaw = v;
+
+	public var fileName(get, set):String;
+	inline function get_fileName():String return _fragmentFilePath ?? _vertexFilePath ?? "FunkinShader";
+	inline function set_fileName(v:String):String return _fragmentFilePath = _vertexFilePath = v;
+
+	public var fragFileName(get, set):String;
+	inline function get_fragFileName():String return _fragmentFilePath ?? "FunkinShader";
+	inline function set_fragFileName(v:String):String return _fragmentFilePath = v;
+
+	public var vertFileName(get, set):String;
+	inline function get_vertFileName():String return _vertexFilePath ?? "FunkinShader";
+	inline function set_vertFileName(v:String):String return _vertexFilePath = v;
+
+	function registerParameter(name:String, type:String, isUniform:Bool) {
+		__registerParameter(name, Shader.getParameterTypeFromGLSL(type, false), StringTools.startsWith(type, "sampler"), 1, null, isUniform, null);
 	}
 
-	override function set_glFragmentSource(value:String):String {
-		if (value == null || value == "") value = __glFragmentSourceDefault;
-		if ((__glFragmentSourceRaw = value) != null) {
-			if (__glVersion != (__glVersion = Shader.getGLSLTextVersion(value, __glVersionRaw)))
-				__glSourceDirty = true;
-
-			value = processGLSLText(value, __glVersion, true, __glFragmentPragmas);
-		}
-
-		if (value != __glFragmentSource) __glSourceDirty = true;
-		return __glFragmentSource = value;
-	}
-
-	override function set_glVertexSource(value:String):String {
-		if (value == null || value == "") value = __glVertexSourceDefault;
-		if ((__glVertexSourceRaw = value) != null) {
-			if (__glVersion != (__glVersion = Shader.getGLSLTextVersion(value, __glVersionRaw)))
-				__glSourceDirty = true;
-
-			value = processGLSLText(value, __glVersion, false, __glVertexPragmas);
-		}
-
-		if (value != __glVertexSource) __glSourceDirty = true;
-		return __glVertexSource = value;
-	}
-
-	override function set_glFragmentPragmas(value:Map<String, String>):Map<String, String> {
-		if (value == null) value = __glFragmentPragmasDefault;
-		if (value != __glFragmentPragmas)
-			__glSourceDirty = true;
-
-		return __glFragmentPragmas = value;
-	}
-
-	override function set_glVertexPragmas(value:Map<String, String>):Map<String, String> {
-		if (value == null) value = __glVertexPragmasDefault;
-		if (value != __glVertexPragmas)
-			__glSourceDirty = true;
-
-		return __glVertexPragmas = value;
-	}
-
-	function registerParameter(name:String, type:String, isUniform:Bool):Void {
-		__registerParameter(name, Program3D.getParameterTypeFromGLString(type, 1), 1, -1, isUniform, false, null);
-	}
-
-	public function toString():String
-		return FlxStringUtil.getDebugString([for (field in Reflect.fields(data)) LabelValuePair.weak(field, Reflect.field(data, field))]);
+	// Unused... cne-openfl uses a different system
+	var __cancelNextProcessGLData:Bool = false;
+	public var onProcessGLData:FlxTypedSignal<(String, String)->Void> = new FlxTypedSignal<(String, String)->Void>();
+	#end
 }
 
+class FunkinShaderSourceAssembler extends FlxRuntimeShader.FlxShaderSourceAssembler {
+	final funkinParent:FunkinShader;
+
+	public function new(parent:FunkinShader) {
+		super(funkinParent = parent);
+	}
+
+	override function assembleSource(source:String, ?pragmas:Map<String, String>, ?extensions:Map<String, String>,
+		?version:String, isVertex:Bool, useCompatibility:Bool = true, precisionHint:ShaderPrecision = FULL):String
+	{
+		if (version == null) version = Flags.DEFAULT_GLSL_VERSION;
+
+		if (source == null) {
+			// There's nothing to assemble with, but just return it with a prefix instead anyway.
+			var dataVersion = GLSLSourceAssembler.__getVersion(version);
+			return __appendPrefix(null, dataVersion.versionNumber, dataVersion.versionProfile, extensions, isVertex, precisionHint);
+		}
+
+		if (pragmas != null) {
+			source = GLSLSourceAssembler.__getPragmaFinder().map(source, (glPragmaFinder:EReg) -> {
+				var pragma = glPragmaFinder.matched(1);
+				return pragmas.exists(pragma) ? '/*pragma $pragma*/\n' + pragmas.get(pragma) + '\n' : 'pragma $pragma';
+			});
+		}
+
+		function includeERegCallback(finder:EReg) {
+			var include = finder.matched(1);
+			var included = __getIncludeSource(include, isVertex);
+			return included != null ? '/*include $include*/\n' + included : '/*Unknown include $include*/\n';
+		}
+
+		source = GLSLSourceAssembler.__getIncludeFinder().map(source, includeERegCallback);
+		source = __getImportFinder().map(source, includeERegCallback);
+
+		var data = GLSLSourceAssembler.__getSource(source, version);
+		extensions = __buildExtensions(GLSLSourceAssembler.__getExtensions(source, extensions == null ? new Map() : extensions.copy()),
+			data.versionNumber, data.versionProfile, isVertex);
+
+		if (useCompatibility) {
+			data.source = __applyCompatibility(data.source, data.versionNumber, data.versionProfile, isVertex);
+		}
+
+		return __appendPrefix(data.source, data.versionNumber, data.versionProfile, extensions, isVertex, precisionHint);
+	}
+
+	override function __getIncludeSource(include:String, fromVertex:Bool):Null<String> {
+		final path = Paths.getPath('shaders/' + include);
+		if (Assets.exists(path)) return Assets.getText(path);
+
+		final fallback = __getIncludeSource(include, fromVertex);
+		if (fallback != null) return fallback;
+
+		Logs.traceColored([
+			Logs.logText('[Shader] ', RED),
+			Logs.logText('Failed to import shader $include', RED),
+		]);
+		return null;
+	}
+
+	override function __appendPrefix(source:String, versionNumber:Int, versionProfile:String, extensions:Map<String, String>, isVertex:Bool,
+			precisionHint:Null<ShaderPrecision>):String
+	{
+		var result = super.__appendPrefix(null, versionNumber, versionProfile, extensions, isVertex, precisionHint) + "\n";
+
+		result += funkinParent.shaderPrefix + "\n" + (isVertex ? funkinParent.vertexPrefix : funkinParent.fragmentPrefix) + "\n";
+
+		if (source != null) {
+			if (!isVertex && versionNumber >= 300 && versionProfile != "compatibility" && !StringTools.contains(source, "out vec4")) {
+				result += "out vec4 openfl_FragColor;\n";
+			}
+			result += source;
+		}
+
+		return result;
+	}
+
+	private static inline function __getImportFinder():EReg {
+		return ~/(?:^|\s)#import\s+(?|"([^"]+)"|'([^']+)'|([^\s]+))/g;
+	}
+}
+
+#if REGION /* Backward Compatibility */
 class ShaderTemplates {
-	#if REGION /* Backward Compatibility */
 	public static final vertHeader:String = "attribute float openfl_Alpha;
 attribute vec4 openfl_ColorMultiplier;
 attribute vec4 openfl_ColorOffset;
@@ -347,29 +291,34 @@ uniform vec2 openfl_TextureSize;
 attribute float alpha;
 attribute vec4 colorMultiplier;
 attribute vec4 colorOffset;
-
 uniform bool hasColorTransform;";
 
 	public static final vertBody:String = "openfl_TextureCoordv = openfl_TextureCoord;
 
-if (hasColorTransform) {
+if (hasColorTransform)
+{
 	openfl_Alphav = openfl_Alpha * colorMultiplier.a;
-	if (openfl_HasColorTransform) {
+	if (openfl_HasColorTransform)
+	{
 		openfl_ColorOffsetv = (openfl_ColorOffset / 255.0 * colorMultiplier) + (colorOffset / 255.0);
 		openfl_ColorMultiplierv = openfl_ColorMultiplier * vec4(colorMultiplier.rgb, 1.0);
 	}
-	else {
+	else
+	{
 		openfl_ColorOffsetv = colorOffset / 255.0;
 		openfl_ColorMultiplierv = vec4(colorMultiplier.rgb, 1.0);
 	}
 }
-else {
+else
+{
 	openfl_Alphav = openfl_Alpha * alpha;
-	if (openfl_HasColorTransform) {
+	if (openfl_HasColorTransform)
+	{
 		openfl_ColorOffsetv = (openfl_ColorOffset + colorOffset) / 255.0;
 		openfl_ColorMultiplierv = openfl_ColorMultiplier;
 	}
-	else {
+	else
+	{
 		openfl_ColorOffsetv = colorOffset / 255.0;
 		openfl_ColorMultiplierv = vec4(1.0);
 	}
@@ -383,22 +332,26 @@ varying vec2 openfl_TextureCoordv;
 uniform bool openfl_HasColorTransform;
 uniform vec2 openfl_TextureSize;
 uniform sampler2D bitmap;
-
 uniform bool hasTransform;
 uniform bool hasColorTransform;
+uniform bool premultiplyAlpha;
 
-vec4 apply_flixel_transform(vec4 color) {
+vec4 apply_flixel_transform(vec4 color)
+{
 	if (!hasTransform) return color;
 	else if (color.a <= 0.0 || openfl_Alphav == 0.0) return vec4(0.0);
 
-	color.rgb /= color.a;
+	// this is just solely for ASTC compressed textures.
+	// ...also in flixel_texture2D, it also converts to linear alpha anyway.
+	if (!premultiplyAlpha) color.rgb /= color.a;
+
 	color = clamp(openfl_ColorOffsetv + (color * openfl_ColorMultiplierv), 0.0, 1.0);
 	return vec4(color.rgb * color.a * openfl_Alphav, color.a * openfl_Alphav);
 }
-
 #define applyFlixelEffects(color) apply_flixel_transform(color)
 
-vec4 flixel_texture2D(sampler2D bitmap, vec2 coord) {
+vec4 flixel_texture2D(sampler2D bitmap, vec2 coord)
+{
 	return apply_flixel_transform(texture2D(bitmap, coord));
 }
 
@@ -454,8 +407,8 @@ if(openfl_HasColorTransform) {
 }
 
 gl_Position = openfl_Matrix * openfl_Position;";
-	#end
 }
+#end
 
 class ShaderTypeException extends Exception {
 	var has:Class<Dynamic>;

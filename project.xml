@@ -186,8 +186,13 @@
 	<haxedef name="SOFTCODED_CLASSES" if="SOFTCODED_CLASSES"/>
 	<haxedef name="USE_ADAPTED_ASSETS" if="USE_ADAPTED_ASSETS"/>
 
-	<!-- EXPERMENTAL FEATURES -->
-	<haxedef name="EXPERIMENTAL_FLXGRAPHIC_DESTROY_FIX" />
+	<!-- Backward Compatibilities -->
+	<haxedef name="FLX_HEALTH" />
+
+	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN"/>
+	<haxedef name="FLX_NO_DEBUG" unless="debug"/>
+
+	<haxedef name="DISCORD_DISABLE_IO_THREAD" if="DISCORD_RPC"/>
 
 	<!-- <haxedef name="no-deprecation-warnings"/> -->
 
@@ -207,19 +212,17 @@
 
 	<haxeflag name="--macro" value="funkin.backend.system.macros.BuildInfo.printBuildInfo()"/>
 
+	<!-- EXPERMENTAL FEATURES -->
+	<haxedef name="EXPERIMENTAL_FLXGRAPHIC_DESTROY_FIX" />
 	<haxedef name="openfl_dpi_aware"/>
 	<haxedef name="openfl_pool_events"/>
 	<haxedef name="openfl-enable-handle-error"/>
 	<haxedef name="openfl_no_custom_render_event"/>
 
-	<haxedef name="DISCORD_DISABLE_IO_THREAD" if="DISCORD_RPC"/>
-
-	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN"/>
-	<haxedef name="FLX_NO_DEBUG" unless="debug"/>
-
 	<haxedef name="HXCPP_M32" if="32bit"/>
 	<haxedef name="HXCPP_DEBUG_LINK" if="debug"/>
-	<haxedef name="HXCPP_CPP20"/>
+	<!--C++20 seems doesn't seem to do anything but causes compile warnings-->
+	<!--<haxedef name="HXCPP_CPP20"/>-->
 	<!--<haxedef name="HXCPP_CLANG"/>-->
 	<!--<haxedef name="HXCPP_MSVC"/>-->
 	<!-- This seems to causes more harm, but to be fair, its mostly because of text rendering -->

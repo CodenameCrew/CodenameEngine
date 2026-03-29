@@ -97,16 +97,10 @@ class Main extends Sprite
 	// DEPRECATED
 	@:dox(hide) public static function execAsync(func:Void->Void) ThreadUtil.execAsync(func);
 
-	private static function getTimer():Int {
-		return time = Lib.getTimer();
-	}
-
 	public static function loadGameSettings() {
 		WindowUtils.init();
 		SaveWarning.init();
 		MemoryUtil.init();
-		@:privateAccess
-		FlxG.game.getTimer = getTimer;
 		FunkinCache.init();
 		Paths.assetsTree = new AssetsLibraryList();
 
