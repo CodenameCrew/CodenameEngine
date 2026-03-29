@@ -1728,15 +1728,19 @@ class Charter extends UIState {
 		UIState.playEditorSound(Flags.DEFAULT_EDITOR_DELETE_SOUND);
 		if (notesGroup.members.length == 0) return;
 		var oldNote:CharterNote = null;
+		var selectionArray:Array<Dynamic> = ((selection.length != 0) ? selection : notesGroup.members.copy());
 		var toDelete:Selection = new Selection();
-		for (note in notesGroup.members.copy()) {
+		for (note in selectionArray) {
 			if (oldNote != null && oldNote.step == note.step && oldNote.strumLineID == note.strumLineID && oldNote.id == note.id) {
 				noteDeleteAnims.deleteNotes.push({note: oldNote, time: noteDeleteAnims.deleteTime});
 				toDelete.push(oldNote);
 			}
 			oldNote = note;
 		}
-		if (toDelete.length != 0) deleteSelection(toDelete);
+		if (toDelete.length != 0) {
+			deleteSelection(toDelete);
+			if (selection.length != 0) for (i in toDelete) selection.remove(i); //crash prevention
+		}
 	}
 
 	function _undo(undo:CharterChange) {
