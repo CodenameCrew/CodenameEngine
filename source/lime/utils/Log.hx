@@ -53,7 +53,7 @@ class Log
 		if (level >= LogLevel.INFO)
 		{
 			#if !macro
-			FunkinLogs.trace('[${info.className}] $message', INFO, RED);
+			FunkinLogs.trace('[${info.className}] $message', INFO, CYAN);
 			#else
 			println("[" + info.className + "] " + Std.string(message));
 			#end
