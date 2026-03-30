@@ -251,8 +251,6 @@ class Note extends FlxSprite
 		return isOnScreen;
 	}
 
-	static var __posPoint:FlxPoint = new FlxPoint();
-
 	static var __lastAngle:Float = Math.NaN;
 	static var __lastAngleSin:Float = 0;
 	static var __lastAngleCos:Float = 0;
@@ -268,7 +266,8 @@ class Note extends FlxSprite
 		var negativeScroll = isSustainNote && strumRelativePos && lastScrollSpeed < 0;
 		if (negativeScroll) y -= height;
 		if (__strum != null && strumRelativePos) {
-			final pos = __posPoint.set(x, y);
+			final originalX = x;
+			final originalY = y;
 
 			if (__noteAngle != __lastAngle) {
 				__lastAngle = __noteAngle;
@@ -284,12 +283,11 @@ class Note extends FlxSprite
 				__lastStrumHalfH = __strum.height * 0.5;
 			}
 
-			final dist = pos.y;
-			x = -origin.x + offset.x + (dist * __lastAngleCos) + __strum.x + __lastStrumHalfW;
-			y = -origin.y + offset.y + (dist * __lastAngleSin) + __strum.y + __lastStrumHalfH;
+			x = -origin.x + offset.x + (originalY * __lastAngleCos) + __strum.x + __lastStrumHalfW;
+			y = -origin.y + offset.y + (originalY * __lastAngleSin) + __strum.y + __lastStrumHalfH;
 			super.draw();
-			x = pos.x;
-			y = dist;
+			x = originalX;
+			y = originalY;
 		} else {
 			super.draw();
 		}
