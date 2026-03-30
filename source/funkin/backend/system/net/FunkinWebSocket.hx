@@ -136,7 +136,15 @@ class FunkinWebSocket implements IFlxDestroyable {
 			Logs.logText('[FunkinWebSocket] ', CYAN),
 			Logs.logText('Opening WebSocket to ', NONE), Logs.logText(url, YELLOW),
 		]);
-		this._ws.open();
+		try {
+			this._ws.open();
+		} catch(e) {
+			Logs.traceColored([
+				Logs.logText('[FunkinWebSocket] ', CYAN),
+				Logs.logText('Failed to open WebSocket: ${e}', NONE),
+			]);
+			onError.dispatch(e);
+		}
 		return this;
 	}
 
