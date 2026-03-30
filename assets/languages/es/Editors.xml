@@ -16,7 +16,7 @@
 		<str id="animation">Animación</str>
 		<str id="atlas">Atlas</str>
 		<str id="spritemap">Mapa de sprites</str>
-		
+
 		<str id="directory">Ubicación ({0}/)</str>
 		<str id="found">{0} {1} Encontrado</str>
 		<str id="foundplural">{0} {1} Encontrados</str>
@@ -188,6 +188,7 @@
 					<str id="paste">Pegar</str>
 					<str id="cut">Cortar</str>
 					<str id="delete">Eliminar</str>
+					<str id="deletestacked">Eliminar Notas Apiladas</str>
 				</group>
 
 				<str id="topBar.chart">Chart</str>
