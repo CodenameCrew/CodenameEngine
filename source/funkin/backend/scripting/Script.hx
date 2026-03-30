@@ -91,7 +91,7 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			"FunkinShader"		=> funkin.backend.shaders.FunkinShader,
 			"CustomShader"		=> funkin.backend.shaders.CustomShader,
 			"FunkinText"		=> funkin.backend.FunkinText,
-			"FlxAnimate"		=> funkin.backend.FlxAnimate,
+			"FlxAnimate"		=> animate.FlxAnimate,
 			"FunkinSprite"		=> funkin.backend.FunkinSprite,
 			"Alphabet"			=> funkin.menus.ui.Alphabet,
 			"Flags"				=> funkin.backend.system.Flags,
@@ -102,6 +102,7 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			#if sys "ZipUtil"	=> funkin.backend.utils.ZipUtil, #end
 			"MarkdownUtil"		=> funkin.backend.utils.MarkdownUtil,
 			"EngineUtil"		=> funkin.backend.utils.EngineUtil,
+			"ThreadUtil"		=> funkin.backend.utils.ThreadUtil,
 			"MemoryUtil"		=> funkin.backend.utils.MemoryUtil,
 			"BitmapUtil"		=> funkin.backend.utils.BitmapUtil,
 

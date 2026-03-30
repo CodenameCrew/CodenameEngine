@@ -1,14 +1,8 @@
 package funkin.backend.scripting;
 
-#if ALLOW_MULTITHREADING
-import sys.thread.Thread;
-#end
-
 import hscript.IHScriptCustomBehaviour;
 
 class MultiThreadedScript implements IFlxDestroyable implements IHScriptCustomBehaviour {
-	var thread:#if ALLOW_MULTITHREADING Thread #else Dynamic #end;
-
 	/**
 	 * Script being ran.
 	 */
@@ -46,13 +40,6 @@ class MultiThreadedScript implements IFlxDestroyable implements IHScriptCustomBe
 
 		script.load();
 
-		#if ALLOW_MULTITHREADING
-		thread = Thread.createWithEventLoop(function() {
-			// Prevent the thread from being auto deleted
-			Thread.current().events.promise();
-		});
-		#end
-
 		__variables = Type.getInstanceFields(Type.getClass(this));
 	}
 
@@ -69,7 +56,7 @@ class MultiThreadedScript implements IFlxDestroyable implements IHScriptCustomBe
 
 	public function call(func:String, args:Array<Dynamic>) {
 		#if ALLOW_MULTITHREADING
-		thread.events.run(function() {
+		funkin.backend.utils.ThreadUtil.execAsync(() -> {
 			callEnded = false;
 			returnValue = script.call(func, args);
 			callEnded = true;
@@ -85,13 +72,5 @@ class MultiThreadedScript implements IFlxDestroyable implements IHScriptCustomBe
 			script.call("destroy");
 			script.destroy();
 		}
-
-		#if ALLOW_MULTITHREADING
-		if (thread != null) {
-			thread.events.runPromised(function() {
-				// close the thing
-			});
-		}
-		#end
 	}
 }

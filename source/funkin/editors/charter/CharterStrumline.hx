@@ -1,5 +1,7 @@
 package funkin.editors.charter;
 
+import funkin.editors.ui.UIContextMenu.UIContextMenuOption;
+import flixel.util.FlxColor;
 import flixel.group.FlxSpriteGroup;
 import flixel.sound.FlxSound;
 import funkin.backend.chart.ChartData.ChartStrumLine;
@@ -10,11 +12,11 @@ import funkin.game.HealthIcon;
 
 class CharterStrumline extends UISprite {
 	public var strumLine:ChartStrumLine;
-	public var hitsounds:Bool = true;
 
 	public var draggingSprite:UISprite;
 	public var healthIcons:FlxSpriteGroup;
 	public var button:CharterStrumlineOptions;
+	public var highlightColor:FlxColor;
 
 	public var draggable:Bool = false;
 	public var dragging:Bool = false;
@@ -22,6 +24,9 @@ class CharterStrumline extends UISprite {
 	public var curMenu:UIContextMenu = null;
 
 	public var vocals:FlxSound;
+	public var hasVocals:Bool = false;
+	public var vocalsVolume:Float = 1;
+	public var hitsoundVolume:Float = 1;
 
 	public var keyCount:Int = 4;
 	public var startingID(get, null):Int;
@@ -141,11 +146,22 @@ class CharterStrumline extends UISprite {
 		if (asset != null) {
 			vocals.reset();
 			vocals.loadEmbedded(asset);
+			hasVocals = true;
 		}
 		else {
 			vocals.destroy();
+			hasVocals = false;
 		}
 		vocals.group = FlxG.sound.defaultMusicGroup;
+
+		highlightColor = 0xFFFFFFFF;
+		if (icons[0] != null) {
+			var characterXML = Character.getXMLFromCharName(icons[0]);
+			if (characterXML != null && characterXML.x.exists("color")) highlightColor = FlxColor.fromString(characterXML.x.get("color"));
+
+			//make darker colors more visible for the highlight
+			highlightColor.brightness = Math.max(highlightColor.brightness, 0.65);
+		}
 	}
 }
 
@@ -168,17 +184,17 @@ class CharterStrumlineOptions extends UITopMenuButton {
 		contextMenu = [
 			{
 				label: TU.translate("charter.strumLine.hitsounds"),
-				onSelect: function(_) {
-					strLine.hitsounds = !strLine.hitsounds;
+				slider: {
+					min: 0,
+					max: 1,
+					value: strLine.hitsoundVolume,
+					onChange: function(t) {
+						strLine.hitsoundVolume = t.slider.value;
+						t.icon = t.slider.value > 0.5 ? 7 : (t.slider.value > 0 ? 8 : 9);
+					}
 				},
-				icon: strLine.hitsounds ? 1 : 0
-			},
-			{
-				label: TU.translate("charter.strumLine.muteVocals"),
-				onSelect: function(_) {
-					strLine.vocals.volume = strLine.vocals.volume > 0 ? 0 : 1;
-				},
-				icon: strLine.vocals.volume > 0 ? 0 : 1
+				onIconClick: Charter.instance._slider_mutetoggle,
+				icon: 7
 			},
 			null,
 			{
@@ -199,20 +215,44 @@ class CharterStrumlineOptions extends UITopMenuButton {
 			}
 		];
 
-		contextMenu.insert(0, {
-			label: TU.translate("charter.strumLine.noWaveform"),
-			onSelect: function(_) {strLine.selectedWaveform = -1;},
-			icon: strLine.selectedWaveform == -1 ? 1 : 0
-		});
+		if (strLine.hasVocals) {
+			contextMenu.insert(1, {
+				label: TU.translate("charter.strumLine.vocals"),
+				slider: {
+					min: 0,
+					max: 1,
+					value: strLine.vocalsVolume,
+					onChange: function(t) {
+						strLine.vocalsVolume = t.slider.value;
+						strLine.vocals.volume = Charter.instance.vocals.volume * strLine.vocalsVolume;
+						t.icon = t.slider.value > 0.5 ? 7 : (t.slider.value > 0 ? 8 : 9);
+					}
+				},
+				onIconClick: Charter.instance._slider_mutetoggle,
+				icon: 7
+			});
+		}
+
+		var waveformOptions:Array<UIContextMenuOption> = [
+			{
+				label: TU.translate("charter.strumLine.noWaveform"),
+				onSelect: function(_) {strLine.selectedWaveform = -1;},
+				icon: strLine.selectedWaveform == -1 ? 1 : 0
+			}
+		];
 
 		for (i => name in Charter.waveformHandler.waveformList)
-			contextMenu.insert(1+i, {
+			waveformOptions.push({
 				label: name,
 				onSelect: function(_) {strLine.selectedWaveform = i;},
 				icon: strLine.selectedWaveform == i ? 6 : 5
 			});
 
-		contextMenu.insert(1+Charter.waveformHandler.waveformList.length, null);
+		contextMenu.insert(0, {
+			label: TU.translate("charter.strumLine.waveforms"),
+			childs: waveformOptions
+		});
+		contextMenu.insert(1, null);
 
 		var cam = Charter.instance.charterCamera;
 		var point = CoolUtil.worldToScreenPosition(this, cam);

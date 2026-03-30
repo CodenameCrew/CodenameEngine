@@ -1,6 +1,7 @@
 package funkin.game;
 
 import flixel.math.FlxPoint;
+import flixel.math.FlxAngle;
 import funkin.backend.system.Conductor;
 
 class Strum extends FlxSprite {
@@ -121,7 +122,7 @@ class Strum extends FlxSprite {
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
 		if (cpu) {
-			if (lastHit + (Conductor.crochet / 2) < Conductor.songPosition && getAnim() == "confirm") {
+			if (lastHit + (Conductor.crochet * 0.5) < Conductor.songPosition && getAnim() == "confirm") {
 				playAnim("static");
 			}
 		}
@@ -133,7 +134,7 @@ class Strum extends FlxSprite {
 	}
 
 	@:noCompletion public static inline final PIX180:Float = 565.4866776461628; // 180 * Math.PI
-	@:noCompletion public static final N_WIDTHDIV2:Float = Note.swagWidth / 2;
+	@:noCompletion public static final N_WIDTHDIV2:Float = Note.swagWidth / 2; // DEPRECATED
 
 	/**
 	 * Updates the position of a note.
@@ -162,40 +163,30 @@ class Strum extends FlxSprite {
 
 		if (shouldX || shouldY) {
 			if (daNote.strumRelativePos) {
-				if (shouldX) daNote.x = (this.width - daNote.width) / 2;
+				if (shouldX) daNote.x = 0;
 				if (shouldY) {
-					daNote.y = (daNote.strumTime - Conductor.songPosition) * (0.45 * CoolUtil.quantize(getScrollSpeed(daNote), 100));
-					if (daNote.isSustainNote) daNote.y += N_WIDTHDIV2;
+					daNote.y = ((daNote.strumTime - Conductor.songPosition) * 0.45 * getScrollSpeed(daNote));
+					if (daNote.isSustainNote) daNote.y += daNote.height * 0.5;
 				}
 			} else {
-				var offset = FlxPoint.get(0, (Conductor.songPosition - daNote.strumTime) * (0.45 * CoolUtil.quantize(getScrollSpeed(daNote), 100)));
-				var realOffset = FlxPoint.get(0, 0);
-
-				if (daNote.isSustainNote) offset.y -= N_WIDTHDIV2;
-
-				if (Std.int(daNote.__noteAngle % 360) != 0) {
-					var noteAngleCos = FlxMath.fastCos(daNote.__noteAngle / PIX180);
-					var noteAngleSin = FlxMath.fastSin(daNote.__noteAngle / PIX180);
-
-					var aOffset:FlxPoint = FlxPoint.get(
-						(daNote.origin.x / daNote.scale.x) - daNote.offset.x,
-						(daNote.origin.y / daNote.scale.y) - daNote.offset.y
-					);
-					realOffset.x = -aOffset.x + (noteAngleCos * (offset.x + aOffset.x)) + (noteAngleSin * (offset.y + aOffset.y));
-					realOffset.y = -aOffset.y + (noteAngleSin * (offset.x + aOffset.x)) + (noteAngleCos * (offset.y + aOffset.y));
-
-					aOffset.put();
-				} else {
-					realOffset.x = offset.x;
-					realOffset.y = offset.y;
+				final speed = getScrollSpeed(daNote);
+				final distance = (daNote.strumTime - Conductor.songPosition) * 0.45 * speed;
+				final __noteAngle = FlxMath.fastSinCos((daNote.__noteAngle + 90) * FlxAngle.TO_RAD);
+				final angleX = __noteAngle.cos;
+				final angleY = __noteAngle.sin;
+				final _noteOffset = FlxPoint.get(angleX * distance, angleY * distance);
+				_noteOffset.x += -daNote.origin.x + daNote.offset.x;
+				_noteOffset.y += -daNote.origin.y + daNote.offset.y;
+				if (daNote.isSustainNote) {
+					final m = (daNote.height * 0.5 * (speed < 0 ? -1 : 1)); // daNote.height works better than this.height in this case ???
+					_noteOffset.x += angleX * m;
+					_noteOffset.y += angleY * m;
 				}
-				realOffset.y *= -1;
-
-				if (shouldX) daNote.x = x + realOffset.x;
-				if (shouldY) daNote.y = y + realOffset.y;
-
-				offset.put();
-				realOffset.put();
+				_noteOffset.x += x + (width * 0.5);
+				_noteOffset.y += y + (height * 0.5);
+				if (shouldX) daNote.x = _noteOffset.x;
+				if (shouldY) daNote.y = _noteOffset.y;
+				_noteOffset.put();
 			}
 		}
 	}

@@ -30,6 +30,8 @@ class ScriptableShader extends FlxBasic implements IHScriptCustomBehaviour {
 			if((shader is CustomShader)) scriptName = cast(shader, CustomShader).fileName;
 			else throw "Missing name for shader script, please provide a scriptName, or use CustomShader";
 
+		this.shader = shader;
+
 		script = Script.create(Paths.script('shaders/$scriptName'));
 		script.setParent(shader);
 		script.set("shader", shader);
