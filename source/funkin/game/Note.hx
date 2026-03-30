@@ -251,7 +251,6 @@ class Note extends FlxSprite
 		return isOnScreen;
 	}
 
-	static var __notePosFrameOffset:FlxPoint = new FlxPoint();
 	static var __posPoint:FlxPoint = new FlxPoint();
 
 	static var __lastAngle:Float = Math.NaN;
