@@ -140,10 +140,10 @@ class SystemInfo extends FramerateCategory {
 	static function formatSysInfo() {
 		var buf = new StringBuf();
 		if (osInfo != "Unknown") {
-			StringMacro.addLine(buf, 'System: ', osInfo);
+			StringMacro.addLine(buf, 'System: ${osInfo}');
 		}
 		if (cpuName != "Unknown") {
-			StringMacro.addLine(buf, '\nCPU: ', cpuName, ' ', openfl.system.Capabilities.cpuArchitecture, ' ', openfl.system.Capabilities.supports64BitProcesses ? '64-Bit' : '32-Bit');
+			StringMacro.addLine(buf, '\nCPU: ${cpuName} ${openfl.system.Capabilities.cpuArchitecture} ${openfl.system.Capabilities.supports64BitProcesses ? "64-Bit" : "32-Bit"}');
 		}
 		if (gpuName != cpuName || vRAM != "Unknown") {
 			var gpuNameKnown = gpuName != "Unknown" && gpuName != cpuName;
@@ -152,16 +152,16 @@ class SystemInfo extends FramerateCategory {
 			if(gpuNameKnown || vramKnown) buf.add("\n");
 
 			if(gpuNameKnown) {
-				StringMacro.addLine(buf, 'GPU: ', gpuName);
+				StringMacro.addLine(buf, 'GPU: ${gpuName}');
 			}
 			if(gpuNameKnown && vramKnown) buf.add(" | ");
 			if(vramKnown) {
-				StringMacro.addLine(buf, 'VRAM: ', vRAM);
+				StringMacro.addLine(buf, 'VRAM: ${vRAM}');
 			}
 		}
 		//if (gpuMaxSize != "Unknown") StringMacro.addLine(buf, '\nMax Bitmap Size: ',gpuMaxSize);
 		if (totalMem != "Unknown" && memType != "Unknown") {
-			StringMacro.addLine(buf, '\nTotal MEM: ', totalMem, ' ', memType);
+			StringMacro.addLine(buf, '\nTotal MEM: ${totalMem} ${memType}');
 		}
 		__formattedSysText = buf.toString();
 	}
@@ -187,7 +187,7 @@ class SystemInfo extends FramerateCategory {
 		var buf = new StringBuf();
 		buf.add(__formattedSysText);
 		if (__formattedSysText != '') buf.add('\n');
-		StringMacro.addLine(buf, 'Garbage Collector: ', MemoryUtil.disableCount > 0 ? 'OFF' : 'ON', ' (', MemoryUtil.disableCount, ')');
+		StringMacro.addLine(buf, 'Garbage Collector: ${MemoryUtil.disableCount > 0 ? "OFF" : "ON"} (${MemoryUtil.disableCount})');
 		_text = buf.toString();
 
 		this.text.text = _text;

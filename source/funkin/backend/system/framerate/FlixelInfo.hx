@@ -17,17 +17,17 @@ class FlixelInfo extends FramerateCategory {
 
 			if((FlxG.state is ModState)) {
 				var state:ModState = cast FlxG.state;
-				StringMacro.addLine(buf, 'Mod State: ', state.scriptName);
+				StringMacro.addLine(buf, 'Mod State: ${state.scriptName}');
 			} else {
-				StringMacro.addLine(buf, 'State: ', Type.getClassName(Type.getClass(FlxG.state)));
+				StringMacro.addLine(buf, 'State: ${Type.getClassName(Type.getClass(FlxG.state))}');
 			}
-			StringMacro.addLine(buf, '\nObject Count: ', FlxG.state.members.length);
-			StringMacro.addLine(buf, '\nCamera Count: ', FlxG.cameras.list.length);
-			StringMacro.addLine(buf, '\nBitmaps Count: ', c);
-			StringMacro.addLine(buf, '\nSounds Count: ', FlxG.sound.list.length);
-			StringMacro.addLine(buf, '\nFlxG.game Childs Count: ', FlxG.game.numChildren);
+			StringMacro.addLine(buf, '\nObject Count: ${FlxG.state.members.length}');
+			StringMacro.addLine(buf, '\nCamera Count: ${FlxG.cameras.list.length}');
+			StringMacro.addLine(buf, '\nBitmaps Count: ${c}');
+			StringMacro.addLine(buf, '\nSounds Count: ${FlxG.sound.list.length}');
+			StringMacro.addLine(buf, '\nFlxG.game Childs Count: ${FlxG.game.numChildren}');
 			if(FlxG.renderBlit) {
-				StringMacro.addLine(buf, '\nBlitting Render: ', true);
+				StringMacro.addLine(buf, '\nBlitting Render: true');
 			}
 			#if FLX_POINT_POOL
 			//var points = flixel.math.FlxPoint.FlxBasePoint.pool;

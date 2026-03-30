@@ -14,9 +14,9 @@ class StatsInfo extends FramerateCategory {
 		if (alpha <= 0.05) return;
 
 		var buf = new StringBuf();
-		StringMacro.addLine(buf, 'totalDC: ', Context3DStats.totalDrawCalls());
-		StringMacro.addLine(buf, '\nstageDC: ', Context3DStats.contextDrawCalls(DrawCallContext.STAGE));
-		StringMacro.addLine(buf, '\nstage3DDC: ', Context3DStats.contextDrawCalls(DrawCallContext.STAGE3D));
+		StringMacro.addLine(buf, 'totalDC: ${Context3DStats.totalDrawCalls()}');
+		StringMacro.addLine(buf, '\nstageDC: ${Context3DStats.contextDrawCalls(DrawCallContext.STAGE)}');
+		StringMacro.addLine(buf, '\nstage3DDC: ${Context3DStats.contextDrawCalls(DrawCallContext.STAGE3D)}');
 		_text = buf.toString();
 
 		this.text.text = _text;
