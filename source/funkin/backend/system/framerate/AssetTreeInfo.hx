@@ -8,12 +8,20 @@ import funkin.backend.assets.IModsAssetLibrary;
 import funkin.backend.assets.ScriptedAssetLibrary;
 
 class AssetTreeInfo extends FramerateCategory {
+	private var lastUpdateTime:Float = 1;
+
 	public function new() {
 		super("Asset Libraries Tree Info");
 	}
 
 	public override function __enterFrame(t:Int) {
 		if (alpha <= 0.05) return;
+
+		if ((lastUpdateTime += FlxG.rawElapsed) < 1)
+			return;
+
+		lastUpdateTime = 0;
+
 		var text = 'Not initialized yet\n';
 		if (Paths.assetsTree != null){
 			text = "";

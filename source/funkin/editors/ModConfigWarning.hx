@@ -9,7 +9,7 @@ class ModConfigWarning extends UIState {
 	var library:ModsFolderLibrary = null;
 	var goToState:Class<FlxState>;
 
-	public static inline var defaultModConfigText = 
+	public static var defaultModConfigText = 
 '[Common] # This section applies the \'MOD_\' prefix to the flags so you don\'t have to.
 NAME="YOUR MOD NAME HERE"
 DESCRIPTION="YOUR MOD DESCRIPTION HERE"
@@ -17,7 +17,7 @@ AUTHOR="YOU/YOUR TEAM HERE"
 VERSION="YOUR MOD\'S VERSION HERE"
 
 # DO NOT EDIT!! this is used to check for version compatibility!
-API_VERSION=1
+API_VERSION=${Flags.CURRENT_API_VERSION}
 
 DOWNLOAD_LINK="YOUR MOD PAGE LINK HERE"
 

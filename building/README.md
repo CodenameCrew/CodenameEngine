@@ -1,6 +1,6 @@
-Here's the full guide on how to setup and compile Codename Engine!<br>
-
-> **Open the instructions for your platform**
+# Compiling Codename Engine
+Do you want to turn your source code into a playable build to play? Then you want to **compile the source code**, follow this guide.
+> **Open the instructions for your platform.**
 <details>
     <summary>Windows</summary>
 
@@ -38,3 +38,22 @@ Here's the full guide on how to setup and compile Codename Engine!<br>
 > You can also run `./cne-windows.bat -help` or `./cne-unix.sh -help` (depending on your platform) to check out more useful commands!<br>
 > For example `./cne-windows test` or `./cne-unix.sh test` builds the game and uses the source assets folder instead of the export one for easier development (although you can still use `lime test` normally).
 > - If you're running the terminal from the project's main folder, use instead `./building/cne-windows.bat -COMMAND HERE` or `./building/cne-unix.sh -COMMAND HERE` depending on your platform.
+
+# Generating Codename Engine's API documentation
+**Mainly recommended if you intend to fork the engine and make your own custom version to publish.**<br>Do you want to generate an API documentation so people can understand and mod your playable build? This documentation can be uploaded to your website.<br>If you just want to compile the engine normally for your hardcoded mod or for yourself you can skip this step.
+> **Select your platform to continue.**
+<details>
+    <summary>Windows</summary>
+
+1. Run `generate-docs-windows.bat` using cmd or double-clicking it and wait for the `doc.xml` to be generated inside the `docs` folder.
+</details>
+<details>
+    <summary>MacOS/Linux</summary>
+
+1. Run `generate-docs-unix.sh` using the terminal or double-clicking it and wait for the `doc.xml` to be generated inside the `docs` folder.
+</details>
+
+2. You can use this `doc.xml` file to generate a full HTML documentation (that you can open in your browser for example) using Haxe's [dox](https://github.com/HaxeFoundation/dox) generator; check [Codename Engine's webiste](https://github.com/CodenameCrew/codename-website/tree/main/api-generator) for example.
+
+> [!CAUTION]
+> The doc.xml might contain some sensible paths of your computer: make sure to filter the file before publishing it for everyone if you want to keep those paths private!<br>To filter and delete those paths, you may use Codename Engine's website's [doc filter Python script](https://github.com/CodenameCrew/codename-website/blob/main/api-generator/api/filter.py) by simply running it in the same folder of your `doc.xml` file. This script will also delete everything irrelevant to the engine that was generated in your documentation, such as libraries' (like OpenFL or Flixel) APIs.

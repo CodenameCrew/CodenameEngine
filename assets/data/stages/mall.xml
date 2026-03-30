@@ -11,7 +11,7 @@
 	<sprite name="fgSnow" x="-600" y="680" sprite="fgSnow"/>
 
 
-	<girlfriend x="540" y="110"/>
+	<girlfriend x="440" y="110"/>
 	<dad/>
 	<boyfriend x="1030" camyoffset="-150" camxoffset="-150"/>
 

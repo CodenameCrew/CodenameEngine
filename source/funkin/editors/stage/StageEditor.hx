@@ -377,9 +377,7 @@ class StageEditor extends UIState {
 		// Play first anim, and make it the last frame
 		var animToPlay = char.getAnimOrder()[0];
 		char.playAnim(animToPlay, true, NONE);
-		var lastIndx = (char.animateAtlas != null) ?
-			char.animateAtlas.anim.length - 1 :
-			char.animation.curAnim.numFrames - 1;
+		var lastIndx = char.animation.curAnim.numFrames - 1;
 		char.playAnim(animToPlay, true, NONE, false, lastIndx);
 		char.stopAnimation();
 
@@ -510,7 +508,7 @@ class StageEditor extends UIState {
 
 	function _file_save(_) {
 		#if sys
-		FlxG.sound.play(Paths.sound('editors/save'));
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);
 		CoolUtil.safeSaveFile(
 			'${Paths.getAssetsRoot()}/data/stages/${__stage}.xml',
 			buildStage()
@@ -522,7 +520,7 @@ class StageEditor extends UIState {
 	}
 
 	function _file_saveas(_) {
-		FlxG.sound.play(Paths.sound('editors/save'));
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);
 		openSubState(new SaveSubstate(buildStage(), {
 			defaultSaveFile: '${__stage}.xml'
 		}));
@@ -565,9 +563,7 @@ class StageEditor extends UIState {
 		// Play first anim, and make it the last frame
 		var animToPlay = char.getAnimOrder()[0];
 		char.playAnim(animToPlay, true, NONE);
-		var lastIndx = (char.animateAtlas != null) ?
-			char.animateAtlas.anim.length - 1 :
-			char.animation.curAnim.numFrames - 1;
+		var lastIndx = char.animation.curAnim.numFrames - 1;
 		char.playAnim(animToPlay, true, NONE, false, lastIndx);
 		char.stopAnimation();
 
@@ -734,7 +730,7 @@ class StageEditor extends UIState {
 	}
 
 	function _edit_undo(_) {
-		FlxG.sound.play(Flags.DEFAULT_EDITOR_UNDO_SOUND);
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_UNDO_SOUND);
 		var undo = undos.undo();
 		switch(undo) {
 			case null:
@@ -760,7 +756,7 @@ class StageEditor extends UIState {
 	}
 
 	function _edit_redo(_) {
-		FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_REDO_SOUND));
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_REDO_SOUND);
 		var redo = undos.redo();
 		switch(redo) {
 			case null:

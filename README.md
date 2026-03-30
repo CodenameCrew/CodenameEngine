@@ -68,7 +68,7 @@ The engine uses [HaxeFlixel](https://haxeflixel.com/) and it mainly features:
 </details>
 
 <details>
-  <summary><h2>How to setup and build</h2></summary>
+  <summary><h2>How to setup and build the engine and its documentation</h2></summary>
 
   Check out our guide [HERE](building/README.md)
 </details>

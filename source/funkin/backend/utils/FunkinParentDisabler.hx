@@ -38,7 +38,7 @@ class FunkinParentDisabler extends FlxBasic {
 			for(c in __cameras) c.paused = true;
 
 			// sounds
-			__sounds = [for(s in FlxG.sound.list) if (s.playing) s];
+			__sounds = [for(s in FlxG.sound.list) if (s.playing && !s.persist) s];
 			for(s in __sounds) s.pause();
 		}
 	}

@@ -8,7 +8,10 @@ import lime.app.Future;
 import lime.app.Promise;
 import lime.media.openal.AL;
 import lime.media.openal.ALBuffer;
+#if lime_vorbis
+import lime.media.vorbis.Vorbis;
 import lime.media.vorbis.VorbisFile;
+#end
 import lime.net.HTTPRequest;
 import lime.utils.Log;
 import lime.utils.UInt8Array;
@@ -101,7 +104,10 @@ class AudioBuffer
 		__srcHowl = null;
 		#end
 		#if lime_cffi
-		if (__srcBuffer != null) AL.deleteBuffer(__srcBuffer);
+		if (__srcBuffer != null) {
+			AL.bufferData(__srcBuffer, 0, null, 0, 0);
+			AL.deleteBuffer(__srcBuffer);
+		}
 		__srcBuffer = null;
 		#end
 		#if lime_vorbis
@@ -178,11 +184,9 @@ class AudioBuffer
 
 		return audioBuffer;
 		#elseif (lime_cffi && !macro)
-		#if lime_vorbis // CNE
-		if (funkin.options.Options.streamedMusic) {
-			var vorbisFile = VorbisFile.fromBytes(bytes);
-			if (vorbisFile != null) return fromVorbisFile(vorbisFile);
-		}
+		#if lime_vorbis
+		var vorbisFile = VorbisFile.fromBytes(bytes);
+		if (vorbisFile != null) return fromVorbisFile(vorbisFile);
 		#end
 		#if !cs
 		var audioBuffer = new AudioBuffer();
@@ -312,29 +316,29 @@ class AudioBuffer
 		if (vorbisFile == null) return null;
 
 		var info = vorbisFile.info();
-		if (info == null) return null;
 
 		var audioBuffer = new AudioBuffer();
 		audioBuffer.channels = info.channels;
 		audioBuffer.sampleRate = info.rate;
 		audioBuffer.bitsPerSample = 16;
 
-		if (!vorbisFile.seekable() ||
-			vorbisFile.pcmTotal() < #if lime_cffi @:privateAccess lime._internal.backend.native.NativeAudioSource.STREAM_BUFFER_SAMPLES #else 0x4000 #end)
-		{
-			// convert it to static if its too short or unseekable.
+		final pcmTotal = vorbisFile.pcmTotal(-1);
+		if (!vorbisFile.seekable() || pcmTotal < (audioBuffer.sampleRate << 2)) {
 			vorbisFile.rawSeek(0);
 
-			var isBigEndian = lime.system.System.endianness == lime.system.Endian.BIG_ENDIAN;
-			var bytes:Bytes = Bytes.alloc(Std.int(haxe.Int64.toInt(vorbisFile.pcmTotal()) * info.channels * 2));
+			final isBigEndian = lime.system.System.endianness == lime.system.Endian.BIG_ENDIAN;
+			final bytes = Bytes.alloc(Std.int((pcmTotal.high * 4294967296. + (pcmTotal.low >> 0)) * info.channels * (audioBuffer.bitsPerSample >> 3)));
 			var total = 0, result = 0;
 			do {
-				total += (result = vorbisFile.read(bytes, total, 0x1000, isBigEndian, 2, true));
-			} while (result > 0);
+				result = vorbisFile.read(bytes, total, 0x1000, isBigEndian, 2, true);
+				total += result;
+			} while (result > 0 || result == Vorbis.HOLE);
 
 			audioBuffer.data = new UInt8Array(bytes);
+			vorbisFile.clear();
 		}
-		else audioBuffer.__srcVorbisFile = vorbisFile;
+		else
+			audioBuffer.__srcVorbisFile = vorbisFile;
 
 		return audioBuffer;
 	}

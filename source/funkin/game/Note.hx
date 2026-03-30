@@ -1,6 +1,7 @@
 package funkin.game;
 
 import flixel.math.FlxPoint;
+import flixel.math.FlxAngle;
 import flixel.math.FlxRect;
 import funkin.backend.chart.ChartData;
 import funkin.backend.scripting.events.note.NoteCreationEvent;
@@ -61,6 +62,15 @@ class Note extends FlxSprite
 	public var sustainParent:Null<Note>;
 
 	/**
+	 * Number of active sustain pieces attached to this note
+	 * 
+	 * Increases by 1 every time a hold piece is initialized.
+	 * 
+	 * Decreases by 1 every time a hold piece gets destroyed.
+	 */
+	public var tailCount:Int = 0;
+
+	/**
 	 * Name of the splash.
 	 */
 	public var splash:String = "default";
@@ -74,6 +84,7 @@ class Note extends FlxSprite
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
+	public var noSustainClip:Bool = false;
 	public var flipSustain:Bool = true;
 
 	public var noteTypeID:Int = 0;
@@ -104,6 +115,8 @@ class Note extends FlxSprite
 
 	public var animSuffix:String = null;
 
+	// Deprecated?
+	@:dox(hide) public var tripTimer:Float = 0; // ranges from 0 to 1
 
 	private static function customTypePathExists(path:String) {
 		if (__customNoteTypeExists.exists(path))
@@ -211,6 +224,7 @@ class Note extends FlxSprite
 	public var lastScrollSpeed:Null<Float> = null;
 	public var gapFix:SingleOrFloat = 0;
 	public var useAntialiasingFix(get, set):Bool;
+
 	inline function set_useAntialiasingFix(v:Bool) {
 		if(v != useAntialiasingFix) {
 			gapFix = v ? 1 : 0;
@@ -230,10 +244,14 @@ class Note extends FlxSprite
 	override function drawComplex(camera:FlxCamera) {
 		var downscrollCam = (camera is HudCamera ? ({var _:HudCamera=cast camera;_;}).downscroll : false);
 		if (updateFlipY) flipY = (isSustainNote && flipSustain) && (downscrollCam != (__strum != null && __strum.getScrollSpeed(this) < 0));
-		if (downscrollCam) {
-			frameOffset.y += __notePosFrameOffset.y * 2;
+		if (downscrollCam && __strum != null) {
+			final xx = x;
+			x += origin.x - offset.x;
+			x -= __strum.x; x *= -1; x += __strum.x;
+			x -= origin.x - offset.x;
+			x += __strum.width; // ??? maybe this isnt good
 			super.drawComplex(camera);
-			frameOffset.y -= __notePosFrameOffset.y * 2;
+			x = xx;
 		} else
 			super.drawComplex(camera);
 	}
@@ -245,36 +263,24 @@ class Note extends FlxSprite
 		@:privateAccess var oldDefaultCameras = FlxCamera._defaultCameras;
 		@:privateAccess if (__strumCameras != null) FlxCamera._defaultCameras = __strumCameras;
 
-		var negativeScroll = isSustainNote && nextSustain != null && lastScrollSpeed < 0;
-		if (negativeScroll)	offset.y *= -1;
-
+		var negativeScroll = isSustainNote && strumRelativePos && lastScrollSpeed < 0;
+		if (negativeScroll) y -= height;
 		if (__strum != null && strumRelativePos) {
-			var pos = __posPoint.set(x, y);
-
-			setPosition(__strum.x, __strum.y);
-
-			__notePosFrameOffset.set(pos.x / scale.x, pos.y / scale.y);
-
-			frameOffset.x -= __notePosFrameOffset.x;
-			frameOffset.y -= __notePosFrameOffset.y;
-
-			this.frameOffsetAngle = __noteAngle;
-
+			final pos = __posPoint.set(x, y);
+			// distance = pos.y , we can use it safely like this
+			final xx = -origin.x + offset.x + (pos.y * Math.cos((__noteAngle + 90) * FlxAngle.TO_RAD));
+			final yy = -origin.y + offset.y + (pos.y * Math.sin((__noteAngle + 90) * FlxAngle.TO_RAD));
+			setPosition(
+				xx + __strum.x + (__strum.width * 0.5),
+				yy + __strum.y + (__strum.height * 0.5)
+			);
 			super.draw();
-
-			this.frameOffsetAngle = 0;
-
-			frameOffset.x += __notePosFrameOffset.x;
-			frameOffset.y += __notePosFrameOffset.y;
-
 			setPosition(pos.x, pos.y);
-			//pos.put();
 		} else {
-			__notePosFrameOffset.set(0, 0);
 			super.draw();
 		}
+		if (negativeScroll) y += height;
 
-		if (negativeScroll)	offset.y *= -1;
 		@:privateAccess FlxCamera._defaultCameras = oldDefaultCameras;
 	}
 
@@ -288,7 +294,7 @@ class Note extends FlxSprite
 		if (lastScrollSpeed != scrollSpeed) {
 			lastScrollSpeed = scrollSpeed;
 			if (nextSustain != null) {
-				scale.y = (sustainLength * 0.45 * scrollSpeed) / frameHeight;
+				scale.y = (sustainLength * 0.45 * Math.abs(scrollSpeed)) / frameHeight;
 				updateHitbox();
 				scale.y += gapFix / frameHeight;
 			}
@@ -297,8 +303,8 @@ class Note extends FlxSprite
 		updateSustainClip();
 	}
 
-	public function updateSustainClip() if (wasGoodHit) {
-		var t = FlxMath.bound((Conductor.songPosition - strumTime) / height * 0.45 * lastScrollSpeed, 0, 1);
+	public function updateSustainClip() if (wasGoodHit && !noSustainClip) {
+		var t = CoolUtil.bound((Conductor.songPosition - strumTime) / height * 0.45 * Math.abs(lastScrollSpeed), 0, 1);
 		var rect = clipRect == null ? FlxRect.get() : clipRect;
 		clipRect = rect.set(0, frameHeight * t, frameWidth, frameHeight * (1 - t));
 	}

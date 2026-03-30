@@ -131,7 +131,7 @@ class AudioSource
 	@:noCompletion inline private function init():Void
 	{
 		__backend.init();
-		activeSources.push(this);
+		if (!activeSources.contains(this)) activeSources.push(this);
 	}
 
 	/**

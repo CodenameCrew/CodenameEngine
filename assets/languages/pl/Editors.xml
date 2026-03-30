@@ -18,7 +18,7 @@
 		<str id="animation">Animacja</str>
 		<str id="atlas">Atlas</str>
 		<str id="spritemap">Mapa sprite'ów</str>
-		
+
 		<str id="directory">Folder ({0}/)</str>
 		<str id="found">{0} {1} Znaleziono</str>
 		<str id="foundplural">{0} {1} Znaleziono</str>
@@ -87,7 +87,7 @@
 		<group name="CharterEventScreen" prefix="charterEventScreen.">
 			<str id="title-creating">Stwórz Grupę Wydarzeń</str>
 			<str id="title-editing">Edytuj Grupę Wydarzeń</str>
-			
+
 			<str id="noEvent">Brak Wydarzenia</str>
 
 			<str id="strumLine.format">Struma #{0} ({1})</str>
@@ -197,6 +197,7 @@
 				<str id="paste">Wklej</str>
 				<str id="cut">Wytnij</str>
 				<str id="delete">Usuń</str>
+				<str id="deletestacked">Usuń Notatki Ułożone w Stos</str>
 			</group>
 
 			<str id="topBar.chart">Mapa</str>
@@ -223,7 +224,7 @@
 				<str id="scrollRight">Przewiń w Prawo</str>
 				<str id="scrollReset">Resetuj Przewinięcie</str>
 			</group>
-			
+
 			<str id="topBar.song">Ścieżka</str>
 			<group name="SongMenu" prefix="song.">
 				<str id="goStart">Wróć do początku</str>

@@ -23,7 +23,7 @@ class Macros {
 			#if VIDEO_CUTSCENES "hxvlc.flixel", "hxvlc.openfl", #end
 			#if NAPE_ENABLED "nape", "flixel.addons.nape", #end
 			// BASE HAXE
-			"DateTools", "EReg", "Lambda", "StringBuf", "haxe.crypto", "haxe.display", "haxe.exceptions", "haxe.extern", "scripting"
+			"DateTools", "EReg", "Lambda", "StringBuf", "haxe.crypto", "haxe.display", "haxe.exceptions", "haxe.extern", "scripting", "animate"
 		])
 			Compiler.include(inc);
 
@@ -69,6 +69,7 @@ class Macros {
 		final fields:Array<Field> = Context.getBuildFields(), pos:Position = Context.currentPos();
 
 		fields.push({name: 'tag', access: [APublic], pos: pos, kind: FVar(macro :funkin.backend.assets.AssetSource)});
+		fields.push({name: 'isCompressed', access: [APublic], pos: pos, kind: FVar(macro :Bool, macro false)});
 
 		return fields;
 	}
