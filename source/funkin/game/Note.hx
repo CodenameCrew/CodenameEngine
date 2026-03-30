@@ -251,13 +251,13 @@ class Note extends FlxSprite
 		return isOnScreen;
 	}
 
-	static var __lastAngle:Float = Math.NaN;
-	static var __lastAngleSin:Float = 0;
-	static var __lastAngleCos:Float = 0;
-	static var __lastStrumW:Float = Math.NaN;
-	static var __lastStrumH:Float = Math.NaN;
-	static var __lastStrumHalfW:Float = 0;
-	static var __lastStrumHalfH:Float = 0;
+	@:dox(hide) static var __lastAngle:Float = Math.NaN;
+	@:dox(hide) static var __lastAngleSin:Float = 0;
+	@:dox(hide) static var __lastAngleCos:Float = 0;
+	@:dox(hide) static var __lastStrumW:Float = Math.NaN;
+	@:dox(hide) static var __lastStrumH:Float = Math.NaN;
+	@:dox(hide) static var __lastStrumHalfW:Float = 0;
+	@:dox(hide) static var __lastStrumHalfH:Float = 0;
 
 	override function draw() {
 		@:privateAccess var oldDefaultCameras = FlxCamera._defaultCameras;
