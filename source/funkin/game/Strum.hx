@@ -215,7 +215,7 @@ class Strum extends FlxSprite {
 
 				if (daNote.__noteAngle != __lastNoteAngle) {
 					__lastNoteAngle = daNote.__noteAngle;
-					final result = FlxMath.fastSinCos((daNote.__noteAngle + 90) * FlxAngle.TO_RAD);
+					final result = FlxMath.fastSinCos((__lastNoteAngle + 90) * FlxAngle.TO_RAD);
 					__lastAngleCos = result.cos;
 					__lastAngleSin = result.sin;
 				}
