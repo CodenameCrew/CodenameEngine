@@ -125,8 +125,8 @@ class Main extends Sprite
 		funkin.options.PlayerSettings.init();
 		Options.load();
 
+		game.focusLostFramerate = 30;
 		FlxG.fixedTimestep = false;
-
 		FlxG.scaleMode = scaleMode = new FunkinRatioScaleMode();
 
 		Conductor.init();
