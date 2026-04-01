@@ -234,7 +234,7 @@
 	<haxedef name="HXCPP_STACK_LINE"/>
 	<haxedef name="HXCPP_STACK_TRACE"/>
 	<!--<haxedef name="HXCPP_CATCH_SEGV"/>-->
-	<haxedef name="HXCPP_FAST_LINK"/>
+	<haxedef name="HXCPP_FAST_LINK" unless="debug"/>
 	<!--<haxedef name="HXCPP_ALIGN_ALLOC"/>--> <!--hxcpp.h(71): warning C4005: 'HXCPP_ALIGN_ALLOC': macro redefinition-->
 
 	<haxedef name="analyzer-optimize" unless="debug"/>
