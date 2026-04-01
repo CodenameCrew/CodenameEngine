@@ -35,6 +35,7 @@ class FramerateCounter extends Sprite {
 	}
 
 	public function reload() {
+		for (label in [fpsNum, fpsLabel]) label.defaultTextFormat = new TextFormat(Framerate.fontName, label == fpsNum ? 18 : 12, -1);
 		lastUpdateTime = 0;
 	}
 

@@ -40,7 +40,9 @@ class FramerateCategory extends Sprite {
 		this.text.y = this.title.y + this.title.height + 2;
 	}
 
-	public function reload() {}
+	public function reload() {
+		for(label in [this.title, this.text]) label.defaultTextFormat = new TextFormat(Framerate.fontName, label == this.title ? 18 : 12, -1);
+	}
 
 	public override function __enterFrame(t:Float) {
 		if (alpha <= 0.05) return;
