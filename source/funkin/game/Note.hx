@@ -240,17 +240,6 @@ class Note extends FlxSprite
 	 */
 	public var strumRelativePos:Bool = true;
 
-	override public function isOnScreen(?camera:FlxCamera):Bool {
-		var downscrollCam = (Std.isOfType(camera, HudCamera) ? cast(camera, HudCamera).downscroll : false);
-		if (updateFlipY) flipY = (isSustainNote && flipSustain) && (downscrollCam != (__strum != null && __strum.getScrollSpeed(this) < 0));
-		final oldX = x;
-		if (downscrollCam && __strum != null)
-			x = -x + 2 * (__strum.x - origin.x + offset.x) + __strum.width;
-		final isOnScreen = super.isOnScreen(camera);
-		x = oldX;
-		return isOnScreen;
-	}
-
 	@:dox(hide) static var __lastAngle:Float = Math.NaN;
 	@:dox(hide) static var __lastAngleSin:Float = 0;
 	@:dox(hide) static var __lastAngleCos:Float = 0;
@@ -294,6 +283,38 @@ class Note extends FlxSprite
 		if (negativeScroll) y += height;
 
 		@:privateAccess FlxCamera._defaultCameras = oldDefaultCameras;
+	}
+
+	var __lastDownscrollCam:Bool = false;
+	var __lastX:Float = 0;
+
+	@:noCompletion @:dox(hide) override function isOnScreen(?camera:FlxCamera):Bool {
+		var downscrollCam = (Std.isOfType(camera, HudCamera) ? cast(camera, HudCamera).downscroll : false);
+
+		if (downscrollCam == __lastDownscrollCam)
+			return super.isOnScreen(camera);
+		else
+			__lastX = x;
+
+		if (updateFlipY) flipY = (isSustainNote && flipSustain) && (downscrollCam != (__strum != null && __strum.getScrollSpeed(this) < 0));
+		if (downscrollCam && __strum != null) {
+			x = -x + 2 * (__strum.x - origin.x + offset.x) + __strum.width;
+		}
+		final isOnScreen = super.isOnScreen(camera);
+		return isOnScreen;
+	}
+
+	override function drawComplex(camera:FlxCamera):Void {
+		super.drawComplex(camera);
+
+		if (__lastDownscrollCam) {
+			__lastDownscrollCam = false;
+			x = __lastX;
+		}
+	}
+
+	public function isOnScreenOriginal(?camera:FlxCamera):Bool {
+    return super.isOnScreen(camera);
 	}
 
 	// The * 0.5 is so that it's easier to hit them too late, instead of too early
