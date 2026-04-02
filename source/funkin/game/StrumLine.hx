@@ -343,7 +343,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 			str.updatePlayerInput(__pressed[str.ID], __justPressed[str.ID], __justReleased[str.ID]);
 		});
 
-		PlayState.instance.gameAndCharsCall("onPostInputUpdate");
+		PlayState.instance.gameAndCharsEvent("onPostInputUpdate", event);
 	}
 
 	/**
