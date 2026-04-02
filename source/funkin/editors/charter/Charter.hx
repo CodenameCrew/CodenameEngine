@@ -232,6 +232,11 @@ class Charter extends UIState {
 						label: translate("edit.delete"),
 						keybind: [DELETE],
 						onSelect: _edit_delete
+					},
+					{
+						label: translate("edit.deletestacked"),
+						keybind: [SHIFT,DELETE],
+						onSelect: _edit_deletestacked
 					}
 				]
 			},
@@ -459,7 +464,7 @@ class Charter extends UIState {
 		rightEventsGroup.eventsRowText = rightEventRowText;
 
 		// thank you neo for pointing out im stupid -lunar
-		// this is future lunar i completely forgot what neo pointed out but hes awesome go follow him on twitter 
+		// this is future lunar i completely forgot what neo pointed out but hes awesome go follow him on twitter
 
 		add(gridBackdropDummy = new CameraHoverDummy(gridBackdrops, FlxPoint.weak(1, 0)));
 		selectionBox = new UISliceSprite(0, 0, 2, 2, 'editors/ui/selection');
@@ -796,6 +801,7 @@ class Charter extends UIState {
 	public var mousePos:FlxPoint = new FlxPoint();
 	public var selectionDragging:Bool = false;
 	public var isSelecting:Bool = false;
+	public var isAltCopyDrag:Bool = false;
 
 	public function updateSelectionLogic() {
 		function select(s:ICharterSelectable) {
@@ -960,17 +966,24 @@ class Charter extends UIState {
 					if (!(verticalChange == 0 && horizontalChange == 0)) {
 						notesGroup.sortNotes();
 
-						undos.addToUndo(CChangeBundle([
-							CSelectionDrag(undoDrags),
-							updateEventsGroups(selection)
-						]));
+						var changes:Array<CharterChange> = [];
+						if (isAltCopyDrag) {
+							changes.push(CCreateSelection(selection.copy()));
+							isAltCopyDrag = false;
+						}
+						changes.push(CSelectionDrag(undoDrags));
+						changes.push(updateEventsGroups(selection));
+						undos.addToUndo(CChangeBundle(changes));
+					} else if (isAltCopyDrag) {
+						undos.addToUndo(CCreateSelection(selection.copy()));
+						isAltCopyDrag = false;
 					}
 
 					gridActionType = NONE;
 					currentCursor = ARROW;
 				}
 			case NONE:
-				if (FlxG.mouse.justPressed) 
+				if (FlxG.mouse.justPressed)
 					FlxG.mouse.getWorldPosition(charterCamera, dragStartPos);
 				else if (FlxG.mouse.justPressedRight) {
 					closeCurrentContextMenu();
@@ -1018,7 +1031,32 @@ class Charter extends UIState {
 						}
 
 						if ((Math.abs(mousePos.x - dragStartPos.x) > (noteSusDrag ? 1 : 5) || Math.abs(mousePos.y - dragStartPos.y) > (noteSusDrag ? 1 : 5))) {
-							if (noteHovered) gridActionType = noteHovered ? NOTE_DRAG : INVALID_DRAG;
+							if (noteHovered) {
+								if (FlxG.keys.pressed.ALT && selection.length > 0) {
+									var newSelection:Array<ICharterSelectable> = [];
+									for (s in selection) {
+										if (s is CharterNote) {
+											var n:CharterNote = cast s;
+											var newNote = new CharterNote();
+											newNote.updatePos(n.step, n.id, n.susLength, n.type, n.strumLine);
+											notesGroup.add(newNote);
+											newSelection.push(newNote);
+										} else if (s is CharterEvent) {
+											var e:CharterEvent = cast s;
+											var newEvent = new CharterEvent(e.step, [for (event in e.events) Reflect.copy(event)], e.global);
+											newEvent.refreshEventIcons();
+											(e.global ? rightEventsGroup : leftEventsGroup).add(newEvent);
+											newSelection.push(newEvent);
+										}
+									}
+									for (s in selection) s.selected = false;
+									selection = newSelection;
+									for (s in selection) s.selected = true;
+									isAltCopyDrag = true;
+									UIState.playEditorSound(Flags.DEFAULT_EDITOR_COPY_SOUND);
+								}
+								gridActionType = NOTE_DRAG;
+							}
 							if (noteSusDrag) gridActionType = SUSTAIN_DRAG;
 						}
 					}
@@ -1686,6 +1724,25 @@ class Charter extends UIState {
 		selection = deleteSelection(selection, true);
 	}
 
+	function _edit_deletestacked(_) {
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_DELETE_SOUND);
+		if (notesGroup.members.length == 0) return;
+		var oldNote:CharterNote = null;
+		var selectionArray:Array<Dynamic> = ((selection.length != 0) ? selection : notesGroup.members.copy());
+		var toDelete:Selection = new Selection();
+		for (note in selectionArray) {
+			if (oldNote != null && oldNote.step == note.step && oldNote.strumLineID == note.strumLineID && oldNote.id == note.id) {
+				noteDeleteAnims.deleteNotes.push({note: oldNote, time: noteDeleteAnims.deleteTime});
+				toDelete.push(oldNote);
+			}
+			oldNote = note;
+		}
+		if (toDelete.length != 0) {
+			deleteSelection(toDelete);
+			if (selection.length != 0) for (i in toDelete) selection.remove(i); //crash prevention
+		}
+	}
+
 	function _undo(undo:CharterChange) {
 		UIState.playEditorSound(Flags.DEFAULT_EDITOR_UNDO_SOUND);
 		switch(undo) {
@@ -1736,7 +1793,11 @@ class Charter extends UIState {
 			case CEditSpecNotesType(notes, oldTypes, newTypes):
 				for(i=>note in notes) note.updatePos(note.step, note.id, note.susLength, oldTypes[i]);
 			case CChangeBundle(changes):
-				for (change in changes) _undo(change);
+				var i = changes.length - 1;
+				while (i >= 0) {
+					_undo(changes[i]);
+					i--;
+				}
 		}
 	}
 
@@ -1918,7 +1979,7 @@ class Charter extends UIState {
 			if (PlayState.SONG.bookmarks != null)
 				bookmarks = PlayState.SONG.bookmarks;
 		} catch (e) {}
-		
+
 		return bookmarks;
 	}
 
@@ -1928,9 +1989,9 @@ class Charter extends UIState {
 			var currentBookmarks:Array<ChartBookmark> = getBookmarkList();
 			var newBookmarks:Array<ChartBookmark> = getBookmarkList();
 			newBookmarks.push({time: daStep, name: name, color: color.toWebString()});
-				
+
 			PlayState.SONG.bookmarks = newBookmarks;
-			updateBookmarks();	
+			updateBookmarks();
 			undos.addToUndo(CEditBookmarks(currentBookmarks, newBookmarks));
 		}
 
@@ -1955,7 +2016,7 @@ class Charter extends UIState {
 		{
 			var bars:Array<FlxSprite> = bs[0];
 			var text:UIText = bs[1];
-			
+
 			if (bars != null) {
 				for (spr in bars) {
 					if (spr == null) continue;
@@ -2009,7 +2070,7 @@ class Charter extends UIState {
 				0,
 				scrollBar.height
 			);
-			
+
 			var bookmarkspr = new FlxSprite(scrollBar.x - 10, yPos).makeSolid(40, 4, bookmarkcolor);
 			uiGroup.add(bookmarkspr);
 			sprites.push(bookmarkspr);
@@ -2293,7 +2354,7 @@ class Charter extends UIState {
 			icon: this.noteType == 0 ? 1 : 0
 		}];
 
-		final noteKeys:Array<Array<Array<FlxKey>>> = [[[ZERO], [NUMPADZERO]], [[ONE], [NUMPADONE]], [[TWO], [NUMPADTWO]], [[THREE], [NUMPADTHREE]], [[FOUR], [NUMPADFOUR]], [[FIVE], [NUMPADFIVE]], 
+		final noteKeys:Array<Array<Array<FlxKey>>> = [[[ZERO], [NUMPADZERO]], [[ONE], [NUMPADONE]], [[TWO], [NUMPADTWO]], [[THREE], [NUMPADTHREE]], [[FOUR], [NUMPADFOUR]], [[FIVE], [NUMPADFIVE]],
 												[[SIX], [NUMPADSIX]], [[SEVEN], [NUMPADSEVEN]], [[EIGHT], [NUMPADEIGHT]], [[NINE], [NUMPADNINE]]];
 		for (i=>type in noteTypes) {
 			var realNoteID:Int = i+1; // Default Note not stored

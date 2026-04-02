@@ -32,7 +32,7 @@ jobs:
           haxe -cp commandline -D analyzer-optimize --run Main setup -s --no-vscheck
       - name: Building the game
         run: |
-          haxelib run lime build windows
+          haxelib run lime build windows -DCOMPILE_EXPERIMENTAL
       - name: Uploading artifact (executable)
         uses: actions/upload-artifact@v4
         with:
