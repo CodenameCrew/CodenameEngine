@@ -1,6 +1,7 @@
 package funkin.backend.utils;
 
 import funkin.backend.scripting.Script;
+import funkin.backend.scripting.DummyScript;
 
 import funkin.backend.system.FunkinGame;
 
@@ -38,6 +39,8 @@ implements IFlxDestroyable implements IHScriptCustomBehaviour {
 
 	public var _closeWhenMainWindowClosed:Bool = true;
 
+	public var FAILED_TO_START:Bool = true;
+
 	public function new(path:String, ?attributes:Dynamic, ?shouldCloseAutomatically:Bool = true) {
 		
 		_closeWhenMainWindowClosed = shouldCloseAutomatically;
@@ -48,6 +51,12 @@ implements IFlxDestroyable implements IHScriptCustomBehaviour {
 		if (attributes.height == null) attributes.height = ScriptedWindow.default_arguments.height;
 		if (attributes.frameRate == null) attributes.frameRate = Options.framerate; // so it will constantly update regardless default_framerate
 
+		script = Script.create(path);
+		if (script is DummyScript) {
+			destroy();
+			return;
+		}
+
 		window = Lib.application.createWindow(attributes);
 		window.stage.addChild(game);
 		window.onClose.add(onWindowClose);
@@ -57,7 +66,6 @@ implements IFlxDestroyable implements IHScriptCustomBehaviour {
 			if (_closeWhenMainWindowClosed) window.close();
 		});
 
-		script = Script.create(path);
 		script.setParent(window);
 		
 		script.set("game", game);
@@ -74,6 +82,7 @@ implements IFlxDestroyable implements IHScriptCustomBehaviour {
 		});
 		
 		__variables = Type.getInstanceFields(Type.getClass(this));
+		FAILED_TO_START = false;
 	}
 
 	private inline function addAsBitmap(path:String):Bitmap {
