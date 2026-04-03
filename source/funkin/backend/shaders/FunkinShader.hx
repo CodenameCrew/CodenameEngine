@@ -217,7 +217,7 @@ class FunkinShaderSourceAssembler extends FlxRuntimeShader.FlxShaderSourceAssemb
 			return '/*include $key*/\n' + __appendIncludes(include, isVertex, includedKeys);
 		});
 
-		return __getImportFinder().map(source, (regex:EReg) ->
+		return __getImportCompatibilityFinder().map(source, (regex:EReg) ->
 		{
 			var key = regex.matched(1);
 			if (includedKeys.get(key)) return '/*Recursive import $key*/\n';
@@ -261,8 +261,8 @@ class FunkinShaderSourceAssembler extends FlxRuntimeShader.FlxShaderSourceAssemb
 		return result;
 	}
 
-	private static inline function __getImportFinder():EReg {
-		return ~/(?:^|\s)#import\s+(?|"([^"]+)"|'([^']+)'|([^\s]+))/g;
+	private static inline function __getImportCompatibilityFinder():EReg {
+		return ~/#import\s+(?|"([^"]+)"|'([^']+)'|<(.*)>|([^\s]+))/g;
 	}
 }
 
