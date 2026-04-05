@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Pulling the new commit
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
@@ -35,7 +37,7 @@ jobs:
           haxe -cp commandline -D analyzer-optimize --run Main setup -s
       - name: Building the game
         run: |
-          haxelib run lime build linux
+          haxelib run lime build linux -DCOMPILE_EXPERIMENTAL
       # - name: Tar files
       #   run: tar -zcvf CodenameEngine.tar.gz -C export/release/linux/bin .
       - name: Uploading artifact (executable)

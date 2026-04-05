@@ -69,6 +69,7 @@ class Macros {
 		final fields:Array<Field> = Context.getBuildFields(), pos:Position = Context.currentPos();
 
 		fields.push({name: 'tag', access: [APublic], pos: pos, kind: FVar(macro :funkin.backend.assets.AssetSource)});
+		fields.push({name: 'isCompressed', access: [APublic], pos: pos, kind: FVar(macro :Bool, macro false)});
 
 		return fields;
 	}

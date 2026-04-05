@@ -203,6 +203,7 @@
 					<str id="paste">Paste</str>
 					<str id="cut">Cut</str>
 					<str id="delete">Delete</str>
+					<str id="deletestacked">Delete Stacked Notes</str>
 				</group>
 
 				<str id="topBar.chart">Chart</str>

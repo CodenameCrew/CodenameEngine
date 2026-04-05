@@ -1,6 +1,8 @@
 package funkin.game;
 
 import flixel.math.FlxPoint;
+import flixel.math.FlxAngle;
+import flixel.util.typeLimit.OneOfTwo;
 import funkin.backend.system.Conductor;
 
 class Strum extends FlxSprite {
@@ -51,8 +53,27 @@ class Strum extends FlxSprite {
 	public var updateNotesPosY:Bool = true;
 	public var extraCopyFields(default, set):Array<String> = [];
 
-	private inline function set_extraCopyFields(val:Array<String>)
-		return extraCopyFields = val == null ? [] : val;
+	@:noCompletion public var __cachedCopyFields:Array<Array<OneOfTwo<String, Int>>> = null;
+
+	private function set_extraCopyFields(val:Array<String>) {
+		extraCopyFields = val == null ? [] : val;
+		__cachedCopyFields = null;
+		return extraCopyFields;
+	}
+
+	private inline function __initCachedCopyFields() {
+		if (__cachedCopyFields != null) return;
+		__cachedCopyFields = [for (field in extraCopyFields) CoolUtil.parsePropertyString(field)];
+	}
+
+	private inline function __applyCopyFields(daNote:Note) {
+		for (i in 0...extraCopyFields.length) {
+			final parsed = __cachedCopyFields[i];
+			final fromProp = CoolUtil.parseProperty(this, parsed);
+			final toProp = CoolUtil.parseProperty(daNote, parsed);
+			toProp.setValue(fromProp.getValue());
+		}
+	}
 
 	/**
 	 * Whenever the strum is pressed.
@@ -128,12 +149,27 @@ class Strum extends FlxSprite {
 	}
 
 	public override function draw() {
-		lastDrawCameras = cameras.copy();
+		if (cameras.length == 1) {
+			if (lastDrawCameras.length != 1 || lastDrawCameras[0] != cameras[0]) {
+				lastDrawCameras = [cameras[0]];
+			}
+		} else {
+			lastDrawCameras = cameras.copy();
+		}
 		super.draw();
 	}
 
 	@:noCompletion public static inline final PIX180:Float = 565.4866776461628; // 180 * Math.PI
 	@:noCompletion public static final N_WIDTHDIV2:Float = Note.swagWidth / 2; // DEPRECATED
+
+	static var __lastStrumW:Float = Math.NaN;
+	static var __lastStrumH:Float = Math.NaN;
+	static var __lastStrumHalfW:Float = 0;
+	static var __lastStrumHalfH:Float = 0;
+	static var __noteOffset:FlxPoint = FlxPoint.get();
+	static var __lastNoteAngle:Float = Math.NaN;
+	static var __lastAngleCos:Float = 0;
+	static var __lastAngleSin:Float = 0;
 
 	/**
 	 * Updates the position of a note.
@@ -152,8 +188,10 @@ class Strum extends FlxSprite {
 		}
 
 		updateNotePos(daNote);
-		for (field in extraCopyFields)
-			CoolUtil.cloneProperty(daNote, field, this); // TODO: make this cached to reduce the reflection calls - Neo
+		if (extraCopyFields.length > 0) {
+			__initCachedCopyFields();
+			__applyCopyFields(daNote);
+		}
 	}
 
 	private inline function updateNotePos(daNote:Note) {
@@ -162,41 +200,40 @@ class Strum extends FlxSprite {
 
 		if (shouldX || shouldY) {
 			if (daNote.strumRelativePos) {
-				if (shouldX) daNote.x = (this.width - daNote.width) * 0.5;
+				if (shouldX) daNote.x = 0;
 				if (shouldY) {
-					daNote.y = (daNote.strumTime - Conductor.songPosition) * (0.45 * getScrollSpeed(daNote));
-					if (daNote.isSustainNote) daNote.y += height * 0.5;
+					daNote.y = ((daNote.strumTime - Conductor.songPosition) * 0.45 * getScrollSpeed(daNote));
+					if (daNote.isSustainNote) daNote.y += daNote.height * 0.5;
 				}
 			} else {
-				var offset = FlxPoint.get(0, (Conductor.songPosition - daNote.strumTime) * (0.45 * getScrollSpeed(daNote)));
-				var realOffset = FlxPoint.get(0, 0);
-
-				if (daNote.isSustainNote) offset.y -= height * 0.5;
-
-				if (Std.int(daNote.__noteAngle % 360) != 0) {
-					var noteAngle = FlxMath.fastSinCos(daNote.__noteAngle / PIX180);
-					var noteAngleCos = noteAngle.cos;
-					var noteAngleSin = noteAngle.sin;
-
-					var aOffset:FlxPoint = FlxPoint.get(
-						(daNote.origin.x / daNote.scale.x) - daNote.offset.x,
-						(daNote.origin.y / daNote.scale.y) - daNote.offset.y
-					);
-					realOffset.x = -aOffset.x + (noteAngleCos * (offset.x + aOffset.x)) + (noteAngleSin * (offset.y + aOffset.y));
-					realOffset.y = -aOffset.y + (noteAngleSin * (offset.x + aOffset.x)) + (noteAngleCos * (offset.y + aOffset.y));
-
-					aOffset.put();
-				} else {
-					realOffset.x = offset.x;
-					realOffset.y = offset.y;
+				if (width != __lastStrumW || height != __lastStrumH) {
+					__lastStrumW = width;
+					__lastStrumH = height;
+					__lastStrumHalfW = width * 0.5;
+					__lastStrumHalfH = height * 0.5;
 				}
-				realOffset.y *= -1;
 
-				if (shouldX) daNote.x = x + realOffset.x;
-				if (shouldY) daNote.y = y + realOffset.y;
+				if (daNote.__noteAngle != __lastNoteAngle) {
+					__lastNoteAngle = daNote.__noteAngle;
+					final result = FlxMath.fastSinCos((__lastNoteAngle + 90) * FlxAngle.TO_RAD);
+					__lastAngleCos = result.cos;
+					__lastAngleSin = result.sin;
+				}
 
-				offset.put();
-				realOffset.put();
+				final speed = getScrollSpeed(daNote);
+				final distance = (daNote.strumTime - Conductor.songPosition) * 0.45 * speed;
+				__noteOffset.set(__lastAngleCos * distance, __lastAngleSin * distance);
+				__noteOffset.x += -daNote.origin.x + daNote.offset.x;
+				__noteOffset.y += -daNote.origin.y + daNote.offset.y;
+				if (daNote.isSustainNote) {
+					final m = (daNote.height * 0.5 * (speed < 0 ? -1 : 1));
+					__noteOffset.x += __lastAngleCos * m;
+					__noteOffset.y += __lastAngleSin * m;
+				}
+				__noteOffset.x += x + __lastStrumHalfW;
+				__noteOffset.y += y + __lastStrumHalfH;
+				if (shouldX) daNote.x = __noteOffset.x;
+				if (shouldY) daNote.y = __noteOffset.y;
 			}
 		}
 	}

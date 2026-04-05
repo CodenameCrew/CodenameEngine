@@ -146,11 +146,10 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 
 		var screen = parent.tree.last();
 		var idx = 0;
-		while (!(screen.members[idx] is Separator)) idx++;
+		while (!(screen.members[idx] is Separator || idx >= screen.members.length)) idx++;
 		screen.insert(idx, makeChartOption(name, curSong.variant != null && curSong.variant != "" ? curSong.variant : null, curSong.name));
-
 		// Add to Meta
-		var metaPath = '$songFolder/meta${curSong.variant != null && curSong.variant == "" ? "-" + curSong.variant : ""}.json';
+		var metaPath = '$songFolder/meta${curSong.variant != null && curSong.variant != "" ? "-" + curSong.variant : ""}.json';
 		CoolUtil.safeSaveFile(metaPath, Chart.makeMetaSaveable(curSong));
 	}
 	#end
