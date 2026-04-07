@@ -33,6 +33,7 @@ jobs:
           haxe -cp commandline -D analyzer-optimize --run Main setup -s --no-vscheck
       - name: Building the game
         run: |
+          haxelib run lime rebuild windows -nocolor -nocffi -release
           haxelib run lime build windows -DCOMPILE_EXPERIMENTAL
       - name: Uploading artifact (executable)
         uses: actions/upload-artifact@v7
@@ -103,6 +104,7 @@ jobs:
           haxe -cp commandline -D analyzer-optimize --run Main setup -s --no-vscheck
       - name: Building the game
         run: |
+          haxelib run lime rebuild windows -nocolor -nocffi -debug
           haxelib run lime build windows -debug
       - name: Uploading artifact (entire build)
         uses: actions/upload-artifact@v7

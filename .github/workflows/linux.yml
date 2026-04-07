@@ -36,6 +36,7 @@ jobs:
           haxe -cp commandline -D analyzer-optimize --run Main setup -s
       - name: Building the game
         run: |
+          haxelib run lime rebuild linux -nocolor -nocffi -release
           haxelib run lime build linux -DCOMPILE_EXPERIMENTAL
       # - name: Tar files
       #   run: tar -zcvf CodenameEngine.tar.gz -C export/release/linux/bin .
@@ -108,7 +109,8 @@ jobs:
           haxe -cp commandline -D analyzer-optimize --run Main setup -s
       - name: Building the game
         run: |
-          haxelib run lime build linux -debug
+          haxelib run lime rebuild linux -nocolor -nocffi -debug
+          haxelib run lime build linux -debug -DCOMPILE_EXPERIMENTAL
       # - name: Tar files
       #   run: tar -zcvf CodenameEngine.tar.gz -C export/debug/linux/bin .
       - name: Uploading artifact (entire build)
