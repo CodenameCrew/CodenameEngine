@@ -108,6 +108,7 @@ class Flags {
 	public static var DEFAULT_LOOP_TIME:Float = 0.0;
 
 	@:lazy public static var DEFAULT_SOUND_TIME_SCALED_PITCH:Null<Bool> = null;
+	@:lazy public static var USE_FLXTRAIL_FRAMES:Null<Bool> = null;
 
 	public static var SUPPORTED_CHART_RUNTIME_FORMATS:Array<String> = ["Legacy", "Psych Engine"];
 	public static var SUPPORTED_CHART_FORMATS:Array<String> = ["BaseGame"];
@@ -326,7 +327,10 @@ class Flags {
 			}
 		}
 		if (DEFAULT_SOUND_TIME_SCALED_PITCH == null) DEFAULT_SOUND_TIME_SCALED_PITCH = MOD_API_VERSION >= 2;
+		if (USE_FLXTRAIL_FRAMES == null) USE_FLXTRAIL_FRAMES = MOD_API_VERSION < 2;
+
 		flixel.sound.FlxSound.defaultTimeScaledPitch = cast DEFAULT_SOUND_TIME_SCALED_PITCH;
+		flixel.addons.effects.FlxTrail.defaultDelayBackwardCompatibility = cast USE_FLXTRAIL_FRAMES;
 	}
 
 	public static function loadFromDatas(datas:Array<String>):Map<String, String> {
