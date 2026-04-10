@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download Windows Full Build
-        uses: dawidd6/action-download-artifact@v8
+        uses: dawidd6/action-download-artifact@v17
         with:
           workflow: windows.yml
           name: Codename Engine
@@ -34,7 +34,7 @@ jobs:
           allow_forks: false
 
       - name: Download Windows Executable
-        uses: dawidd6/action-download-artifact@v8
+        uses: dawidd6/action-download-artifact@v17
         with:
           workflow: windows.yml
           name: Codename Engine (Executable Only)
@@ -42,7 +42,7 @@ jobs:
           allow_forks: false
 
       - name: Download Mac OS Full Build
-        uses: dawidd6/action-download-artifact@v8
+        uses: dawidd6/action-download-artifact@v17
         with:
           workflow: macos.yml
           name: Codename Engine
@@ -50,7 +50,7 @@ jobs:
           allow_forks: false
 
       - name: Download Mac OS Executable
-        uses: dawidd6/action-download-artifact@v8
+        uses: dawidd6/action-download-artifact@v17
         with:
           workflow: macos.yml
           name: Codename Engine (Executable Only)
@@ -58,7 +58,7 @@ jobs:
           allow_forks: false
 
       - name: Download Linux Full Build
-        uses: dawidd6/action-download-artifact@v8
+        uses: dawidd6/action-download-artifact@v17
         with:
           workflow: linux.yml
           name: Codename Engine
@@ -66,7 +66,7 @@ jobs:
           allow_forks: false
 
       - name: Download Linux Executable
-        uses: dawidd6/action-download-artifact@v8
+        uses: dawidd6/action-download-artifact@v17
         with:
           workflow: linux.yml
           name: Codename Engine (Executable Only)
@@ -178,7 +178,7 @@ jobs:
           echo -e "Final pre-changelog message:\n\n$BODY"
 
       - name: Create GitHub Release with Assets
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
