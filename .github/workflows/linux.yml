@@ -19,7 +19,7 @@ jobs:
         with:
           haxe-version: 4.3.7
       # - name: Restore existing build cache for faster compilation
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v5
       #   with:
       #     # not caching the bin folder to prevent asset duplication and stuff like that
       #     key: cache-build-linux
@@ -51,7 +51,7 @@ jobs:
           name: Codename Engine
           path: export/release/linux/bin/
       # - name: Clearing already existing cache
-      #   uses: actions/github-script@v6
+      #   uses: actions/github-script@v9
       #   with:
       #     script: |
       #       const caches = await github.rest.actions.getActionsCacheList({
@@ -70,7 +70,7 @@ jobs:
       #         }
       #       }
       # - name: Uploading new cache
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v5
       #   with:
       #     # caching again since for some reason it doesnt work with the first post cache shit
       #     key: cache-build-linux
@@ -92,7 +92,7 @@ jobs:
         with:
           haxe-version: 4.3.7
       # - name: Restore existing build cache for faster compilation
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v5
       #   with:
       #     # not caching the bin folder to prevent asset duplication and stuff like that
       #     key: cache-build-linux-debug
@@ -119,7 +119,7 @@ jobs:
           name: Codename Engine Debug
           path: export/debug/linux/bin/
       # - name: Clearing already existing cache
-      #   uses: actions/github-script@v6
+      #   uses: actions/github-script@v9
       #   with:
       #     script: |
       #       const caches = await github.rest.actions.getActionsCacheList({
@@ -138,7 +138,7 @@ jobs:
       #         }
       #       }
       # - name: Uploading new cache
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v5
       #   with:
       #     # caching again since for some reason it doesnt work with the first post cache shit
       #     key: cache-build-linux-debug
