@@ -11,15 +11,15 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Pulling the new commit
-        uses: actions/checkout@v6
+        uses: actions/checkout@main
         with:
           fetch-depth: 0
       - name: Setting up Haxe
-        uses: krdlab/setup-haxe@v2
+        uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.3.7
       # - name: Restore existing build cache for faster compilation
-      #   uses: actions/cache@v5
+      #   uses: actions/cache@main
       #   with:
       #     # not caching the bin folder to prevent asset duplication and stuff like that
       #     key: cache-build-windows
@@ -36,19 +36,19 @@ jobs:
           haxelib run lime rebuild windows -nocolor -nocffi -release
           haxelib run lime build windows -DCOMPILE_EXPERIMENTAL
       - name: Uploading artifact (executable)
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@main
         with:
           name: Codename Engine (Executable Only)
           path: |
             export/release/windows/bin/CodenameEngine.exe
             export/release/windows/bin/lime.ndll
       - name: Uploading artifact (entire build)
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@main
         with:
           name: Codename Engine
           path: export/release/windows/bin
       # - name: Clearing already existing cache
-      #   uses: actions/github-script@v9
+      #   uses: actions/github-script@main
       #   with:
       #     script: |
       #       const caches = await github.rest.actions.getActionsCacheList({
@@ -67,7 +67,7 @@ jobs:
       #         }
       #       }
       # - name: Uploading new cache
-      #   uses: actions/cache@v5
+      #   uses: actions/cache@main
       #   with:
       #     # caching again since for some reason it doesnt work with the first post cache shit
       #     key: cache-build-windows
@@ -83,13 +83,13 @@ jobs:
     needs: build # since its low priority, it'll run after, so actions will concentrate first on normal builds
     steps:
       - name: Pulling the new commit
-        uses: actions/checkout@v6
+        uses: actions/checkout@main
       - name: Setting up Haxe
-        uses: krdlab/setup-haxe@v2
+        uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.3.7
       # - name: Restore existing build cache for faster compilation
-      #   uses: actions/cache@v5
+      #   uses: actions/cache@main
       #   with:
       #     # not caching the bin folder to prevent asset duplication and stuff like that
       #     key: cache-build-windows-debug
@@ -107,12 +107,12 @@ jobs:
           haxelib run lime rebuild windows -nocolor -nocffi -debug
           haxelib run lime build windows -debug
       - name: Uploading artifact (entire build)
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@main
         with:
           name: Codename Engine Debug
           path: export/debug/windows/bin
       # - name: Clearing already existing cache
-      #   uses: actions/github-script@v9
+      #   uses: actions/github-script@main
       #   with:
       #     script: |
       #       const caches = await github.rest.actions.getActionsCacheList({
@@ -131,7 +131,7 @@ jobs:
       #         }
       #       }
       # - name: Uploading new cache
-      #   uses: actions/cache@v5
+      #   uses: actions/cache@main
       #   with:
       #     # caching again since for some reason it doesnt work with the first post cache shit
       #     key: cache-build-windows-debug
