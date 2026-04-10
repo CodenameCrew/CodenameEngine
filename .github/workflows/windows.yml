@@ -112,7 +112,7 @@ jobs:
           name: Codename Engine Debug
           path: export/debug/windows/bin
       # - name: Clearing already existing cache
-      #   uses: actions/github-script@v6
+      #   uses: actions/github-script@v9
       #   with:
       #     script: |
       #       const caches = await github.rest.actions.getActionsCacheList({
