@@ -1,4 +1,4 @@
-<window width="660" height="320" title="${translate('win-title', [button.animData.name])}">
+<window width="660" height="320" title="${translate('win-title', null, [button.animData.name])}">
 	<set name="MARGIN" value="20" />
 	<set name="XOFFSET" value="35" />
 	<set name="YOFFSET" value="40" />
@@ -7,11 +7,6 @@
 	<exec>
 		function col(c:Int) {
 			return MARGIN + (200 + XOFFSET) * c;
-		}
-
-		function translate(id:String, ?prefix:String, ?args:Array&lt;Dynamic&gt;) {
-			prefix ??= "stageSpriteAnimEditScreen.";
-			return TranslationUtil.translate(prefix + id, args);
 		}
 	</exec>
 

@@ -76,8 +76,8 @@ class SpriteAnimEditScreen extends UISoftcodedWindow
 	public var parentButton:StageSpriteAnimButton;
 	public var xml:Access;
 
-	inline function translate(id:String, ?args:Array<Dynamic>)
-		return TU.translate("stageSpriteAnimEditScreen." + id, args);
+	inline function translate(id:String, prefix:String = "stageSpriteAnimEditScreen.", ?args:Array<Dynamic>)
+		return TU.translate(prefix + id, args);
 
 	public function new(xml:Access, parentButton:StageSpriteAnimButton, saveCallback:Void->Void) {
 		this.saveCallback = saveCallback;
