@@ -440,11 +440,9 @@ final class CoolUtil
 	 * @param fadeIn
 	 */
 	@:noUsing public static function playMenuSong(fadeIn:Bool = false) {
-		if (FlxG.sound.music == null || !FlxG.sound.music.playing)
-		{
+		if (FlxG.sound.music == null || !FlxG.sound.music.playing) {
 			playMusic(Paths.music(Flags.DEFAULT_MENU_MUSIC), true, fadeIn ? 0 : 1, true, 102);
-			if (fadeIn)
-				FlxG.sound.music.fadeIn(4, 0, 0.7);
+			if (fadeIn) FlxG.sound.music.fadeIn(4, 0, 1);
 		}
 	}
 

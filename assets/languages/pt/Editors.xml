@@ -203,6 +203,7 @@
 					<str id="paste">Colar</str>
 					<str id="cut">Cortar</str>
 					<str id="delete">Apagar</str>
+					<str id="deletestacked">Apagar Notas Empilhadas</str>
 				</group>
 
 				<str id="topBar.chart">Mapa</str>
