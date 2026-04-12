@@ -628,6 +628,8 @@
 				<str id="loop">REPETIR</str>
 			</group>
 			<str id="tipCustomProperties">Dica: Para aceder a mais dados,\nSegure em Shift quando Editar</str>
+
+			<str id="defaultAnimPrefix">Nome em Dados de Animação</str>
 		</group>
 
 		<group name="StageXMLEditScreen" prefix="stageXMLEditScreen.">
@@ -651,6 +653,14 @@
 			<str id="box">Caixa</str>
 			<str id="character">Personagem</str>
 			<str id="warnings.not-implemented">Criar caixas ainda não foi implementado!</str>
+		</group>
+
+		<group name="StageAnimEdit" prefix="stageSpriteAnimEditScreen.">
+			<str id="win-title">A Editar a Animação "{0}"</str>
+			<str id="anim-title">Dados da Animação</str>
+			<str id="label">Usar Rótulos?</str>
+			<str id="offsets">Posições (X, Y)</str>
+			<str id="forcePlay">Reprodução Forçada?</str>
 		</group>
 	</group>
 

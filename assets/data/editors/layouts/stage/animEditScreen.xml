@@ -1,0 +1,69 @@
+<window width="660" height="320" title="${translate('win-title', [button.animData.name])}">
+	<set name="MARGIN" value="20" />
+	<set name="XOFFSET" value="35" />
+	<set name="YOFFSET" value="40" />
+	<set name="TO" value="64" />
+
+	<exec>
+		function col(c:Int) {
+			return MARGIN + (200 + XOFFSET) * c;
+		}
+
+		function translate(id:String, ?prefix:String, ?args:Array&lt;Dynamic&gt;) {
+			prefix ??= "stageSpriteAnimEditScreen.";
+			return TranslationUtil.translate(prefix + id, args);
+		}
+	</exec>
+
+	<title name="title" x="MARGIN" y="YOFFSET + 6" text="${translate('anim-title')}"/>
+
+	<!-- Alot of terms have already been translated in other places, so they get reused for consistency -->
+	<section>
+		<set name="curY" value="title.y + TO"/>
+		<textbox name="animID" label="${translate('characterAnim.name', 'characterEditor.')}" text="${button.animData.name}" x="col(0)" y="curY" width="120"/>
+		<stepper name="animFPS" label="${translate('characterAnim.fps', 'characterEditor.')}" value="button.animData.fps" x="last.x + last.bWidth + XOFFSET - 20" y="curY" width="100" precision="2" min="1"/>
+		<textbox name="animPrefix" label="${translate('characterAnim.anim', 'characterEditor.')}" text="${button.animData.anim}" x="col(1)" y="curY" width="190"/>
+		<checkbox name="useFrameLabel" text="${translate('label')}" value="button.animData.label" x="last.x + last.bWidth + MARGIN" y="curY + 6"/>
+	</section>
+
+	<section>
+		<set name="curY" value="animID.y + animID.bHeight + YOFFSET"/>
+		<dropdown name="animType" label="${translate('animType', 'stageElementEditScreen.')}" value="button.animData.animType" x="col(0)" y="curY" width="180">
+			<item label="${translate('animType.none', 'stageElementEditScreen.')}" value="0" />
+			<item label="${translate('animType.beat', 'stageElementEditScreen.')}" value="1" />
+			<item label="${translate('animType.loop', 'stageElementEditScreen.')}" value="2" />
+		</dropdown>
+		<textbox name="animIndices" label="${translate('characterAnim.indices', 'characterEditor.')}" text="${CoolUtil.formatNumberRange(button.animData.indices, ', ')}" x="col(1)" y="curY" width="200"/>
+		<stepper name="offsetX" value="button.animData.x" x="col(2)" y="curY" width="100" precision="1"/>
+		<stepper name="offsetY" value="button.animData.y" x="last.x + last.bWidth + XOFFSET - 20" y="curY" width="100" precision="1"/>
+		<label name="offsets" text="${translate('offsets')}" x="offsetX.x" y="offsetX.y" size="15"/>
+	</section>
+
+	<section>
+		<set name="curY" value="self.winHeight - YOFFSET"/>
+		<checkbox name="loop" text="${translate('characterAnim.looping', 'characterEditor.')}" value="button.animData.loop" x="col(0)" y="curY"/>
+		<checkbox name="forcedPlay" text="${translate('forcePlay')}" value="CoolUtil.getDefault(button.animData.forced, false)" x="last.x + last.field.width + XOFFSET" y="curY"/>
+	</section>
+
+	<exec>
+		var prevText:String = animID.label.text;
+		function onUpdate() {
+			if (animID.label.text != prevText)
+				self.winTitle = self.titleSpr.text = translate('win-title', null, [animID.label.text]);
+			prevText = animID.label.text;
+		}
+
+		function onSave() {
+			button.animData.name = animID.label.text;
+			button.animData.animType = animType.value;
+			button.animData.anim = animPrefix.label.text;
+			button.animData.fps = animFPS.value;
+			button.animData.x = offsetX.value; button.animData.y = offsetY.value;
+			button.animData.loop = loop.checked;
+			button.animData.forced = forcedPlay.checked;
+			button.animData.indices = CoolUtil.parseNumberRange(animIndices.label.text);
+			button.animData.label = useFrameLabel.checked;
+			button.updateDisplay();
+		}
+	</exec>
+</window>

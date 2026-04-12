@@ -19,6 +19,8 @@
 		function animTypeToString(animType:AnimType) { 
 			return ["none", "beat", "loop"][animType]; 
 		}
+		if (getEx('anims') == null)
+			setEx('anims', sprite.animDatas.copy());
 	</exec>
 
 	<title name="title" x="20" y="30 + 16" text="${translate('sprite-title')}" />
@@ -68,8 +70,6 @@
 		<checkbox name="antialiasingCheckbox" text="${translate('antialiasing')}" value="sprite.antialiasing" x="col(0)" y="curY" />
 		<radio for="memoryCheck" name="highMemoryRadio" text="${translate('highMemory')}" value="getEx('highMemory')" x="col(1)" y="curY" />
 		<radio for="memoryCheck" name="lowMemoryRadio" text="${translate('lowMemory')}" value="getEx('lowMemory')" x="col(2)" y="curY" />
-
-		<!-- TODO: Animation list -->
 	</section>
 
 	<section> <!-- RIGHT SIDE -->
@@ -81,30 +81,39 @@
 			<camSpacing value="0" />
 
 			<code>
-				buttonlist.addButton.exists = false;
-			</code>
-
-			<!-- <code>
-				import funkin.editors.extra.PropertyButton;
+				//import funkin.backend.utils.XMLUtil.AnimData;
+				import funkin.editors.stage.elements.StageSpriteAnimButton;
 
 				var buttonList = buttonlist; // important for now, since it gets reset after the code is run
-
 				var width = buttonList.buttonSize.x;
 				var height = buttonList.buttonSize.y;
 
-				buttonList.addButton.callback = function() {
-					buttonList.add(new PropertyButton("newProperty", "valueHere", buttonList, width, height, 150, 220, 25));
+				inline function addAnimBtn(animData:AnimData) {
+					var animButton = new StageSpriteAnimButton(animData, buttonList, width, height, width / 5, width / 3);
+					animButton.spriteXML = xml;
+					buttonList.add(animButton);
 				}
 
-				//var defaultAttribs = Stage.DEFAULT_ATTRIBUTES;
-				//for (i in stage.stageXML.attributes()) {
-				//	trace(i, defaultAttribs);
-				//	if (!defaultAttribs.contains(i))
-				//		buttonList.add(new PropertyButton(i, stage.stageXML.get(i), buttonList, width, height, 150, 220, 25));
-				//}
-				for(key =&gt; val in stage.extra)
-					buttonList.add(new PropertyButton(key, val, buttonList, width, height, 150, 220, 25));
-			</code> -->
+				buttonList.addButton.callback = function() {
+					final dummyAnim = {
+						name: TranslationUtil.translate('characterEditor.characterAnim.defaultAnimName'),
+						anim: translate('defaultAnimPrefix'),
+						fps: 24,
+						loop: false,
+						animType: animType.value,
+						x: 0,
+						y: 0,
+						indices: [],
+						label: false
+					};
+					addAnimBtn(dummyAnim);
+				}
+
+				for (animData in getEx('anims')) {
+					if (animData.name == 'idle' &amp;&amp; animData.anim == null) continue; // Skips dummy animation added by XMLUtil.loadSpriteFromXML
+					addAnimBtn(animData);
+				}
+			</code>
 		</buttonlist>
 
 		<text text="${translate('tipCustomProperties')}" x="col(2) - 60" y="self.winHeight - 50" size="15" />
@@ -205,6 +214,37 @@
 			button.xml.set("antialiasing", antialiasingCheckbox.checked);
 			button.xml.set("angle", angleStepper.value);
 			button.xml.set("alpha", alphaStepper.value);
+
+			getEx('anims').clear();
+			var allowedAnims:Array&lt;String&gt; = [for (b in animations.buttons.members) b.animData.name];
+			for (node in button.xml.elementsNamed('anim')) if (!allowedAnims.contains( node.get('name') ))
+				button.xml.removeChild(node);
+
+			for (i in 0...animations.buttons.length) {
+				var actualChildren:Array&lt;Xml&gt; = button.xml.children.filter((f) -&gt; f.nodeType == 0);
+				if (i &gt; actualChildren.length - 1) {
+					var newAnim = Xml.createElement('anim');
+					button.xml.addChild(newAnim);
+					actualChildren.push(newAnim);
+					//trace("added new at " + i + ": " + newAnim);
+				}
+
+				final animData:AnimData = animations.buttons.members[i].animData;
+				final animNode:Xml = actualChildren[i];
+				//trace(animNode + "(" + i + ") before");
+				animNode.set("name", animData.name);
+				animNode.set("type", animTypeToString(animData.animType)); // XMLAnimType is abstract of int, the code is treating it as just int 
+				animNode.set("anim", animData.anim);
+				animNode.set("fps", animData.fps);
+				animNode.set("x", animData.x);
+				animNode.set("y", animData.y);
+				animNode.set("loop", animData.loop);
+				animNode.set("forced", CoolUtil.getDefault(animData.forced, false));
+				animNode.set("indices", CoolUtil.formatNumberRange(animData.indices));
+				animNode.set("label", animData.label);
+				//trace(animNode + "(" + i + ")");
+				getEx('anims').set(animData.name, animData);
+			}
 
 			saveXY(sprite.scrollFactor, "scroll", scrollXStepper, scrollYStepper);
 			saveXY(sprite.scale, "scale", scaleXStepper, scaleYStepper);

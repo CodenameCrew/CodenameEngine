@@ -670,6 +670,8 @@ class StageEditor extends UIState {
 				saveToXml(spriteXML, "color", sprite.color.toWebString(), "#FFFFFF");
 				// TODO: save custom parameters
 				//saveToXml(spriteXML, "flipX", sprite.flipX, false);
+				if (node.hasNode.anim) for (animNode in node.nodes.anim)
+					spriteXML.addChild(animNode.x);
 				newNode = spriteXML;
 			} else if(button is StageCharacterButton) {
 				var button:StageCharacterButton = cast button;

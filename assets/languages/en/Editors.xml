@@ -632,6 +632,8 @@
 				<str id="loop">LOOP</str>
 			</group>
 			<str id="tipCustomProperties">Tip: To access custom properties,\nHold Shift when clicking edit</str>
+
+			<str id="defaultAnimPrefix">Name on Animation Data</str>
 		</group>
 
 		<group name="StageXMLEditScreen" prefix="stageXMLEditScreen.">
@@ -655,6 +657,14 @@
 			<str id="box">Box</str>
 			<str id="character">Character</str>
 			<str id="warnings.not-implemented">Creating a box isnt implemented yet!</str>
+		</group>
+
+		<group name="StageAnimEdit" prefix="stageSpriteAnimEditScreen.">
+			<str id="win-title">Editing "{0}" Anim</str>
+			<str id="anim-title">Anim Data</str>
+			<str id="label">Use Frame Labels?</str>
+			<str id="offsets">Anim Offset (X, Y)</str>
+			<str id="forcePlay">Forced Playing?</str>
 		</group>
 	</group>
 
