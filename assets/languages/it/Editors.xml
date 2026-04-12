@@ -194,6 +194,7 @@
 						<str id="paste">Incolla</str>
 						<str id="cut">Taglia</str>
 						<str id="delete">Elimina</str>
+						<str id="deletestacked">Elimina Note Impilate</str>
 					</group>
 
 					<str id="topBar.chart">Chart</str>
