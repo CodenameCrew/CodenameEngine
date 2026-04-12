@@ -6,7 +6,7 @@
 
 	<exec>
 		function col(c:Int) {
-			return 20 + (200 + XOFFSET) * c;
+			return MARGIN + (200 + XOFFSET) * c;
 		}
 
 		if(sprite.animateAtlas == null) {
@@ -14,6 +14,10 @@
 			previewSprite.frame = sprite.frame;
 
 			self.add(previewSprite);
+		}
+
+		function animTypeToString(animType:AnimType) { 
+			return ["none", "beat", "loop"][animType]; 
 		}
 	</exec>
 
@@ -115,6 +119,7 @@
 
 	<exec>
 		var prevText = spriteTextBox.label.text;
+		var prevID = nameTextBox.label.text;
 		var spriteExists = true;
 		var ratio = sprite.width / sprite.height;
 
@@ -136,8 +141,11 @@
 			prevText = text; 
 		}
 		
-	<exec>
 		function onUpdate() {
+			if (nameTextBox.label.text != prevID)
+				self.winTitle = self.titleSpr.text = translate('win-sprite-title', [nameTextBox.label.text]);
+			prevID = nameTextBox.label.text;
+
 			if(previewSprite == null) return;
 			previewSprite.color = 0xFFFFFFFF; // TODO: Color Wheel
 			previewSprite.skew.x = skewXStepper.value;
@@ -156,12 +164,12 @@
 			setEx("highMemory", highMemoryRadio.checked);
 			setEx("lowMemory", lowMemoryRadio.checked);
 
-			//sprite.x = xStepper.value;
-			//sprite.y = yStepper.value;
-			//sprite.zoomFactor = zoomFactorStepper.value;
-			//sprite.antialiasing = antialiasingCheckbox.checked;
+			sprite.x = xStepper.value;
+			sprite.y = yStepper.value;
+			sprite.zoomFactor = zoomFactorStepper.value;
+			sprite.antialiasing = antialiasingCheckbox.checked;
 			//sprite.color = colorWheel.color;
-			//sprite.spriteAnimType = animType.value;
+			sprite.spriteAnimType = animTypeToString(animType.value);
 			sprite.angle = angleStepper.value;
 			sprite.alpha = alphaStepper.value;
 
@@ -193,7 +201,7 @@
 			button.xml.set("x", xStepper.value);
 			button.xml.set("y", yStepper.value);
 			button.xml.set("zoom", zoomFactorStepper.value);
-			button.xml.set("type", animType.key);
+			button.xml.set("type", animTypeToString(animType.value));
 			button.xml.set("antialiasing", antialiasingCheckbox.checked);
 			button.xml.set("angle", angleStepper.value);
 			button.xml.set("alpha", alphaStepper.value);
@@ -202,6 +210,8 @@
 			saveXY(sprite.scale, "scale", scaleXStepper, scaleYStepper);
 			saveXY(sprite.skew, "skew", skewXStepper, skewYStepper);
 			XMLUtil.loadSpriteFromXML(sprite, button.xml, stage.spritesParentFolder);
+			button.updateInfo();
+			setEx('node', button.xml);
 		}
 	</exec>
 </window>
