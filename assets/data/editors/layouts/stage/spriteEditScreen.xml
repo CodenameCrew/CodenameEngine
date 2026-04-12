@@ -10,7 +10,7 @@
 		}
 
 		if(sprite.animateAtlas == null) {
-			previewSprite =  new FunkinSprite(50, self.winHeight - 100);
+			previewSprite =  new FunkinSprite(MARGIN, self.winHeight - (100 + MARGIN));
 			previewSprite.frame = sprite.frame;
 
 			self.add(previewSprite);
@@ -25,7 +25,7 @@
 		<textbox name="nameTextBox" label="${translate('nameID')}" value="button.getName()"   x="col(0)" y="curY" width="200" height="32" />
 		<textbox name="spriteTextBox" value="getEx('imageFile')" x="last.x + last.bWidth + XOFFSET" y="curY" width="200" height="32" />
 		<stepper name="alphaStepper" label="Alpha" value="sprite.alpha" x="spriteTextBox.x + spriteTextBox.bWidth + XOFFSET" y="curY" precision="2" step="0.01" width="100" />
-		<label name="imageFile" text="${translate('imageFile')}" x="spriteTextBox.x" y="spriteTextBox.y - 14" size="15" />
+		<label name="imageFile" text="${translate('imageFile', [stage.spritesParentFolder])}" x="spriteTextBox.x" y="spriteTextBox.y - 14" size="15" />
 	</section>
 
 	<section> <!-- ROW 2 -->
@@ -111,8 +111,31 @@
 
 	<section if="previewSprite != null">
 		<title name="previewTitle" x="20" y="self.winHeight - 150" text="${translate('transformPreview')}" size="15" />
-    </section>
+	</section>
 
+	<exec>
+		var prevText = spriteTextBox.label.text;
+		var spriteExists = true;
+		var ratio = sprite.width / sprite.height;
+
+		spriteTextBox.onChange = function(text) {
+			var newSprite = stage.spritesParentFolder + text;
+			var animated = Paths.framesExists(newSprite, true);
+			spriteExists = ( animated || Assets.exists(Paths.image(newSprite)) );
+
+			if (text != prevText &amp;&amp; spriteExists) {
+				if (animated) previewSprite.frames = Paths.getFrames(newSprite, previewSprite.animateSettings);
+				else previewSprite.loadGraphic(Paths.image(newSprite));
+				previewSprite.updateHitbox();
+				
+				ratio = previewSprite.width / previewSprite.height;
+				previewSprite.colorTransform.__identity();
+			} else if (!spriteExists) {
+				previewSprite.colorTransform.color = 0xFFEF0202;
+			}
+			prevText = text; 
+		}
+		
 	<exec>
 		function onUpdate() {
 			if(previewSprite == null) return;
@@ -122,11 +145,10 @@
 			previewSprite.angle = angleStepper.value;
 			previewSprite.alpha = alphaStepper.value;
 			previewSprite.antialiasing = antialiasingCheckbox.checked;
-			var ratio = sprite.width / sprite.height;
-			previewSprite.setGraphicSize(50 * scaleXStepper.value * ratio, 50 * scaleYStepper.value);
+			previewSprite.setGraphicSize(85 * scaleXStepper.value * ratio, 85 * scaleYStepper.value);
 			previewSprite.updateHitbox();
 		}
-
+		
 		function onSave() {
 			sprite.name = nameTextBox.label.text;
 			setEx("imageFile", spriteTextBox.label.text);

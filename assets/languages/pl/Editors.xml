@@ -567,7 +567,7 @@
 			<str id="title">Info Sceny</str>
 			<str id="stageName">Nazwa Sceny</str>
 			<str id="spritePath">Ścieżka Plikowa Sprite'a\n(Wymaga Odświeżenia)</str>
-			<str id="startCamPos">Pozycja Startowa Kamery (X, Y)</str>
+			<str id="startCamPos">Pozycja Startowa Kamery\n(X, Y)</str>
 			<str id="zoom">Przybliżenie</str>
 		</group>
 
@@ -582,7 +582,7 @@
 
 			<str id="elementName">Nazwa Elementu</str>
 			<str id="nameID">Nazwa Identyfikatora</str>
-			<str id="imageFile">Plik Obrazu (W TRACKIE PRACY: wymaga odświeżenia)\nIn (${stage.spritesParentFolder})</str>
+			<str id="imageFile">Plik Obrazu\n(in "{0}")</str>
 			<str id="scroll">Przewijanie {0}</str>
 			<str id="scale">Skala {0}</str>
 			<str id="camera">Kamera {0}</str>

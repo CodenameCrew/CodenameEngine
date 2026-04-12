@@ -591,8 +591,9 @@
 			<str id="title">Stage Info</str>
 			<str id="stageName">Stage Name</str>
 			<str id="spritePath">Sprite Path\n(Needs Refresh)</str>
-			<str id="startCamPos">Start Camera Position (X, Y)</str>
+			<str id="startCamPos">Start Camera Position\n(X, Y)</str>
 			<str id="zoom">Zoom</str>
+			<str id="customAttributes">Custom Attributes</str>
 		</group>
 
 		<group name="StageElementEditScreen" prefix="stageElementEditScreen.">
@@ -606,7 +607,7 @@
 
 			<str id="elementName">Element Name</str>
 			<str id="nameID">Name Identifier</str>
-			<str id="imageFile">Image File (WIP: needs reload)\nIn (${stage.spritesParentFolder})</str>
+			<str id="imageFile">Image File\n(in "{0}")</str>
 			<str id="scroll">Scroll {0}</str>
 			<str id="scale">Scale {0}</str>
 			<str id="camera">Camera {0}</str>
@@ -622,6 +623,7 @@
 			<str id="lowMemory">Low Memory</str>
 			<str id="attributes">Attributes</str>
 			<str id="transformPreview">Transform Preview:</str>
+			<str id="animations">Animations</str>
 
 			<str id="animType">Animation Type</str>
 			<group name="AnimTypeDropdown" prefix="animType.">
@@ -644,6 +646,7 @@
 		<group name="StageElement" prefix="stageElement.">
 			<str id="scale">Scale: {0}, {1}</str>
 			<str id="scroll">Scroll: {0}, {1}</str>
+			<str id="unknown">Unknown Sprite:\n{0}</str>
 		</group>
 
 		<group name="StageSprites" prefix="stageSprites.">
