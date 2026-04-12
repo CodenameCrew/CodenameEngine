@@ -659,7 +659,7 @@
 		<group name="StageAnimEdit" prefix="stageSpriteAnimEditScreen.">
 			<str id="win-title">A Editar a Animação "{0}"</str>
 			<str id="anim-title">Dados da Animação</str>
-			<str id="label">Usar Rótulos?</str>
+			<str id="label">Usar Rótulos\nde Quadro?</str>
 			<str id="offsets">Posições (X, Y)</str>
 			<str id="forcePlay">Reprodução Forçada?</str>
 		</group>

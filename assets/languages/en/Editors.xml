@@ -634,7 +634,7 @@
 			</group>
 			<str id="tipCustomProperties">Tip: To access custom properties,\nHold Shift when clicking edit</str>
 
-			<str id="defaultAnimPrefix">Name on Animation Data</str>
+			<str id="defaultAnimPrefix">Name on Anim Data</str>
 		</group>
 
 		<group name="StageXMLEditScreen" prefix="stageXMLEditScreen.">
@@ -664,7 +664,7 @@
 			<str id="win-title">Editing "{0}" Anim</str>
 			<str id="anim-title">Anim Data</str>
 			<str id="label">Use Frame Labels?</str>
-			<str id="offsets">Anim Offset (X, Y)</str>
+			<str id="offsets">Offset (X, Y)</str>
 			<str id="forcePlay">Forced Playing?</str>
 		</group>
 	</group>

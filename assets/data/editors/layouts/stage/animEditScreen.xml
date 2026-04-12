@@ -18,7 +18,8 @@
 		<textbox name="animID" label="${translate('characterAnim.name', 'characterEditor.')}" text="${button.animData.name}" x="col(0)" y="curY" width="120"/>
 		<stepper name="animFPS" label="${translate('characterAnim.fps', 'characterEditor.')}" value="button.animData.fps" x="last.x + last.bWidth + XOFFSET - 20" y="curY" width="100" precision="2" min="1"/>
 		<textbox name="animPrefix" label="${translate('characterAnim.anim', 'characterEditor.')}" text="${button.animData.anim}" x="col(1)" y="curY" width="190"/>
-		<checkbox name="useFrameLabel" text="${translate('label')}" value="button.animData.label" x="last.x + last.bWidth + MARGIN" y="curY + 6"/>
+		<checkbox name="useFrameLabel" value="button.animData.label" x="last.x + last.bWidth + MARGIN" y="curY + 6"/>
+		<label name="labelText" text="${translate('label')}" x="last.x + last.width + MARGIN - 15" size="15"/>
 	</section>
 
 	<section>
@@ -46,6 +47,8 @@
 			if (animID.label.text != prevText)
 				self.winTitle = self.titleSpr.text = translate('win-title', null, [animID.label.text]);
 			prevText = animID.label.text;
+
+			labelText.y = (useFrameLabel.y + (useFrameLabel.height / 2)) - (labelText.height / 2);
 		}
 
 		function onSave() {
