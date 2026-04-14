@@ -261,7 +261,7 @@ class FreeplayState extends MusicBeatState
 		if (!disableAutoPlay && !songInstPlaying && (autoplayElapsed > timeUntilAutoplay)) {
 			if (curPlayingInst != (curPlayingInst = Paths.inst(curSong.name, curDifficulties[curDifficulty], curSong.instSuffix))) {
 				var streamed = false;
-				if (Options.streamedMusic) {
+				/*if (Options.streamedMusic) {
 					var sound = Assets.getMusic(curPlayingInst, true, false);
 					streamed = sound != null;
 
@@ -269,7 +269,7 @@ class FreeplayState extends MusicBeatState
 						FlxG.sound.playMusic(sound, 0);
 						Conductor.changeBPM(curSong.bpm, curSong.beatsPerMeasure, curSong.stepsPerBeat);
 					}
-				}
+				}*/
 
 				if (!streamed) {
 					var huh:Void->Void = function() {
@@ -290,7 +290,7 @@ class FreeplayState extends MusicBeatState
 				}
 			}
 			songInstPlaying = true;
-			if (disableAsyncLoading && !Options.streamedMusic) dontPlaySongThisFrame = true;
+			if (disableAsyncLoading/* && !Options.streamedMusic*/) dontPlaySongThisFrame = true;
 		}
 		#end
 
