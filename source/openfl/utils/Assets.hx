@@ -247,7 +247,7 @@ class Assets
 			var sound = cache.getSound(id);
 			if (isValidSound(sound)) return sound;
 		}
-		#if (lime_vorbis && lime > "7.9.0" && !macro)
+		/*#if (lime_vorbis && lime > "7.9.0" && !macro)
 		if (Options.streamedMusic) {
 			var bytes = getBytes(id);
 			if (bytes == null) return null;
@@ -255,7 +255,7 @@ class Assets
 			var vorbisFile = VorbisFile.fromBytes(bytes);
 			if (vorbisFile != null) return Sound.fromAudioBuffer(AudioBuffer.fromVorbisFile(vorbisFile));
 		}
-		#end
+		#end*/
 		return if (staticFallback) getSound(id, useCache); else null;
 	}
 

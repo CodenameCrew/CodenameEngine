@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Pulling the new commit
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
