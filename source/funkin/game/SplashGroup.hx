@@ -92,8 +92,7 @@ class SplashGroup extends FlxTypedGroup<Splash> {
 	}
 
 	function pregenerateSplashes(splash:Splash) {
-		// make 7 additional splashes
-		for(i in 0...7) {
+		for (i in 0...Flags.MAX_SPLASHES - 1) {
 			var spr = Splash.copyFrom(splash);
 			spr.animation.finishCallback = function(name:String) {
 				spr.active = spr.visible = false;
