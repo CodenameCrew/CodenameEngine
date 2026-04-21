@@ -5,72 +5,55 @@ import flixel.util.typeLimit.OneOfTwo;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 
-class FunkinPacket {
+class FunkinPacket implements haxe.Constraints.IMap<String, Dynamic> {
 	public var status:Int = -1;
-	public var head:String;
-	public var fields:Map<String, String> = new Map<String, String>();
-	public var body:OneOfTwo<String, Bytes>;
+	private var fields:Map<String, Dynamic> = [];
 
-	public function new(_head:String, ?_body:OneOfTwo<String, Bytes> = "", ?_status:Int = -1) {
-		this.head = _head.trim();
-		this.body = (_body is String) ? _body.trim() : _body;
-		this.status = _status;
-	}
+	public function new() { }
 
-	public function set(name:String, value:String):FunkinPacket { fields.set(name, value); return this; }
-	inline public function get(name:String):String { return fields.get(name); }
-	inline public function exists(name:String):Bool { return fields.exists(name); }
-	inline public function remove(name:String):Bool { return fields.remove(name); }
-	inline public function keys():Iterator<String> { return fields.keys(); }
-
-	public function toString(?includeBody:Bool = true):String {
-		var str:String = '';
-		if (head.length > 0) str += '$head\r\n';
-		for (key in keys()) str += '$key: ${get(key)}\r\n';
-		if (!includeBody) return str;
-		if (body is String) str += body;
-		else str += (cast body : Bytes).toString();
-		return str;
-	}
-	public function toBytes():Bytes {
-		var bytes:BytesOutput = new BytesOutput();
-		bytes.writeString(toString(false)); // Absolute Cinema, thanks AbstractAndrew for the Revolutionary Idea 🔥🔥
-		if (body is String) bytes.writeString(body);
-		else if (body is Bytes) bytes.write(body);
-		return bytes.getBytes();
-	}
-
-	public static function fromBytes(bytes:Bytes):Null<FunkinPacket> {
-		var status:Int = -1;
-
-		var header_length:Int = -1;
-		var header:String = "";
-
-		var body_is_string:Bool = false;
-		var body_length:Int = -1;
-		var body:OneOfTwo<String, Bytes> = null;
-
-		try {
-			var offset:Int = 0;
-			status = bytes.getInt32(0); offset += 4;
-			header_length = bytes.getInt32(offset); offset += 4;
-			header = bytes.getString(offset, header_length); offset += header_length;
-			body_is_string = (bytes.get(offset) == 1); offset += 1;
-			body_length = bytes.getInt32(offset); offset += 4;
-			if (body_is_string) body = bytes.getString(offset, body_length);
-			else body = bytes.sub(offset, body_length);
-		} catch(e) {
-			FlxG.log.error('FunkinPacket.fromBytes() failed to parse packet: $e');
-			return null;
-		}
-		var packet:FunkinPacket = new FunkinPacket(null, body, status);
-		for (line in header.split("\r\n")) {
-			var data = line.split(": ");
-			if (data.length < 2) continue;
-			var key:String = data.shift().trim();
-			var value:String = data.shift().trim();
-			packet.set(key, value);
-		}
+	public static function fromJson(json:OneOfTwo<String, haxe.DynamicAccess<Dynamic>>):Null<FunkinPacket> {		
+		var packet = new FunkinPacket();
+		packet.appendJson(json);
 		return packet;
 	}
+
+	public function appendJson(json:OneOfTwo<String, haxe.DynamicAccess<Dynamic>>):Void {
+		var parsedJson:haxe.DynamicAccess<Dynamic> = (json is String) ? haxe.Json.parse(json) : json;
+		if (parsedJson == null) return;
+		
+		for (key => value in parsedJson) this.set(key, value);
+	}
+
+	public function toJson():haxe.DynamicAccess<Dynamic> {
+		var json:haxe.DynamicAccess<Dynamic> = {};
+		for (key => value in fields) json[key] = value;
+		return json;
+	}
+
+	inline public function stringify():String { return haxe.Json.stringify(toJson()); }
+
+	public function toBytes():Bytes {
+		var output = new BytesOutput();
+		output.writeString(haxe.Json.stringify(toJson()));
+		return output.getBytes();
+	}
+
+	inline public function get(key:String):Null<Dynamic> { return fields.get(key); }
+	inline public function set(key:String, value:Dynamic):Void { fields.set(key, value); }
+	inline public function exists(key:String):Bool { return fields.exists(key); }
+	inline public function remove(key:String):Bool { return fields.remove(key); }
+
+	inline public function keys():Iterator<String> { return fields.keys(); }
+	inline public function iterator():Iterator<Dynamic> { return fields.iterator(); }
+	inline public function keyValueIterator():KeyValueIterator<String, Dynamic> { return fields.keyValueIterator(); }
+
+	public function copy():FunkinPacket { 
+		var copy = new FunkinPacket();
+		for (key => value in fields) copy.set(key, value);
+		copy.status = this.status;
+		return copy;
+	}
+
+	inline public function clear():Void { fields.clear(); }
+	inline public function toString():String { return 'FunkinPacket (Status: $status)'; }
 }

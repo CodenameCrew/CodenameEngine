@@ -11,7 +11,6 @@ import hx.ws.Types.MessageType;
 
 /**
 * This is a wrapper for hxWebSockets. Used in-tangem with `FunkinPacket` and `Metrics`.
-* By default, it assums the Connections is to a [CodenameEngine Template Server](https://github.com/ItsLJcool/CodenameEngine-Online-Template).
 * You can override how `haxe.io.Bytes` is decoded by setting `AUTO_DECODE_PACKETS`. By default it will attempt to deserialize the packet into a `FunkinPacket`.
 * It also has `Metrics` which keeps track of the amount of bytes sent and received.
 **/
@@ -77,7 +76,7 @@ class FunkinWebSocket implements IFlxDestroyable {
 	public var onError:FlxTypedSignal<Dynamic->Void> = new FlxTypedSignal<Dynamic->Void>();
 
 	/**
-	* The URL to connect to, including the protocol (ws:// or wss://). Currently wss:// (SSH) is not supported.
+	* The URL to connect to, including the protocol (ws:// or wss://). Currently wss:// (Secure WebSocket) is not supported.
 	**/
 	public var url:String;
 
@@ -88,17 +87,10 @@ class FunkinWebSocket implements IFlxDestroyable {
 	public function get_handshakeHeaders():Map<String, String> { return this._ws.additionalHeaders; }
 
 	/**
-	* Since not all servers are going to be the Custom CodenameEngine Template Server, this allows you to receive the packet as raw Bytes, if you want to decode it yourself.
-	* Not all incomming data will be bytes, since Strings are just... strings, there is no reason to have special handling for them.
+	* If true, the packets will be automatically deserialized into a `FunkinPacket` if possible.
+	* Otherwise you will handle everything manually.
 	**/
 	public var AUTO_DECODE_PACKETS:Bool = true;
-
-	/**
-	* This is only called if the `Metrics` failed to update the bytes sent or received.
-	* So you can handle and update the data yourself.
-	* If Bool is true, the data was being sent. Otherwise it was being received.
-	**/
-	private var updateMetricCustom:(Metrics, Bool, Dynamic)->Void = null;
 
 	/**
 	* @param _url The URL to connect to, including the protocol (ws:// or wss://). Currently wss:// (SSH) is not supported.
@@ -107,25 +99,60 @@ class FunkinWebSocket implements IFlxDestroyable {
 		this.url = _url;
 
 		this._ws = new WebSocket(this.url, false);
-		this._ws.onopen = () -> onOpen.dispatch();
-		this._ws.onmessage = (message:MessageType) -> {
-			var data:OneOfThree<String, Bytes, FunkinPacket> = "";
-			switch(message) {
-				case StrMessage(content):
-					data = content;
-					metrics.updateBytesReceived(Bytes.ofString(content).length);
-				case BytesMessage(buffer):
-					metrics.updateBytesReceived(buffer.length);
-					data = buffer.readAllAvailableBytes();
-					if (!AUTO_DECODE_PACKETS) return onMessage.dispatch(data);
-					var packet:FunkinPacket = FunkinPacket.fromBytes(data);
-					if (packet == null) return onMessage.dispatch(data);
-					data = packet;
-			}
-			onMessage.dispatch(data);
-		};
-		this._ws.onclose = () -> onClose.dispatch();
-		this._ws.onerror = (error) -> onError.dispatch(error);
+		this._ws.onopen = _onOpen;
+		this._ws.onmessage = _onMessage;
+		this._ws.onclose = _onClose;
+		this._ws.onerror = _onError;
+	}
+
+	/**
+	* Internal function for handling the onMessage event.
+	* @param message The message to handle from hxWebSockets.
+	**/
+	private function _onMessage(message:MessageType):Void {
+		var data:OneOfThree<String, Bytes, FunkinPacket> = "";
+
+		switch(message) {
+			case StrMessage(content):
+				data = content;
+				metrics.updateBytesReceived(Bytes.ofString(content).length);
+				// Can we just have a switch break in Haxe for the life of me bro 💔💔💔
+				if (AUTO_DECODE_PACKETS) {
+					var packet:FunkinPacket = FunkinPacket.fromJson(cast(data, String));
+					if (packet != null) {		
+						packet.status = 200;
+
+						data = packet;
+					}
+				}
+			case BytesMessage(buffer):
+				metrics.updateBytesReceived(buffer.length);
+				data = buffer.readAllAvailableBytes();
+			default: trace('Unknown message type: ${message}');
+		}
+
+		onMessage.dispatch(data);
+	}
+
+	/**
+	* Internal function for handling the onOpen event.
+	**/
+	private function _onOpen():Void {
+		onOpen.dispatch();
+	}
+
+	/**
+	* Internal function for handling the onClose event.
+	**/
+	private function _onClose():Void {
+		onClose.dispatch();
+	}
+
+	/**
+	* Internal function for handling the onError event.
+	**/
+	private function _onError(error:Dynamic):Void {
+		onError.dispatch(error);
 	}
 
 	/**
@@ -151,14 +178,21 @@ class FunkinWebSocket implements IFlxDestroyable {
 	/**
 	* Sends data to the server.
 	* @param data The data to send.
+	* @return true if the data was sent successfully, false if it failed.
 	**/
 	public function send(data:Dynamic):Bool {
 		try {
-			this._ws.send(data);
-			if (data is String) metrics.updateBytesSent(Bytes.ofString(data).length);
-			else if (data is Bytes) metrics.updateBytesSent(data.length);
-			else if (data is FunkinPacket) metrics.updateBytesSent(data.toBytes().length);
-			else if (metrics.IS_LOGGING && updateMetricCustom != null) updateMetricCustom(metrics, true, data);
+			if (data is FunkinPacket)
+				this._ws.send(data.stringify());
+			else
+				this._ws.send(data);
+
+			if (metrics.IS_LOGGING) {
+				if (data is String) metrics.updateBytesSent(Bytes.ofString(data).length);
+				else if (data is Bytes) metrics.updateBytesSent(data.length);
+				else if (data is FunkinPacket) metrics.updateBytesSent(data.toBytes().length);
+			}
+
 			return true;
 		} catch(e) {
 			Logs.traceColored([
