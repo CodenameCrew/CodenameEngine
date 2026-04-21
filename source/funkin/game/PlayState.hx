@@ -1667,7 +1667,7 @@ class PlayState extends MusicBeatState
 					if (strLine.characters != null) // Alt anim Idle
 						for (character in strLine.characters) {
 							if (character == null) continue;
-							character.idleSuffix = event.params[1] ? "-alt" : "";
+							character.idleSuffix = event.params[1] ? strLine.defaultAnimSuffix : "";
 						}
 				}
 			case "Play Animation":
