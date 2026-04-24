@@ -6,8 +6,14 @@ import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 
 class FunkinPacket implements haxe.Constraints.IMap<String, Dynamic> {
+	// Status of the packet. 200 is an OK response.
 	public var status:Int = -1;
+
+	// The JSON fields of the packet, as a Map.
 	private var fields:Map<String, Dynamic> = [];
+
+	// If the recieved data is binary or contains binary, this will contain the raw bytes.
+	public var bytes:Bytes = null;
 
 	public function new() { }
 
@@ -49,7 +55,7 @@ class FunkinPacket implements haxe.Constraints.IMap<String, Dynamic> {
 
 	public function copy():FunkinPacket { 
 		var copy = new FunkinPacket();
-		for (key => value in fields) copy.set(key, value);
+		copy.fields = this.fields.copy();
 		copy.status = this.status;
 		return copy;
 	}

@@ -127,7 +127,13 @@ class FunkinWebSocket implements IFlxDestroyable {
 				}
 			case BytesMessage(buffer):
 				metrics.updateBytesReceived(buffer.length);
-				data = buffer.readAllAvailableBytes();
+				if (AUTO_DECODE_PACKETS) {
+					var packet:FunkinPacket = new FunkinPacket();
+					packet.bytes = buffer.readAllAvailableBytes();
+					packet.status = 200;
+					data = packet;
+				} else
+					data = buffer.readAllAvailableBytes();
 			default: trace('Unknown message type: ${message}');
 		}
 
