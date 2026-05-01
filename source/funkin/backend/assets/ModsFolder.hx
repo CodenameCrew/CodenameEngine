@@ -120,11 +120,7 @@ class ModsFolder {
 
 			sortForge.add(Std.string(sortingOptions.descending ? 1 : 0));
 
-			final modeId:String = switch (sortingOptions.mode) {
-			    case ModSortingMode.CLEAN: "c";
-				case ModSortingMode.ALPHABETICAL: "a";
-			};
-			sortForge.add(modeId);
+			sortForge.add(sortingOptions.mode);
 			
 			final sortForgePure:String = sortForge.toString();
 			final sortForgeHashed:String = haxe.crypto.Sha256.encode(sortForgePure);
@@ -234,14 +230,14 @@ class ModSortingController {
 /**
  * The mods list can be sorted in all of the ways provided by this enum.
  */
-enum ModSortingMode {
+enum abstract ModSortingMode(String) {
     /**
      * Use the original list received from reading the directory. This may depend
      * on the current platform, but remains for legacy purposes.
      */
-    CLEAN;
+    var CLEAN;
     /**
      * The list should be in alphabetical order.
      */
-    ALPHABETICAL;
+    var ALPHABETICAL;
 }
