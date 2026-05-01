@@ -115,8 +115,10 @@ class ModsFolder {
 		
 		if (sortingOptions != null) {
 		    var sortForge:StringBuf = new StringBuf();
-			for (i in mods)
-			    sortForge.add(i);	
+			for (i in mods) {
+			    sortForge.add(i);
+				sortForge.add("::");
+			}
 
 			sortForge.add(Std.string(sortingOptions.descending ? 1 : 0));
 
