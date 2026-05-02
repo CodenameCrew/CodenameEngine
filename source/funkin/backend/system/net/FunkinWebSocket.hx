@@ -193,6 +193,7 @@ class FunkinWebSocket implements IFlxDestroyable {
 			else
 				this._ws.send(data);
 
+			// Do an outside check to see if it wants to log before we try decoding stuff into raw bytes, to save on some unnecessary work.
 			if (metrics.IS_LOGGING) {
 				if (data is String) metrics.updateBytesSent(Bytes.ofString(data).length);
 				else if (data is Bytes) metrics.updateBytesSent(data.length);
