@@ -75,7 +75,7 @@ class EventsData {
 				defValue: "In"
 			},
 			{name: "Mode", type: TDropDown(['direct', 'stage']), defValue: "direct"},
-			{name: "Multiplicative?", type: TBool, defValue: true}
+			{name: "Multiplicative?", type: TBool, defValue: false}
 		],
 		"Camera Modulo Change" => [
 			{name: "Modulo Interval", type: TInt(1, 9999999, 1), defValue: 4},
