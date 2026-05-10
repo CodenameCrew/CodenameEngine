@@ -1,24 +1,19 @@
 package funkin.game;
 
-import haxe.xml.Access;
-
-import hscript.IHScriptCustomBehaviour;
-
 import funkin.game.Stage.StageCharPos;
 import funkin.game.Stage.StageCharPosInfo;
-
 import funkin.backend.utils.XMLUtil;
-
 import funkin.backend.scripting.Script;
-import funkin.backend.scripting.ScriptPack;
 import funkin.backend.scripting.events.stage.StageXMLEvent;
-
 import funkin.backend.system.interfaces.IBeatReceiver;
 
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
-
+import flixel.math.FlxRect;
 import flixel.util.FlxSignal.FlxTypedSignal;
+
+import haxe.xml.Access;
+import hscript.IHScriptCustomBehaviour;
 
 using StringTools;
 
@@ -29,9 +24,11 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	private static final __instanceFields = Type.getInstanceFields(StageLayer);
 
 	public var name:String;
-
-	private var stageSprites:Map<String, Int> = [];
-	private var stageLayers:Map<String, Int> = [];
+	public var x(get, never):Float;
+	public var y(get, never):Float;
+	public var width(get, never):Float;
+	public var height(get, never):Float;
+	public var bounds(get, never):FlxRect;
 
 	public var onAddSprite:FlxTypedSignal<FlxObject -> Void> = new FlxTypedSignal();
 	public var onAddLayer:FlxTypedSignal<StageLayer -> Void> = new FlxTypedSignal();
@@ -49,19 +46,24 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		this.name = name;
 	}
 
+	private var stageSprites:Map<String, Int> = [];
+	private var stageLayers:Map<String, Int> = [];
+
 	public function addSprite(name:String, spr:FlxObject):FlxObject {
+		if(stageSprites.exists(name)) return spr;
 		this.add(spr);
 		stageSprites.set(name, this.members.indexOf(spr)); // TODO: faster way to set the index
-
+		updateBounds();
 		onAddSprite.dispatch(spr);
 
 		return spr;
 	}
 
 	public function addLayer(name:String, layer:StageLayer):StageLayer {
+		if(stageLayers.exists(name)) return layer;
 		this.add(layer);
 		stageLayers.set(name, this.members.indexOf(layer));
-		
+		updateBounds();
 		onAddLayer.dispatch(layer);
 
 		return layer;
@@ -94,8 +96,114 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		if(stageLayers.exists(name)) return this.members[stageLayers[name]] = val;
 		return null;
 	}
+
+	override function destroy() {
+		super.destroy();
+		_bounds.put();
+	}
+
+	private var _bounds:FlxRect = FlxRect.get();
+	private function get_bounds():FlxRect {
+		return _bounds;
+	}
+
+	private function updateBounds() {
+		if(this.length == 0) return;
+		var x = findMinX();
+		var y = findMinY();
+		var width = findMaxX() - x;
+		var height = findMaxY() - y;
+
+		_bounds.set(x, y, width, height);
+	}
+
+	// From FlxSpriteGroup
+
+	private function findMinX():Float {
+		if(this.length == 0) return 0;
+		var value = Math.POSITIVE_INFINITY;
+
+		for(m in this.members) {
+			if(m == null) continue;
+
+			var minX:Float;
+			if(m is StageLayer) minX = cast(m, StageLayer).findMinX();
+			else minX = cast(m, FlxObject).x;
+
+			if (minX < value) value = minX;
+		}
+
+		return value;
+	}
+
+	private function findMaxX():Float {
+		if(this.length == 0) return 0;
+		var value = Math.NEGATIVE_INFINITY;
+
+		for(m in this.members) {
+			if(m == null) continue;
+
+			var maxX:Float;
+			if(m is StageLayer) maxX = cast(m, StageLayer).findMaxX();
+			else {
+				var obj:FlxObject = cast m;
+				maxX = obj.x + obj.width;
+			}
+
+			if (maxX > value) value = maxX;
+		}
+
+		return value;
+	}
+
+	private function findMinY():Float {
+		if(this.length == 0) return 0;
+		var value = Math.POSITIVE_INFINITY;
+
+		for(m in this.members) {
+			if(m == null) continue;
+
+			var minY:Float;
+			if(m is StageLayer) minY = cast(m, StageLayer).findMinY();
+			else minY = cast(m, FlxObject).y;
+
+			if (minY < value) value = minY;
+		}
+
+		return value;
+	}
+
+	private function findMaxY():Float {
+		if(this.length == 0) return 0;
+		var value = Math.NEGATIVE_INFINITY;
+
+		for(m in this.members) {
+			if(m == null) continue;
+
+			var maxY:Float;
+			if(m is StageLayer) maxY = cast(m, StageLayer).findMaxY();
+			else {
+				var obj:FlxObject = cast m;
+				maxY = obj.y + obj.height;
+			}
+
+			if (maxY > value) value = maxY;
+		}
+
+		return value;
+	}
+
+	private function get_x():Float 
+		return _bounds.x;
+	private function get_y():Float 
+		return _bounds.y;
+	private function get_width():Float
+		return _bounds.width;
+	private function get_height():Float 
+		return _bounds.height;
 }
 
+// TODO: make it preload
 class NewStage extends StageLayer {
 	private static final __instanceFields = Type.getInstanceFields(NewStage);
 
@@ -175,11 +283,9 @@ class NewStage extends StageLayer {
 
 	private var stageEvent:StageXMLEvent;
 
-	private function loadStage(loadAll:Bool = false) {
+	public function loadStage(loadAll:Bool = false) {
 		if (allowScripts) {
 			script = Script.create(scriptFilePath);
-			// Performed by "onStageScriptLoad"
-			// PlayState.instance.scripts.add(stageScript);
 			if (onStageScriptLoad != null) onStageScriptLoad(script);
 			script.load();
 		}
@@ -209,27 +315,7 @@ class NewStage extends StageLayer {
 
 		// some way to tag that the sprites are from the group
 		checkMemoryMode(xmlFile, loadAll, elems);
-		/*
-		for (node in xmlFile.elements)
-		{
-			if (node.name == "high-memory" && (!Options.lowMemoryMode || forceLoadAll))
-				for (e in node.elements)
-					__pushNcheckNode(elems, e);
-			else if (node.name == "low-memory" && (Options.lowMemoryMode || forceLoadAll))
-				for (e in node.elements)
-					__pushNcheckNode(elems, e);
-			else
-				__pushNcheckNode(elems, node);
-		}
-		*/
 
-		// This should be performed by the "onXMLLoaded" callback
-		/*
-		if (PlayState.instance == state) {
-			event = EventManager.get(StageXMLEvent).recycle(this, stageXML, elems);
-			elems = PlayState.instance.gameAndCharsEvent("onStageXMLParsed", event).elems;
-		}
-		*/
 		if(onXMLLoaded != null) {
 			stageEvent = EventManager.get(StageXMLEvent).recycle(this, xmlFile, elems);
 			elems = onXMLLoaded(stageEvent);
@@ -244,15 +330,6 @@ class NewStage extends StageLayer {
 		startCam.x = Std.parseFloat(xmlFile.getAtt("startCamPosX")).getDefaultFloat(0);
 		startCam.y = Std.parseFloat(xmlFile.getAtt("startCamPosY")).getDefaultFloat(0);
 		defaultZoom = Std.parseFloat(xmlFile.getAtt("zoom")).getDefaultFloat(1.05);
-		/*
-		var parsed:Null<Float>;
-		if ((parsed = Std.parseFloat(xmlFile.getAtt("startCamPosX"))).isNotNull())
-			startCam.x = parsed;
-		if ((parsed = Std.parseFloat(xmlFile.getAtt("startCamPosY"))).isNotNull())
-			startCam.y = parsed;
-		if ((parsed = Std.parseFloat(xmlFile.getAtt("zoom"))).isNotNull())
-			defaultZoom = parsed;
-		*/
 	}
 
 	private inline function loadCustomAttributes() {
@@ -349,7 +426,6 @@ class NewStage extends StageLayer {
 			}
 
 			// idk lemme check anyways just in case scripts did smth  - Nex
-			//if (event != null) PlayState.instance.gameAndCharsEvent("onPostStageCreation", event);
 			if(onPostStageCreation != null && stageEvent != null)
 				onPostStageCreation(stageEvent);
 
@@ -358,7 +434,6 @@ class NewStage extends StageLayer {
 				var script = info.getScript();
 				if (script == null) continue;
 
-				//PlayState.instance.scripts.remove(script);
 				if(onRemoveInfo != null)
 					onRemoveInfo(script);
 				script.destroy();
@@ -451,7 +526,6 @@ class NewStage extends StageLayer {
 	**/
 	public function destroySilently(destroySprites:Bool = true, destroyScript:Bool = true) {
 		if (destroyScript && script != null) {
-			// if (PlayState.instance == state && PlayState.instance.scripts != null) PlayState.instance.scripts.remove(stageScript);
 			if (onSilentDestroy != null) onSilentDestroy(this.script);
 			script.destroy();
 		}
@@ -463,7 +537,6 @@ class NewStage extends StageLayer {
 	}
 
 	override function destroy() {
-		// if (PlayState.instance == state && PlayState.instance.scripts != null) PlayState.instance.gameAndCharsCall("onStageDestroy", [this]);
 		if (onStageDestroy != null) onStageDestroy(this);
 		script?.call("destroy");
 		destroySilently();
@@ -472,23 +545,18 @@ class NewStage extends StageLayer {
 	@:dox(hide) private function checkMemoryMode(xml:Access, loadAll:Bool, elems:Array<Access>) {
 		for(node in xml.elements) {
 			if (node.name == "high-memory" && (!Options.lowMemoryMode || loadAll))
-				for (e in node.elements)
-					pushNode(e, elems);
+				for (e in node.elements) pushNode(e, elems);
 			else if (node.name == "low-memory" && (Options.lowMemoryMode || loadAll))
-				for (e in node.elements)
-					pushNode(e, elems);
-			else if (node.name == "layer")
-				checkMemoryMode(node, loadAll, elems); // recursive check in layers
-			else
-				pushNode(node, elems);
+				for (e in node.elements) pushNode(e, elems);
+			else if (node.name == "layer") checkMemoryMode(node, loadAll, elems); // recursive check in layers
+			else pushNode(node, elems);
 		}
 	}
 
 	@:dox(hide) private function pushNode(node:Access, elems:Array<Access>) {
 		elems.push(node);
 		if ((node.name == "use-extension" || node.name == "extension" || node.name == "ext") && XMLImportedScriptInfo.shouldLoadBefore(node))
-			if (onPrepareInfo != null) // :3
-				onPrepareInfo(node);
+			if (onPrepareInfo != null) onPrepareInfo(node);
 	}
 
 	// bruh...
@@ -511,18 +579,12 @@ class NewStage extends StageLayer {
 	public var stageFile(get, never):String;
 	public var stageName(get, set):String;
 	public var stageScript(get, never):Script;
-
 	public var characterPoses(get, never):Map<String, StageCharPos>;
 
 	function get_stageScript():Script { return this.script; }
-
 	function get_stagePath():String { return this.xmlFilePath; }
-
 	function get_stageFile():String { return this.fileName; }
-
 	function get_stageName():String { return this.name; }
-
 	function set_stageName(name:String):String { return this.name = name; }
-
 	function get_characterPoses():Map<String, StageCharPos> { return this.characterPosLookup; }
 }

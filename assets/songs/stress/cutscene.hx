@@ -37,16 +37,16 @@ function create() {
 	tankman.addAnim('p2', 'TANK TALK 3 P2 UNCUT', 0, false);
 	tankman.playAnim('p1');
 
-	pico = new FunkinSprite(game.gf.x + game.gf.globalOffset.x + 150, game.gf.y + game.gf.globalOffset.y + 395);
+	pico = new FunkinSprite(game.gf.x + game.gf.globalOffset.x - 615, game.gf.y + game.gf.globalOffset.y - 130);
 	pico.antialiasing = true;
 	pico.loadSprite(Paths.image('game/cutscenes/tank/stress-pico'));
-	pico.addAnim('die', 'GF Time to Die sequence', 24, false);
-	pico.addAnim('saves', 'Pico Saves them sequence', 24, false);
-	pico.addAnim('idle', 'Pico Dual Wield on Speaker idle', 24, true);
+	pico.addAnim('die', 'die', 24, false, null, null, 0, 0, null, true);
+	pico.addAnim('saves', 'saves', 24, false, null, null, 0, 0, null, true);
+	pico.addAnim('idle', 'idle', 24, true, null, null, 0, 0, null, true);
 	pico.scrollFactor.set(0.95, 0.95);
 	pico.playAnim("idle");
 	pico.visible = false;
-	game.insert(game.members.indexOf(game.gf) + 1, pico);
+	game.insert(game.members.indexOf(game.gf) + 2, pico);
 
 	game.insert(game.members.indexOf(game.dad) + 1, tankman);
 	game.dad.visible = false;
@@ -59,7 +59,11 @@ function update(elapsed) {
 			lipSync(tankman, 0, 16750);
 			if (stressCutscene.time > 15100) {
 				step = 1;
-				focusOn(game.gf);
+
+				//focusOn(game.gf);
+				game.camFollow.x += 350;
+				game.camFollow.y -= 200;
+
 				pico.visible = true;
 				pico.playAnim('die', true);
 
@@ -118,7 +122,7 @@ function update(elapsed) {
 }
 
 function lipSync(char:FunkinSprite, begin:Float, end:Float) {
-	char.animateAtlas.anim.curFrame = Std.int(FlxMath.remapToRange(stressCutscene.time, begin, end, 0, char.animateAtlas.anim.length-1));
+	char.anim.curAnim.curFrame = Std.int(FlxMath.remapToRange(stressCutscene.time, begin, end, 0, char.anim.curAnim.numFrames - 1));
 }
 
 function focusOn(char, snap:Bool = false) {

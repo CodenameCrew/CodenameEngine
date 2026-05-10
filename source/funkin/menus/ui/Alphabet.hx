@@ -36,7 +36,7 @@ final class AlphabetComponent {
 	public var cos:Float;
 	public var scaleX:Float;
 	public var scaleY:Float;
-	
+
 	public var flipX:Bool;
 	public var flipY:Bool;
 
@@ -281,7 +281,7 @@ class Alphabet extends FlxSprite {
 				var anim = getLetterAnim(letter, data, __component, i);
 				//if (cantrace)
 					//trace(anim.name + " | " + __component.anim + " | " + frames.frames[anim.frames[0]]);
-				advance = (Math.isNaN(advance)) ? getAdvance(letter, anim, data) : advance;
+				advance = (Math.isNaN(advance) && i >= data.startIndex) ? getAdvance(letter, anim, data) : advance;
 
 				if (anim == null || __renderData.alpha <= 0.0)
 					continue;
@@ -551,7 +551,7 @@ class Alphabet extends FlxSprite {
 						angle: angle,
 						cos: angleCos,
 						sin: angleSin,
-						
+
 						flipX: node.get("flipX") == "true",
 						flipY: node.get("flipY") == "true",
 
@@ -607,7 +607,7 @@ class Alphabet extends FlxSprite {
 							angle: angle,
 							cos: angleCos,
 							sin: angleSin,
-							
+
 							flipX: xFlip,
 							flipY: yFlip,
 
@@ -630,7 +630,7 @@ class Alphabet extends FlxSprite {
 						angle: angle,
 						cos: angleCos,
 						sin: angleSin,
-						
+
 						flipX: xFlip,
 						flipY: yFlip,
 
@@ -664,7 +664,7 @@ class Alphabet extends FlxSprite {
 				var xScale:Float = Std.parseFloat(node.get("scaleX")).getDefaultFloat(1.0);
 				var yScale:Float = Std.parseFloat(node.get("scaleY")).getDefaultFloat(1.0);
 				var advance:Float = Std.parseFloat(node.get("advance"));
-				
+
 				var xFlip = node.get("flipX") == "true";
 				var yFlip = node.get("flipY") == "true";
 
@@ -685,7 +685,7 @@ class Alphabet extends FlxSprite {
 						angle: angle,
 						cos: angleCos,
 						sin: angleSin,
-						
+
 						flipX: xFlip,
 						flipY: yFlip,
 

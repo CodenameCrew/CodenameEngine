@@ -4,7 +4,7 @@ import flixel.util.FlxTimer;
 import funkin.backend.system.Conductor;
 
 class GameplayOptions extends TreeMenuScreen {
-	var __metronome = FlxG.sound.load(Paths.sound('editors/charter/metronome'));
+	var __metronome = FlxG.sound.load(Paths.sound(Flags.DEFAULT_CHARTER_METRONOME_SOUND));
 	var offsetSetting:NumOption;
 
 	public function new() {
@@ -67,7 +67,14 @@ class AdvancedGameplayOptions extends TreeMenuScreen {
 	public function new() {
 		super('optionsMenu.advanced', 'optionsTree.gameplay.advanced-desc', 'GameplayOptions.Advanced.');
 
-		add(new Checkbox(getNameID('streamedMusic'), getDescID('streamedMusic'), 'streamedMusic'));
-		add(new Checkbox(getNameID('streamedVocals'), getDescID('streamedVocals'), 'streamedVocals'));
+		// Remove locked whenever this PR from FunkinCrew is merged.
+		// https://github.com/FunkinCrew/lime/pull/57
+		for (checkbox in [
+			new Checkbox(getNameID('streamedMusic'), getDescID('streamedMusic'), 'streamedMusic'),
+			new Checkbox(getNameID('streamedVocals'), getDescID('streamedVocals'), 'streamedVocals')
+		]) {
+			checkbox.locked = true;
+			add(checkbox);
+		}
 	}
 }
