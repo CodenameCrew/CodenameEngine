@@ -635,10 +635,10 @@ class PlayState extends MusicBeatState
 	}
 
 	private inline function get_curStage()
-		return stage == null ? "" : stage.stageName;
+		return stage == null ? "" : stage.name;
 
 	private inline function set_curStage(name:String) {
-		if (stage != null) stage.stageName = name;
+		if (stage != null) stage.name = name;
 		return name;
 	}
 

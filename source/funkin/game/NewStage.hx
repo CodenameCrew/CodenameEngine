@@ -41,7 +41,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		return stageLayers.exists(name) ? cast this.members[stageLayers[name]] : null;
 	}
 
-	public function new(name:String = "stage") {
+	public function new(name:String = "stage_layer") {
 		super();
 		this.name = name;
 	}
@@ -49,16 +49,45 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	private var stageSprites:Map<String, Int> = [];
 	private var stageLayers:Map<String, Int> = [];
 
+	// Stage Sprite Management
 	public function addSprite(name:String, spr:FlxObject):FlxObject {
 		if(stageSprites.exists(name)) return spr;
 		this.add(spr);
+
 		stageSprites.set(name, this.members.indexOf(spr)); // TODO: faster way to set the index
 		updateBounds();
+
 		onAddSprite.dispatch(spr);
 
 		return spr;
 	}
 
+	public function insertSprite(name:String, spr:FlxObject, index:Int):FlxObject {
+		if (stageSprites.exists(name)) return spr;
+		this.insert(index, spr);
+
+		stageSprites.set(name, this.members.indexOf(spr)); // TODO: faster way to set the index
+		updateBounds();
+
+		onAddSprite.dispatch(spr);
+
+		return spr;
+	}
+
+	public function removeSprite(name:String, splice:Bool = false):Bool {
+		if (!stageSprites.exists(name)) return false;
+
+		var index:Int = stageSprites.get(name);
+		if (this.members[index] == null) return false;
+
+		this.remove(this.members[index], splice);
+		stageSprites.remove(name);
+		updateBounds();
+		
+		return true;
+	}	
+
+	// Stage Layer Management
 	public function addLayer(name:String, layer:StageLayer):StageLayer {
 		if(stageLayers.exists(name)) return layer;
 		this.add(layer);
@@ -67,6 +96,29 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		onAddLayer.dispatch(layer);
 
 		return layer;
+	}
+
+	public function insertLayer(name:String, layer:StageLayer, index:Int):StageLayer {
+		if (stageLayers.exists(name)) return layer;
+		this.insert(index, layer);
+		stageLayers.set(name, this.members.indexOf(layer));
+		updateBounds();
+		onAddLayer.dispatch(layer);
+
+		return layer;
+	}
+
+	public function removeLayer(name:String, splice:Bool = false):Bool {
+		if (!stageLayers.exists(name)) return false;
+
+		var index:Int = stageLayers.get(name);
+		if (this.members[index] == null) return false;
+
+		this.remove(this.members[index], splice);
+		stageLayers.remove(name);
+		updateBounds();
+
+		return true;
 	}
 
 	public function beatHit(curBeat:Int) {
@@ -103,12 +155,13 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	}
 
 	private var _bounds:FlxRect = FlxRect.get();
-	private function get_bounds():FlxRect {
-		return _bounds;
-	}
+	private function get_bounds():FlxRect { return _bounds; }
 
 	private function updateBounds() {
-		if(this.length == 0) return;
+		if (this.length == 0) return;
+
+		// TODO: Optimize the code so that we don't run 4 for loops every time we update the bounds.
+		// We should just do one giant loop and check the bounds all here without wasting time, keep the other functions for specific checks.
 		var x = findMinX();
 		var y = findMinY();
 		var width = findMaxX() - x;
@@ -249,6 +302,7 @@ class NewStage extends StageLayer {
 	public var onRemoveInfo:Script -> Void;
 	
 	public var onXMLLoaded:(StageXMLEvent)->Array<Access> = null;
+	public var onNodeInitalize:(Access)->Dynamic = null;
 	public var onNodeLoaded:(Access, Dynamic)->Dynamic = null;
 	public var onNodeFinished:(Access, Dynamic)->Void = null;
 	public var onXMLPostLoaded:(Access, Array<Access>)->Array<Access> = null;
@@ -287,6 +341,13 @@ class NewStage extends StageLayer {
 		if (allowScripts) {
 			script = Script.create(scriptFilePath);
 			if (onStageScriptLoad != null) onStageScriptLoad(script);
+			script.setParent(PlayState.instance);
+			script.set("stage", this);
+			script.set("add", this.add);
+			script.set("remove", this.remove);
+			script.set("insert", this.insert);
+			script.set("replace", this.replace);
+			script.set("members", this.members);
 			script.load();
 		}
 
@@ -316,7 +377,7 @@ class NewStage extends StageLayer {
 		// some way to tag that the sprites are from the group
 		checkMemoryMode(xmlFile, loadAll, elems);
 
-		if(onXMLLoaded != null) {
+		if (onXMLLoaded != null) {
 			stageEvent = EventManager.get(StageXMLEvent).recycle(this, xmlFile, elems);
 			elems = onXMLLoaded(stageEvent);
 		}
@@ -340,16 +401,20 @@ class NewStage extends StageLayer {
 
 	private function loadLayer(layer:StageLayer, elems:Array<Access>) {
 		for(node in elems) {
-			var sprite = switch(node.name) {
+			// If `onNodeInitalize` returns a valid value, then why waste time on checking other values, since we should only care about what the user
+			// sets it too. Optimizations be like:
+			var sprite:Dynamic = (onNodeInitalize != null) ? onNodeInitalize(node) : null;
+			if (sprite == null) sprite = switch(node.name) {
 				case "layer":
 					if (!node.has.name) continue;
+
 					var layerName = node.att.name;
 					var layer = new StageLayer(layerName);
 					// recursive so it will allow nested layers
 					loadLayer(layer, [for(n in node.elements) n]);
 					addLayer(layerName, layer);
 				case "sprite" | "spr" | "sparrow":
-					if (!node.has.sprite || !node.has.name) continue;
+					if (!node.has.name) continue;
 
 					var spr = XMLUtil.createSpriteFromXML(node, spritesParentFolder, LOOP);
 					addSprite(spr.name, spr);
@@ -381,7 +446,7 @@ class NewStage extends StageLayer {
 					if (!node.has.name) continue;
 					setCharPos(node.att.name, node);
 				case "ratings" | "combo":
-					if(onRatingSet == null) continue;
+					if (onRatingSet == null) continue;
 					var ratingPos = {
 						x: Std.parseFloat(node.getAtt("x")),
 						y: Std.parseFloat(node.getAtt("y"))
@@ -508,7 +573,6 @@ class NewStage extends StageLayer {
 	 * @param id ?????? no fucking clue why does it have an ID it's never used!!!!!!!!!!!!!!!!
 	**/
 	public function applyCharPos(char:Character, posName:String, id:Float = 0) {
-		// Should I add the characters to the "stageSprites" list?
 		var charName:String = char.curCharacter;
 		var charPos:Null<StageCharPos> = characterPosLookup.exists(charName) ? characterPosLookup.get(charName) : characterPosLookup.get(posName);
 		if(charPos != null) {
