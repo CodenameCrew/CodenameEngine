@@ -375,7 +375,7 @@ class NewStage extends StageLayer {
 		charPos.visible = charPos.active = false;
 		charPos.name = name;
 
-		if(defaultCharPos != null) {
+		if (defaultCharPos != null) {
 			charPos.setPosition(defaultCharPos.x, defaultCharPos.y);
 			charPos.scrollFactor.set(defaultCharPos.scroll, defaultCharPos.scroll);
 			charPos.flipX = defaultCharPos.flip;
