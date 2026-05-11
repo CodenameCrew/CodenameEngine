@@ -2186,7 +2186,7 @@ class PlayState extends MusicBeatState
 	private inline function set_playerStrums(v:StrumLine):StrumLine
 		return strumLines.members[1] = v;
 	private inline function get_gfSpeed():Int
-		return (strumLines.members[2] != null && strumLines.members[2].characters[0] != null) ? strumLines.members[2].characters[0].beatInterval : 1;
+		return strumLines.members[2] != null ? strumLines?.members[2]?.characters[0]?.beatInterval : 1;
 	private inline function set_gfSpeed(v:Int):Int {
 		if (strumLines.members[2] != null && strumLines.members[2].characters[0] != null)
 			strumLines.members[2].characters[0].beatInterval = v;
@@ -2196,68 +2196,58 @@ class PlayState extends MusicBeatState
 	private inline static function get_campaignAccuracy()
 		return campaignAccuracyCount == 0 ? 0 : campaignAccuracyTotal / campaignAccuracyCount;
 
-	private function set_stage(stage:NewStage):NewStage {
-		var replacingStage:Bool = this.stage != null; // check if there is already a stage
+	// For now, I'd like the stage to manage all of this itself, but also it's completely fine if we have code here like `gameAndCharsEvent` for PlayState.
+	private function set_stage(new_stage:NewStage):NewStage {
+		var isReplacing:Bool = (this.stage != null); // check if there is already a stage
 
-		stage.onStageScriptLoad = (script) -> {scripts.add(script);}
-		stage.onStartCamSet = (startCam, defaultZoom) -> {
+		new_stage.onStageScriptLoad = (script) -> scripts.add(script);
+		new_stage.onStartCamSet = (startCam, defaultZoom) -> {
 			camFollow.x = startCam.x;
 			camFollow.y = startCam.y;
 			defaultCamZoom = defaultZoom;
 		}
-		stage.onXMLLoaded = (stageEvent) -> {
+		new_stage.onXMLLoaded = (stageEvent) -> {
 			return this.gameAndCharsEvent("onStageXMLParsed", stageEvent).elems;
 		}
-		stage.onRatingSet = (x, y) -> {
+		new_stage.onRatingSet = (x, y) -> {
 			comboGroup.setPosition(x, y);
 			add(comboGroup);
 			return comboGroup;
 		}
-		stage.onPrepareInfo = (node) -> {
+		new_stage.onPrepareInfo = (node) -> {
 			return XMLImportedScriptInfo.prepareInfos(node, this.scripts, (infos) -> {
-				stage.xmlImportedScripts.push(infos);
+				new_stage.xmlImportedScripts.push(infos);
 			});
 		}
-		stage.onRemoveInfo = (script) -> {
-			scripts.remove(script);
+		new_stage.onRemoveInfo = (script) -> scripts.remove(script);
+		new_stage.onNodeLoaded = (node, sprite) -> {
+			return this.gameAndCharsEvent("onStageNodeParsed", EventManager.get(StageNodeEvent).recycle(new_stage, node, sprite, node.name)).sprite;
 		}
-		stage.onNodeLoaded = (node, sprite) -> {
-			return this.gameAndCharsEvent("onStageNodeParsed", EventManager.get(StageNodeEvent).recycle(stage, node, sprite, node.name)).sprite;
-		}
-		stage.onPostStageCreation = (stageEvent) -> {
-			this.gameAndCharsEvent("onPostStageCreation", stageEvent);
-		}
-		stage.onSilentDestroy = (script) -> {
-			if(this.scripts != null)
-				scripts.remove(script);
-		}
-		stage.onStageDestroy = (stage) -> {
-			this.gameAndCharsCall("onStageDestroy", [stage]);
-		}
+		new_stage.onPostStageCreation = (stageEvent) -> this.gameAndCharsEvent("onPostStageCreation", stageEvent);
+		new_stage.onSilentDestroy = (script) -> this.scripts?.remove(script);
+		new_stage.onStageDestroy = (_) -> this.gameAndCharsCall("onStageDestroy", [_]);
 
-		stage.loadStage();
+		new_stage.loadStage();
 
-		if(replacingStage) {
-			// reset the characters positions with the new stage
-			var stageIndex:Int = members.indexOf(this.stage);
-			for(strumline in this.strumLines.members) {
-				if(strumline.characters.length == 0) continue;
-				for(i => char in strumline.characters) {
-					var posName:String = strumline.data.position ?? switch(strumline.data.type) {
-						case 0: "dad";
-						case 1: "boyfriend";
-						case 2: "girlfriend";
-					};
-					// var char = new Character(0, 0, charName, stage.isCharFlipped(stage.characterPoses[charName] != null ? charName : charPosName, strumLine.type == 1));
-					char.isPlayer = stage.isCharFlipped(stage.characterPoses[char.curCharacter] != null ? char.curCharacter : posName, !strumline.opponentSide);
-					stage.applyCharPos(char, posName, i);
-				}
-			}
-
-			replace(this.stage, stage);
-		}
+		if (!isReplacing) return this.stage = new_stage;
 		
-		return this.stage = stage;
+		// reset the characters positions with the new stage
+		for (strumline in this.strumLines.members) {
+			if (strumline.characters.length == 0) continue;
+			for (i => char in strumline.characters) {
+				var posName:String = strumline.data.position ?? switch(strumline.data.type) {
+					case 0: "dad";
+					case 1: "boyfriend";
+					case 2: "girlfriend";
+				};
+				// var char = new Character(0, 0, charName, new_stage.isCharFlipped(new_stage.characterPoses[charName] != null ? charName : charPosName, strumLine.type == 1));
+				char.isPlayer = new_stage.isCharFlipped(new_stage.characterPoses[char.curCharacter] != null ? char.curCharacter : posName, !strumline.opponentSide);
+				new_stage.applyCharPos(char, posName, i);
+			}
+		}
+
+		replace(this.stage, new_stage);
+		return this.stage = new_stage;
 	}
 	#end
 

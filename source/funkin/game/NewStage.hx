@@ -8,9 +8,12 @@ import funkin.backend.scripting.events.stage.StageXMLEvent;
 import funkin.backend.system.interfaces.IBeatReceiver;
 
 import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.util.FlxSignal.FlxTypedSignal;
+
+import flixel.system.FlxAssets.FlxShader;
 
 import haxe.xml.Access;
 import hscript.IHScriptCustomBehaviour;
@@ -33,12 +36,19 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	public var onAddSprite:FlxTypedSignal<FlxObject -> Void> = new FlxTypedSignal();
 	public var onAddLayer:FlxTypedSignal<StageLayer -> Void> = new FlxTypedSignal();
 
+	public var shader(default, set):FlxShader;
+	private function set_shader(s:FlxShader):FlxShader {
+		for (key=>ref in this.members) cast(ref, FlxSprite).shader = s;
+		this.shader = s;
+		return s;
+	}
+
 	public inline function getSprite(name:String):Null<Dynamic> {
-		return stageSprites.exists(name) ? this.members[stageSprites[name]] : null;
+		return stageSprites.exists(name) ? stageSprites[name] : null;
 	}
 
 	public inline function getLayer(name:String):Null<StageLayer> {
-		return stageLayers.exists(name) ? cast this.members[stageLayers[name]] : null;
+		return stageLayers.exists(name) ? cast stageLayers[name] : null;
 	}
 
 	public function new(name:String = "stage_layer") {
@@ -46,15 +56,15 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		this.name = name;
 	}
 
-	private var stageSprites:Map<String, Int> = [];
-	private var stageLayers:Map<String, Int> = [];
+	private var stageSprites:Map<String, FlxBasic> = [];
+	private var stageLayers:Map<String, StageLayer> = [];
 
 	// Stage Sprite Management
 	public function addSprite(name:String, spr:FlxObject):FlxObject {
-		if(stageSprites.exists(name)) return spr;
+		if (stageSprites.exists(name)) return spr;
 		this.add(spr);
 
-		stageSprites.set(name, this.members.indexOf(spr)); // TODO: faster way to set the index
+		stageSprites.set(name, spr);
 		updateBounds();
 
 		onAddSprite.dispatch(spr);
@@ -66,7 +76,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		if (stageSprites.exists(name)) return spr;
 		this.insert(index, spr);
 
-		stageSprites.set(name, this.members.indexOf(spr)); // TODO: faster way to set the index
+		stageSprites.set(name, spr);
 		updateBounds();
 
 		onAddSprite.dispatch(spr);
@@ -77,11 +87,17 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	public function removeSprite(name:String, splice:Bool = false):Bool {
 		if (!stageSprites.exists(name)) return false;
 
-		var index:Int = stageSprites.get(name);
-		if (this.members[index] == null) return false;
-
-		this.remove(this.members[index], splice);
+		var spr:FlxBasic = stageSprites.get(name);
 		stageSprites.remove(name);
+		
+		// If it's null we want to still attempt to remove the reference from the Array methinks.
+		if (spr == null) {
+			var idx:Int = this.members.indexOf(spr);
+			if (idx < 0) return false;
+
+			this.remove(this.members[idx], splice);
+		} else
+			this.remove(spr, splice);
 		updateBounds();
 		
 		return true;
@@ -89,9 +105,11 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 
 	// Stage Layer Management
 	public function addLayer(name:String, layer:StageLayer):StageLayer {
-		if(stageLayers.exists(name)) return layer;
+		if (stageLayers.exists(name)) return layer;
+		
 		this.add(layer);
-		stageLayers.set(name, this.members.indexOf(layer));
+		stageLayers.set(name, layer);
+
 		updateBounds();
 		onAddLayer.dispatch(layer);
 
@@ -100,8 +118,10 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 
 	public function insertLayer(name:String, layer:StageLayer, index:Int):StageLayer {
 		if (stageLayers.exists(name)) return layer;
+
 		this.insert(index, layer);
-		stageLayers.set(name, this.members.indexOf(layer));
+		stageLayers.set(name, layer);
+
 		updateBounds();
 		onAddLayer.dispatch(layer);
 
@@ -111,16 +131,23 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	public function removeLayer(name:String, splice:Bool = false):Bool {
 		if (!stageLayers.exists(name)) return false;
 
-		var index:Int = stageLayers.get(name);
-		if (this.members[index] == null) return false;
-
-		this.remove(this.members[index], splice);
+		var layer:StageLayer = stageLayers.get(name);
 		stageLayers.remove(name);
-		updateBounds();
+		
+		// If it's null we want to still attempt to remove the reference from the Array methinks.
+		if (layer == null) {
+			var idx:Int = this.members.indexOf(layer);
+			if (idx < 0) return false;
 
+			this.remove(this.members[idx], splice);
+		} else
+			this.remove(layer, splice);
+		updateBounds();
+		
 		return true;
 	}
 
+	// IBeatReceiver implementation
 	public function beatHit(curBeat:Int) {
 		for(m in members) if(m != null && m is IBeatReceiver) cast(m, IBeatReceiver).beatHit(curBeat);
 	}
@@ -131,11 +158,12 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		for(m in members) if(m != null && m is IBeatReceiver) cast(m, IBeatReceiver).measureHit(curMeasure);
 	}
 
+	// IHScriptCustomBehaviour implementation
 	public function hget(name:String):Dynamic {
 		if (__instanceFields.contains(name) || __instanceFields.contains('get_$name'))
 			return Reflect.getProperty(this, name);
-		if(stageSprites.exists(name)) return this.members[stageSprites[name]];
-		if(stageLayers.exists(name)) return this.members[stageLayers[name]];
+		if (stageSprites.exists(name)) return stageSprites[name];
+		if (stageLayers.exists(name)) return stageLayers[name];
 		return null;
 	}
 
@@ -144,11 +172,12 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 			Reflect.setProperty(this, name, val);
 			return val;
 		}
-		if(stageSprites.exists(name)) return this.members[stageSprites[name]] = val;
-		if(stageLayers.exists(name)) return this.members[stageLayers[name]] = val;
+		if (stageSprites.exists(name)) return stageSprites[name] = val;
+		if (stageLayers.exists(name)) return stageLayers[name] = val;
 		return null;
 	}
 
+	// then whatever below
 	override function destroy() {
 		super.destroy();
 		_bounds.put();
@@ -256,10 +285,10 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		return _bounds.height;
 }
 
-// TODO: make it preload
 class NewStage extends StageLayer {
 	private static final __instanceFields = Type.getInstanceFields(NewStage);
 
+	// TODO: Preload the Assets and scripts of the stage before returning 👀
 	public static function getStage(name:String):NewStage {
 		return new NewStage(name);
 	}
@@ -319,7 +348,7 @@ class NewStage extends StageLayer {
 	 * Sets the sprites in the script, so you can access them by the name.
 	**/
 	public function setStagesSprites(script:Script)
-		for (k=>e in stageSprites) script.set(k, this.members[e]);
+		for (key=>ref in stageSprites) script.set(key, ref);
 
 	public function new(stage:String, load:Bool = false) {
 		super();
@@ -459,7 +488,7 @@ class NewStage extends StageLayer {
 				default: null;
 			}
 
-			if(onNodeLoaded != null) {
+			if (onNodeLoaded != null) {
 				sprite = onNodeLoaded(node, sprite);
 			}
 
@@ -468,7 +497,7 @@ class NewStage extends StageLayer {
 					XMLUtil.applyXMLProperty(sprite, e);
 			}
 
-			if(onNodeFinished != null) {
+			if (onNodeFinished != null) {
 				onNodeFinished(node, sprite);
 			}
 		}
@@ -476,18 +505,17 @@ class NewStage extends StageLayer {
 
 	private function postLoadStage(?elems:Array<Access>) {
 		for(defaultChar in ["girlfriend", "dad", "boyfriend"]) {
-			if(!characterPosLookup.exists(defaultChar))
+			if (!characterPosLookup.exists(defaultChar))
 				setCharPos(defaultChar, null, getDefaultPos(defaultChar));
 		}
 
-		if(allowScripts) {
+		if (allowScripts) {
 			setStagesSprites(this.script);
 
 			// i know this for gets run twice under, but its better like this in case a script modifies the short lived ones, i dont wanna save them in an array; more dynamic like this  - Nex
 			for (info in xmlImportedScripts) if (info.importStageSprites) {
 				var script = info.getScript();
-				if (script != null)
-					setStagesSprites(script);
+				if (script != null) setStagesSprites(script);
 			}
 
 			// idk lemme check anyways just in case scripts did smth  - Nex
@@ -499,13 +527,12 @@ class NewStage extends StageLayer {
 				var script = info.getScript();
 				if (script == null) continue;
 
-				if(onRemoveInfo != null)
-					onRemoveInfo(script);
+				if (onRemoveInfo != null) onRemoveInfo(script);
 				script.destroy();
 			}
 		}
 
-		if(xmlFile != null && onXMLPostLoaded != null) {
+		if (xmlFile != null && onXMLPostLoaded != null) {
 			elems = onXMLPostLoaded(xmlFile, elems);
 		}
 	}
