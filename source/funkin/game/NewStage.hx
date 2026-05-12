@@ -36,6 +36,8 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	public var onAddSprite:FlxTypedSignal<FlxObject -> Void> = new FlxTypedSignal();
 	public var onAddLayer:FlxTypedSignal<StageLayer -> Void> = new FlxTypedSignal();
 
+	// TODO: better way to set all members that have the `shader` value ig??
+	// Also use FlxAnimate's implementation on useRenderTexture so we can apply the shader onto all sprites as 1 sprite !!!
 	public var shader(default, set):FlxShader;
 	private function set_shader(s:FlxShader):FlxShader {
 		for (key=>ref in this.members) cast(ref, FlxSprite).shader = s;
@@ -72,7 +74,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		return spr;
 	}
 
-	public function insertSprite(name:String, spr:FlxObject, index:Int):FlxObject {
+	public function insertSprite(index:Int, name:String, spr:FlxObject):FlxObject {
 		if (stageSprites.exists(name)) return spr;
 		this.insert(index, spr);
 
@@ -104,11 +106,11 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	}	
 
 	// Stage Layer Management
-	public function addLayer(name:String, layer:StageLayer):StageLayer {
-		if (stageLayers.exists(name)) return layer;
+	public function addLayer(layer:StageLayer):StageLayer {
+		if (stageLayers.exists(layer.name)) return layer;
 		
 		this.add(layer);
-		stageLayers.set(name, layer);
+		stageLayers.set(layer.name, layer);
 
 		updateBounds();
 		onAddLayer.dispatch(layer);
@@ -116,11 +118,11 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		return layer;
 	}
 
-	public function insertLayer(name:String, layer:StageLayer, index:Int):StageLayer {
-		if (stageLayers.exists(name)) return layer;
+	public function insertLayer(index:Int, layer:StageLayer):StageLayer {
+		if (stageLayers.exists(layer.name)) return layer;
 
 		this.insert(index, layer);
-		stageLayers.set(name, layer);
+		stageLayers.set(layer.name, layer);
 
 		updateBounds();
 		onAddLayer.dispatch(layer);
@@ -128,11 +130,11 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		return layer;
 	}
 
-	public function removeLayer(name:String, splice:Bool = false):Bool {
-		if (!stageLayers.exists(name)) return false;
+	public function removeLayer(layer:StageLayer, splice:Bool = false):Bool {
+		if (!stageLayers.exists(layer.name)) return false;
 
-		var layer:StageLayer = stageLayers.get(name);
-		stageLayers.remove(name);
+		var layer:StageLayer = stageLayers.get(layer.name);
+		stageLayers.remove(layer.name);
 		
 		// If it's null we want to still attempt to remove the reference from the Array methinks.
 		if (layer == null) {
@@ -370,13 +372,7 @@ class NewStage extends StageLayer {
 		if (allowScripts) {
 			script = Script.create(scriptFilePath);
 			if (onStageScriptLoad != null) onStageScriptLoad(script);
-			script.setParent(PlayState.instance);
-			script.set("stage", this);
-			script.set("add", this.add);
-			script.set("remove", this.remove);
-			script.set("insert", this.insert);
-			script.set("replace", this.replace);
-			script.set("members", this.members);
+			script.setParent(this);
 			script.load();
 		}
 
@@ -441,7 +437,7 @@ class NewStage extends StageLayer {
 					var layer = new StageLayer(layerName);
 					// recursive so it will allow nested layers
 					loadLayer(layer, [for(n in node.elements) n]);
-					addLayer(layerName, layer);
+					addLayer(layer);
 				case "sprite" | "spr" | "sparrow":
 					if (!node.has.name) continue;
 
@@ -654,12 +650,18 @@ class NewStage extends StageLayer {
 	override function hget(name:String):Dynamic {
 		if (__instanceFields.contains(name) || __instanceFields.contains('get_$name'))
 			return Reflect.getProperty(this, name);
+		if (PlayState.__instanceFields.contains(name) || PlayState.__instanceFields.contains('get_$name'))
+			return Reflect.getProperty(PlayState.instance, name);
 		return super.hget(name);
 	}
 
 	override function hset(name:String, val:Dynamic):Dynamic {
 		if (__instanceFields.contains(name) || __instanceFields.contains('set_$name')) {
 			Reflect.setProperty(this, name, val);
+			return val;
+		}
+		if (PlayState.__instanceFields.contains(name) || PlayState.__instanceFields.contains('set_$name')) {
+			Reflect.setProperty(PlayState.instance, name, val);
 			return val;
 		}
 		return super.hset(name, val);

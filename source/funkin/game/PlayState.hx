@@ -44,6 +44,7 @@ using StringTools;
 @:access(funkin.game.StrumLine)
 class PlayState extends MusicBeatState
 {
+	public static final __instanceFields = Type.getInstanceFields(PlayState);
 	/**
 	 * Current PlayState instance.
 	 */
