@@ -2,6 +2,7 @@ package funkin.game.scoring;
 
 import funkin.game.scoring.*;
 import funkin.game.scoring.HitWindowData.WindowPreset;
+import flixel.util.FlxSignal;
 
 import haxe.ds.StringMap;
 
@@ -10,6 +11,9 @@ import haxe.ds.StringMap;
  */
 class RatingManager
 {
+	public var onRatingAdded:FlxTypedSignal<Rating->Void> = new FlxTypedSignal();
+	public var onRatingRemoved:FlxTypedSignal<Rating->Void> = new FlxTypedSignal();
+
 	public var hitWindows:StringMap<Float>;
 	public var ratingData:Array<Rating> = [];
 	public var lastHitWindow:Float = -1;
@@ -50,9 +54,9 @@ class RatingManager
 		}
 
 		addRating({name: "sick", window: getWindow("sick"), accuracy: 1, score: 300, splash: true});
-		addRating({name: "good", window: getWindow("good"), accuracy: 0.75, score: 200});
-		addRating({name: "bad", window: getWindow("bad"), accuracy: 0.45, score: 100});
-		addRating({name: "shit", window: getWindow("shit"), accuracy: 0.25, score: 50});
+		addRating({name: "good", window: getWindow("good"), accuracy: 0.75, score: 200, health: 0.015});
+		addRating({name: "bad", window: getWindow("bad"), accuracy: 0.45, score: 100, health: 0});
+		addRating({name: "shit", window: getWindow("shit"), accuracy: 0.25, score: 50, health: -0.05, breaksCombo: true});
 	}
 
 	public function addRating(data:Dynamic)
@@ -71,7 +75,9 @@ class RatingManager
 			window: window,
 			accuracy: data.accuracy != null ? data.accuracy : 1,
 			score: data.score != null ? data.score : 0,
+			health: data.health != null ? data.health : 0.023,
 			splash: data.splash == true,
+			breaksCombo: data.breaksCombo == true,
 			hittable: data.hittable != null ? data.hittable : true
 		};
 
@@ -86,13 +92,18 @@ class RatingManager
 			ratingData.push(newRating);
 
 		ratingData.sort((a, b) -> Reflect.compare(a.window, b.window));
+		onRatingAdded.dispatch(newRating);
 	}
 
 	public function removeRating(name:String):Void
 	{
 		if (name == null) return;
 		name = name.toLowerCase();
-		ratingData = ratingData.filter(r -> r.name != name);
+		var toRemove = ratingData.filter(r -> r.name == name);
+		for (rating in toRemove) {
+			ratingData.remove(rating);
+			onRatingRemoved.dispatch(rating);
+		}
 	}
 
 	public function getHitWindow(name:String):Float
@@ -127,9 +138,19 @@ final class Rating
 	public var score:Int = 0;
 
 	/**
+	 * Amount of health given when earning this rating.
+	 */
+	public var health:Float = 0.023;
+
+	/**
 	 * If this rating was hit, a note splash will appear.
 	 */
 	@:optional public var splash:Bool = false;
+
+	/**
+	 * Whether the rating will break your combo or not.
+	 */
+	@:optional public var breaksCombo:Bool = false;
 
 	/**
 	 * Whether the rating is hittable or not.
