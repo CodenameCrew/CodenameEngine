@@ -100,8 +100,6 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.keys.justPressed.F)  FlxG.fullscreen = !FlxG.fullscreen;
-
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
 
 		#if mobile
