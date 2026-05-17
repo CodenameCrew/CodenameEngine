@@ -11,8 +11,8 @@ import openfl.utils.Assets as OpenFlAssets;
 import animate.FlxAnimateFrames;
 #if android
 import extension.androidtools.os.Build;
-import extension.androidtools.os.Build.VERSION;
-import extension.androidtools.os.Build.VERSION_CODES;
+import extension.androidtools.os.VERSION;
+import extension.androidtools.os.VERSION_CODES;
 #end
 
 using StringTools;
@@ -30,7 +30,7 @@ class Paths
        #elseif android
        var pkg = lime.app.Application.current.meta.get("packageName");
 
-       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+       if (VERSION.SDK_INT >= VERSION_CODES.R) {
            return '/storage/emulated/0/Android/obb/$pkg/files/assets/';
        } else {
            return '/storage/emulated/0/Android/data/$pkg/files/assets/';
