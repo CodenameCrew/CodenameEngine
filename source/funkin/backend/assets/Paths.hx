@@ -9,6 +9,9 @@ import haxe.io.Path;
 import lime.utils.AssetLibrary;
 import openfl.utils.Assets as OpenFlAssets;
 import animate.FlxAnimateFrames;
+#if android
+import extension.androidtools.os.Build;
+#end
 
 using StringTools;
 
@@ -18,18 +21,40 @@ class Paths
 
 	public static var tempFramesCache:Map<String, FlxFramesCollection> = [];
 
+	public static inline function getAssetsBase():String {
+		#if ios
+		return lime.system.System.documentsDirectory + "/assets/";
+		#elseif android
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+			return "obb/";
+		} else {
+			return "data/";
+		}
+		#else
+		return "assets/";
+		#end
+	}
+
 	public static function init() {
 		FlxG.signals.preStateSwitch.add(function() {
 			tempFramesCache.clear();
 		});
+		#if ios
+		ModsFolder.modsPath = lime.system.System.documentsDirectory + "/mods/";
+		if (Reflect.hasField(ModsFolder, "addonsPath")) Reflect.setProperty(ModsFolder, "addonsPath", lime.system.System.documentsDirectory + "/addons/");
+		#elseif android
+		ModsFolder.modsPath = "/storage/emulated/0/.CodenameEngine-v1.0.1/mods/";
+		if (Reflect.hasField(ModsFolder, "addonsPath")) Reflect.setProperty(ModsFolder, "addonsPath", "/storage/emulated/0/.CodenameEngine-v1.0.1/addons/");
+		#end
 	}
 
 	public static inline function getPath(file:String, ?library:String) {
-		var returnedPath:String = library != null ? '$library:assets/$library/$file' : 'assets/$file';
+		var assetsBase = getAssetsBase();
+		var returnedPath:String = library != null ? '$library:$assetsBase$library/$file' : '$assetsBase$file';
 		#if (sys && !windows)
 		returnedPath = Path.normalize(returnedPath);
 		if (OpenFlAssets.exists(returnedPath)) return returnedPath;
-		var fixedPath:String = library != null ? '$library:assets/$library/' : 'assets/';
+		var fixedPath:String = library != null ? '$library:$assetsBase$library/' : assetsBase;
 		var parts:Array<String> = returnedPath.split("/");
 		for (it=>part in parts) {
 			if (it == 0) continue;
@@ -193,8 +218,20 @@ class Paths
 	inline static public function getAsepriteAtlasAlt(key:String, ?ext:String)
 		return FlxAtlasFrames.fromAseprite('$key.${ext != null ? ext : Flags.IMAGE_EXT}', '$key.json');
 
-	inline static public function getAssetsRoot():String
-		return  ModsFolder.currentModFolder != null ? '${ModsFolder.modsPath}${ModsFolder.currentModFolder}' : #if (sys && TEST_BUILD) './${Main.pathBack}assets/' #else './assets' #end;
+	inline static public function getAssetsRoot():String {
+		#if ios
+		var mPath = lime.system.System.documentsDirectory + "/mods/";
+		var aPath = lime.system.System.documentsDirectory + "/assets";
+		return ModsFolder.currentModFolder != null ? '${mPath}${ModsFolder.currentModFolder}' : aPath;
+		#elseif android
+		var mPath = "/storage/emulated/0/.CodenameEngine-v1.0.1/mods/";
+		var aPath = getAssetsBase();
+		if (aPath.endsWith("/")) aPath = aPath.substr(0, aPath.length - 1);
+		return ModsFolder.currentModFolder != null ? '${mPath}${ModsFolder.currentModFolder}' : aPath;
+		#else
+		return ModsFolder.currentModFolder != null ? '${ModsFolder.modsPath}${ModsFolder.currentModFolder}' : #if (sys && TEST_BUILD) './${Main.pathBack}assets/' #else './assets' #end;
+		#end
+	}
 
 	/**
 	 * Gets frames at specified path.
@@ -285,7 +322,7 @@ class Paths
 
 	public static function getFolderDirectories(key:String, addPath:Bool = false, source:AssetSource = BOTH):Array<String> {
 		if (!key.endsWith("/")) key += "/";
-		var content = assetsTree.getFolders('assets/$key', source);
+		var content = assetsTree.getFolders(getAssetsBase() + key, source);
 		if (addPath) {
 			for(k=>e in content)
 				content[k] = '$key$e';
@@ -295,7 +332,7 @@ class Paths
 	static public function getFolderContent(key:String, addPath:Bool = false, source:AssetSource = BOTH, noExtension:Bool = false):Array<String> {
 		// designed to work both on windows and web
 		if (!key.endsWith("/")) key += "/";
-		var content = assetsTree.getFiles('assets/$key', source);
+		var content = assetsTree.getFiles(getAssetsBase() + key, source);
 		for (k => e in content) {
 			if (noExtension) e = Path.withoutExtension(e);
 			content[k] = addPath ? '$key$e' : e;
