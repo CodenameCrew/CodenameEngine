@@ -1,24 +1,6 @@
 package mobile.backend.assets;
 
 using StringTools;
-
-import haxe.io.Path;
-
-#if sys
-import sys.FileSystem;
-import sys.io.File;
-#end
-
-import lime.utils.Assets;
-import lime.utils.Bytes;
-import funkin.backend.assets.Paths;
-
-#if android
-import lime.app.Application;
-import extension.androidtools.os.Build;
-import extension.androidtools.os.Build.VERSION;
-import extension.androidtools.os.Build.VERSION_CODES;
-#end
 /**
  * class made to handle copying the files to the needed place.
 **/
