@@ -1,7 +1,6 @@
 package funkin.backend.assets;
 
 import funkin.backend.system.Flags;
-
 import haxe.io.Path;
 import lime.graphics.Image;
 import lime.media.AudioBuffer;
@@ -9,6 +8,7 @@ import lime.text.Font;
 import lime.utils.Bytes;
 import openfl.utils.AssetLibrary;
 import sys.io.File;
+import lime.system.System;
 
 #if MOD_SUPPORT
 import funkin.backend.utils.SysZip.SysZipEntry;
@@ -30,15 +30,26 @@ class ZipFolderLibrary extends AssetLibrary implements IModsAssetLibrary {
 	public function new(basePath:String, libName:String, ?modName:String, ?preloadVideos:Bool = true) {
 		this.libName = libName;
 
+		var root:String = "";
+		#if android
+		root = haxe.io.Path.normalize("/storage/emulated/0/.CodenameEngine-v1.0.1/");
+		#elseif ios
+		root = System.documentsDirectory;
+		if (root != null && !root.endsWith("/")) root += "/";
+		#end
+
+		if (root != "" && !Path.isAbsolute(basePath)) {
+			basePath = Path.join([root, basePath]);
+		}
+
 		this.basePath = basePath;
-		
 		this.modName = (modName == null) ? libName : modName;
 
 		zip = SysZip.openFromFile(basePath);
 		for(entry in zip.entries) {
 			if (entry.fileName.length < 0 || entry.fileName.endsWith("/")) continue;
 
-			var name:String = entry.fileName.toLowerCase(); // calling .toLowerCase a million times is never the solution
+			var name:String = entry.fileName.toLowerCase();
 			lowerCaseAssets[name] = assets[name] = assets[entry.fileName] = entry;
 			nameMap.set(name, entry.fileName);
 		}
@@ -46,12 +57,7 @@ class ZipFolderLibrary extends AssetLibrary implements IModsAssetLibrary {
 		super();
 
 		isCompressed = true;
-		
-		// don't override default value of true if the file exists.
-		// by default `PRELOAD_VIDEOS` is true so you will never need to add this file, but in the case of it being false this is a backup method.
 		PRELOAD_VIDEOS = (!PRELOAD_VIDEOS) ? exists("assets/data/PRECACHE_VIDEOS", "TEXT") : PRELOAD_VIDEOS;
-
-		// if (PRELOAD_VIDEOS) precacheVideos(); // we do this in `MainState` now to handle for `Flags.VIDEO_EXT` :)
 	}
 
 	public function precacheVideos() {
@@ -69,15 +75,23 @@ class ZipFolderLibrary extends AssetLibrary implements IModsAssetLibrary {
 		trace('Precached $count video${(count == 1) ? "" : "s"}');
 	}
 
-	// Now we have supports for videos in ZIP!!
 	public var _videoExtensions:Array<String> = [Flags.VIDEO_EXT];
 	public var videoCacheRemap:Map<String, String> = [];
+	
 	public function getVideoRemap(originalPath:String):String {
 		if (!_videoExtensions.contains(Path.extension(_parsedAsset))) return originalPath;
 		if (videoCacheRemap.exists(originalPath)) return videoCacheRemap.get(originalPath);
 
-		// We adding the length of the string to counteract folder in folder naming duplicates.
-		var newPath = './.temp/${_parsedAsset.length}-zipvideo-${_parsedAsset.split("/").pop()}';
+		var tempDir:String = "./.temp/";
+		#if mobile
+		tempDir = Path.join([System.applicationStorageDirectory, "temp"]);
+		#end
+
+		if (!sys.FileSystem.exists(tempDir)) sys.FileSystem.createDirectory(tempDir);
+
+		var fileName = '${_parsedAsset.length}-zipvideo-${_parsedAsset.split("/").pop()}';
+		var newPath = Path.join([tempDir, fileName]);
+
 		File.saveBytes(newPath, unzip(assets[_parsedAsset]));
 		videoCacheRemap.set(originalPath, newPath);
 		return newPath;
@@ -145,13 +159,11 @@ class ZipFolderLibrary extends AssetLibrary implements IModsAssetLibrary {
 		return getVideoRemap('$basePath/$_parsedAsset');
 	}
 
-	// TODO: rewrite this to 1 function, like ModsFolderLibrary
 	public function getFiles(folder:String):Array<String> {
 		if (!folder.endsWith("/")) folder += "/";
 		if (!__parseAsset(folder)) return [];
 
 		var content:Array<String> = [];
-
 		var checkPath = _parsedAsset.toLowerCase();
 
 		@:privateAccess
@@ -172,7 +184,6 @@ class ZipFolderLibrary extends AssetLibrary implements IModsAssetLibrary {
 		if (!__parseAsset(folder)) return [];
 
 		var content:Array<String> = [];
-
 		var checkPath = _parsedAsset.toLowerCase();
 
 		@:privateAccess
