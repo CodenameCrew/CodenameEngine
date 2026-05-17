@@ -24,8 +24,12 @@ import openfl.utils.AssetLibrary;
 import sys.FileSystem;
 import sys.io.File;
 #if android
-import android.content.Context;
-import android.os.Build;
+import extension.androidtools.content.Context;
+import extension.androidtools.os.Build;
+import extension.androidtools.Permissions;
+import extension.androidtools.os.Environment;
+import extension.androidtools.Settings;
+import mobile.backend.assets.Files;
 #end
 
 class Main extends Sprite
@@ -38,9 +42,7 @@ class Main extends Sprite
 	public static var verbose:Bool = false;
 
 	public static var scaleMode:FunkinRatioScaleMode;
-	#if !mobile
 	public static var framerateSprite:Framerate;
-	#end
 
 	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels).
 	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels).
@@ -71,12 +73,55 @@ class Main extends Sprite
 
 		CrashHandler.init();
 
+		#if android
+	    checkPermissions();
+
+    	if (Permissions.hasManageAllFiles()) {
+		    finalizeSetup();
+	    }
+        #elseif ios
+     	    finalizeSetup();
+        #end
+
 		addChild(game = new FunkinGame(gameWidth, gameHeight, MainState, Options.framerate, Options.framerate, skipSplash, startFullscreen));
 
-		#if (!mobile && !web)
 		addChild(framerateSprite = new Framerate());
 		SystemInfo.init();
-		#end
+
+	}
+
+	#if android
+	private function onResult(_):Void {
+		if (extension.androidtools.Permissions.hasManageAllFiles()) {
+			finalizeSetup();
+			openfl.Lib.current.stage.removeEventListener(openfl.events.Event.ACTIVATE, onResult);
+		}
+	}
+ 
+	private function checkPermissions():Void {
+		if (!extension.androidtools.Permissions.hasManageAllFiles()) {
+			openfl.Lib.current.stage.addEventListener(openfl.events.Event.ACTIVATE, onResult);
+			extension.androidtools.Permissions.requestManageAllFiles();
+		} else {
+			finalizeSetup();
+		}
+	}
+	#end	
+
+	private function finalizeSetup():Void {
+		var base = mobile.backend.assets.Files.getAssetsDir();
+		
+		if (!base.endsWith("/")) base += "/";
+
+		var firstRun = !sys.FileSystem.exists(base + "assets/");
+
+		if (firstRun)
+		{
+			trace("First run detected. Starting file initialization...");
+			mobile.backend.assets.Files.init();
+		} else {
+			trace("Assets already initialized at: " + base);
+		}
 	}
 
 	@:dox(hide)
