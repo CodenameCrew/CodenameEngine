@@ -24,7 +24,7 @@ class Files
 		}
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-			_androidDir = "/storage/emulated/0/Android/obb/" + pkg + "/";
+			_androidDir = "/storage/emulated/0/Android/obb/" + pkg + "/files/";
 		} else {
 			_androidDir = "/storage/emulated/0/Android/data/" + pkg + "/files/";
 		}
