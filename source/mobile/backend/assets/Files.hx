@@ -11,6 +11,7 @@ import sys.io.File;
 
 import lime.utils.Assets;
 import lime.utils.Bytes;
+import funkin.backend.assets.Paths;
 
 #if android
 import lime.app.Application;
