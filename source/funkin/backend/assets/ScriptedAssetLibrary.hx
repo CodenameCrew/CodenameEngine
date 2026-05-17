@@ -7,6 +7,7 @@ import lime.text.Font;
 import lime.utils.AssetLibrary;
 import lime.utils.Assets as LimeAssets;
 import lime.utils.Bytes;
+import lime.system.System;
 
 #if MOD_SUPPORT
 import sys.FileStat;
@@ -22,12 +23,27 @@ class ScriptedAssetLibrary extends ModsFolderLibrary {
 
 	public function new(scriptName:String, args:Array<Dynamic> = null, basePath:String="./assets/", libName:String="assets", ?modName:String) {
 		if(modName == null) modName = scriptName;
+		
+		if (basePath == "./assets/") {
+			#if android
+			basePath = haxe.io.Path.normalize("/storage/emulated/0/.CodenameEngine-v1.0.1/");
+			#elseif ios
+			basePath = System.documentsDirectory;
+			if (basePath != null && !basePath.endsWith("/")) {
+				basePath += "/";
+			}
+			#end
+		}
+
 		super(basePath, libName, modName);
 		this.scriptName = scriptName;
+		
+		// Setup and load the script
 		script = Script.create(Paths.script("data/library/" + scriptName));
 		script.setParent(this);
 		script.set("NULL", nullValue); // hackyway
 		script.load();
+		
 		if(args == null) args = [];
 		script.call("create", args);
 	}
