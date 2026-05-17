@@ -36,6 +36,10 @@ import funkin.backend.week.WeekData;
 import funkin.savedata.FunkinSave;
 import haxe.io.Path;
 
+#if mobile
+import mobile.controls.PauseButton;
+#end
+
 using StringTools;
 
 @:access(flixel.text.FlxText.FlxTextFormatRange)
@@ -923,6 +927,12 @@ class PlayState extends MusicBeatState
 		for(s in introSounds)
 			if (s != null)
 				FlxG.sound.load(Paths.sound(s));
+			
+        #if mobile
+		var androidPause = new mobile.controls.Pause();
+        add(androidPause);
+        androidPause.setPauseButton('true');
+		#end
 
 		if (chartingMode) {
 			WindowUtils.prefix = Charter.undos.unsaved ? Flags.UNDO_PREFIX : "";
