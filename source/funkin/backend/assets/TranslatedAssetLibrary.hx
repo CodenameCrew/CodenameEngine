@@ -6,6 +6,7 @@ import lime.media.AudioBuffer;
 import lime.graphics.Image;
 import lime.text.Font;
 import lime.utils.Bytes;
+import lime.system.System;
 
 class TranslatedAssetLibrary extends AssetLibrary implements IModsAssetLibrary {
 	public var libName:String;
