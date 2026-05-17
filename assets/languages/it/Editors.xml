@@ -561,7 +561,7 @@
 		<str id="title">Informazioni Palcoscenico</str>
 		<str id="stageName">Nome Palcoscenico</str>
 		<str id="spritePath">Percorso file Sprite\n(E' necessario ricaricare la pagina)</str>
-		<str id="startCamPos">Posizioni iniziali della Telecamera (X, Y)</str>
+		<str id="startCamPos">Posizioni iniziali della Telecamera\n(X, Y)</str>
 		<str id="zoom">Zoom</str>
 	</group>
 
@@ -576,7 +576,7 @@
 
 		<str id="elementName">Nome Elemento</str>
 		<str id="nameID">Nome Identificatore</str>
-		<str id="imageFile">File Immagine (WIP: reload necessario)\nIn (${stage.spritesParentFolder})</str>
+		<str id="imageFile">File Immagine\n(in "{0}")</str>
 		<str id="scroll">Scorrimento {0}</str>
 		<str id="scale">Scala {0}</str>
 		<str id="camera">Teleamera {0}</str>
