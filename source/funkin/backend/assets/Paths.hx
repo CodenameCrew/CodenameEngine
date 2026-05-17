@@ -22,17 +22,21 @@ class Paths
 	public static var tempFramesCache:Map<String, FlxFramesCollection> = [];
 
 	public static inline function getAssetsBase():String {
-		#if ios
-		return lime.system.System.documentsDirectory + "/assets/";
-		#elseif android
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-			return "obb/";
-		} else {
-			return "data/";
-		}
-		#else
-		return "assets/";
-		#end
+       #if ios
+       return lime.system.System.documentsDirectory + "/assets/";
+   
+       #elseif android
+       var pkg = lime.app.Application.current.meta.get("packageName");
+
+       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+           return '/storage/emulated/0/Android/obb/$pkg/files/assets/';
+       } else {
+           return '/storage/emulated/0/Android/data/$pkg/files/assets/';
+       }
+
+       #else
+       return "assets/";
+       #end
 	}
 
 	public static function init() {
