@@ -36,7 +36,7 @@ class Files
 			pkg = Application.current.meta.get("packageName");
 		}
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+		if (VERSION.SDK_INT >= VERSION_CODES.R) {
 			_androidDir = "/storage/emulated/0/Android/obb/" + pkg + "/files/";
 		} else {
 			_androidDir = "/storage/emulated/0/Android/data/" + pkg + "/files/";
