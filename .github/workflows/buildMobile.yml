@@ -1,0 +1,237 @@
+name: Mobile Build
+run-name: ${{ github.event.inputs.build_name }}
+
+on:
+  #push:
+    #branches: [main]
+  workflow_dispatch:
+    inputs:
+    
+      build_name:
+        description: Build Name
+        required: true
+        default: Mobile Build
+        
+      android_flags:
+        description: Android Flags
+        required: false
+        default:
+        
+      ios_flags:
+        description: Ios Flags
+        required: false
+        default: -D nosign
+        
+      platform:
+        description: "Build platform"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - android
+          - ios
+          
+      rebuild_cache:
+        description: "Rebuild Cache?"
+        required: true
+        default: "No"
+        type: choice
+        options:
+          - "Yes"
+          - "No"
+          
+jobs:
+  buildAndroid:
+    if: ${{ github.event.inputs.platform == 'android' || github.event.inputs.platform == 'all' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.7
+
+      - uses: actions/setup-java@v4
+        with:
+         distribution: temurin
+         java-version: '17'
+
+      - name: Restore cache
+        if: ${{ github.event.inputs.rebuild_cache != 'Yes' || github.event_name == 'push'}}
+        uses: actions/cache/restore@v4
+        with:
+         path: |
+          ~/.haxelib
+          ~/.lime
+          ~/.openfl
+          ~/.gradle/wrapper
+          ~/Android/Sdk
+          /home/runner/hxcpp_cache
+         key: android-cache-${{ runner.os }}-${{ hashFiles('**/project.xml') }}
+         restore-keys: |
+          android-cache-${{ runner.os }}-
+
+      - name: Setup hxcpp cache
+        run: |
+         mkdir -p /home/runner/hxcpp_cache
+         echo '<xml>
+          <set name="HXCPP_COMPILE_CACHE" value="/home/runner/hxcpp_cache" />
+          <set name="HXCPP_CACHE_MB" value="4096" />
+         </xml>' > ~/.hxcpp_config.xml
+
+      - name: Setup environment
+        run: |
+          haxelib setup ~/haxelib
+
+          haxe -cp commandline -D analyzer-optimize --run Main setup --silent
+          
+          printf "%s\n%s\n%s\n" \
+            "$ANDROID_HOME" \
+            "$ANDROID_NDK_ROOT" \
+            "$JAVA_HOME" \
+            | haxelib run lime setup android  
+          
+          haxelib list
+
+      - name: Install Android SDK + NDK
+        run: |
+          mkdir -p ~/android-sdk
+          cd ~/android-sdk
+          wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+          unzip commandlinetools-linux-*.zip
+
+          mkdir cmdline-tools/latest
+          mv cmdline-tools/* cmdline-tools/latest/ || true
+
+          yes | ~/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+          ~/android-sdk/cmdline-tools/latest/bin/sdkmanager \
+            "platform-tools" \
+            "platforms;android-33" \
+            "build-tools;33.0.2" \
+            "ndk;29.0.14206865"
+
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_NDK_ROOT=$HOME/android-sdk/ndk/29.0.14206865" >> $GITHUB_ENV
+
+      - name: Clean Android
+        run: haxelib run lime clean android
+
+      - name: Configure Gradle (5GB Safe Mode)
+        run: |
+          mkdir -p ~/.gradle
+          echo "org.gradle.jvmargs=-Xmx5g -XX:MaxMetaspaceSize=1536m -Dfile.encoding=UTF-8" > ~/.gradle/gradle.properties
+          echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
+          echo "org.gradle.parallel=false" >> ~/.gradle/gradle.properties
+          echo "org.gradle.configureondemand=false" >> ~/.gradle/gradle.properties
+          echo "android.splits.abi.enable=false" >> ~/.gradle/gradle.properties
+          
+      - name: Limit Java heap globally
+        run: echo "JAVA_TOOL_OPTIONS=-Xmx5g" >> $GITHUB_ENV
+        
+      - name: Build APK
+        run: |
+         haxelib run lime build android -clean ${{ github.event.inputs.android_flags }}
+
+      - name: Save cache
+        if: ${{ success() && (github.event.inputs.rebuild_cache != 'Yes' || github.event_name == 'push') }}
+        uses: actions/cache/save@v4
+        with:
+         path: |
+          ~/.haxelib
+          ~/.lime
+          ~/.openfl
+          ~/.gradle/wrapper
+          ~/Android/Sdk
+          /home/runner/hxcpp_cache
+         key: android-cache-${{ runner.os }}-${{ hashFiles('**/project.xml') }}
+
+      - name: Find APK
+        run: find . -name "*.apk"
+        
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Android-Build
+          path: export/release/android/bin/app/build/outputs/apk/debug/*.apk
+
+  buildiOS:
+    if: ${{ github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'all' }}
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.7
+          architecture: arm64
+
+      - name: Restore cache
+        if: ${{ github.event.inputs.rebuild_cache != 'Yes' || github.event_name == 'push'}}
+        uses: actions/cache/restore@v4
+        with:
+         path: |
+          ~/.haxelib
+          ~/.lime
+          ~/.openfl
+          ~/hxcpp_cache
+         key: ios-cache-${{ runner.os }}-${{ hashFiles('**/project.xml') }}
+         restore-keys: |
+          ios-cache-${{ runner.os }}-
+
+      - name: Setup environment
+        run: |
+          haxelib setup ~/haxelib
+          
+          haxe -cp commandline -D analyzer-optimize --run Main setup --silent
+
+          echo "n" | haxelib run lime setup ios
+          
+      - name: Clean iOS
+        run: haxelib run lime clean ios
+
+      - name: Build iOS
+        run: |
+          arch -x86_64 haxelib run lime build ios ${{ github.event.inputs.ios_flags }}
+          find . -name "*.ipa"
+           
+      - name: Compile Xcode Project
+        run: |
+          xcodebuild \
+           -project export/release/ios/CodenameEngine.xcodeproj \
+           -scheme CodenameEngine \
+           -configuration Release \
+           -sdk iphoneos \
+           -derivedDataPath $PWD/build \
+           CODE_SIGNING_ALLOWED=NO \
+           CODE_SIGNING_REQUIRED=NO \
+           CODE_SIGN_IDENTITY="" \
+           build
+
+      - name: Export Ipa
+        run: |
+          mkdir -p Payload
+          
+          cp -r $PWD/build/Build/Products/Release-iphoneos/CodenameEngine.app Payload/
+          
+          mkdir -p outputs/ipa/debug
+          zip -qr outputs/ipa/debug/CodenameEngine-debug.ipa Payload
+
+      - name: Save cache
+        if: ${{ success() && (github.event.inputs.rebuild_cache != 'Yes' || github.event_name == 'push') }}
+        uses: actions/cache/save@v4
+        with:
+         path: |
+          ~/.haxelib
+          ~/.lime
+          ~/.openfl
+          ~/hxcpp_cache
+         key: ios-cache-${{ runner.os }}-${{ hashFiles('**/project.xml') }}
+          
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iosBuild
+          path: outputs/ipa/debug/*
+          if-no-files-found: ignore
