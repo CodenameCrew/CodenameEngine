@@ -5,10 +5,13 @@ using StringTools;
 #if android
 import lime.app.Application;
 import extension.androidtools.os.Build;
+import extension.androidtools.os.Build.VERSION;
+import extension.androidtools.os.Build.VERSION_CODES;
 #end
 /**
  * class made to handle copying the files to the needed place.
 **/
+#if mobile
 class Files
 {
 	#if android
@@ -127,3 +130,4 @@ class Files
 		#end
 	}
 }
+#end
