@@ -27,15 +27,6 @@ class Paths
        #if ios
        return lime.system.System.documentsDirectory + "/assets/";
    
-       #elseif android
-       var pkg = lime.app.Application.current.meta.get("packageName");
-
-       if (VERSION.SDK_INT >= VERSION_CODES.R) {
-           return '/storage/emulated/0/Android/obb/$pkg/files/assets/';
-       } else {
-           return '/storage/emulated/0/Android/data/$pkg/files/assets/';
-       }
-
        #else
        return "assets/";
        #end
@@ -57,6 +48,20 @@ class Paths
 	public static inline function getPath(file:String, ?library:String) {
 		var assetsBase = getAssetsBase();
 		var returnedPath:String = library != null ? '$library:$assetsBase$library/$file' : '$assetsBase$file';
+		
+		#if android
+		if (OpenFlAssets.exists(returnedPath)) {
+			return returnedPath;
+		}
+		
+		var pkg = lime.app.Application.current.meta.get("packageName");
+		assetsBase = (VERSION.SDK_INT >= VERSION_CODES.R) ? 
+			'/storage/emulated/0/Android/obb/$pkg/files/assets/' : 
+			'/storage/emulated/0/Android/data/$pkg/files/assets/';
+		
+		returnedPath = library != null ? '$library:$assetsBase$library/$file' : '$assetsBase$file';
+		#end
+
 		#if (sys && !windows)
 		returnedPath = Path.normalize(returnedPath);
 		if (OpenFlAssets.exists(returnedPath)) return returnedPath;
@@ -78,7 +83,7 @@ class Paths
 		#end
 		return returnedPath;
 	}
-
+	
 	public static inline function video(key:String, ?ext:String)
 		return getPath('videos/$key.${ext != null ? ext : Flags.VIDEO_EXT}');
 
