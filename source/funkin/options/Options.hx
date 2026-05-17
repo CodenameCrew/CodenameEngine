@@ -20,6 +20,7 @@ class Options
 	/**
 	 * SETTINGS
 	 */
+	public static var pauseButton:Bool = true;
 	public static var naughtyness:Bool = true;
 	public static var downscroll:Bool = false;
 	public static var ghostTapping:Bool = true;
