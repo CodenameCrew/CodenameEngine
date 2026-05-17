@@ -9,7 +9,7 @@
 
 		<!-- OpenFL & Lime (Required for Flixel) -->
 		<git name="openfl" url="https://github.com/CodenameCrew/cne-openfl" ref="old" />
-		<lib name="lime" version="8.1.2" />
+		<lib name="lime" version="8.2.1" />
 
 		<!-- Flixel -->
 		<git name="flixel" url="https://github.com/ChanceXML/cne-flixel-old" />
