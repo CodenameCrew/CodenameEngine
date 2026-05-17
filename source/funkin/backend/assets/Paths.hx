@@ -67,7 +67,7 @@ class Paths
 		return OpenFlAssets.exists(path);
 	}
 
-	public static inline function getPath(file:String, ?library:String) {
+	public static function getPath(file:String, ?library:String) {
 		var returnedPath:String = library != null ? '$library:assets/$library/$file' : 'assets/$file';
 		
 		#if sys
