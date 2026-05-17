@@ -3,12 +3,16 @@
 	<if cond="update || all">
 		<print pretty="true">Preparing installation...</print>
 
+		<!-- Mobile Libraries -->
+		<git name="extension-androidtools" url="https://github.com/ChanceXML/androidTools" />
+		<git name="nativeiospopup" url="https://github.com/ChanceXML/nativeiospopup" />
+
 		<!-- OpenFL & Lime (Required for Flixel) -->
 		<git name="openfl" url="https://github.com/CodenameCrew/cne-openfl" ref="old" />
 		<lib name="lime" version="8.1.2" />
 
 		<!-- Flixel -->
-		<git name="flixel" url="https://github.com/CodenameCrew/cne-flixel" ref="old" />
+		<git name="flixel" url="https://github.com/ChanceXML/cne-flixel-old" />
 		<git name="flixel-addons" url="https://github.com/CodenameCrew/cne-flixel-addons" ref="old" />
 
 		<!-- Other Libraries -->
