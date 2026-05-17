@@ -20,7 +20,7 @@ on:
       ios_flags:
         description: Ios Flags
         required: false
-        default: 
+        default: -nosign
         
       platform:
         description: "Build platform"
@@ -195,8 +195,8 @@ jobs:
       - name: Build iOS
         run: |
           #arch -x86_64 
-          haxelib run lime build ios ${{ github.event.inputs.ios_flags }} -args CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_METHOD=manual
-          find . -name "*.app"
+          haxelib run lime build ios ${{ github.event.inputs.ios_flags }}
+          find . -name "*.ipa"
            
       - name: Compile Xcode Project
         run: |
