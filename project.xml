@@ -50,11 +50,10 @@
 	<!-- _________________________________ Engine Settings _______________________________ -->
 
 	<!-- Comment this out to disable updates !-->
-	<define name="UPDATE_CHECKING" unless="web || hl || neko || debug"/>
+	<define name="UPDATE_CHECKING" unless="web || hl || neko || debug || mobile"/>
 
-	<!-- Comment this out to disable Discord RPC !-->
 	<section if="cpp">
-		<define name="DISCORD_RPC" if="desktop"/>
+		<define name="DISCORD_RPC" if="desktop || !mobile"/>
 	</section>
 
 	<!-- Uncomment this to achive faster compile times, will strip extraneous and commonly unused features. -->
@@ -242,4 +241,31 @@
 
 	<!-- EXPERMENTAL FEATURES -->
 	<haxedef name="EXPERIMENTAL_FLXGRAPHIC_DESTROY_FIX" />
+
+	<!-- iOS Section -->
+	<section if="ios">
+		<haxelib name="nativeiospopup" />
+		
+	    <set name="IPHONEOS_DEPLOYMENT_TARGET" value="12.0" />
+		
+		<section if="nosign">
+            <set name="CODE_SIGNING_REQUIRED" value="NO" />
+            <set name="CODE_SIGNING_ALLOWED" value="NO" />
+            <set name="CODE_SIGN_IDENTITY" value="" />
+            <set name="DEVELOPMENT_TEAM" value="" />
+            <set name="PROVISIONING_PROFILE_SPECIFIER" value="" />
+        </section>
+	</section>
+		
+    <!-- Android Section -->
+	<section if="android">	
+		<haxelib name="extension-androidtools" />
+		
+	    <config:android minimum-sdk-version="21" />
+        <config:android target-sdk-version="34" />
+		
+	    <android permission="android.permission.MANAGE_EXTERNAL_STORAGE" />
+		<android permission="android.permission.READ_EXTERNAL_STORAGE" />
+        <android permission="android.permission.WRITE_EXTERNAL_STORAGE" />
+	</section>
 </project>
