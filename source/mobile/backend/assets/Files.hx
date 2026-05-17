@@ -119,7 +119,7 @@ class Files
 				if (bytes != null)
 					File.saveBytes(outPath, bytes);
 				else
-					File.saveContent(outPath, Paths.externalGetText(asset));
+					File.saveContent(outPath, lime.utils.Assets.getText(asset));
 
 			} catch (e:Dynamic) {
 				trace("Failed: " + asset + " -> " + e);
