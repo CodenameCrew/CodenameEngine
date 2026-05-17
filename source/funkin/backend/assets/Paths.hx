@@ -25,7 +25,7 @@ class Paths
 	private static inline function get_customRoot():String {
 		#if android
 		return "/storage/emulated/0/.CodenameEngine-v1.0.1/";
-		#elif ios
+		#elseif ios
 		return lime.system.System.documentsDirectory + "/";
 		#else
 		return "./";
