@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="pauseButton.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="pause0000" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0001" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0002" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0003" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0004" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0005" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0006" x="106" y="0" width="87" height="81" frameX="-18" frameY="-16" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0007" x="198" y="0" width="91" height="83" frameX="-16" frameY="-15" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0008" x="294" y="0" width="123" height="113"/>
+	<SubTexture name="pause0009" x="0" y="118" width="119" height="109" frameX="-2" frameY="-2" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0010" x="0" y="118" width="119" height="109" frameX="-2" frameY="-2" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0011" x="124" y="118" width="89" height="82" frameX="-17" frameY="-15" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0012" x="124" y="118" width="89" height="82" frameX="-17" frameY="-15" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0013" x="218" y="118" width="95" height="87" frameX="-14" frameY="-13" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0014" x="218" y="118" width="95" height="87" frameX="-14" frameY="-13" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0015" x="318" y="118" width="99" height="91" frameX="-12" frameY="-11" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0016" x="318" y="118" width="99" height="91" frameX="-12" frameY="-11" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0017" x="0" y="232" width="100" height="91" frameX="-11" frameY="-11" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0018" x="0" y="232" width="100" height="91" frameX="-11" frameY="-11" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0019" x="0" y="232" width="100" height="91" frameX="-11" frameY="-11" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0020" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0021" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0022" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0023" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0024" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0025" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0026" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0027" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0028" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0029" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0030" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0031" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+	<SubTexture name="pause0032" x="0" y="0" width="101" height="93" frameX="-11" frameY="-10" frameWidth="123" frameHeight="113"/>
+</TextureAtlas>
