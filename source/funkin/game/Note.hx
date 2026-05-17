@@ -259,12 +259,14 @@ class Note extends FlxSprite
 			final originalY = y;
 
 			if (__noteAngle != __lastAngle) {
-				__lastAngle = __noteAngle;
-				final result = FlxMath.fastSinCos((__noteAngle + 90) * FlxAngle.TO_RAD);
-				__lastAngleSin = result.sin;
-				__lastAngleCos = result.cos;
-			}
+        	    __lastAngle = __noteAngle;
 
+	            final rad = (__noteAngle + 90) * FlxAngle.TO_RAD;
+
+	            __lastAngleSin = Math.sin(rad);
+	            __lastAngleCos = Math.cos(rad);
+	   		}
+			
 			if (__strum.width != __lastStrumW || __strum.height != __lastStrumH) {
 				__lastStrumW = __strum.width;
 				__lastStrumH = __strum.height;
