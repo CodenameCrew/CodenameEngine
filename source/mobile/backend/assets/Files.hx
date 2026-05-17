@@ -2,6 +2,16 @@ package mobile.backend.assets;
 
 using StringTools;
 
+import haxe.io.Path;
+
+#if sys
+import sys.FileSystem;
+import sys.io.File;
+#end
+
+import lime.utils.Assets;
+import lime.utils.Bytes;
+
 #if android
 import lime.app.Application;
 import extension.androidtools.os.Build;
@@ -89,7 +99,7 @@ class Files
 
 	static function copyAssets(source:String, target:String):Void
 	{
-		var list = Assets.list();
+		var list:Array<String> = Assets.list();
 
 		for (asset in list)
 		{
