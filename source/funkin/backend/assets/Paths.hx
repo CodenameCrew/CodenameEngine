@@ -11,8 +11,8 @@ import openfl.utils.Assets as OpenFlAssets;
 import animate.FlxAnimateFrames;
 
 #if android
-import android.content.Context;
-import android.os.Build.VERSION;
+import extension.androidtoold.content.Context;
+import extension.androidtools.os.Build.VERSION;
 #end
 
 using StringTools;
