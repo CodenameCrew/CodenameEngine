@@ -165,6 +165,7 @@
 	</section>
 
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
+	<assets path="assets" include="*" />
 
 	<!-- OpenAL config -->
 	<section if="desktop">
