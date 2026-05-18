@@ -10,6 +10,11 @@ import lime.utils.AssetLibrary;
 import openfl.utils.Assets as OpenFlAssets;
 import animate.FlxAnimateFrames;
 
+#if android
+import android.content.Context;
+import android.os.Build.VERSION;
+#end
+
 using StringTools;
 
 class Paths
@@ -19,6 +24,10 @@ class Paths
 	public static var tempFramesCache:Map<String, FlxFramesCollection> = [];
 
 	public static function init() {
+		#if android
+		//Sys.setCwd(haxe.io.Path.addTrailingSlash(VERSION.SDK_INT >= 30 ? Context.getObbDir() : Context.getExternalFilesDir()));
+		#end
+
 		FlxG.signals.preStateSwitch.add(function() {
 			tempFramesCache.clear();
 		});
