@@ -167,7 +167,7 @@ class Main extends Sprite
 		#end
 
 		#if android
-        var root = haxe.io.Path.addTrailingSlash(VERSION.SDK_INT >= 30 ? Context.getObbDir() : Context.getExternalFilesDir());
+        var root = haxe.io.Path.addTrailingSlash(Context.getExternalFilesDir();
         Paths.assetsTree.addLibrary(ModsFolder.loadLibraryFromFolder('assets', root + 'assets/', true));
 		#elseif ios
         var root = haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory);
@@ -279,7 +279,7 @@ class Main extends Sprite
 			Sys.setCwd(haxe.io.Path.directory(Sys.programPath()));
 		}
 		#elseif android
-		Sys.setCwd(haxe.io.Path.addTrailingSlash(VERSION.SDK_INT > 30 ? Context.getObbDir() : Context.getExternalFilesDir()));
+		//Sys.setCwd(haxe.io.Path.addTrailingSlash(VERSION.SDK_INT > 30 ? Context.getObbDir() : Context.getExternalFilesDir()));
 		#elseif (ios || switch)
 		Sys.setCwd(haxe.io.Path.addTrailingSlash(openfl.filesystem.File.applicationStorageDirectory.nativePath));
 		#end
