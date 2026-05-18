@@ -39,6 +39,7 @@ import haxe.io.Path;
 #if mobile
 import mobile.controls.PauseButton;
 import mobile.controls.HitBox;
+import flixel.input.keyboard.FlxKey;
 #end
 
 using StringTools;
