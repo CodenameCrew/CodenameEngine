@@ -259,6 +259,16 @@ class Paths
 
         return Path.normalize(dataPath + "/assets");
 
+        #elseif ios
+
+        var basePath:String = Path.normalize(lime.system.System.documentsDirectory);
+
+        if (ModsFolder.currentModFolder != null) {
+            return Path.normalize(basePath + "/mods/" + ModsFolder.currentModFolder);
+        }
+
+        return Path.normalize(basePath + "/assets");
+
         #else
 
         if (ModsFolder.currentModFolder != null)
