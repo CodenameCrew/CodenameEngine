@@ -26,6 +26,9 @@
 
 		<str id="optionsTree.debug-name">Debug Options</str>
 		<str id="optionsTree.debug-desc">Debug Options for Developer Mode.</str>
+
+		<str id="optionsTree.mobile-name">Mobile Options</str>
+        <str id="optionsTree.mobile-desc">Configure stuff related to mobile.</str>
 	</group>
 
 	<group name="KeybindOptions" prefix="KeybindsOptions.">
@@ -63,11 +66,38 @@
 			<str id="reloadState">Reload State</str>
 		</group>
 	</group>
+	
+    <group name="MobileOptions" prefix="MobileOptions">
+   	    <str id="pauseButton-name">Pause Button</str>
+	    <str id="pauseButton-desc">If unchecked. the pause button will become invisible</str>
 
+		<str id="virtualPadOpacity-name">VirtualPad Opacity</str>
+		<str id="virtualPadOpacity-desc">Pretty self explanatory, isn't it?</str>
+	
+        <str id="hintStyle-name">Hint Style</str>
+        <str id="hintStyle-desc">Changes the look of the hints.</str>
+        
+        <str id="hitboxStyle-name">Hint Style</str>
+        <str id="hitboxStyle-desc">Changes the look of the hitbox.</str>
+	
+        <str id="hintOpacity-name">Hint Opacity</str>
+        <str id="hintOpacity-desc">Changes the opacity of the hints. put on 0 if u dont want them.</str>
+    
+        <str id="hitboxOpacity-name">Hitbox Opacity</str>
+        <str id="hitboxOpacity-desc">Pretty self explanatory, isn't it?</str>
+
+	   <!-- <str id=" -->
+    </group>
 	<group name="AppearanceOptions" prefix="AppearanceOptions.">
 		<str id="framerate-name">Framerate</str>
 		<str id="framerate-desc">Pretty self explanatory, isn't it?</str>
+        <!--
+		<str id="fpsSize-name">Fps Size</str>
+		<str id="fpsSize-name">Changes the size of the fps info depeding on the user's provided number.</str>
 
+		<str id="newFPS-name">New FPS System</str>
+		<str id="newFPS-desc">Changes the codename fps overlay to a new one.</str>
+        -->
 		<str id="flashingMenu-name">Flashing Menu</str>
 		<str id="flashingMenu-desc">If unchecked, will disable menu flashing when you select an option in the Main Menu, and other flashes will be slower.</str>
 
@@ -101,10 +131,16 @@
 	<group name="GameplayOptions" prefix="GameplayOptions.">
 		<str id="downscroll-name">Downscroll</str>
 		<str id="downscroll-desc">If checked, notes will go from up to down instead of down to up, as if they're falling.</str>
-
+        <!--
+		<str id="middleScroll-name">Middlescroll</str>
+		<str id="middleScroll-desc">If checked, notes will go to the middle instead of the side.</str>
+		-->
 		<str id="ghostTapping-name">Ghost Tapping</str>
 		<str id="ghostTapping-desc">If unchecked, trying to hit any strum that have no note that can be hit will cause a miss.</str>
-
+		<!--
+		<str id="repeatHold-name">Repeat Hold</str>
+		<str id="repeatHold-desc">If checked, hold animations will loop. if unchecked. hold animations will only play once.</str>
+		-->
 		<str id="naughtyness-name">Naughtyness</str>
 		<str id="naughtyness-desc">If unchecked, will censor the Week 7 cutscenes or more.</str>
 
