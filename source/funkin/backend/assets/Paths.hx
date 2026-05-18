@@ -25,9 +25,7 @@ class Paths
 	}
 
 	public static inline function getPath(file:String, ?library:String) {
-	return library != null
-		? 'assets:$library/$file'
-		: 'assets/$file';
+		return library != null ? '$library:assets/$library/$file' : 'assets/$file';
 	}
 
 	public static inline function video(key:String, ?ext:String)
@@ -176,7 +174,7 @@ class Paths
 		return FlxAtlasFrames.fromAseprite('$key.${ext != null ? ext : Flags.IMAGE_EXT}', '$key.json');
 
 	inline static public function getAssetsRoot():String
-		return  ModsFolder.currentModFolder != null ? '${ModsFolder.modsPath}${ModsFolder.currentModFolder}' : #if (sys && TEST_BUILD) './${Main.pathBack}assets/' #else './assets' #end;
+		return 'assets/';
 
 	/**
 	 * Gets frames at specified path.
@@ -233,8 +231,6 @@ class Paths
 		var ext = Ext != null ? Ext : Flags.IMAGE_EXT;
 
 		if (!SkipMultiCheck && Assets.exists('$noExt/1.${ext}')) {
-			// MULTIPLE SPRITESHEETS!!
-
 			var graphic = FlxG.bitmap.add("flixel/images/logo/default.png", false, '$noExt/mult');
 			var frames = MultiFramesCollection.findFrame(graphic);
 			if (frames != null)
@@ -275,7 +271,6 @@ class Paths
 		return content;
 	}
 	static public function getFolderContent(key:String, addPath:Bool = false, source:AssetSource = BOTH, noExtension:Bool = false):Array<String> {
-		// designed to work both on windows and web
 		if (!key.endsWith("/")) key += "/";
 		var content = assetsTree.getFiles('assets/$key', source);
 		for (k => e in content) {
@@ -285,7 +280,6 @@ class Paths
 		return content;
 	}
 
-	// Used in Script.hx
 	@:noCompletion public static function getFilenameFromLibFile(path:String) {
 		var file = new haxe.io.Path(path);
 		if(file.file.startsWith("LIB_")) {
