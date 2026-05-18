@@ -6,8 +6,6 @@ import funkin.backend.assets.TranslatedAssetLibrary;
 import funkin.backend.assets.IModsAssetLibrary;
 import lime.utils.AssetLibrary;
 import haxe.ds.Map;
-import lime.system.System;
-import haxe.io.Path;
 
 class AssetsLibraryList extends AssetLibrary {
 
@@ -185,22 +183,8 @@ class AssetsLibraryList extends AssetLibrary {
 		#end
 
 		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', './${Main.pathBack}assets/', true, SOURCE));
-		
 		#elseif USE_ADAPTED_ASSETS
-		
-		// setup assets depending on device
-		#if ios
-		var rootPath:String = Path.addTrailingSlash(System.documentsDirectory);
-		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', rootPath + 'assets/', true, SOURCE));
-		
-		#elseif android
-		var rootPath:String = haxe.io.Path.normalize("/storage/emulated/0/.CodenameEngine-v1.0.1/");
-		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', rootPath + 'assets/', true, SOURCE));
-		
-		#else
 		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', './assets/', true, SOURCE));
-		#end
-		
 		#end
 		for (d in __defaultLibraries) addLibrary(d);
 	}
