@@ -23,6 +23,11 @@ class OptionsMenu extends TreeMenu {
 			substate: funkin.options.keybinds.KeybindsOptions
 		},
 		{
+			name: 'optionsTree.mobile-name',
+			desc: 'optionsTree.mobile-desc',
+			state: MobileOptions
+		},
+		{
 			name: 'optionsTree.gameplay-name',
 			desc: 'optionsTree.gameplay-desc',
 			state: GameplayOptions
