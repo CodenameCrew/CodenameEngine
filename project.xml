@@ -162,11 +162,10 @@
 
 		<!-- TODO: make it copy this manually, instead of using assets node, so it doesn't manually check for fonts -->
 		<assets path='mods' rename='mods' embed='false' />
-	</section>
+	</section> 
+	
 
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
-	<assets path="assets" include="*" />
-
 	<!-- OpenAL config -->
 	<section if="desktop">
 		<assets path="building/alsoft.txt" rename="plugins/alsoft.ini" type="text" if="windows"/>
