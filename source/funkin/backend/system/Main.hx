@@ -167,7 +167,7 @@ class Main extends Sprite
 		#end
 
 		#if android
-        var root = haxe.io.Path.addTrailingSlash(Context.getExternalFilesDir();
+        var root = haxe.io.Path.addTrailingSlash(Context.getExternalFilesDir());
         Paths.assetsTree.addLibrary(ModsFolder.loadLibraryFromFolder('assets', root + 'assets/', true));
 		#elseif ios
         var root = haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory);
