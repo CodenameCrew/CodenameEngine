@@ -173,24 +173,24 @@ class VirtualPad extends FlxSpriteGroup
 			var isPressed = false;
 
 			for (touch in FlxG.touches.list) {
-				var point = touch.getWorldPosition(virtualpadCamera);
-				if (btn.overlapsPoint(point, true, virtualpadCamera)) {
-					isPressed = true;
-					overlappingPad = true;
-					break;
+				if (touch.pressed) { 
+					var point = touch.getWorldPosition(virtualpadCamera);
+					if (btn.overlapsPoint(point, true, virtualpadCamera)) {
+						isPressed = true;
+						overlappingPad = true;
+						break;
+					}
 				}
 			}
 			
+			#if desktop
 			if (!isPressed && FlxG.mouse.pressed) {
 				if (FlxG.mouse.overlaps(btn, virtualpadCamera)) {
 					isPressed = true;
 					overlappingPad = true;
 				}
 			}
-
-			if (!overlappingPad && FlxG.mouse.overlaps(btn, virtualpadCamera)) {
-				overlappingPad = true;
-			}
+			#end
 
 			var wasPressed = buttonStates.exists(btn) ? buttonStates.get(btn) : false;
 			var justPressed = isPressed && !wasPressed;
@@ -208,15 +208,6 @@ class VirtualPad extends FlxSpriteGroup
 		}
 
 		VirtualPad.touchingPad = overlappingPad;
-
-		if (overlappingPad) {
-			#if mobile
-			@:privateAccess {
-				FlxG.mouse._leftButton.current = 0; 
-				FlxG.mouse._leftButton.last = 0;
-			}
-			#end
-		}
 
 		super.update(elapsed);
 	}
