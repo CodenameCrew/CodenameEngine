@@ -133,6 +133,7 @@ class PauseSubState extends MusicBeatSubstate
 		#if mobile
 		virtualPad = new VirtualPad(UP_DOWN, A_B);
         add(virtualPad);
+		#end
 	}
 
 	override function createPost() {
