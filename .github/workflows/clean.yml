@@ -1,0 +1,37 @@
+name: Cleanup Artifacts
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            let page = 1;
+            while (true) {
+              const res = await github.rest.actions.listArtifactsForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                per_page: 100,
+                page
+              });
+
+              if (res.data.artifacts.length === 0) break;
+
+              for (const a of res.data.artifacts) {
+                await github.rest.actions.deleteArtifact({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  artifact_id: a.id
+                });
+                console.log(`Deleted: ${a.name}`);
+              }
+
+              page++;
+            }
