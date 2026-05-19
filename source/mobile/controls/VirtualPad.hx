@@ -230,7 +230,7 @@ class VirtualPad extends FlxSpriteGroup
 		if (overlappingPad)
         {
             @:privateAccess
-            FlxG.mouse._leftButton.current = FlxInput.PRESSED;
+            FlxG.mouse._leftButton.current = FlxInputState.PRESSED;
 		}
 
 		VirtualPad.touchingPad = overlappingPad;
