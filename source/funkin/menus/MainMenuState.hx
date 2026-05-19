@@ -9,12 +9,20 @@ import funkin.backend.scripting.events.NameEvent;
 import funkin.menus.credits.CreditsMain;
 import funkin.options.OptionsMenu;
 import lime.app.Application;
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
 
 using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
 	var curSelected:Int = 0;
+
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
@@ -93,6 +101,9 @@ class MainMenuState extends MusicBeatState
 		add(devModeWarning);
 		devModeWarning.scrollFactor.set();
 		devModeWarning.alpha = 0;
+		#if mobile
+		addVirtualPad('FULL', 'A_B_X_Y');
+		#end
 	}
 
 	var selectedSomethin:Bool = false;
