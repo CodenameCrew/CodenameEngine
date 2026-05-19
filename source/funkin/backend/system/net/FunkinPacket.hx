@@ -20,9 +20,17 @@ class FunkinPacket implements haxe.Constraints.IMap<String, Dynamic> {
 	public static function fromJson(json:OneOfTwo<String, haxe.DynamicAccess<Dynamic>>):FunkinPacket { return (new FunkinPacket().appendJson(json)); }
 
 	public function appendJson(json:OneOfTwo<String, haxe.DynamicAccess<Dynamic>>):FunkinPacket {
-		var parsedJson:haxe.DynamicAccess<Dynamic> = (json is String) ? haxe.Json.parse(json) : json;
-		if (parsedJson == null) return this;
-		
+		var parsedJson:haxe.DynamicAccess<Dynamic>;
+		if (json is String) {
+			try {
+				parsedJson = haxe.Json.parse(json);
+				if (parsedJson == null) return this;
+				
+			} catch(e) {
+				this.set("message", json);
+				return this;
+			}
+		} else parsedJson = json;
 		for (key => value in parsedJson) this.set(key, value);
 		return this;
 	}
