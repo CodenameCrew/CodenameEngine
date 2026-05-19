@@ -56,6 +56,36 @@ class HScript extends Script {
         });
 		#end
 
+		interp.variables.set("addCustomButton", function(x:Float, y:Float, assetPath:String, keyStr:String) {
+            var vpad = interp.variables.get("virtualPad");
+            if (vpad == null) return null;
+
+            var fullPath = Paths.image(assetPath);
+            if (!openfl.utils.Assets.exists(fullPath)) {
+                trace("ERROR: Custom button image not found at: " + assetPath);
+                return null;
+            }
+
+            var btn = new flixel.ui.FlxButton(x, y);
+            btn.loadGraphic(fullPath);
+    
+            btn.solid = false;
+            btn.immovable = true;
+            btn.scrollFactor.set();
+    
+            var key = flixel.input.keyboard.FlKey.fromString(keyStr.toUpperCase());
+    
+            vpad.add(btn); 
+
+            var oldUpdate = vpad.update;
+            vpad.update = function(elapsed:Float) {
+                oldUpdate(elapsed);
+                @:privateAccess vpad.updateButtonKey(btn, key, "custom_" + assetPath, elapsed);
+            };
+
+            return btn;
+        });
+
 		interp.variables.set("trace", Reflect.makeVarArgs((args) -> {
 			var v:String = Std.string(args.shift());
 			for (a in args) v += ", " + Std.string(a);
