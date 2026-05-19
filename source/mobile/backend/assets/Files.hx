@@ -8,27 +8,28 @@ using StringTools;
 class Files
 {
 	#if android
-	private static var _androidDir:String = null;
+    private static var _androidDir:String = null;
 
-	private static function getAndroidStorageDir():String
-	{
-		if (_androidDir != null) return _androidDir;
+    private static function getAndroidStorageDir():String
+    {
+        if (_androidDir != null)
+            return _androidDir;
 
-		var pkg:String = "com.yoshman29.codenameengine"; // fallback
-		if (Application.current != null && Application.current.meta.get("packageName") != null) {
-			pkg = Application.current.meta.get("packageName");
-		}
+        if (VERSION.SDK_INT >= VERSION_CODES.R)
+        {
+            _androidDir = haxe.io.Path.addTrailingSlash(extension.androidtools.content.Context.getObbDir());
+        }
+        else
+        {
+            _androidDir = haxe.io.Path.addTrailingSlash(extension.androidtools.content.Context.getExternalFilesDir());
+        }
 
-		if (VERSION.SDK_INT >= VERSION_CODES.R) {
-			_androidDir = "/storage/emulated/0/Android/obb/" + pkg + "/files/";
-		} else {
-			_androidDir = "/storage/emulated/0/Android/data/" + pkg + "/files/";
-		}
-		
-		return _androidDir;
-	}
-	#end
+        trace("ANDROID STORAGE DIR: " + _androidDir);
 
+        return _androidDir;
+    }
+    #end
+	
 	public static function getAssetsDir():String
 	{
 		#if android
