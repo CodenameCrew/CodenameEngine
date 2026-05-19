@@ -15,19 +15,16 @@ class FunkinPacket implements haxe.Constraints.IMap<String, Dynamic> {
 	// If the recieved data is binary or contains binary, this will contain the raw bytes.
 	public var bytes:Bytes = null;
 
-	public function new() { }
+	public function new() {}
 
-	public static function fromJson(json:OneOfTwo<String, haxe.DynamicAccess<Dynamic>>):Null<FunkinPacket> {		
-		var packet = new FunkinPacket();
-		packet.appendJson(json);
-		return packet;
-	}
+	public static function fromJson(json:OneOfTwo<String, haxe.DynamicAccess<Dynamic>>):FunkinPacket { return (new FunkinPacket().appendJson(json)); }
 
-	public function appendJson(json:OneOfTwo<String, haxe.DynamicAccess<Dynamic>>):Void {
+	public function appendJson(json:OneOfTwo<String, haxe.DynamicAccess<Dynamic>>):FunkinPacket {
 		var parsedJson:haxe.DynamicAccess<Dynamic> = (json is String) ? haxe.Json.parse(json) : json;
-		if (parsedJson == null) return;
+		if (parsedJson == null) return this;
 		
 		for (key => value in parsedJson) this.set(key, value);
+		return this;
 	}
 
 	public function toJson():haxe.DynamicAccess<Dynamic> {
