@@ -6,9 +6,17 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.backend.FunkinText;
 import funkin.editors.ui.UIWarningSubstate.WarningButton;
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
 
 class PlaytestingWarningSubstate extends MusicBeatSubstate
 {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
+	
 	var titleAlphabet:Alphabet;
 	var disclaimer:FunkinText;
 
@@ -68,6 +76,9 @@ class PlaytestingWarningSubstate extends MusicBeatSubstate
 
 		curSelected = options.length-1;
 		changeSelection(0);
+        #if mobile
+		addVirtualPad('LEFT_RIGHT', 'A');
+		#end
 	}
 
 	var sinner:Float = 0;
