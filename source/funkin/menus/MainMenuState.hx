@@ -102,7 +102,8 @@ class MainMenuState extends MusicBeatState
 		devModeWarning.scrollFactor.set();
 		devModeWarning.alpha = 0;
 		#if mobile
-		addVirtualPad('FULL', 'A_B_X_Y');
+		virtualPad = new VirtualPad(FULL, A_B_X_Y);
+        add(virtualPad);
 		#end
 	}
 
