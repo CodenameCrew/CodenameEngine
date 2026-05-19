@@ -158,42 +158,41 @@ class VirtualPad extends FlxSpriteGroup
 
 	override function update(elapsed:Float) 
 	{
-        super.update(elapsed);
+		#if mobile
+		this.alpha = Options.virtualPadOpacity;
 
-        #if mobile
-        this.alpha = Options.virtualPadOpacity;
-        #end
+		var padButtons = [buttonLeft, buttonRight, buttonUp, buttonDown, buttonA, buttonB, buttonC, buttonX, buttonY];
+		var overlappingPad:Bool = false;
 
-        updateButtonKey(buttonUp, getBind("up"), "up", elapsed);
-        updateButtonKey(buttonDown, getBind("down"), "down", elapsed);
-        updateButtonKey(buttonLeft, getBind("left"), "left", elapsed);
-        updateButtonKey(buttonRight, getBind("right"), "right", elapsed);
-    
-        updateButtonKey(buttonA, getBind("a"), "a", elapsed);
-        updateButtonKey(buttonB, getBind("b"), "b", elapsed);
-        updateButtonKey(buttonC, getBind("c"), "c", elapsed);
-        updateButtonKey(buttonX, getBind("x"), "x", elapsed);
-        updateButtonKey(buttonY, getBind("y"), "y", elapsed);
-
-        var padButtons = [buttonLeft, buttonRight, buttonUp, buttonDown, buttonA, buttonB, buttonC, buttonX, buttonY];
-        var overlappingPad:Bool = false;
-
-        for (btn in padButtons) {
-            if (btn != null && btn.visible && FlxG.mouse.overlaps(btn)) {
-                overlappingPad = true;
-                break;
-            }
-        }
+		for (btn in padButtons) {
+			if (btn != null && btn.visible && FlxG.mouse.overlaps(btn)) {
+				overlappingPad = true;
+				break;
+			}
+		}
 		
-        if (overlappingPad) {
-           @:privateAccess {
-                FlxG.mouse._leftButton.current = 0; 
-                FlxG.mouse._leftButton.last = 0;
-           }
-        }
-    }
-	
+		if (overlappingPad) {
+		   @:privateAccess {
+				FlxG.mouse._leftButton.current = 0; 
+				FlxG.mouse._leftButton.last = 0;
+		   }
+		}
+		#end
 
+		super.update(elapsed);
+
+		updateButtonKey(buttonUp, getBind("up"), "up", elapsed);
+		updateButtonKey(buttonDown, getBind("down"), "down", elapsed);
+		updateButtonKey(buttonLeft, getBind("left"), "left", elapsed);
+		updateButtonKey(buttonRight, getBind("right"), "right", elapsed);
+	
+		updateButtonKey(buttonA, getBind("a"), "a", elapsed);
+		updateButtonKey(buttonB, getBind("b"), "b", elapsed);
+		updateButtonKey(buttonC, getBind("c"), "c", elapsed);
+		updateButtonKey(buttonX, getBind("x"), "x", elapsed);
+		updateButtonKey(buttonY, getBind("y"), "y", elapsed);
+	}
+	
 	private inline function getBind(keyName:String):FlxKey 
     {
         return keyBinds.exists(keyName) ? keyBinds.get(keyName) : FlxKey.NONE;
