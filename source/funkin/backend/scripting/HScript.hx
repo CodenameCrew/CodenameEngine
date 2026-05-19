@@ -6,6 +6,10 @@ import hscript.Parser;
 import openfl.Assets;
 #if mobile
 import mobile.controls.VirtualPad;
+import funkin.backend.utils.NativeAPI;
+#end
+#if android
+import extension.androidtools.Tools;
 #end
 
 class HScript extends Script {
@@ -163,6 +167,10 @@ class HScript extends Script {
 			Logs.logText(fn, GREEN),
 			Logs.logText(err, RED)
 		], ERROR);
+
+		#if Mobile
+	    NativeAPI.showMessageBox("HScript Error!", fn + "\n" + Std.string(err), "Got It!");
+	    #end
 	}
 
 	private function _warnHandler(error:Error) {
@@ -181,6 +189,10 @@ class HScript extends Script {
 			Logs.logText(fn, GREEN),
 			Logs.logText(err, YELLOW)
 		], WARNING);
+
+		#if android
+    	NativeAPI.showMessageBox("HScript Warning!", fn + "\n" + Std.string(err), "Got It!");
+    	#end
 	}
 
 	public override function setParent(parent:Dynamic) {
