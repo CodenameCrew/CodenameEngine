@@ -165,15 +165,19 @@ class Main extends Sprite
 		#if GLOBAL_SCRIPT
 		funkin.backend.scripting.GlobalScript.init();
 		#end
-        /**
+
 		#if android
-        var root = haxe.io.Path.addTrailingSlash(Context.getExternalFilesDir());
-        Paths.assetsTree.addLibrary(ModsFolder.loadLibraryFromFolder('assets', root + 'assets/', true));
+		var androidDir = VERSION.SDK_INT >= 30 ? Context.getObbDir() : Context.getExternalFilesDir();
+		if (!sys.FileSystem.exists(androidDir)) {
+			sys.FileSystem.createDirectory(androidDir);
+		}
+		var root = haxe.io.Path.addTrailingSlash(androidDir);
+		Paths.assetsTree.addLibrary(ModsFolder.loadLibraryFromFolder('assets', root + 'assets/', true));
 		#elseif ios
         var root = haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory);
         Paths.assetsTree.addLibrary(ModsFolder.loadLibraryFromFolder('assets', root + 'assets/', true));
         #end
-        **/
+
 		var lib = new AssetLibrary();
 		@:privateAccess
 		lib.__proxy = Paths.assetsTree;
@@ -279,7 +283,11 @@ class Main extends Sprite
 			Sys.setCwd(haxe.io.Path.directory(Sys.programPath()));
 		}
 		#elseif android
-		//Sys.setCwd(haxe.io.Path.addTrailingSlash(VERSION.SDK_INT > 30 ? Context.getObbDir() : Context.getExternalFilesDir()));
+		var androidDir = VERSION.SDK_INT >= 30 ? Context.getObbDir() : Context.getExternalFilesDir();
+		if (!sys.FileSystem.exists(androidDir)) {
+			sys.FileSystem.createDirectory(androidDir);
+		}
+		Sys.setCwd(haxe.io.Path.addTrailingSlash(androidDir));
 		#elseif (ios || switch)
 		Sys.setCwd(haxe.io.Path.addTrailingSlash(openfl.filesystem.File.applicationStorageDirectory.nativePath));
 		#end
