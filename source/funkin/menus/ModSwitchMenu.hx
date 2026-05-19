@@ -6,8 +6,15 @@ import flixel.util.FlxColor;
 import funkin.backend.assets.ModsFolder;
 import haxe.io.Path;
 import sys.FileSystem;
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
 
 class ModSwitchMenu extends MusicBeatSubstate {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
 	var mods:Array<String> = [];
 	var alphabets:FlxTypedGroup<Alphabet>;
 	var curSelected:Int = 0;
@@ -43,6 +50,10 @@ class ModSwitchMenu extends MusicBeatSubstate {
 		}
 		add(alphabets);
 		changeSelection(0, true);
+
+		#if mobile
+		addVirtualPad('UP_DOWN', 'A_B');
+		#end
 	}
 
 	public override function update(elapsed:Float) {
