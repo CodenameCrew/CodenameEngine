@@ -156,7 +156,8 @@ class VirtualPad extends FlxSpriteGroup
 		}
 	}
 
-	override function update(elapsed:Float) {
+	override function update(elapsed:Float) 
+	{
         super.update(elapsed);
 
         #if mobile
