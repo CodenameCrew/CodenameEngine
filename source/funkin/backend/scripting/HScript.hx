@@ -4,6 +4,9 @@ import hscript.*;
 import hscript.Expr.Error;
 import hscript.Parser;
 import openfl.Assets;
+#if mobile
+import mobile.controls.VirtualPad;
+#end
 
 class HScript extends Script {
 	public var interp:Interp;
@@ -38,6 +41,20 @@ class HScript extends Script {
 		interp.importFailedCallback = importFailedCallback;
 		interp.staticVariables = Script.staticVariables;
 		interp.allowStaticVariables = interp.allowPublicVariables = true;
+		#if mobile
+		interp.variables.set("VirtualPad", mobile.controls.VirtualPad);
+
+        interp.variables.set("addVirtualPad", function(dpadModeStr:String, actionModeStr:String) {
+            var dpadMode = Type.createEnum(mobile.controls.VirtualPad.FlxDPadMode, dpadModeStr);
+            var actionMode = Type.createEnum(mobile.controls.VirtualPad.FlxActionMode, actionModeStr);
+    
+            var vpad = new mobile.controls.VirtualPad(dpadMode, actionMode);
+            add(vpad);
+            interp.variables.set("virtualPad", vpad);
+    
+            return vpad;
+        });
+		#end
 
 		interp.variables.set("trace", Reflect.makeVarArgs((args) -> {
 			var v:String = Std.string(args.shift());
