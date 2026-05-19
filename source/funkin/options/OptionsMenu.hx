@@ -76,7 +76,8 @@ class OptionsMenu extends TreeMenu {
 		for (i in mainOptions) if (i.name == "optionsTree.language-name" && Flags.DISABLE_LANGUAGES) mainOptions.remove(i);
 
 		#if mobile
-		addVirtualPad('FULL', 'A_B');
+		virtualPad = new VirtualPad(FULL, A_B);
+        add(virtualPad);
 		#end
 
 		addMenu(new TreeMenuScreen('optionsMenu.header.title', 'optionsMenu.header.desc', [for (o in mainOptions) new TextOption(o.name, o.desc, o.suffix != null ? o.suffix : " >", () -> {
