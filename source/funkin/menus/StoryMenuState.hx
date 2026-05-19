@@ -142,8 +142,11 @@ class StoryMenuState extends MusicBeatState {
 		DiscordUtil.call("onMenuLoaded", ["Story Menu"]);
 		CoolUtil.playMenuSong();
 
-		addVirtualPad('FULL', 'A_B_C');
+		#if mobile
+		virtualPad = new VirtualPad(FULL, A_B_C);
+        add(virtualPad);
 		virtualPad.rebind('C', 'R');
+		#end
 	}
 
 	var __lastDifficultyTween:FlxTween;
