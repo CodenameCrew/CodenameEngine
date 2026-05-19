@@ -15,9 +15,17 @@ import funkin.editors.charter.Charter;
 import funkin.menus.StoryMenuState;
 import funkin.options.OptionsMenu;
 import funkin.options.keybinds.KeybindsOptions;
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
 
 class PauseSubState extends MusicBeatSubstate
 {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
+	
 	public static var script:String = Flags.DEFAULT_PAUSE_SCRIPT;
 
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
@@ -121,6 +129,8 @@ class PauseSubState extends MusicBeatSubstate
 		camera = new FlxCamera();
 		camera.bgColor = 0;
 		FlxG.cameras.add(camera, false);
+
+		addVirtualPad('UP_DOWN', 'A_B');
 	}
 
 	override function createPost() {
