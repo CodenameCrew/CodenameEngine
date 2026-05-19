@@ -200,57 +200,19 @@ class VirtualPad extends FlxSpriteGroup
     }
     
 	private function updateButtonKey(btn:FlxButton, key:FlxKey, actionName:String, elapsed:Float):Void
-	{
-		if (btn == null || !btn.exists || !btn.active || key == FlxKey.NONE) return;
+    {
+        if (btn == null || !btn.exists || !btn.active || key == FlxKey.NONE) return;
 
         if (btn.justPressed)
-	    {
-			FlxG.keys.handleAction(key, true);
-			holdTimers.set(actionName, 0);
-			holdActive.set(actionName, false);
-		}
-		
-		if (btn.pressed && !btn.justPressed)
-		{
-			var timer = holdTimers.exists(actionName) ? holdTimers.get(actionName) : 0;
-			var active = holdActive.exists(actionName) ? holdActive.get(actionName) : false;
-			
-			timer += elapsed;
-			
-			if (!active)
-			{
-				if (timer >= HOLD_DELAY)
-				{
-					holdActive.set(actionName, true);
-					holdTimers.set(actionName, 0);
-					FlxG.keys.handleAction(key, true);
-				}
-				else
-				{
-					holdTimers.set(actionName, timer);
-				}
-			}
-			else
-			{
-				if (timer >= HOLD_REPEAT)
-				{
-					holdTimers.set(actionName, 0);
-					FlxG.keys.handleAction(key, true);
-				}
-				else
-				{
-					holdTimers.set(actionName, timer);
-				}
-			}
-		}
-		
-		if (btn.justReleased)
-		{
-			FlxG.keys.handleAction(key, false);
-			holdTimers.remove(actionName);
-			holdActive.remove(actionName);
-		}
-	}
+        {
+            FlxG.keys.handleAction(key, true);
+        }
+    
+        if (btn.justReleased)
+        {
+            FlxG.keys.handleAction(key, false);
+        }
+    }
 
 	override public function draw():Void {
 		if (virtualpadCamera != null && !FlxG.cameras.list.contains(virtualpadCamera))
@@ -288,64 +250,21 @@ class VirtualPad extends FlxSpriteGroup
 	}
 
 	public function pressed(action:String, elapsed:Float):Bool
-	{
-		if (boundActions == null) return false;
+    {
+        if (boundActions == null) return false;
 
-		var isDown:Bool = false;
-
-		for (btn => actions in boundActions)
-		{
-			if (actions != null && actions.contains(action))
-			{
-				if (btn != null && btn.exists && btn.active && btn.pressed)
-				{
-					isDown = true;
-					break;
-				}
-			}
-		}
-		if (!isDown)
-		{
-			if (holdTimers.exists(action))
-			{
-				holdTimers.remove(action);
-				holdActive.remove(action);
-			}
-			return false;
-		}
-		if (!holdTimers.exists(action))
-		{
-			holdTimers.set(action, 0);
-			holdActive.set(action, false);
-			return true;
-		}
-
-		var timer = holdTimers.get(action);
-		var active = holdActive.exists(action) ? holdActive.get(action) : false;
-
-		timer += elapsed;
-
-		if (!active)
-		{
-			if (timer >= HOLD_DELAY)
-			{
-				holdActive.set(action, true);
-				holdTimers.set(action, 0);
-				return true;
-			}
-		}
-		else
-		{
-			if (timer >= HOLD_REPEAT)
-			{
-				holdTimers.set(action, 0);
-				return true;
-			}
-		}
-
-		holdTimers.set(action, timer);
-		return false;
-	}
+        for (btn => actions in boundActions)
+        {
+            if (actions != null && actions.contains(action))
+            {
+                if (btn != null && btn.exists && btn.active && btn.pressed)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 	
 	public function anyPressed():Bool
 	{
@@ -405,6 +324,53 @@ class VirtualPad extends FlxSpriteGroup
 			}
 		}
 		return false;
+	}
+
+    public function justPressedRepeated(action:String, elapsed:Float):Bool
+    {
+        if (boundActions == null) return false;
+
+        var isDown:Bool = false;
+        for (btn => actions in boundActions) {
+            if (actions != null && actions.contains(action)) {
+                if (btn != null && btn.exists && btn.active && btn.pressed) {
+                    isDown = true;
+                    break;
+                }
+            }
+        }
+  
+        if (!isDown) {
+            holdTimers.remove(action);
+            holdActive.remove(action);
+            return false;
+        }
+
+        if (!holdTimers.exists(action)) {
+            holdTimers.set(action, 0);
+            holdActive.set(action, false);
+            return true; 
+        }
+
+        var timer = holdTimers.get(action);
+        var active = holdActive.exists(action) ? holdActive.get(action) : false;
+        timer += elapsed;
+
+        if (!active) {
+            if (timer >= HOLD_DELAY) {
+                holdActive.set(action, true);
+                holdTimers.set(action, 0);
+                return true;
+            }
+         } else {
+            if (timer >= HOLD_REPEAT) {
+                holdTimers.set(action, 0);
+                return true;
+            }
+        }
+
+        holdTimers.set(action, timer);
+        return false;
 	}
 	
 	override public function destroy():Void
