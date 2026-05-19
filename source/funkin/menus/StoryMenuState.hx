@@ -14,8 +14,16 @@ import funkin.backend.week.*;
 import funkin.savedata.FunkinSave;
 import haxe.io.Path;
 import haxe.xml.Access;
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
 
 class StoryMenuState extends MusicBeatState {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
+	
 	public var characters:Map<String, WeekData.WeekCharacter> = [];
 	public var weeks:Array<WeekData> = [];
 	public var weekList:StoryWeeklist;
@@ -133,6 +141,9 @@ class StoryMenuState extends MusicBeatState {
 
 		DiscordUtil.call("onMenuLoaded", ["Story Menu"]);
 		CoolUtil.playMenuSong();
+
+		addVirtualPad('FULL', 'A_B_C');
+		virtualPad.rebind('C', 'R');
 	}
 
 	var __lastDifficultyTween:FlxTween;
