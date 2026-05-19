@@ -1,5 +1,16 @@
 package mobile.controls;
 
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.FlxCamera;
+import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxPoint;
+import flixel.ui.FlxButton;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxTileFrames;
+import flixel.util.FlxDestroyUtil;
+import flixel.input.keyboard.FlxKey;
+#if mobile
 class VirtualPad extends FlxSpriteGroup
 {
 	public var buttonA:FlxButton;
@@ -22,6 +33,8 @@ class VirtualPad extends FlxSpriteGroup
 	public var boundActions:Map<FlxButton, Array<String>> = new Map();
 	
 	private var buttonStates:Map<FlxButton, Bool> = new Map();
+	private var buttonJustPressed:Map<FlxButton, Bool> = new Map();
+	private var buttonJustReleased:Map<FlxButton, Bool> = new Map();
 
 	private var atlasFrames:FlxAtlasFrames;
 	
@@ -159,54 +172,86 @@ class VirtualPad extends FlxSpriteGroup
 
 	override function update(elapsed:Float) 
 	{
-		#if mobile
-		this.alpha = Options.virtualPadOpacity;
-		#end
-		
-		super.update(elapsed);
+		this.alpha = Options.virtualPadOpacity; 
+	    
+		var overlappingPad:Bool = false;
+		var padButtons = [buttonLeft, buttonRight, buttonUp, buttonDown, buttonA, buttonB, buttonC, buttonX, buttonY];
 
-		updateButtonKey(buttonUp, getBind("up"), "up", elapsed);
-		updateButtonKey(buttonDown, getBind("down"), "down", elapsed);
-		updateButtonKey(buttonLeft, getBind("left"), "left", elapsed);
-		updateButtonKey(buttonRight, getBind("right"), "right", elapsed);
-	
-		updateButtonKey(buttonA, getBind("a"), "a", elapsed);
-		updateButtonKey(buttonB, getBind("b"), "b", elapsed);
-		updateButtonKey(buttonC, getBind("c"), "c", elapsed);
-		updateButtonKey(buttonX, getBind("x"), "x", elapsed);
-		updateButtonKey(buttonY, getBind("y"), "y", elapsed);
+		for (btn in padButtons) {
+			if (btn == null || !btn.exists || !btn.active || !btn.visible) continue;
+
+			var isPressed = false;
+
+			for (touch in FlxG.touches.list) {
+				var point = touch.getWorldPosition(virtualpadCamera);
+				if (btn.overlapsPoint(point, true, virtualpadCamera)) {
+					isPressed = true;
+					overlappingPad = true;
+					break;
+				}
+			}
+			
+			if (!isPressed && FlxG.mouse.pressed) {
+				if (FlxG.mouse.overlaps(btn, virtualpadCamera)) {
+					isPressed = true;
+					overlappingPad = true;
+				}
+			}
+
+			if (!overlappingPad && FlxG.mouse.overlaps(btn, virtualpadCamera)) {
+				overlappingPad = true;
+			}
+
+			var wasPressed = buttonStates.exists(btn) ? buttonStates.get(btn) : false;
+			var justPressed = isPressed && !wasPressed;
+			var justReleased = !isPressed && wasPressed;
+
+			buttonStates.set(btn, isPressed);
+			buttonJustPressed.set(btn, justPressed);
+			buttonJustReleased.set(btn, justReleased);
+
+			var key = getBindForButton(btn);
+			if (key != FlxKey.NONE) {
+				if (justPressed) FlxG.keys.handleAction(key, true);
+				else if (justReleased) FlxG.keys.handleAction(key, false);
+			}
+		}
+
+		VirtualPad.touchingPad = overlappingPad;
+
+		if (overlappingPad) {
+			#if mobile
+			@:privateAccess {
+				FlxG.mouse._leftButton.current = 0; 
+				FlxG.mouse._leftButton.last = 0;
+			}
+			#end
+		}
+
+		super.update(elapsed);
 	}
 	
 	private inline function getBind(keyName:String):FlxKey 
 	{
 		return keyBinds.exists(keyName) ? keyBinds.get(keyName) : FlxKey.NONE;
 	}
-	
-	private function updateButtonKey(btn:FlxButton, key:FlxKey, actionName:String, elapsed:Float):Void
+
+	private function getBindForButton(btn:FlxButton):FlxKey 
 	{
-		if (btn == null || !btn.exists || !btn.active || key == FlxKey.NONE) return;
-
-		var isPressed = btn.pressed;
-		var wasPressed = buttonStates.exists(btn) ? buttonStates.get(btn) : false;
-		
-		if (isPressed && !wasPressed)
-		{
-			FlxG.keys.handleAction(key, true);
-		}
-		else if (!isPressed && wasPressed)
-		{
-			FlxG.keys.handleAction(key, false);
-		}
-
-		buttonStates.set(btn, isPressed);
+		if (btn == buttonUp) return getBind("up");
+		if (btn == buttonDown) return getBind("down");
+		if (btn == buttonLeft) return getBind("left");
+		if (btn == buttonRight) return getBind("right");
+		if (btn == buttonA) return getBind("a");
+		if (btn == buttonB) return getBind("b");
+		if (btn == buttonC) return getBind("c");
+		if (btn == buttonX) return getBind("x");
+		if (btn == buttonY) return getBind("y");
+		return FlxKey.NONE;
 	}
 
 	override public function draw():Void {
-		if (virtualpadCamera != null && !FlxG.cameras.list.contains(virtualpadCamera))
-		{
-			return; 
-		}
-
+		if (virtualpadCamera != null && !FlxG.cameras.list.contains(virtualpadCamera)) return; 
 		super.draw();
 	}
 
@@ -240,14 +285,9 @@ class VirtualPad extends FlxSpriteGroup
 	{
 		if (boundActions == null) return false;
 
-		for (btn => actions in boundActions)
-		{
-			if (actions != null && actions.contains(action))
-			{
-				if (btn != null && btn.exists && btn.active && btn.pressed)
-				{
-					return true;
-				}
+		for (btn => actions in boundActions) {
+			if (actions != null && actions.contains(action)) {
+				if (buttonStates.exists(btn) && buttonStates.get(btn)) return true;
 			}
 		}
 		return false;
@@ -255,33 +295,18 @@ class VirtualPad extends FlxSpriteGroup
 	
 	public function anyPressed():Bool
 	{
-		if (buttonUp != null && buttonUp.pressed) return true;
-		if (buttonDown != null && buttonDown.pressed) return true;
-		if (buttonLeft != null && buttonLeft.pressed) return true;
-		if (buttonRight != null && buttonRight.pressed) return true;
-
-		if (buttonA != null && buttonA.pressed) return true;
-		if (buttonB != null && buttonB.pressed) return true;
-		if (buttonX != null && buttonX.pressed) return true;
-		if (buttonY != null && buttonY.pressed) return true;
-		if (buttonC != null && buttonC.pressed) return true;
-
+		for (btn in buttonStates.keys()) {
+			if (buttonStates.get(btn)) return true;
+		}
 		return false;
 	}
 
 	public function isTouchOnPad(point:FlxPoint):Bool
 	{
-		if (buttonUp != null && buttonUp.overlapsPoint(point)) return true;
-		if (buttonDown != null && buttonDown.overlapsPoint(point)) return true;
-		if (buttonLeft != null && buttonLeft.overlapsPoint(point)) return true;
-		if (buttonRight != null && buttonRight.overlapsPoint(point)) return true;
-
-		if (buttonA != null && buttonA.overlapsPoint(point)) return true;
-		if (buttonB != null && buttonB.overlapsPoint(point)) return true;
-		if (buttonX != null && buttonX.overlapsPoint(point)) return true;
-		if (buttonY != null && buttonY.overlapsPoint(point)) return true;
-		if (buttonC != null && buttonC.overlapsPoint(point)) return true;
-
+		var padButtons = [buttonLeft, buttonRight, buttonUp, buttonDown, buttonA, buttonB, buttonC, buttonX, buttonY];
+		for (btn in padButtons) {
+			if (btn != null && btn.overlapsPoint(point)) return true;
+		}
 		return false;
 	}
 	
@@ -289,12 +314,9 @@ class VirtualPad extends FlxSpriteGroup
 	{
 		if (boundActions == null) return false; 
 
-		for (btn => actions in boundActions)
-		{
-			if (actions != null && actions.contains(action))
-			{
-				if (btn != null && btn.exists && btn.active && btn.justPressed)
-					return true;
+		for (btn => actions in boundActions) {
+			if (actions != null && actions.contains(action)) {
+				if (buttonJustPressed.exists(btn) && buttonJustPressed.get(btn)) return true;
 			}
 		}
 		return false;
@@ -306,8 +328,7 @@ class VirtualPad extends FlxSpriteGroup
 
 		for (btn => actions in boundActions) {
 			if (actions != null && actions.contains(action)) {
-				if (btn != null && btn.justReleased)
-					return true;
+				if (buttonJustReleased.exists(btn) && buttonJustReleased.get(btn)) return true;
 			}
 		}
 		return false;
@@ -320,7 +341,7 @@ class VirtualPad extends FlxSpriteGroup
 		var isDown:Bool = false;
 		for (btn => actions in boundActions) {
 			if (actions != null && actions.contains(action)) {
-				if (btn != null && btn.exists && btn.active && btn.pressed) {
+				if (buttonStates.exists(btn) && buttonStates.get(btn)) {
 					isDown = true;
 					break;
 				}
@@ -362,22 +383,23 @@ class VirtualPad extends FlxSpriteGroup
 	
 	override public function destroy():Void
 	{
-		if (boundActions != null)
-		{
+		if (boundActions != null) {
 			boundActions.clear();
 			boundActions = null;
 		}
 
-		if (virtualpadCamera != null)
-		{
+		if (virtualpadCamera != null) {
 			FlxG.cameras.remove(virtualpadCamera, false);
 			virtualpadCamera = null;
 		}
 
-		if (buttonStates != null) 
-		{
+		if (buttonStates != null) {
 			buttonStates.clear();
+			buttonJustPressed.clear();
+			buttonJustReleased.clear();
 			buttonStates = null;
+			buttonJustPressed = null;
+			buttonJustReleased = null;
 		}
 
 		buttonA = FlxDestroyUtil.destroy(buttonA);
@@ -409,37 +431,11 @@ class VirtualPad extends FlxSpriteGroup
 	}
 }
 
-enum FlxDPadMode
-{
-	NONE;
-	UP_DOWN;
-	LEFT_RIGHT;
-	UP_LEFT_RIGHT;
-	DOWN_LEFT_RIGHT;
-	RIGHT_FULL;
-	FULL;
+enum FlxDPadMode {
+	NONE; UP_DOWN; LEFT_RIGHT; UP_LEFT_RIGHT; DOWN_LEFT_RIGHT; RIGHT_FULL; FULL;
 }
 
-enum FlxActionMode
-{
-	NONE;
-	A;
-	B;
-	X;
-	Y;
-	C;
-	A_B;
-	A_C;
-	A_X;
-	A_Y;
-	A_B_C;
-	A_X_Y;
-	A_B_X_Y;
-	A_C_X_Y;
-	A_B_C_X_Y;
-	B_C;
-	B_X;
-	B_Y;
-	B_C_X_Y;
-	B_X_Y;
+enum FlxActionMode {
+	NONE; A; B; X; Y; C; A_B; A_C; A_X; A_Y; A_B_C; A_X_Y; A_B_X_Y; A_C_X_Y; A_B_C_X_Y; B_C; B_X; B_Y; B_C_X_Y; B_X_Y;
 }
+#end
