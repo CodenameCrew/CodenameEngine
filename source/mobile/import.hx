@@ -12,7 +12,7 @@ import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.atlas.FlxNode;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.input.FlxInput;
-import flixel.input.FlxInputState;
+import flixel.input.FlxInput.FlxInputState;
 import flixel.input.FlxPointer;
 import flixel.input.IFlxInput;
 import flixel.input.keyboard.FlxKey;
