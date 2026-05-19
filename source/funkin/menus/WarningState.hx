@@ -43,8 +43,10 @@ class WarningState extends MusicBeatState {
 		titleAlphabet.y += off;
 
 		DiscordUtil.call("onMenuLoaded", ["Beta Warning"]);
-        #if mobile
-		addVirtualPad('NONE', 'A');
+
+		#if mobile
+		virtualPad = new VirtualPad(NONE, A);
+        add(virtualPad);
 		#end
 	}
 
