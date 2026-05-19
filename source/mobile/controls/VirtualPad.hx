@@ -201,10 +201,36 @@ class VirtualPad extends FlxSpriteGroup
 			buttonJustReleased.set(btn, justReleased);
 
 			var key = getBindForButton(btn);
-			if (key != FlxKey.NONE) {
-				if (justPressed) FlxG.keys.handleAction(key, true);
-				else if (justReleased) FlxG.keys.handleAction(key, false);
-			}
+
+            if (key != FlxKey.NONE)
+            {
+            	@:privateAccess
+            	{
+	        	if (justPressed)
+		        {
+        			FlxG.keys._keyListMap[key].current = JUST_PRESSED;
+        		}
+	            	else if (justReleased)
+	               	{
+		            	FlxG.keys._keyListMap[key].current = JUST_RELEASED;
+	                    }
+	            	else if (isPressed)
+          	        {
+	         		if (FlxG.keys._keyListMap[key].current == JUST_PRESSED)
+			        	FlxG.keys._keyListMap[key].current = PRESSED;
+					    }
+		            else
+            		{
+	              		if (FlxG.keys._keyListMap[key].current == JUST_RELEASED)
+			        	FlxG.keys._keyListMap[key].current = RELEASED;
+	            	}
+              }
+        }
+			
+		if (overlappingPad)
+        {
+            @:privateAccess
+            FlxG.mouse._leftButton.current = FlxInput.PRESSED;
 		}
 
 		VirtualPad.touchingPad = overlappingPad;
