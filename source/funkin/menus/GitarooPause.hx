@@ -1,9 +1,17 @@
 package funkin.menus;
 
 import funkin.editors.charter.Charter;
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
 
 class GitarooPause extends MusicBeatState
 {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
+		
 	var replayButton:FlxSprite;
 	var cancelButton:FlxSprite;
 
@@ -44,7 +52,11 @@ class GitarooPause extends MusicBeatState
 		add(cancelButton);
 
 		changeThing();
-
+		
+        #if mobile
+		addVirtualPad('LEFT_RIGHT', 'A_B');
+        #end
+		
 		super.create();
 	}
 
