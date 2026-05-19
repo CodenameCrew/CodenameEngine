@@ -156,30 +156,14 @@ class VirtualPad extends FlxSpriteGroup
 		}
 	}
 
-	override function update(elapsed:Float) 
-	{
-		var padButtons = [buttonLeft, buttonRight, buttonUp, buttonDown, buttonA, buttonB, buttonC, buttonX, buttonY];
-		var overlappingPad:Bool = false;
+	override function update(elapsed:Float) {
+        super.update(elapsed);
 
-		for (btn in padButtons) {
-			if (btn != null && btn.visible && FlxG.mouse.overlaps(btn)) {
-				overlappingPad = true;
-				break;
-			}
-		}
-		
-		if (overlappingPad) {
-			@:privateAccess {
-				FlxG.mouse._leftButton.current = 0; 
-				FlxG.mouse._leftButton.last = 0;
-		   }
-		}
+        #if mobile
+        this.alpha = Options.virtualPadOpacity;
+        #end
 
-		#if mobile
-		this.alpha = Options.virtualPadOpacity;
-		#end
-
-		updateButtonKey(buttonUp, getBind("up"), "up", elapsed);
+        updateButtonKey(buttonUp, getBind("up"), "up", elapsed);
         updateButtonKey(buttonDown, getBind("down"), "down", elapsed);
         updateButtonKey(buttonLeft, getBind("left"), "left", elapsed);
         updateButtonKey(buttonRight, getBind("right"), "right", elapsed);
@@ -190,8 +174,24 @@ class VirtualPad extends FlxSpriteGroup
         updateButtonKey(buttonX, getBind("x"), "x", elapsed);
         updateButtonKey(buttonY, getBind("y"), "y", elapsed);
 
-		super.update(elapsed);
-	}
+        var padButtons = [buttonLeft, buttonRight, buttonUp, buttonDown, buttonA, buttonB, buttonC, buttonX, buttonY];
+        var overlappingPad:Bool = false;
+
+        for (btn in padButtons) {
+            if (btn != null && btn.visible && FlxG.mouse.overlaps(btn)) {
+                overlappingPad = true;
+                break;
+            }
+        }
+		
+        if (overlappingPad) {
+           @:privateAccess {
+                FlxG.mouse._leftButton.current = 0; 
+                FlxG.mouse._leftButton.last = 0;
+           }
+        }
+    }
+	
 
 	private inline function getBind(keyName:String):FlxKey 
     {
