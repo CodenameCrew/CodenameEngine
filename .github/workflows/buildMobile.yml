@@ -173,10 +173,12 @@ jobs:
         uses: actions/cache/restore@v4
         with:
          path: |
-          ~/.haxelib
+          ~/haxelib
           ~/.lime
           ~/.openfl
           ~/hxcpp_cache
+          ~/Library/Developer/Xcode/DerivedData
+          export/ios/build
          key: ios-cache-${{ runner.os }}-${{ hashFiles('**/project.xml') }}
          restore-keys: |
           ios-cache-${{ runner.os }}-
@@ -225,10 +227,12 @@ jobs:
         uses: actions/cache/save@v4
         with:
          path: |
-          ~/.haxelib
+          ~/haxelib
           ~/.lime
           ~/.openfl
           ~/hxcpp_cache
+          ~/Library/Developer/Xcode/DerivedData
+          export/ios/build
          key: ios-cache-${{ runner.os }}-${{ hashFiles('**/project.xml') }}
           
       - uses: actions/upload-artifact@v4
