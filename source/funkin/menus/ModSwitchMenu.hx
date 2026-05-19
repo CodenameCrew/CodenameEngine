@@ -52,7 +52,8 @@ class ModSwitchMenu extends MusicBeatSubstate {
 		changeSelection(0, true);
 
 		#if mobile
-		addVirtualPad('UP_DOWN', 'A_B');
+	    virtualPad = new VirtualPad(UP_DOWK, A_B);
+        add(virtualPad);
 		#end
 	}
 
