@@ -130,7 +130,9 @@ class PauseSubState extends MusicBeatSubstate
 		camera.bgColor = 0;
 		FlxG.cameras.add(camera, false);
 
-		addVirtualPad('UP_DOWN', 'A_B');
+		#if mobile
+		virtualPad = new VirtualPad(UP_DOWN, A_B);
+        add(virtualPad);
 	}
 
 	override function createPost() {
