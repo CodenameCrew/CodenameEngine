@@ -120,7 +120,7 @@ class FunkinWebSocket implements IFlxDestroyable {
 				if (AUTO_DECODE_PACKETS) {
 					var packet:FunkinPacket = FunkinPacket.fromJson(cast(data, String));
 					if (packet != null) {		
-						packet.status = 200;
+						packet.status = (packet.get("custom_status") ?? 200);
 
 						data = packet;
 					}
