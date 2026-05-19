@@ -165,7 +165,7 @@ class Main extends Sprite
 		#if GLOBAL_SCRIPT
 		funkin.backend.scripting.GlobalScript.init();
 		#end
-
+        /**
 		#if android
         var root = haxe.io.Path.addTrailingSlash(Context.getExternalFilesDir());
         Paths.assetsTree.addLibrary(ModsFolder.loadLibraryFromFolder('assets', root + 'assets/', true));
@@ -173,7 +173,7 @@ class Main extends Sprite
         var root = haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory);
         Paths.assetsTree.addLibrary(ModsFolder.loadLibraryFromFolder('assets', root + 'assets/', true));
         #end
-
+        **/
 		var lib = new AssetLibrary();
 		@:privateAccess
 		lib.__proxy = Paths.assetsTree;
