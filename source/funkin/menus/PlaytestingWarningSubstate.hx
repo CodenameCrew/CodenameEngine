@@ -77,7 +77,8 @@ class PlaytestingWarningSubstate extends MusicBeatSubstate
 		curSelected = options.length-1;
 		changeSelection(0);
         #if mobile
-		addVirtualPad('LEFT_RIGHT', 'A');
+		virtualPad = new VirtualPad(LEFT_RIGHT, A);
+        add(virtualPad);
 		#end
 	}
 
