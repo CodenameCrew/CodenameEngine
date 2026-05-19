@@ -25,6 +25,7 @@ class Options
 	public static var hintStyle:String = "Simple";
 	public static var hitboxOpacity:Float = 0.20;
 	public static var hintOpacity:Float = 0.25;
+	public static var virtualPadOpacity: Float = 0.7;
 	public static var naughtyness:Bool = true;
 	public static var downscroll:Bool = false;
 	public static var ghostTapping:Bool = true;
