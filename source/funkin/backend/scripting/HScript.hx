@@ -7,6 +7,8 @@ import openfl.Assets;
 #if mobile
 import mobile.controls.VirtualPad;
 import funkin.backend.utils.NativeAPI;
+import flixel.input.keyboard.FlxKey;
+import flixel.ui.FlxButton;
 #end
 #if android
 import extension.androidtools.Tools;
@@ -70,14 +72,14 @@ class HScript extends Script {
                 return null;
             }
 
-            var btn = new flixel.ui.FlxButton(x, y);
+            var btn = new FlxButton(x, y);
             btn.loadGraphic(fullPath);
     
             btn.solid = false;
             btn.immovable = true;
             btn.scrollFactor.set();
     
-            var key = flixel.input.keyboard.FlKey.fromString(keyStr.toUpperCase());
+            var key = FlxKey.fromString(keyStr.toUpperCase());
     
             vpad.add(btn); 
 
