@@ -97,11 +97,14 @@ class Main extends Sprite
 			openfl.Lib.current.stage.removeEventListener(openfl.events.Event.ACTIVATE, onResult);
 		}
 	}
- 
+    
 	private function checkPermissions():Void {
 		if (!extension.androidtools.Permissions.hasManageAllFiles()) {
-			openfl.Lib.current.stage.addEventListener(openfl.events.Event.ACTIVATE, onResult);
-			extension.androidtools.Permissions.requestManageAllFiles();
+            haxe.Timer.delay(function() {
+               openfl.Lib.current.stage.addEventListener(openfl.events.Event.ACTIVATE, onResult);
+
+            extension.androidtools.Permissions.requestManageAllFiles(); 
+			}, 2000);
 		} else {
 			finalizeSetup();
 		}
