@@ -224,9 +224,9 @@ class VirtualPad extends FlxSpriteGroup
 	              		if (FlxG.keys._keyListMap[key].current == JUST_RELEASED)
 			        	FlxG.keys._keyListMap[key].current = RELEASED;
 	            	}
-              }
-        }
-			
+                }
+            }
+		}
 		if (overlappingPad)
         {
             @:privateAccess
