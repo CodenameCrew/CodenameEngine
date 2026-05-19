@@ -189,26 +189,31 @@ class VirtualPad extends FlxSpriteGroup
 		this.alpha = Options.virtualPadOpacity;
 		#end
 
-		updateButtonKey(buttonUp, keyBinds.get("up"), "up", elapsed);
-		updateButtonKey(buttonDown, keyBinds.get("down"), "down", elapsed);
-		updateButtonKey(buttonLeft, keyBinds.get("left"), "left", elapsed);
-		updateButtonKey(buttonRight, keyBinds.get("right"), "right", elapsed);
-		
-		updateButtonKey(buttonA, keyBinds.get("a"), "a", elapsed);
-		updateButtonKey(buttonB, keyBinds.get("b"), "b", elapsed);
-		updateButtonKey(buttonC, keyBinds.get("c"), "c", elapsed);
-		updateButtonKey(buttonX, keyBinds.get("x"), "x", elapsed);
-		updateButtonKey(buttonY, keyBinds.get("y"), "y", elapsed);
+		updateButtonKey(buttonUp, getBind("up"), "up", elapsed);
+        updateButtonKey(buttonDown, getBind("down"), "down", elapsed);
+        updateButtonKey(buttonLeft, getBind("left"), "left", elapsed);
+        updateButtonKey(buttonRight, getBind("right"), "right", elapsed);
+    
+        updateButtonKey(buttonA, getBind("a"), "a", elapsed);
+        updateButtonKey(buttonB, getBind("b"), "b", elapsed);
+        updateButtonKey(buttonC, getBind("c"), "c", elapsed);
+        updateButtonKey(buttonX, getBind("x"), "x", elapsed);
+        updateButtonKey(buttonY, getBind("y"), "y", elapsed);
 
 		super.update(elapsed);
 	}
 
+	private inline function getBind(keyName:String):FlxKey 
+    {
+        return keyBinds.exists(keyName) ? keyBinds.get(keyName) : FlxKey.NONE;
+    }
+    
 	private function updateButtonKey(btn:FlxButton, key:FlxKey, actionName:String, elapsed:Float):Void
 	{
-		if (btn == null || !btn.exists || !btn.active || key == null) return;
+		if (btn == null || !btn.exists || !btn.active || key == FlxKey.NONE) return;
 
-		if (btn.justPressed)
-		{
+        if (btn.justPressed)
+	    {
 			FlxG.keys.handleAction(key, true);
 			holdTimers.set(actionName, 0);
 			holdActive.set(actionName, false);
