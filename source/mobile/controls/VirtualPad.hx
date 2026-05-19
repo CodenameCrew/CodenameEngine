@@ -20,11 +20,12 @@ class VirtualPad extends FlxSpriteGroup
 	private inline static var B_H:Int = 135;
 
 	public var boundActions:Map<FlxButton, Array<String>> = new Map();
+	
+	private var buttonStates:Map<FlxButton, Bool> = new Map();
 
 	private var atlasFrames:FlxAtlasFrames;
 	
 	public static inline var HOLD_DELAY:Float = 0.15;
-
 	public static inline var HOLD_REPEAT:Float = 0.05;
 
 	private var holdTimers:Map<String, Float> = new Map();
@@ -160,25 +161,8 @@ class VirtualPad extends FlxSpriteGroup
 	{
 		#if mobile
 		this.alpha = Options.virtualPadOpacity;
-
-		var padButtons = [buttonLeft, buttonRight, buttonUp, buttonDown, buttonA, buttonB, buttonC, buttonX, buttonY];
-		var overlappingPad:Bool = false;
-
-		for (btn in padButtons) {
-			if (btn != null && btn.visible && FlxG.mouse.overlaps(btn)) {
-				overlappingPad = true;
-				break;
-			}
-		}
-		
-		if (overlappingPad) {
-		   @:privateAccess {
-				FlxG.mouse._leftButton.current = 0; 
-				FlxG.mouse._leftButton.last = 0;
-		   }
-		}
 		#end
-
+		
 		super.update(elapsed);
 
 		updateButtonKey(buttonUp, getBind("up"), "up", elapsed);
@@ -194,24 +178,28 @@ class VirtualPad extends FlxSpriteGroup
 	}
 	
 	private inline function getBind(keyName:String):FlxKey 
-    {
-        return keyBinds.exists(keyName) ? keyBinds.get(keyName) : FlxKey.NONE;
-    }
-    
+	{
+		return keyBinds.exists(keyName) ? keyBinds.get(keyName) : FlxKey.NONE;
+	}
+	
 	private function updateButtonKey(btn:FlxButton, key:FlxKey, actionName:String, elapsed:Float):Void
-    {
-        if (btn == null || !btn.exists || !btn.active || key == FlxKey.NONE) return;
+	{
+		if (btn == null || !btn.exists || !btn.active || key == FlxKey.NONE) return;
 
-        if (btn.justPressed)
-        {
-            FlxG.keys.handleAction(key, true);
-        }
-    
-        if (btn.justReleased)
-        {
-            FlxG.keys.handleAction(key, false);
-        }
-    }
+		var isPressed = btn.pressed;
+		var wasPressed = buttonStates.exists(btn) ? buttonStates.get(btn) : false;
+		
+		if (isPressed && !wasPressed)
+		{
+			FlxG.keys.handleAction(key, true);
+		}
+		else if (!isPressed && wasPressed)
+		{
+			FlxG.keys.handleAction(key, false);
+		}
+
+		buttonStates.set(btn, isPressed);
+	}
 
 	override public function draw():Void {
 		if (virtualpadCamera != null && !FlxG.cameras.list.contains(virtualpadCamera))
@@ -249,21 +237,21 @@ class VirtualPad extends FlxSpriteGroup
 	}
 
 	public function pressed(action:String, elapsed:Float):Bool
-    {
-        if (boundActions == null) return false;
+	{
+		if (boundActions == null) return false;
 
-        for (btn => actions in boundActions)
-        {
-            if (actions != null && actions.contains(action))
-            {
-                if (btn != null && btn.exists && btn.active && btn.pressed)
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+		for (btn => actions in boundActions)
+		{
+			if (actions != null && actions.contains(action))
+			{
+				if (btn != null && btn.exists && btn.active && btn.pressed)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	
 	public function anyPressed():Bool
 	{
@@ -325,51 +313,51 @@ class VirtualPad extends FlxSpriteGroup
 		return false;
 	}
 
-    public function justPressedRepeated(action:String, elapsed:Float):Bool
-    {
-        if (boundActions == null) return false;
+	public function justPressedRepeated(action:String, elapsed:Float):Bool
+	{
+		if (boundActions == null) return false;
 
-        var isDown:Bool = false;
-        for (btn => actions in boundActions) {
-            if (actions != null && actions.contains(action)) {
-                if (btn != null && btn.exists && btn.active && btn.pressed) {
-                    isDown = true;
-                    break;
-                }
-            }
-        }
+		var isDown:Bool = false;
+		for (btn => actions in boundActions) {
+			if (actions != null && actions.contains(action)) {
+				if (btn != null && btn.exists && btn.active && btn.pressed) {
+					isDown = true;
+					break;
+				}
+			}
+		}
   
-        if (!isDown) {
-            holdTimers.remove(action);
-            holdActive.remove(action);
-            return false;
-        }
+		if (!isDown) {
+			holdTimers.remove(action);
+			holdActive.remove(action);
+			return false;
+		}
 
-        if (!holdTimers.exists(action)) {
-            holdTimers.set(action, 0);
-            holdActive.set(action, false);
-            return true; 
-        }
+		if (!holdTimers.exists(action)) {
+			holdTimers.set(action, 0);
+			holdActive.set(action, false);
+			return true; 
+		}
 
-        var timer = holdTimers.get(action);
-        var active = holdActive.exists(action) ? holdActive.get(action) : false;
-        timer += elapsed;
+		var timer = holdTimers.get(action);
+		var active = holdActive.exists(action) ? holdActive.get(action) : false;
+		timer += elapsed;
 
-        if (!active) {
-            if (timer >= HOLD_DELAY) {
-                holdActive.set(action, true);
-                holdTimers.set(action, 0);
-                return true;
-            }
-         } else {
-            if (timer >= HOLD_REPEAT) {
-                holdTimers.set(action, 0);
-                return true;
-            }
-        }
+		if (!active) {
+			if (timer >= HOLD_DELAY) {
+				holdActive.set(action, true);
+				holdTimers.set(action, 0);
+				return true;
+			}
+		 } else {
+			if (timer >= HOLD_REPEAT) {
+				holdTimers.set(action, 0);
+				return true;
+			}
+		}
 
-        holdTimers.set(action, timer);
-        return false;
+		holdTimers.set(action, timer);
+		return false;
 	}
 	
 	override public function destroy():Void
@@ -384,6 +372,12 @@ class VirtualPad extends FlxSpriteGroup
 		{
 			FlxG.cameras.remove(virtualpadCamera, false);
 			virtualpadCamera = null;
+		}
+
+		if (buttonStates != null) 
+		{
+			buttonStates.clear();
+			buttonStates = null;
 		}
 
 		buttonA = FlxDestroyUtil.destroy(buttonA);
