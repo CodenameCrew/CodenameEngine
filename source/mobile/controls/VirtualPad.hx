@@ -186,7 +186,6 @@ class VirtualPad extends FlxSpriteGroup
 		}
 
 		#if mobile
-		Controls.virtualPad = this;
 		this.alpha = Options.virtualPadOpacity;
 		#end
 
@@ -414,11 +413,6 @@ class VirtualPad extends FlxSpriteGroup
 	
 	override public function destroy():Void
 	{
-		#if mobile
-		if (Controls.virtualPad == this)
-			Controls.virtualPad = null;
-		#end
-
 		if (boundActions != null)
 		{
 			boundActions.clear();
