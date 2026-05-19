@@ -200,7 +200,8 @@ class FreeplayState extends MusicBeatState
 		interpColor = new FlxInterpolateColor(bg.color);
 
 		#if mobile
-		addVirtualPad('FULL', 'A_B_X_Y');
+		virtualPad = new VirtualPad(FULL, A_B_X_Y);
+        add(virtualPad);
 		virtualPad.rebind('X', 'R');
 		virtualPad.rebind('Y', 'TAB');
 		#end
