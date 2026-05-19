@@ -49,7 +49,7 @@ class HScript extends Script {
             var actionMode = Type.createEnum(mobile.controls.VirtualPad.FlxActionMode, actionModeStr);
     
             var vpad = new mobile.controls.VirtualPad(dpadMode, actionMode);
-            add(vpad);
+            flixel.FlxG.state.add(vpad); 
             interp.variables.set("virtualPad", vpad);
     
             return vpad;
