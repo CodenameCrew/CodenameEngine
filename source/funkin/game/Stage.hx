@@ -2,6 +2,7 @@ package funkin.game;
 
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.editors.character.CharacterEditor;
+import funkin.game.Character;
 import flixel.FlxState;
 import flixel.math.FlxPoint;
 import haxe.xml.Access;
@@ -83,9 +84,9 @@ class Stage extends FlxBasic implements IBeatReceiver {
 		var elems:Array<Access> = [];
 		if (xml != null) {
 			var parsed:Null<Float>;
-			if((parsed = Std.parseFloat(xml.getAtt("startCamPosX"))).isNotNull()) startCam.x = parsed;
-			if((parsed = Std.parseFloat(xml.getAtt("startCamPosY"))).isNotNull()) startCam.y = parsed;
-			if((parsed = Std.parseFloat(xml.getAtt("zoom"))).isNotNull()) defaultZoom = parsed;
+			startCam.x = Character.safeParseFloat(xml.getAtt("startCamPosX"), startCam.x);
+			startCam.y = Character.safeParseFloat(xml.getAtt("startCamPosY"), startCam.y);
+			defaultZoom = Character.safeParseFloat(xml.getAtt("zoom"), defaultZoom);
 
 			stageName = xml.getAtt("name").getDefault(stageFile);
 
@@ -263,7 +264,7 @@ class Stage extends FlxBasic implements IBeatReceiver {
 	 * @param node The XML node
 	 * @param nonXMLInfo (Optional) Non-XML information
 	**/
-	public function addCharPos(name:String, node:Access, ?nonXMLInfo:StageCharPosInfo):StageCharPos {
+		public function addCharPos(name:String, node:Access, ?nonXMLInfo:StageCharPosInfo):StageCharPos {
 		var charPos = new StageCharPos();
 		charPos.visible = charPos.active = false;
 		charPos.name = name;
@@ -275,44 +276,29 @@ class Stage extends FlxBasic implements IBeatReceiver {
 		}
 
 		if (node != null) {
-			charPos.x = Std.parseFloat(node.getAtt("x")).getDefault(charPos.x);
-			charPos.y = Std.parseFloat(node.getAtt("y")).getDefault(charPos.y);
-			charPos.charSpacingX = Std.parseFloat(node.getAtt("spacingx")).getDefault(charPos.charSpacingX);
-			charPos.charSpacingY = Std.parseFloat(node.getAtt("spacingy")).getDefault(charPos.charSpacingY);
-			charPos.camxoffset = Std.parseFloat(node.getAtt("camxoffset")).getDefault(charPos.camxoffset);
-			charPos.camyoffset = Std.parseFloat(node.getAtt("camyoffset")).getDefault(charPos.camyoffset);
-			charPos.skewX = Std.parseFloat(node.getAtt("skewx")).getDefault(charPos.skewX);
-			charPos.skewY = Std.parseFloat(node.getAtt("skewy")).getDefault(charPos.skewY);
-			charPos.alpha = Std.parseFloat(node.getAtt("alpha")).getDefault(charPos.alpha);
-			charPos.angle = Std.parseFloat(node.getAtt("angle")).getDefault(charPos.angle);
+			charPos.x = Character.safeParseFloat(node.getAtt("x"), charPos.x);
+			charPos.y = Character.safeParseFloat(node.getAtt("y"), charPos.y);
+			charPos.charSpacingX = Character.safeParseFloat(node.getAtt("spacingx"), charPos.charSpacingX);
+			charPos.charSpacingY = Character.safeParseFloat(node.getAtt("spacingy"), charPos.charSpacingY);
+			charPos.camxoffset = Character.safeParseFloat(node.getAtt("camxoffset"), charPos.camxoffset);
+			charPos.camyoffset = Character.safeParseFloat(node.getAtt("camyoffset"), charPos.camyoffset);
+			charPos.skewX = Character.safeParseFloat(node.getAtt("skewx"), charPos.skewX);
+			charPos.skewY = Character.safeParseFloat(node.getAtt("skewy"), charPos.skewY);
+			charPos.alpha = Character.safeParseFloat(node.getAtt("alpha"), charPos.alpha);
+			charPos.angle = Character.safeParseFloat(node.getAtt("angle"), charPos.angle);
 			charPos.flipX = (node.has.flip || node.has.flipX) ? (node.getAtt("flip") == "true" || node.getAtt("flipX") == "true") : charPos.flipX;
-			charPos.zoomFactor = Std.parseFloat(node.getAtt("zoomfactor")).getDefault(charPos.zoomFactor);
+			charPos.zoomFactor = Character.safeParseFloat(node.getAtt("zoomfactor"), charPos.zoomFactor);
 
-			if (node.has.scale) {
-				var scale:Null<Float> = Std.parseFloat(node.att.scale);
-				if (scale.isNotNull()) charPos.scale.set(scale, scale);
-			}
-			if (node.has.scalex) {
-				var scale:Null<Float> = Std.parseFloat(node.att.scalex);
-				if (scale.isNotNull()) charPos.scale.x = scale;
-			}
-			if (node.has.scaley) {
-				var scale:Null<Float> = Std.parseFloat(node.att.scaley);
-				if (scale.isNotNull()) charPos.scale.y = scale;
-			}
+			if (node.has.scale) charPos.scale.set(Character.safeParseFloat(node.att.scale, 1), Character.safeParseFloat(node.att.scale, 1));
+			if (node.has.scalex) charPos.scale.x = Character.safeParseFloat(node.att.scalex, charPos.scale.x);
+			if (node.has.scaley) charPos.scale.y = Character.safeParseFloat(node.att.scaley, charPos.scale.y);
 
 			if (node.has.scroll) {
-				var scroll:Null<Float> = Std.parseFloat(node.att.scroll);
-				if (scroll != null) charPos.scrollFactor.set(scroll, scroll);
+				var val = Character.safeParseFloat(node.att.scroll, 1);
+				charPos.scrollFactor.set(val, val);
 			}
-			if (node.has.scrollx) {
-				var scroll:Null<Float> = Std.parseFloat(node.att.scrollx);
-				if (scroll != null) charPos.scrollFactor.x = scroll;
-			}
-			if (node.has.scrolly) {
-				var scroll:Null<Float> = Std.parseFloat(node.att.scrolly);
-				if (scroll != null) charPos.scrollFactor.y = scroll;
-			}
+			if (node.has.scrollx) charPos.scrollFactor.x = Character.safeParseFloat(node.att.scrollx, charPos.scrollFactor.x);
+			if (node.has.scrolly) charPos.scrollFactor.y = Character.safeParseFloat(node.att.scrolly, charPos.scrollFactor.y);
 		}
 
 		return addSprite(characterPoses[name] = charPos);
