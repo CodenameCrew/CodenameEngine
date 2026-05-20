@@ -111,6 +111,27 @@ final class CoolUtil
 	}
 
 	/**
+     * Helper made to get correct positions on some mods.
+     **/
+	public static function normalizePosition(
+        position:FlxPoint,
+        scale:FlxPoint,
+        alpha:Float = 1,
+        screenWidth:Float = 1280,
+        screenHeight:Float = 720
+    ):FlxPoint {
+        position.x = Math.max(0, Math.min(screenWidth, position.x));
+        position.y = Math.max(0, Math.min(screenHeight, position.y));
+        
+        scale.x = Math.max(0.1, Math.min(2.0, scale.x));
+        scale.y = Math.max(0.1, Math.min(2.0, scale.y));
+        
+        alpha = Math.max(0, Math.min(1, alpha));
+        
+        return position;
+	}
+
+	/**
 	 * Deletes a folder recursively
 	 * @param delete Path to the folder.
 	 */
