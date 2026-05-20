@@ -8,7 +8,7 @@
 		<git name="nativeiospopup" url="https://github.com/ChanceXML/nativeiospopup" />
 
 		<!-- OpenFL & Lime (Required for Flixel) -->
-		<git name="openfl" url="https://github.com/HomuHomu833-haxe-stuff/cne-openfl" />
+		<git name="openfl" url="https://github.com/CodenameCrew/cne-openfl" />
 		<lib name="lime" version="8.2.1" />
 
 		<!-- Flixel -->
