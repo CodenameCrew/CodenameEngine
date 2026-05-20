@@ -128,16 +128,16 @@
 	<group name="GameplayOptions" prefix="GameplayOptions.">
 		<str id="downscroll-name">Downscroll</str>
 		<str id="downscroll-desc">If checked, notes will go from up to down instead of down to up, as if they're falling.</str>
-        <!--
+    
 		<str id="middleScroll-name">Middlescroll</str>
 		<str id="middleScroll-desc">If checked, notes will go to the middle instead of the side.</str>
-		-->
+	
 		<str id="ghostTapping-name">Ghost Tapping</str>
 		<str id="ghostTapping-desc">If unchecked, trying to hit any strum that have no note that can be hit will cause a miss.</str>
-		<!--
-		<str id="repeatHold-name">Repeat Hold</str>
-		<str id="repeatHold-desc">If checked, hold animations will loop. if unchecked. hold animations will only play once.</str>
-		-->
+
+		<str id="strumlineBackground-name">StrumLine Background</str>
+		<str id="strumlineBackground-desc">Changes the opacity of the Strumline Background.</str>
+		
 		<str id="naughtyness-name">Naughtyness</str>
 		<str id="naughtyness-desc">If unchecked, will censor the Week 7 cutscenes or more.</str>
 
