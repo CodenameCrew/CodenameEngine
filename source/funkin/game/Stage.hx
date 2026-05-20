@@ -305,13 +305,13 @@ class Stage extends FlxBasic implements IBeatReceiver {
         }
 
         var normalizedPosition = CoolUtil.normalizePosition(
-            FlxPoint.get(charPos.x + (nonXMLInfo != null ? nonXMLInfo.x : 0) + (charPos.charSpacingX != null ? charPos.charSpacingX : 0), charPos.y + (nonXMLInfo != null ? nonXMLInfo.y : 0) + (charPos.charSpacingY != null ? charPos.charSpacingY : 0)),
-            charPos.scale,
+		    FlxPoint.get(charPos.x + (id * charPos.charSpacingX), charPos.y + (id * charPos.charSpacingY))
+			charPos.scale,
             charPos.alpha);
 
-        charPos.x = normalizedPosition.x;
-        charPos.y = normalizedPosition.y;
-        charPos.scale.set(normalizedPosition.x, normalizedPosition.y);
+            charPos.x = normalizedPosition.x;
+            charPos.y = normalizedPosition.y;
+            charPos.scale.set(normalizedPosition.x, normalizedPosition.y);
 
         return addSprite(characterPoses[name] = charPos);
 	}
@@ -342,7 +342,7 @@ class Stage extends FlxBasic implements IBeatReceiver {
                       characterPoses[char.curCharacter] : characterPoses[posName];
         if (charPos != null) {
             var normalizedPosition = CoolUtil.normalizePosition(
-                FlxPoint.weak(charPos.x + (id * charSpacingX), charPos.y + (id * charSpacingY)), char.scale, char.alpha);
+                FlxPoint.weak(charPos.x + (id * charPos.charSpacingX), charPos.y + (id * charPos.charSpacingY)), char.scale, char.alpha);
 
             char.setPosition(normalizedPosition.x, normalizedPosition.y);
             state.insert(state.members.indexOf(charPos), char);
