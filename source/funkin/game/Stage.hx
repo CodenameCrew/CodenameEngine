@@ -252,7 +252,7 @@ class Stage extends FlxBasic implements IBeatReceiver {
 	 * @param node The XML node
 	 * @param nonXMLInfo (Optional) Non-XML information
 	**/
-	public function addCharPos(name:String, node:Access, ?nonXMLInfo:StageCharPosInfo):StageCharPos {
+	public function addCharPos(name:String, node:Access, ?nonXMLInfo:StageCharPosInfo ?id:Float = 0):StageCharPos {
         var charPos = new StageCharPos();
         charPos.visible = charPos.active = false;
         charPos.name = name;
