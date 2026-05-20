@@ -25,6 +25,9 @@
 		<str id="optionsTree.debug-name">Desarrollador</str>
 		<str id="optionsTree.debug-desc">Opciones para el Modo Desarrollador.</str>
 
+		<str id="optionsTree.mobile-name">Movil</str>
+        <str id="optionsTree.mobile-desc">Opciones para celulares movil.</str>
+
 		<!-- cant have debug here -->
 	</group>
 
@@ -66,6 +69,9 @@
 		<str id="framerate-name">FPS</str>
 		<str id="framerate-desc">Yo creo que se explica sólo.</str>
 
+		<str id="fpsSize-name">Tamaño de los fps</str>
+		<str id="fpsSize-name">Cambia el tamaño de los fps.</str>
+
 		<str id="flashingMenu-name">Luces Intermitentes</str>
 		<str id="flashingMenu-desc">Si está desactivado, el menú no parpadeará, y otros parpadeos serán más lentos.</str>
 
@@ -89,10 +95,38 @@
 		</group>
 	</group>
 
+	<group name="MobileOptions" prefix="MobileOptions">
+   	    <str id="pauseButton-name">Boton De Pausa</str>
+	    <str id="pauseButton-desc">Si esta desactivado. el boton de pause se volvera invisible.</str>
+
+		<str id="virtualPadOpacity-name">Opacidad De Los Controles</str>
+		<str id="virtualPadOpacity-desc">No tengo que explicar esto.</str>
+	
+        <str id="hintStyle-name">Estilo Del Hint</str>
+        <str id="hintStyle-desc">Cambia el estilo del hint.</str>
+        
+        <str id="hitboxStyle-name">Estilo De La Hitbox</str>
+        <str id="hitboxStyle-desc">Cambia el estilo de la hitbox.</str>
+	
+        <str id="hintOpacity-name">Opacidad Del Hint</str>
+        <str id="hintOpacity-desc">Cambia la opacidad del hint..</str>
+    
+        <str id="hitboxOpacity-name">Hitbox Opacity</str>
+        <str id="hitboxOpacity-desc">no tengo que explicar esto.</str>
+
+	   <!-- <str id=" -->
+    </group>
+
 	<group name="GameplayOptions" prefix="GameplayOptions.">
 		<str id="downscroll-desc">Si está activado, las notas iran de arriba hacia abajo, como si estuvieran cayendo.</str>
 
+		<str id="middleScroll-name">Middlescroll</str>
+		<str id="middleScroll-desc">si esta activado. las flechas estaran en el medio en vez de al lado.</str>
+
 		<str id="ghostTapping-desc">Si está desactivado, apretar una tecla sin ninguna nota contará como un Combo Break.</str>
+
+		<str id="strumlineBackground-name">Fondo Del Strumline</str>
+		<str id="strumlineBackground-desc">Cambia la opacidad del Strumline.</str>
 
 		<str id="naughtyness-name">Guarradas</str>
 		<str id="naughtyness-desc">Si está desactivado, se censurarán las escenas de Week 7.</str>
