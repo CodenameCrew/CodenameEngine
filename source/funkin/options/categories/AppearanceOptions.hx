@@ -8,6 +8,12 @@ class AppearanceOptions extends TreeMenuScreen {
 			30, 240, 1,
 			'framerate', __changeFPS
 		));
+
+		add(new NumOption(getNameID('fpsSize'), getDescID('fpsSize'),
+			0, 2, 0.1,
+			'fpsSize'
+		));
+		
 		add(new Checkbox(getNameID('flashingMenu'), getDescID('flashingMenu'), 'flashingMenu'));
 		add(new Checkbox(getNameID('colorHealthBar'), getDescID('colorHealthBar'), 'colorHealthBar'));
 		add(new Checkbox(getNameID('week6PixelPerfect'), getDescID('week6PixelPerfect'), 'week6PixelPerfect'));
