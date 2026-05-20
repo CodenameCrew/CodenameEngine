@@ -27,6 +27,7 @@ import haxe.io.Path;
 import haxe.xml.Access;
 import openfl.geom.ColorTransform;
 import animate.FlxAnimateFrames;
+import funkin.backend.utils.CoolUtil;
 
 using StringTools;
 
@@ -300,14 +301,14 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	}
 
 	public inline function getCameraPosition() {
-		var midpoint:FlxPoint = getMidpoint();
-		var event = EventManager.get(PointEvent).recycle(
-			midpoint.x + (isPlayer ? -100 : 150) + globalOffset.x + cameraOffset.x,
-			midpoint.y - 100 + globalOffset.y + cameraOffset.y);
-		scripts.call("onGetCamPos", [event]);
+        var midpoint:FlxPoint = getMidpoint();
+        var event = EventManager.get(PointEvent).recycle(midpoint.x + (isPlayer ? -100 : 150) + globalOffset.x + cameraOffset.x, midpoint.y - 100 + globalOffset.y + cameraOffset.y);
+        scripts.call("onGetCamPos", [event]);
 
-		midpoint.put();
-		return new FlxPoint(event.x, event.y);
+        var normalizedPosition = CoolUtil.normalizePosition(FlxPoint.get(event.x, event.y), FlxPoint.get(scale.x, scale.y), 1);
+
+        midpoint.put();
+        return new FlxPoint(normalizedPosition.x, normalizedPosition.y);
 	}
 
 	public override function destroy() {
