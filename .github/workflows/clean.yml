@@ -1,37 +1,23 @@
-name: Cleanup Artifacts
+name: Repository Search
 
 on:
   workflow_dispatch:
+    inputs:
+      search_query:
+        description: 'what am i searching today?'
+        required: true
+        type: string
 
 jobs:
-  cleanup:
+  search:
     runs-on: ubuntu-latest
-    permissions:
-      actions: write
-
     steps:
-      - uses: actions/github-script@v7
-        with:
-          script: |
-            let page = 1;
-            while (true) {
-              const res = await github.rest.actions.listArtifactsForRepo({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                per_page: 100,
-                page
-              });
+      - name: checkout repo!
+        uses: actions/checkout@v4
 
-              if (res.data.artifacts.length === 0) break;
-
-              for (const a of res.data.artifacts) {
-                await github.rest.actions.deleteArtifact({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  artifact_id: a.id
-                });
-                console.log(`Deleted: ${a.name}`);
-              }
-
-              page++;
-            }
+      - name: what
+        run: |
+          echo "Searching for: ${{ github.event.inputs.search_query }}"
+          echo "========================================="
+          
+          grep -rnE --color=always "${{ github.event.inputs.search_query }}" . || echo "No matches found."
