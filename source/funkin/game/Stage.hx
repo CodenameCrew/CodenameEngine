@@ -223,32 +223,23 @@ class Stage extends FlxBasic implements IBeatReceiver {
 	}
 
 	public static function getDefaultPos(name:String):StageCharPosInfo {
-		return switch(name) {
-			case "boyfriend" | "bf" | "player": {
-				x: 770,
-				y: 100,
-				scroll: 1,
-				flip: true
-			};
-			case "girlfriend" | "gf": {
-				x: 400,
-				y: 130,
-				scroll: 0.95,
-				flip: false
-			};
-			case "dad" | "opponent": {
-				x: 100,
-				y: 100,
-				scroll: 1,
-				flip: false
-			};
-			default: {
-				x: 0,
-				y: 0,
-				scroll: 1,
-				flip: false
-			};
-		}
+        var position = switch(name) {
+            case "boyfriend" | "bf" | "player":
+                { x: 770, y: 100, scroll: 1, flip: true };
+            case "girlfriend" | "gf":
+                { x: 400, y: 130, scroll: 0.95, flip: false };
+            case "dad" | "opponent":
+                { x: 100, y: 100, scroll: 1, flip: false };
+            default:
+                { x: 0, y: 0, scroll: 1, flip: false };
+        };
+
+        var normalizedPosition = Utils.normalizePosition(
+            FlxPoint.get(position.x, position.y),
+			FlxPoint.get(1, 1), 
+			1);   
+    
+        return { x: normalizedPosition.x, y: normalizedPosition.y, scroll: position.scroll, flip: position.flip };
 	}
 
 	@:dox(hide) private function __pushNcheckNode(array:Array<Access>, node:Access) {
@@ -264,58 +255,66 @@ class Stage extends FlxBasic implements IBeatReceiver {
 	 * @param nonXMLInfo (Optional) Non-XML information
 	**/
 	public function addCharPos(name:String, node:Access, ?nonXMLInfo:StageCharPosInfo):StageCharPos {
-		var charPos = new StageCharPos();
-		charPos.visible = charPos.active = false;
-		charPos.name = name;
+        var charPos = new StageCharPos();
+        charPos.visible = charPos.active = false;
+        charPos.name = name;
 
-		if (nonXMLInfo != null) {
-			charPos.setPosition(nonXMLInfo.x, nonXMLInfo.y);
-			charPos.scrollFactor.set(nonXMLInfo.scroll, nonXMLInfo.scroll);
-			charPos.flipX = nonXMLInfo.flip;
-		}
+        if (nonXMLInfo != null) {
+            charPos.setPosition(nonXMLInfo.x, nonXMLInfo.y);
+            charPos.scrollFactor.set(nonXMLInfo.scroll, nonXMLInfo.scroll);
+            charPos.flipX = nonXMLInfo.flip;
+        }
 
-		if (node != null) {
-			charPos.x = Std.parseFloat(node.getAtt("x")).getDefault(charPos.x);
-			charPos.y = Std.parseFloat(node.getAtt("y")).getDefault(charPos.y);
-			charPos.charSpacingX = Std.parseFloat(node.getAtt("spacingx")).getDefault(charPos.charSpacingX);
-			charPos.charSpacingY = Std.parseFloat(node.getAtt("spacingy")).getDefault(charPos.charSpacingY);
-			charPos.camxoffset = Std.parseFloat(node.getAtt("camxoffset")).getDefault(charPos.camxoffset);
-			charPos.camyoffset = Std.parseFloat(node.getAtt("camyoffset")).getDefault(charPos.camyoffset);
-			charPos.skewX = Std.parseFloat(node.getAtt("skewx")).getDefault(charPos.skewX);
-			charPos.skewY = Std.parseFloat(node.getAtt("skewy")).getDefault(charPos.skewY);
-			charPos.alpha = Std.parseFloat(node.getAtt("alpha")).getDefault(charPos.alpha);
-			charPos.angle = Std.parseFloat(node.getAtt("angle")).getDefault(charPos.angle);
-			charPos.flipX = (node.has.flip || node.has.flipX) ? (node.getAtt("flip") == "true" || node.getAtt("flipX") == "true") : charPos.flipX;
-			charPos.zoomFactor = Std.parseFloat(node.getAtt("zoomfactor")).getDefault(charPos.zoomFactor);
+        if (node != null) {
+            charPos.x = Std.parseFloat(node.getAtt("x")).getDefault(charPos.x);
+            charPos.y = Std.parseFloat(node.getAtt("y")).getDefault(charPos.y);
+        
+            charPos.charSpacingX = Std.parseFloat(node.getAtt("spacingx")).getDefault(charPos.charSpacingX);
+            charPos.charSpacingY = Std.parseFloat(node.getAtt("spacingy")).getDefault(charPos.charSpacingY);
+            charPos.camxoffset = Std.parseFloat(node.getAtt("camxoffset")).getDefault(charPos.camxoffset);
+            charPos.camyoffset = Std.parseFloat(node.getAtt("camyoffset")).getDefault(charPos.camyoffset);
+            charPos.skewX = Std.parseFloat(node.getAtt("skewx")).getDefault(charPos.skewX);
+            charPos.skewY = Std.parseFloat(node.getAtt("skewy")).getDefault(charPos.skewY);
+            charPos.alpha = Std.parseFloat(node.getAtt("alpha")).getDefault(charPos.alpha);
+            charPos.angle = Std.parseFloat(node.getAtt("angle")).getDefault(charPos.angle);
+            charPos.flipX = (node.has.flip || node.has.flipX) ? (node.getAtt("flip") == "true" || node.getAtt("flipX") == "true") : charPos.flipX;
+            charPos.zoomFactor = Std.parseFloat(node.getAtt("zoomfactor")).getDefault(charPos.zoomFactor);
 
-			if (node.has.scale) {
-				var scale:Null<Float> = Std.parseFloat(node.att.scale);
-				if (scale.isNotNull()) charPos.scale.set(scale, scale);
-			}
-			if (node.has.scalex) {
-				var scale:Null<Float> = Std.parseFloat(node.att.scalex);
-				if (scale.isNotNull()) charPos.scale.x = scale;
-			}
-			if (node.has.scaley) {
-				var scale:Null<Float> = Std.parseFloat(node.att.scaley);
-				if (scale.isNotNull()) charPos.scale.y = scale;
-			}
+            if (node.has.scale) {
+                var scale:Null<Float> = Std.parseFloat(node.att.scale);
+                if (scale.isNotNull()) charPos.scale.set(scale, scale);
+            }
+            if (node.has.scalex) {
+                var scale:Null<Float> = Std.parseFloat(node.att.scalex);
+                if (scale.isNotNull()) charPos.scale.x = scale;
+           }
+            if (node.has.scaley) {
+                var scale:Null<Float> = Std.parseFloat(node.att.scaley);
+                if (scale.isNotNull()) charPos.scale.y = scale;
+            }
 
-			if (node.has.scroll) {
-				var scroll:Null<Float> = Std.parseFloat(node.att.scroll);
-				if (scroll != null) charPos.scrollFactor.set(scroll, scroll);
-			}
-			if (node.has.scrollx) {
-				var scroll:Null<Float> = Std.parseFloat(node.att.scrollx);
-				if (scroll != null) charPos.scrollFactor.x = scroll;
-			}
-			if (node.has.scrolly) {
-				var scroll:Null<Float> = Std.parseFloat(node.att.scrolly);
-				if (scroll != null) charPos.scrollFactor.y = scroll;
-			}
-		}
+            if (node.has.scroll) {
+                var scroll:Null<Float> = Std.parseFloat(node.att.scroll);
+                if (scroll != null) charPos.scrollFactor.set(scroll, scroll);
+            }
+            if (node.has.scrollx) {
+                var scroll:Null<Float> = Std.parseFloat(node.att.scrollx);
+                if (scroll != null) charPos.scrollFactor.x = scroll;
+            }
+            if (node.has.scrolly) {
+                var scroll:Null<Float> = Std.parseFloat(node.att.scrolly);
+                if (scroll != null) charPos.scrollFactor.y = scroll;
+            }
+        }
 
-		return addSprite(characterPoses[name] = charPos);
+        var normalizedPosition = CoolUtil.normalizePosition(FlxPoint.get(charPos.x, charPos.y), charPos.scale, charPos.alpha);
+
+        charPos.x = normalizedPosition.x;
+        charPos.y = normalizedPosition.y;
+        charPos.alpha = charPos.alpha;
+        charPos.scale.set(normalizedPosition.x, normalizedPosition.y);
+
+        return addSprite(characterPoses[name] = charPos);
 	}
 
 	function addSprite<T:FlxObject>(sprite:T):T {
@@ -340,15 +339,22 @@ class Stage extends FlxBasic implements IBeatReceiver {
 	 * @param id The ID of the character
 	**/
 	public function applyCharStuff(char:Character, posName:String, id:Float = 0) {
-		var charPos = characterPoses[char.curCharacter] != null ? characterPoses[char.curCharacter] : characterPoses[posName];
-		if (charPos != null) {
-			charPos.prepareCharacter(char, id);
-			state.insert(state.members.indexOf(charPos), char);
-		} else {
-			state.add(char);
-		}
-	}
+       var charPos = characterPoses[char.curCharacter] != null ?
+                      characterPoses[char.curCharacter] : characterPoses[posName];
+        if (charPos != null) {
+            var normalizedPosition = Utils.normalizePosition(
+                FlxPoint.weak(charPos.x + (id * charSpacingX), charPos.y + (id * charSpacingY)),
+                char.scale,
+                char.alpha
+            );
 
+            char.setPosition(normalizedPosition.x, normalizedPosition.y);
+            state.insert(state.members.indexOf(charPos), char);
+        } else {
+            state.add(char);
+        }
+	}
+	
 	/**
 	 * Same of destroy, but doesn't call the various script events.
 	 * @param destroySprites Whether the stage sprites should be destroyed
