@@ -77,7 +77,7 @@
         <str id="hintStyle-name">Hint Style</str>
         <str id="hintStyle-desc">Changes the look of the hints.</str>
         
-        <str id="hitboxStyle-name">Hint Style</str>
+        <str id="hitboxStyle-name">Hitbox Style</str>
         <str id="hitboxStyle-desc">Changes the look of the hitbox.</str>
 	
         <str id="hintOpacity-name">Hint Opacity</str>
@@ -91,13 +91,10 @@
 	<group name="AppearanceOptions" prefix="AppearanceOptions.">
 		<str id="framerate-name">Framerate</str>
 		<str id="framerate-desc">Pretty self explanatory, isn't it?</str>
-        <!--
-		<str id="fpsSize-name">Fps Size</str>
+		
+		<str id="fpsSize-name">Framerate Size</str>
 		<str id="fpsSize-name">Changes the size of the fps info depeding on the user's provided number.</str>
 
-		<str id="newFPS-name">New FPS System</str>
-		<str id="newFPS-desc">Changes the codename fps overlay to a new one.</str>
-        -->
 		<str id="flashingMenu-name">Flashing Menu</str>
 		<str id="flashingMenu-desc">If unchecked, will disable menu flashing when you select an option in the Main Menu, and other flashes will be slower.</str>
 
