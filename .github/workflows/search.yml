@@ -1,0 +1,23 @@
+name: Repository Search
+
+on:
+  workflow_dispatch:
+    inputs:
+      search_query:
+        description: 'Enter the text or term to search for'
+        required: true
+        type: string
+
+jobs:
+  search:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo!
+        uses: actions/checkout@v4
+
+      - name: search
+        run: |
+          echo "Searching for: ${{ github.event.inputs.search_query }}"
+          echo "========================================="
+          
+          grep -rnE --color=always "${{ github.event.inputs.search_query }}" . || echo "No matches found."

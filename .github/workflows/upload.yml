@@ -1,0 +1,89 @@
+name: Upload Artifact
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Choose release type"
+        required: true
+        default: "Pre-Release"
+        type: choice
+        options:
+          - "Release"
+          - "Pre-Release"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      actions: read
+
+    steps:
+      - name: get latest workflow run
+        id: latest_run
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runs = await github.rest.actions.listWorkflowRunsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              status: 'success',
+              per_page: 20
+            });
+
+            const currentRunId = context.runId;
+
+            const latest = runs.data.workflow_runs.find(
+              run => run.id !== currentRunId
+            );
+
+            if (!latest) {
+              core.setFailed('No successful workflow runs found.');
+              return;
+            }
+
+            core.setOutput('run_id', latest.id.toString());
+
+      - name: download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ steps.latest_run.outputs.run_id }}
+          path: artifacts
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: extract all zip artifacts
+        run: |
+          mkdir extracted
+
+          find artifacts -name "*.zip" | while read file; do
+            echo "Extracting $file"
+            unzip -o "$file" -d extracted
+          done
+
+      - name: find files
+        run: |
+          mkdir release-files
+
+          find extracted -type f \( -name "*.apk" -o -name "*.ipa" \) -exec cp {} release-files/ \;
+
+          echo "Files found:"
+          ls -R release-files
+
+          if [ -z "$(ls -A release-files)" ]; then
+            echo "No APK or IPA files found."
+            exit 1
+          fi
+
+      - name: create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: release-${{ github.run_number }}
+          name: Release ${{ github.run_number }}
+          prerelease: ${{ inputs.release_type == 'Pre-Release' }}
+          files: |
+            release-files/*.apk
+            release-files/*.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
