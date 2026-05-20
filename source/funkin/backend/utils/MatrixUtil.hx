@@ -7,10 +7,9 @@ import flixel.util.typeLimit.OneOfTwo;
 import funkin.backend.system.FakeCamera;
 import funkin.backend.system.FakeCamera.FakeCallCamera;
 import flixel.graphics.FlxGraphic;
-import flixel.graphics.frames.FlxFrame;
 import flixel.graphics.tile.FlxDrawTrianglesItem;
 import flixel.math.FlxMatrix;
-import flixel.math.FlxPoint;
+import flixel.math.FlxMath;
 import flixel.system.FlxAssets.FlxShader;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
@@ -30,17 +29,18 @@ interface IPrePostDraw {
 final class MatrixUtil {
 	public static function getMatrixPosition(sprite:FlxSprite, points:OneOfTwo<FlxPoint, Array<FlxPoint>>, ?camera:FlxCamera, _width:Float = 1, _height:Float = 1):Array<FlxPoint>
 	{
-		//if(_width == -1) _width = sprite.width;
-		//if(_height == -1) _height = sprite.height;
 		if(camera == null) camera = sprite.camera;
-		if(points is FlxBasePoint) points = [points];
+		
+		if(!Std.isOfType(points, Array)) points = [cast points];
 
 		var nc:FakeCamera = FakeCamera.instance;
+		nc.width = camera.width;
+		nc.height = camera.height;
 		nc.zoom = camera.zoom;
 		nc.scroll.set(camera.scroll.x, camera.scroll.y);
 		nc.pixelPerfectRender = camera.pixelPerfectRender;
 
-		var points:Array<FlxPoint> = cast points;
+		var pointsArray:Array<FlxPoint> = cast points;
 
 		if(sprite is IPrePostDraw) {
 			var postDraw = cast(sprite, IPrePostDraw);
@@ -50,9 +50,9 @@ final class MatrixUtil {
 		} else {
 			sprite.drawComplex(nc);
 		}
-		transformPoints(sprite, points, sprite._matrix, camera, _width, _height);
+		transformPoints(sprite, pointsArray, sprite._matrix, camera, _width, _height);
 
-		return points;
+		return pointsArray;
 	}
 
 	/**
@@ -64,11 +64,14 @@ final class MatrixUtil {
 		if(isFunkinSprite) funkinSprite = cast sprite;
 
 		for(point in points) {
-			var x = matrix.__transformX(point.x * _width, point.y * _height);
-			var y = matrix.__transformY(point.x * _width, point.y * _height);
+			var px = point.x * _width;
+			var py = point.y * _height;
+
+			var x = matrix.a * px + matrix.c * py + matrix.tx;
+			var y = matrix.b * px + matrix.d * py + matrix.ty;
 
 			if(doCameraTransform) {
-				// reset to ingame coords
+				// Reset to ingame coords
 				x += camera.scroll.x;
 				y += camera.scroll.y;
 
@@ -85,8 +88,11 @@ final class MatrixUtil {
 
 	private static function rawTransformPoints(points:Array<FlxPoint>, matrix:FlxMatrix, _width:Float = 1, _height:Float = 1):Array<FlxPoint> {
 		for(point in points) {
-			var x = matrix.__transformX(point.x * _width, point.y * _height);
-			var y = matrix.__transformY(point.x * _width, point.y * _height);
+			var px = point.x * _width;
+			var py = point.y * _height;
+
+			var x = matrix.a * px + matrix.c * py + matrix.tx;
+			var y = matrix.b * px + matrix.d * py + matrix.ty;
 
 			point.set(x, y);
 		}
