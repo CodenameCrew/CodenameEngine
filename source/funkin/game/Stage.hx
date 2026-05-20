@@ -304,11 +304,11 @@ class Stage extends FlxBasic implements IBeatReceiver {
             }
         }
 
-        var normalizedPosition = CoolUtil.normalizePosition(
-		    FlxPoint.get(charPos.x + (id * charPos.charSpacingX), charPos.y + (id * charPos.charSpacingY))
-			charPos.scale,
-            charPos.alpha);
-
+        var normalizedPosition = CoolUtil.normalizePosition(FlxPoint.get(charPos.x + (id * charPos.charSpacingX), charPos.y + (id * charPos.charSpacingY)),
+            charPos.scale,
+            charPos.alpha
+            );
+   
             charPos.x = normalizedPosition.x;
             charPos.y = normalizedPosition.y;
             charPos.scale.set(normalizedPosition.x, normalizedPosition.y);
