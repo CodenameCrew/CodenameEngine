@@ -29,6 +29,8 @@ class Options
 	public static var fpsSize:Float = 1;
 	public static var naughtyness:Bool = true;
 	public static var downscroll:Bool = false;
+	public static var middleScroll:Bool = false;
+	public static var strumlineBackground:Int = 0;
 	public static var ghostTapping:Bool = true;
 	public static var flashingMenu:Bool = true;
 	public static var camZoomOnBeat:Bool = true;
