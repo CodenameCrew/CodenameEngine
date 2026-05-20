@@ -11,6 +11,7 @@ import funkin.backend.scripting.DummyScript;
 import funkin.backend.scripting.Script;
 import funkin.backend.scripting.events.stage.*;
 import funkin.backend.system.interfaces.IBeatReceiver;
+import funkin.backend.utils.CoolUtil;
 import haxe.io.Path;
 import haxe.xml.Access;
 
@@ -234,10 +235,7 @@ class Stage extends FlxBasic implements IBeatReceiver {
                 { x: 0, y: 0, scroll: 1, flip: false };
         };
 
-        var normalizedPosition = Utils.normalizePosition(
-            FlxPoint.get(position.x, position.y),
-			FlxPoint.get(1, 1), 
-			1);   
+        var normalizedPosition = CoolUtil.normalizePosition(FlxPoint.get(position.x, position.y), FlxPoint.get(1, 1), 1);   
     
         return { x: normalizedPosition.x, y: normalizedPosition.y, scroll: position.scroll, flip: position.flip };
 	}
@@ -342,11 +340,8 @@ class Stage extends FlxBasic implements IBeatReceiver {
        var charPos = characterPoses[char.curCharacter] != null ?
                       characterPoses[char.curCharacter] : characterPoses[posName];
         if (charPos != null) {
-            var normalizedPosition = Utils.normalizePosition(
-                FlxPoint.weak(charPos.x + (id * charSpacingX), charPos.y + (id * charSpacingY)),
-                char.scale,
-                char.alpha
-            );
+            var normalizedPosition = CoolUtil.normalizePosition(
+                FlxPoint.weak(charPos.x + (id * charSpacingX), charPos.y + (id * charSpacingY)), char.scale, char.alpha);
 
             char.setPosition(normalizedPosition.x, normalizedPosition.y);
             state.insert(state.members.indexOf(charPos), char);
