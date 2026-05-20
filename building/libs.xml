@@ -20,7 +20,7 @@
 		<git name="flxanimate" url="https://github.com/CodenameCrew/cne-flxanimate" />
 		<git name="hxdiscord_rpc" url="https://github.com/CodenameCrew/cne-hxdiscord_rpc" skipDeps="true" />
 		<lib name="funkin-modchart" version="1.2.4" skipDeps="true" />
-		<git name="hxvlc" url="https://github.com/HomuHomu833-haxe-stuff/cne-hxvlc" skipDeps="true" />
+		<lib name="hxvlc" skipDeps="true" />
 
 		<!-- Documentation and other features -->
 		<git name="away3d" url="https://github.com/CodenameCrew/away3d" />
@@ -30,9 +30,12 @@
 
 		<lib name="nape-haxe4" />
 
-		<git name="format" url="https://github.com/HomuHomu833-haxe-stuff/format" />
-		<git name="hxp" url="https://github.com/HomuHomu833-haxe-stuff/hxp" />
+		<lib name="format" />
+		<lib name="hxp" />
 
-		<git name="hxcpp" url="https://github.com/HomuHomu833-haxe-stuff/hxcpp" />
+		<lib global="true" name="hxp" /> <lib name="hxp" />
+		<lib global="true" name="format" /> <lib name="format" />
+
+		<git name="hxcpp" url="https://github.com/CodenameCrew/cne-hxcpp" ref="old" />
 	</if>
 </libraries>
