@@ -35,7 +35,7 @@
 
 		<git name="hxcpp" url="https://github.com/CodenameCrew/cne-hxcpp" ref="old" />
 
-		<git name="flixel-animate" url="https://github.com/CodenameCrew/cne-flixel-animate/" ref="old" skipDeps="true"/>
+		<git name="flixel-animate" url="https://github.com/ChanceXML/flixelanimate-old" skipDeps="true"/>
 	</if>
 
 	<!-- Hxcpp Building -->
