@@ -256,36 +256,35 @@ class Stage extends FlxBasic implements IBeatReceiver {
         var charPos = new StageCharPos();
         charPos.visible = charPos.active = false;
         charPos.name = name;
-
+ 
         if (nonXMLInfo != null) {
             charPos.setPosition(nonXMLInfo.x, nonXMLInfo.y);
             charPos.scrollFactor.set(nonXMLInfo.scroll, nonXMLInfo.scroll);
             charPos.flipX = nonXMLInfo.flip;
         }
-
+   
         if (node != null) {
             charPos.x = Std.parseFloat(node.getAtt("x")).getDefault(charPos.x);
             charPos.y = Std.parseFloat(node.getAtt("y")).getDefault(charPos.y);
-        
-            charPos.charSpacingX = Std.parseFloat(node.getAtt("spacingx")).getDefault(charPos.charSpacingX);
-            charPos.charSpacingY = Std.parseFloat(node.getAtt("spacingy")).getDefault(charPos.charSpacingY);
-            charPos.camxoffset = Std.parseFloat(node.getAtt("camxoffset")).getDefault(charPos.camxoffset);
-            charPos.camyoffset = Std.parseFloat(node.getAtt("camyoffset")).getDefault(charPos.camyoffset);
-            charPos.skewX = Std.parseFloat(node.getAtt("skewx")).getDefault(charPos.skewX);
-            charPos.skewY = Std.parseFloat(node.getAtt("skewy")).getDefault(charPos.skewY);
-            charPos.alpha = Std.parseFloat(node.getAtt("alpha")).getDefault(charPos.alpha);
-            charPos.angle = Std.parseFloat(node.getAtt("angle")).getDefault(charPos.angle);
+            charPos.charSpacingX = Std.parseFloat(node.getAtt("spacingx")).getDefault(0);
+            charPos.charSpacingY = Std.parseFloat(node.getAtt("spacingy")).getDefault(0);
+            charPos.camxoffset = Std.parseFloat(node.getAtt("camxoffset")).getDefault(0);
+            charPos.camyoffset = Std.parseFloat(node.getAtt("camyoffset")).getDefault(0);
+            charPos.skewX = Std.parseFloat(node.getAtt("skewx")).getDefault(0);
+            charPos.skewY = Std.parseFloat(node.getAtt("skewy")).getDefault(0);
+            charPos.alpha = Std.parseFloat(node.getAtt("alpha")).getDefault(1);
+            charPos.angle = Std.parseFloat(node.getAtt("angle")).getDefault(0);
             charPos.flipX = (node.has.flip || node.has.flipX) ? (node.getAtt("flip") == "true" || node.getAtt("flipX") == "true") : charPos.flipX;
-            charPos.zoomFactor = Std.parseFloat(node.getAtt("zoomfactor")).getDefault(charPos.zoomFactor);
+            charPos.zoomFactor = Std.parseFloat(node.getAtt("zoomfactor")).getDefault(1);
 
             if (node.has.scale) {
                 var scale:Null<Float> = Std.parseFloat(node.att.scale);
                 if (scale.isNotNull()) charPos.scale.set(scale, scale);
-            }
+            } 
             if (node.has.scalex) {
                 var scale:Null<Float> = Std.parseFloat(node.att.scalex);
                 if (scale.isNotNull()) charPos.scale.x = scale;
-           }
+            }
             if (node.has.scaley) {
                 var scale:Null<Float> = Std.parseFloat(node.att.scaley);
                 if (scale.isNotNull()) charPos.scale.y = scale;
@@ -305,11 +304,13 @@ class Stage extends FlxBasic implements IBeatReceiver {
             }
         }
 
-        var normalizedPosition = CoolUtil.normalizePosition(FlxPoint.get(charPos.x, charPos.y), charPos.scale, charPos.alpha);
+        var normalizedPosition = CoolUtil.normalizePosition(
+            FlxPoint.get(charPos.x + (nonXMLInfo != null ? nonXMLInfo.x : 0) + (charPos.charSpacingX != null ? charPos.charSpacingX : 0), charPos.y + (nonXMLInfo != null ? nonXMLInfo.y : 0) + (charPos.charSpacingY != null ? charPos.charSpacingY : 0)),
+            charPos.scale,
+            charPos.alpha);
 
         charPos.x = normalizedPosition.x;
         charPos.y = normalizedPosition.y;
-        charPos.alpha = charPos.alpha;
         charPos.scale.set(normalizedPosition.x, normalizedPosition.y);
 
         return addSprite(characterPoses[name] = charPos);
