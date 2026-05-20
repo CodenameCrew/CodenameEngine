@@ -10,7 +10,11 @@ import funkin.backend.system.Conductor;
 import funkin.editors.charter.Charter;
 import funkin.menus.FreeplayState;
 import funkin.menus.StoryMenuState;
-
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
+	
 class GameOverSubstate extends MusicBeatSubstate
 {
 	var character:Character;
@@ -91,6 +95,11 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		DiscordUtil.call("onGameOver", []);
 		gameoverScript.call("postCreate");
+
+		#if mobile
+		virtualPad = new VirtualPad(NONE, B);
+        add(virtualPad);
+		#end
 	}
 
 	override function update(elapsed:Float)
@@ -101,8 +110,11 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (__cancelDefault)
 			return;
-
+        #if desktop
 		if (controls.ACCEPT) endBullshit();
+		#else
+		if (controls.ACCEPT || FlxG.mouse.justPressed) endBullshit();
+		#end
 		if (controls.BACK) exit();
 
 		if (!isEnding && ((!lossSFX.playing) || (character.getAnimName() == "firstDeath" && character.isAnimFinished())) && (FlxG.sound.music == null || !FlxG.sound.music.playing))
