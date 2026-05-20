@@ -8,6 +8,8 @@ import funkin.backend.chart.ChartData;
 import funkin.backend.scripting.events.note.*;
 import funkin.backend.system.Conductor;
 import funkin.backend.system.Controls;
+import flixel.FlxSprite;
+import flixel.util.FlxDestroyUtil;
 
 /**
  * Group of strums, that contains the strums and notes.
@@ -90,6 +92,11 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	 * Extra data that can be added to the strum line.
 	**/
 	public var extra:Map<String, Dynamic> = [];
+
+	/**
+	 * The background sprite for the strumline (Lane Background).
+	 */
+	public var laneBg:FlxSprite;
 
 	private function get_ghostTapping() {
 		if (this.ghostTapping != null) return this.ghostTapping;
@@ -185,11 +192,21 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	}
 
 	public override function update(elapsed:Float) {
+		if (laneBg != null) {
+			laneBg.update(elapsed);
+			laneBg.x = startingPos.x; 
+		}
+
 		super.update(elapsed);
 		notes.update(elapsed);
 	}
 
 	public override function draw() {
+		if (laneBg != null && laneBg.alpha > 0) {
+			laneBg.cameras = cameras;
+			laneBg.draw();
+		}
+
 		super.draw();
 		notes.cameras = cameras;
 		notes.draw();
@@ -364,6 +381,29 @@ class StrumLine extends FlxTypedGroup<Strum> {
 	**/
 	public inline function generateStrums(amount:Int = -1) {
 		if(amount == -1) amount = Flags.DEFAULT_STRUM_AMOUNT;
+		var spacing:Float = (data != null && data.strumSpacing != null) ? data.strumSpacing : 1;
+
+		// middle scroll
+		if (Options.middleScroll) {
+			if (opponentSide) {
+				startingPos.x = 10000;
+			} else {
+				startingPos.x = calculateStartingXPos(0.5, strumScale, spacing, amount);
+			}
+		}
+
+		// strumline background
+		var bgOpacity:Float = Options.strumlineBackground;
+		if (bgOpacity > 1) bgOpacity /= 100;
+
+		if (bgOpacity > 0 && (!opponentSide || !Options.middleScroll)) {
+			var totalWidth = (Note.swagWidth * strumScale * spacing * (amount - 1)) + (Note.swagWidth * strumScale);
+			
+			laneBg = new FlxSprite(startingPos.x, -FlxG.height).makeGraphic(Std.int(totalWidth), FlxG.height * 3, 0xFF000000);
+			laneBg.scrollFactor.set(0, 0);
+			laneBg.alpha = bgOpacity;
+		}
+
 		for (i in 0...amount)
 			add(createStrum(i));
 	}
@@ -373,6 +413,8 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		if(startingPos != null)
 			startingPos.put();
 		notes = FlxDestroyUtil.destroy(notes);
+		if (laneBg != null)
+			laneBg = FlxDestroyUtil.destroy(laneBg);
 	}
 
 	/**
