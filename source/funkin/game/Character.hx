@@ -7,7 +7,9 @@ import flixel.util.typeLimit.OneOfTwo;
 import flixel.graphics.frames.FlxFrame;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import flixel.math.FlxMath;
 import flixel.util.FlxColor;
+import flixel.FlxCamera;
 import funkin.backend.FunkinSprite;
 import funkin.backend.scripting.DummyScript;
 import funkin.backend.scripting.Script;
@@ -27,7 +29,6 @@ import haxe.io.Path;
 import haxe.xml.Access;
 import openfl.geom.ColorTransform;
 import animate.FlxAnimateFrames;
-import funkin.backend.utils.CoolUtil;
 
 using StringTools;
 
@@ -301,14 +302,14 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	}
 
 	public inline function getCameraPosition() {
-        var midpoint:FlxPoint = getMidpoint();
-        var event = EventManager.get(PointEvent).recycle(midpoint.x + (isPlayer ? -100 : 150) + globalOffset.x + cameraOffset.x, midpoint.y - 100 + globalOffset.y + cameraOffset.y);
-        scripts.call("onGetCamPos", [event]);
+		var midpoint:FlxPoint = getMidpoint();
+		var event = EventManager.get(PointEvent).recycle(
+			midpoint.x + (isPlayer ? -100 : 150) + globalOffset.x + cameraOffset.x,
+			midpoint.y - 100 + globalOffset.y + cameraOffset.y);
+		scripts.call("onGetCamPos", [event]);
 
-        var normalizedPosition = CoolUtil.normalizePosition(FlxPoint.get(event.x, event.y), FlxPoint.get(scale.x, scale.y), 1);
-
-        midpoint.put();
-        return new FlxPoint(normalizedPosition.x, normalizedPosition.y);
+		midpoint.put();
+		return new FlxPoint(event.x, event.y);
 	}
 
 	public override function destroy() {
@@ -356,6 +357,12 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		buildCharacter(xml);
 	}
 
+	public static function safeParseFloat(val:String, defaultVal:Float = 0):Float {
+		if (val == null) return defaultVal;
+		var parsed = Std.parseFloat(val.replace(",", "."));
+		return Math.isNaN(parsed) ? defaultVal : parsed;
+	}
+
 	public function buildCharacter(xml:Access) {
 		for(node in xml.elements)
 			switch(node.name) {
@@ -371,18 +378,18 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		this.xml = xml; // Modders wassup :D
 
 		if (xml.x.exists("isPlayer")) playerOffsets = (xml.x.get("isPlayer") == "true");
-		if (xml.x.exists("x")) globalOffset.x = Std.parseFloat(xml.x.get("x"));
-		if (xml.x.exists("y")) globalOffset.y = Std.parseFloat(xml.x.get("y"));
+		if (xml.x.exists("x")) globalOffset.x = safeParseFloat(xml.x.get("x"), 0);
+		if (xml.x.exists("y")) globalOffset.y = safeParseFloat(xml.x.get("y"), 0);
 		if (xml.x.exists("gameOverChar")) gameOverCharacter = xml.x.get("gameOverChar");
-		if (xml.x.exists("camx")) cameraOffset.x = Std.parseFloat(xml.x.get("camx"));
-		if (xml.x.exists("camy")) cameraOffset.y = Std.parseFloat(xml.x.get("camy"));
-		if (xml.x.exists("holdTime")) holdTime = Std.parseFloat(xml.x.get("holdTime")).getDefaultFloat(4);
+		if (xml.x.exists("camx")) cameraOffset.x = safeParseFloat(xml.x.get("camx"), 0);
+		if (xml.x.exists("camy")) cameraOffset.y = safeParseFloat(xml.x.get("camy"), 0);
+		if (xml.x.exists("holdTime")) holdTime = safeParseFloat(xml.x.get("holdTime"), 4);
 		if (xml.x.exists("flipX")) flipX = (xml.x.get("flipX") == "true");
 		if (xml.x.exists("icon")) icon = xml.x.get("icon");
 		if (xml.x.exists("color")) iconColor = FlxColor.fromString(xml.x.get("color"));
 		if (xml.x.exists("scale")) {
-			var scale:Float = Std.parseFloat(xml.x.get("scale")).getDefaultFloat(1);
-			this.scale.set(scale, scale);
+			var scaleVal:Float = safeParseFloat(xml.x.get("scale"), 1);
+			this.scale.set(scaleVal, scaleVal);
 			updateHitbox();
 		}
 		if (xml.x.exists("antialiasing")) antialiasing = (xml.x.get("antialiasing") == "true");
@@ -450,13 +457,13 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		var xml:Xml = Xml.createElement("character");
 		xml.attributeOrder = characterProperties.copy();
 
-		if (globalOffset.x != 0) xml.set("x", Std.string(FlxMath.roundDecimal(globalOffset.x, 2)));
-		if (globalOffset.y != 0) xml.set("y", Std.string(FlxMath.roundDecimal(globalOffset.y, 2)));
+		if (globalOffset.x != 0) xml.set("x", Std.string(globalOffset.x));
+		if (globalOffset.y != 0) xml.set("y", Std.string(globalOffset.y));
 
-		if (cameraOffset.x != 0) xml.set("camx", Std.string(FlxMath.roundDecimal(cameraOffset.x, 2)));
-		if (cameraOffset.y != 0) xml.set("camy", Std.string(FlxMath.roundDecimal(cameraOffset.y, 2)));
+		if (cameraOffset.x != 0) xml.set("camx", Std.string(cameraOffset.x));
+		if (cameraOffset.y != 0) xml.set("camy", Std.string(cameraOffset.y));
 
-		if (holdTime != 4) xml.set("holdTime", Std.string(FlxMath.roundDecimal(holdTime, 4)));
+		if (holdTime != 4) xml.set("holdTime", Std.string(holdTime));
 
 		var realFlipped:Bool = isPlayer ? !__baseFlipped : __baseFlipped;
 		if (realFlipped) xml.set("flipX", "true");
@@ -466,7 +473,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		if (iconColor != null) xml.set("color", iconColor.toWebString());
 
 		if (sprite != curCharacter) xml.set("sprite", sprite);
-		if (scale.x != 1) xml.set("scale", Std.string(FlxMath.roundDecimal(scale.x, 4)));
+		if (scale.x != 1) xml.set("scale", Std.string(scale.x));
 		if (!antialiasing) xml.set("antialiasing", antialiasing == true ? "true" : "false");
 
 		if (isPlayer) xml.set("isPlayer", isPlayer == true ? "true" : "false");
@@ -486,11 +493,11 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 			animXml.set("name", anim.name);
 			animXml.set("anim", anim.anim);
 			if (anim.loop) animXml.set("loop", Std.string(anim.loop));
-			if (FlxMath.roundDecimal(anim.fps, 2) != 24) animXml.set("fps", Std.string(FlxMath.roundDecimal(anim.fps, 2)));
+			if (anim.fps != 24) animXml.set("fps", Std.string(anim.fps));
 
 			var offset:FlxPoint = getAnimOffset(anim.name);
-			if (FlxMath.roundDecimal(offset.x, 2) != 0) animXml.set("x", Std.string(FlxMath.roundDecimal(offset.x, 2)));
-			if (FlxMath.roundDecimal(offset.y, 2) != 0) animXml.set("y", Std.string(FlxMath.roundDecimal(offset.y, 2)));
+			if (offset.x != 0) animXml.set("x", Std.string(offset.x));
+			if (offset.y != 0) animXml.set("y", Std.string(offset.y));
 			offset.putWeak();
 
 			if (anim.indices.length > 0)
