@@ -133,8 +133,12 @@ jobs:
         
       - name: Build APK
         run: |
-         haxelib run lime build android -clean ${{ github.event.inputs.android_flags }}
-
+         if [ "${GITHUB_REF##*/}" = "dev" ]; then
+             haxelib run lime build android -clean -D DEVBRANCH ${{ github.event.inputs.android_flags }}
+         else
+             haxelib run lime build android -clean ${{ github.event.inputs.android_flags }}
+         fi
+         
       - name: Save cache
         if: ${{ success() && (github.event.inputs.rebuild_cache != 'Yes' || github.event_name == 'push') }}
         uses: actions/cache/save@v4
