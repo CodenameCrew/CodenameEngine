@@ -1,4 +1,4 @@
-package funkin.mobile;
+package mobile.backend.utils;
 
 import flixel.FlxG;
 import flixel.text.FlxText;
