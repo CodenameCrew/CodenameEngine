@@ -151,7 +151,7 @@ class VirtualPad extends FlxSpriteGroup
 
 		scrollFactor.set();
 
-		FlxG.signals.preStateUpdate.add(updatePadInput); 
+		FlxG.signals.preUpdate.add(updatePadInput);
 	}
 
 	public function rebind(button:String, key:String):Void
@@ -381,7 +381,7 @@ class VirtualPad extends FlxSpriteGroup
 	
 	override public function destroy():Void
 	{
-		FlxG.signals.preStateUpdate.remove(updatePadInput); 
+		FlxG.signals.preUpdate.remove(updatePadInput);
 
 		VirtualPad.instance = null;
 
