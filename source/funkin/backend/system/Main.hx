@@ -23,6 +23,9 @@ import openfl.text.TextFormat;
 import openfl.utils.AssetLibrary;
 import sys.FileSystem;
 import sys.io.File;
+#if mobile
+import mobile.backend.utils.MobileTrace;
+#end
 #if android
 import extension.androidtools.content.Context;
 import extension.androidtools.os.Build;
@@ -82,6 +85,10 @@ class Main extends Sprite
         #elseif ios
      	    finalizeSetup();
         #end
+
+		#if mobile
+		MobileTrace.enabled = true;
+		#end
 
 		addChild(game = new FunkinGame(gameWidth, gameHeight, MainState, Options.framerate, Options.framerate, skipSplash, startFullscreen));
 
