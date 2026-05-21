@@ -5,6 +5,9 @@ import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import openfl.desktop.Clipboard;
 import openfl.geom.Rectangle;
+#if mobile
+import lime.app.Application;
+#ene
 
 class UITextBox extends UISliceSprite implements IUIFocusable {
 	public var label:UIText;
@@ -66,6 +69,16 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 				alpha = label.alpha = 0.4;
 			}
 		}
+
+		#if mobile
+		if (selected && !__wasFocused) {
+			Application.current.window.textInputEnabled = true;
+		}
+		
+		if (!selected && __wasFocused) {
+			Application.current.window.textInputEnabled = false;
+		}
+		#end
 
 		var off = multiline ? 4 : ((bHeight - label.height) / 2);
 		label.follow(this, label.autoSize ? (bWidth - label.textField.width) / 2 : 4, off);
