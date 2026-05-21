@@ -2,6 +2,9 @@ package funkin.editors.ui;
 
 import haxe.io.Bytes;
 import lime.ui.FileDialog;
+#if android
+import extension.androidtools.Tools;
+#end
 
 class UIFileExplorer extends UISliceSprite {
 	public var uploadButton:UIButton;
@@ -25,9 +28,17 @@ class UIFileExplorer extends UISliceSprite {
 		if (onFile != null) this.onFile = onFile;
 
 		uploadButton = new UIButton(x + 8, y+ 8, null, function () {
+			#if android
+			Tools.pickFile(function(path:String) {
+				if (path != null && path != "") {
+					loadFile(path);
+				}
+			});
+			#else
 			var fileDialog = new FileDialog();
 			fileDialog.onSelect.add(loadFile);
 			fileDialog.browse(OPEN, this.fileType);
+			#end
 		}, bWidth - 16, bHeight - 16);
 		members.push(uploadButton);
 
