@@ -25,7 +25,7 @@
 		<str id="optionsTree.debug-name">Desarrollador</str>
 		<str id="optionsTree.debug-desc">Opciones para el Modo Desarrollador.</str>
 
-		<str id="optionsTree.mobile-name">Movil</str>
+		<str id="optionsTree.mobile-name">Opciones Movil</str>
         <str id="optionsTree.mobile-desc">Opciones para celulares movil.</str>
 
 		<!-- cant have debug here -->
@@ -99,7 +99,7 @@
    	    <str id="pauseButton-name">Boton De Pausa</str>
 	    <str id="pauseButton-desc">Si esta desactivado. el boton de pause se volvera invisible.</str>
 
-		<str id="virtualPadOpacity-name">Opacidad De Los Controles</str>
+		<str id="virtualPadOpacity-name">Opacidad Del VirtualPad</str>
 		<str id="virtualPadOpacity-desc">No tengo que explicar esto.</str>
 	
         <str id="hintStyle-name">Estilo Del Hint</str>
@@ -111,7 +111,7 @@
         <str id="hintOpacity-name">Opacidad Del Hint</str>
         <str id="hintOpacity-desc">Cambia la opacidad del hint..</str>
     
-        <str id="hitboxOpacity-name">Hitbox Opacity</str>
+        <str id="hitboxOpacity-name">Opacidad De La Hitbox</str>
         <str id="hitboxOpacity-desc">no tengo que explicar esto.</str>
 
 	   <!-- <str id=" -->
