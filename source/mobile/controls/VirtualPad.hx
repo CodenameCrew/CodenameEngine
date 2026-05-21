@@ -3,6 +3,8 @@ package mobile.controls;
 #if mobile
 class VirtualPad extends FlxSpriteGroup
 {
+	public static var instance:VirtualPad = null;
+
 	public var buttonA:FlxButton;
 	public var buttonB:FlxButton;
 	public var buttonC:FlxButton;
@@ -49,6 +51,8 @@ class VirtualPad extends FlxSpriteGroup
 	public function new(?DPad:FlxDPadMode, ?Action:FlxActionMode)
 	{
 		super();
+
+		VirtualPad.instance = this;
 
 		virtualpadCamera = new FlxCamera();
 		virtualpadCamera.bgColor = 0x00000000;
@@ -202,35 +206,26 @@ class VirtualPad extends FlxSpriteGroup
 
 			var key = getBindForButton(btn);
 
-            if (key != FlxKey.NONE)
-            {
-            	@:privateAccess
-            	{
-	        	if (justPressed)
-		        {
-        			FlxG.keys._keyListMap[key].current = JUST_PRESSED;
-        		}
-	            	else if (justReleased)
-	               	{
-		            	FlxG.keys._keyListMap[key].current = JUST_RELEASED;
-	                    }
-	            	else if (isPressed)
-          	        {
-	         		if (FlxG.keys._keyListMap[key].current == JUST_PRESSED)
-			        	FlxG.keys._keyListMap[key].current = PRESSED;
-					    }
-		            else
-            		{
-	              		if (FlxG.keys._keyListMap[key].current == JUST_RELEASED)
-			        	FlxG.keys._keyListMap[key].current = RELEASED;
-	            	}
-                }
-            }
+			if (key != FlxKey.NONE)
+			{
+				if (justPressed)
+				{
+					FlxG.keys.handleAction(key, true);
+				}
+				else if (justReleased)
+				{
+					FlxG.keys.handleAction(key, false);
+				}
+			}
 		}
+
 		if (overlappingPad)
-        {
-            @:privateAccess
-            FlxG.mouse._leftButton.current = FlxInputState.PRESSED;
+		{
+			@:privateAccess
+			{
+				FlxG.mouse._leftButton.current = 0;
+				FlxG.mouse._leftButton.last = 0;
+			}
 		}
 
 		VirtualPad.touchingPad = overlappingPad;
@@ -390,6 +385,8 @@ class VirtualPad extends FlxSpriteGroup
 	
 	override public function destroy():Void
 	{
+		VirtualPad.instance = null;
+
 		if (boundActions != null) {
 			boundActions.clear();
 			boundActions = null;
