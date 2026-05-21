@@ -55,12 +55,16 @@ jobs:
 
       - name: extract all zip artifacts
         run: |
-          mkdir extracted
+         mkdir -p extracted
 
-          find artifacts -name "*.zip" | while read file; do
-            echo "Extracting $file"
-            unzip -o "$file" -d extracted
-          done
+         echo "Searching for zip files..."
+         find . -type f -name "*.zip" | while read file; do
+           echo "Extracting $file"
+           unzip -o "$file" -d extracted
+         done
+  
+         echo "Contents of extracted:"
+         ls -R extracted || true
 
       - name: find files
         run: |
