@@ -66,19 +66,20 @@ jobs:
          echo "Contents of extracted:"
          ls -R extracted || true
 
-      - name: find files
+      - name: file stuff
         run: |
-          mkdir release-files
+         mkdir -p release-files
 
-          find extracted -type f \( -name "*.apk" -o -name "*.ipa" \) -exec cp {} release-files/ \;
+         cp artifacts/Android-Build/*.apk release-files/ || true
+         cp artifacts/iosBuild/*.ipa release-files/ || true
+   
+         echo "Files found:"
+         ls -R release-files
 
-          echo "Files found:"
-          ls -R release-files
-
-          if [ -z "$(ls -A release-files)" ]; then
+         if [ -z "$(ls -A release-files)" ]; then
             echo "No APK or IPA files found."
             exit 1
-          fi
+         fi
 
       - name: see everything
         if: always()
