@@ -5,6 +5,10 @@ import funkin.backend.assets.ModsFolder;
 import funkin.backend.scripting.events.CancellableEvent;
 import funkin.backend.system.Conductor;
 import funkin.options.PlayerSettings;
+#if mobile
+import mobile.backend.utils.MobileTrace;
+import flixel.util.FlxColor;
+#end
 
 #if GLOBAL_SCRIPT
 /**
@@ -91,6 +95,10 @@ class GlobalScript {
 				if (PlayerSettings.solo.controls.DEV_RELOAD) {
 					reloading = true;
 					Logs.trace("Reloading Global Scripts...", INFO, YELLOW);
+					MobileTrace.log(
+		                "Reloading Global Scripts...",
+	  	                FlxColor.YELLOW
+	                );
 
 					// yeah its a bit messy, sorry. This just prevents actually reloading the actual state.
 					_lastAllow_Reload = MusicBeatState.ALLOW_DEV_RELOAD;
