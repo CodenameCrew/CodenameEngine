@@ -8,6 +8,8 @@ class MobileTrace
 {
 	public static var text:FlxText;
 
+	public static var enabled:Bool = false;
+
 	public static function init()
 	{
 		text = new FlxText(10, 10, FlxG.width - 20, "");
@@ -22,6 +24,8 @@ class MobileTrace
 
 	public static function log(msg:Dynamic, ?color:FlxColor)
 	{
+		if (!enabled) return;
+		
 		if (text == null) return;
 
 		if (color != null)
