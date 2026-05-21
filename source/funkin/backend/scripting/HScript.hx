@@ -170,7 +170,7 @@ class HScript extends Script {
 			Logs.logText(err, RED)
 		], ERROR);
 
-		#if Mobile
+		#if mobile
 	    NativeAPI.showMessageBox("HScript Error!", fn + "\n" + Std.string(err), "Got It!");
 	    #end
 	}
