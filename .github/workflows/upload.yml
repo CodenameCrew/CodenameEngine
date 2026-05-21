@@ -81,7 +81,7 @@ jobs:
           fi
 
       - name: see everything
-        if: !success()
+        if: failure()
         run: |
          echo "full directory":
          ls -R
