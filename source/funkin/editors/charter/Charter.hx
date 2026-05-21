@@ -577,6 +577,20 @@ class Charter extends UIState {
 
 		loadSong();
 
+		#if mobile
+		virtualPad = new VirtualPad(FULL, A_B_X_Y);
+        add(virtualPad);
+		
+		virtualPad.rebind('A', 'ENTER');
+		virtualPad.rebind('B', 'SPACE');
+		virtualPad.rebind('X', 'E');
+		virtualPad.rebind('Y', 'Q');
+		virtualPad.rebind('UP', 'W');
+		virtualPad.rebind('DOWN', 'S');
+		virtualPad.rebind('LEFT', 'A');
+		virtualPad.rebind('RIGHT', 'D');
+		#end
+
 		if (Framerate.isLoaded) {
 			Framerate.fpsCounter.alpha = 0.4;
 			Framerate.memoryCounter.alpha = 0.4;
