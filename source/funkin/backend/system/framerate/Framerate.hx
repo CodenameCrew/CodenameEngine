@@ -19,7 +19,6 @@ import openfl.Lib;
 import openfl.events.Event;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
-import openfl.display.Sprite;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 
@@ -423,6 +422,7 @@ class CodenameBuildField extends TextField {
 		super();
 		defaultTextFormat = Framerate.textFormat;
 		autoSize = LEFT;
+		multiline = true;
 		reload();
 		updateScale();
 		addEventListener(Event.ADDED_TO_STAGE, function(_) stage.addEventListener(Event.RESIZE, onResize));
@@ -447,6 +447,7 @@ class CodenameBuildField extends TextField {
 	public function reload() {
 		text = '${Flags.VERSION_MESSAGE}';
 		#if debug text += '\n${Flags.COMMIT_MESSAGE}'; #end
+		#if DEVBUILD text += '\nDev Build'; #end
 	}
 }
 
