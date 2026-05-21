@@ -4,6 +4,12 @@ import flixel.util.FlxDestroyUtil.IFlxDestroyable;
 import flixel.util.FlxStringUtil;
 import haxe.io.Path;
 import lime.app.Application;
+#if mobile
+import mobile.backend.utils.MobileTrace;
+import flixel.util.FlxColor;
+#end
+
+#end
 
 @:allow(funkin.backend.scripting.ScriptPack)
 /**
@@ -306,15 +312,22 @@ class Script extends FlxBasic implements IFlxDestroyable {
 	 * Traces something as this script.
 	 */
 	public function trace(v:Dynamic) {
-		var fileName = this.fileName;
-		if(remappedNames.exists(fileName))
-			fileName = remappedNames.get(fileName);
-		Logs.traceColored([
-			Logs.logText(fileName + ': ', GREEN),
-			Logs.logText(Std.string(v))
-		], TRACE);
-	}
+	    var fileName = this.fileName;
+	    if(remappedNames.exists(fileName))
+		    fileName = remappedNames.get(fileName);
 
+    	Logs.traceColored([
+	 	    Logs.logText(fileName + ': ', GREEN),
+	    	Logs.logText(Std.string(v))
+    	], TRACE);
+
+	    #if mobile
+    	MobileTrace.log(
+		    fileName + ': ' + Std.string(v),
+		    FlxColor.WHITE
+    	);
+    	#end
+	}
 
 	/**
 	 * Calls the function `func` defined in the script.
@@ -373,6 +386,13 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			Logs.logText(fileName, RED),
 			Logs.logText(text)
 		], ERROR);
+
+		#if mobile
+    	MobileTrace.log(
+		    fileName + ": " + text,
+		    FlxColor.RED
+	    );
+		#end
 	}
 
 	override public function toString():String {
