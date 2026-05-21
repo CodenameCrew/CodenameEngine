@@ -9,8 +9,6 @@ import mobile.backend.utils.MobileTrace;
 import flixel.util.FlxColor;
 #end
 
-#end
-
 @:allow(funkin.backend.scripting.ScriptPack)
 /**
  * Class used for scripting.
