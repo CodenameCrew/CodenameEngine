@@ -1,9 +1,8 @@
 package mobile.controls;
+
 #if mobile
 class VirtualPad extends FlxSpriteGroup
 {
-	public static var instance:VirtualPad = null;
-
 	public var buttonA:FlxButton;
 	public var buttonB:FlxButton;
 	public var buttonC:FlxButton;
@@ -50,8 +49,6 @@ class VirtualPad extends FlxSpriteGroup
 	public function new(?DPad:FlxDPadMode, ?Action:FlxActionMode)
 	{
 		super();
-
-		VirtualPad.instance = this;
 
 		virtualpadCamera = new FlxCamera();
 		virtualpadCamera.bgColor = 0x00000000;
@@ -150,8 +147,6 @@ class VirtualPad extends FlxSpriteGroup
 		}
 
 		scrollFactor.set();
-
-		FlxG.signals.preUpdate.add(updatePadInput);
 	}
 
 	public function rebind(button:String, key:String):Void
@@ -168,13 +163,7 @@ class VirtualPad extends FlxSpriteGroup
 	override function update(elapsed:Float) 
 	{
 		this.alpha = Options.virtualPadOpacity; 
-		super.update(elapsed);
-	}
-
-	private function updatePadInput():Void 
-	{
-		if (!active || !exists || !visible) return;
-
+	    
 		var overlappingPad:Bool = false;
 		var padButtons = [buttonLeft, buttonRight, buttonUp, buttonDown, buttonA, buttonB, buttonC, buttonX, buttonY];
 
@@ -193,6 +182,15 @@ class VirtualPad extends FlxSpriteGroup
 					}
 				}
 			}
+			
+			#if desktop
+			if (!isPressed && FlxG.mouse.pressed) {
+				if (FlxG.mouse.overlaps(btn, virtualpadCamera)) {
+					isPressed = true;
+					overlappingPad = true;
+				}
+			}
+			#end
 
 			var wasPressed = buttonStates.exists(btn) ? buttonStates.get(btn) : false;
 			var justPressed = isPressed && !wasPressed;
@@ -204,29 +202,41 @@ class VirtualPad extends FlxSpriteGroup
 
 			var key = getBindForButton(btn);
 
-			if (key != FlxKey.NONE)
-			{
-				if (justPressed)
-				{
-					FlxG.keys.handleAction(key, true);
-				}
-				else if (justReleased)
-				{
-					FlxG.keys.handleAction(key, false);
-				}
-			}
+            if (key != FlxKey.NONE)
+            {
+            	@:privateAccess
+            	{
+	        	if (justPressed)
+		        {
+        			FlxG.keys._keyListMap[key].current = JUST_PRESSED;
+        		}
+	            	else if (justReleased)
+	               	{
+		            	FlxG.keys._keyListMap[key].current = JUST_RELEASED;
+	                    }
+	            	else if (isPressed)
+          	        {
+	         		if (FlxG.keys._keyListMap[key].current == JUST_PRESSED)
+			        	FlxG.keys._keyListMap[key].current = PRESSED;
+					    }
+		            else
+            		{
+	              		if (FlxG.keys._keyListMap[key].current == JUST_RELEASED)
+			        	FlxG.keys._keyListMap[key].current = RELEASED;
+	            	}
+                }
+            }
 		}
-
+		
 		if (overlappingPad)
-		{
-			@:privateAccess
-			{
-				FlxG.mouse._leftButton.current = 0;
-				FlxG.mouse._leftButton.last = 0;
-			}
+        {
+            @:privateAccess
+            FlxG.mouse._leftButton.current = FlxInputState.RELEASED;
 		}
 
 		VirtualPad.touchingPad = overlappingPad;
+
+		super.update(elapsed);
 	}
 	
 	private inline function getBind(keyName:String):FlxKey 
@@ -381,10 +391,6 @@ class VirtualPad extends FlxSpriteGroup
 	
 	override public function destroy():Void
 	{
-		FlxG.signals.preUpdate.remove(updatePadInput);
-
-		VirtualPad.instance = null;
-
 		if (boundActions != null) {
 			boundActions.clear();
 			boundActions = null;
