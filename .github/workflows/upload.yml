@@ -81,12 +81,6 @@ jobs:
             exit 1
          fi
 
-      - name: see everything
-        if: always()
-        run: |
-         echo "full directory":
-         ls -R
-
       - name: create release
         uses: softprops/action-gh-release@v2
         with:
