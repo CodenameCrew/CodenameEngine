@@ -1,5 +1,5 @@
 package mobile.controls;
-
+#if mobile
 class VirtualPad extends FlxSpriteGroup
 {
 	public static var instance:VirtualPad = null;
