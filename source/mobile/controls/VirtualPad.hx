@@ -1,6 +1,17 @@
 package mobile.controls;
 
 #if mobile
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.FlxCamera;
+import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxPoint;
+import flixel.ui.FlxButton;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxTileFrames;
+import flixel.util.FlxDestroyUtil;
+import flixel.input.keyboard.FlxKey;
+
 class VirtualPad extends FlxSpriteGroup
 {
 	public static var instance:VirtualPad = null;
@@ -151,6 +162,8 @@ class VirtualPad extends FlxSpriteGroup
 		}
 
 		scrollFactor.set();
+
+		FlxG.signals.preStateUpdate.add(updatePadInput); 
 	}
 
 	public function rebind(button:String, key:String):Void
@@ -167,7 +180,13 @@ class VirtualPad extends FlxSpriteGroup
 	override function update(elapsed:Float) 
 	{
 		this.alpha = Options.virtualPadOpacity; 
-	    
+		super.update(elapsed);
+	}
+
+	private function updatePadInput():Void 
+	{
+		if (!active || !exists || !visible) return;
+
 		var overlappingPad:Bool = false;
 		var padButtons = [buttonLeft, buttonRight, buttonUp, buttonDown, buttonA, buttonB, buttonC, buttonX, buttonY];
 
@@ -186,15 +205,6 @@ class VirtualPad extends FlxSpriteGroup
 					}
 				}
 			}
-			
-			#if desktop
-			if (!isPressed && FlxG.mouse.pressed) {
-				if (FlxG.mouse.overlaps(btn, virtualpadCamera)) {
-					isPressed = true;
-					overlappingPad = true;
-				}
-			}
-			#end
 
 			var wasPressed = buttonStates.exists(btn) ? buttonStates.get(btn) : false;
 			var justPressed = isPressed && !wasPressed;
@@ -229,8 +239,6 @@ class VirtualPad extends FlxSpriteGroup
 		}
 
 		VirtualPad.touchingPad = overlappingPad;
-
-		super.update(elapsed);
 	}
 	
 	private inline function getBind(keyName:String):FlxKey 
@@ -385,6 +393,8 @@ class VirtualPad extends FlxSpriteGroup
 	
 	override public function destroy():Void
 	{
+		FlxG.signals.preStateUpdate.remove(updatePadInput); 
+
 		VirtualPad.instance = null;
 
 		if (boundActions != null) {
