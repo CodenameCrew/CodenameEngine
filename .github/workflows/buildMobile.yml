@@ -10,7 +10,7 @@ on:
       build_name:
         description: Build Name
         required: true
-        default: Mobile Build
+        default: Dev Build
         
       android_flags:
         description: Android Flags
