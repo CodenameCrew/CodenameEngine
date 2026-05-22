@@ -375,6 +375,8 @@ class CharacterEditor extends UIState {
 	public var draggingCharacter:Bool = false;
 	public var draggingOffset:FlxPoint = new FlxPoint();
 	public override function update(elapsed:Float) {
+		FlxButtonManager.globalPreUpdate()
+			
 		if(FlxG.keys.justPressed.ANY && currentFocus == null)
 			UIUtil.processShortcuts(topMenu);
 
