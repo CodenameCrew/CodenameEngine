@@ -23,8 +23,10 @@ class CharterSelection extends EditorTreeMenu {
 		addMenu(new CharterSelectionScreen());
 		bgType = 'charter';
 
+		#if mobile
 		virtualPad = new VirtualPad(UP_DOWN, A_B);
         add(virtualPad);
+		#end
 	}
 }
 
