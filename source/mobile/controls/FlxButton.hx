@@ -1,5 +1,30 @@
 package mobile.controls;
 
+interface IMobileButton
+{
+	public function updateButton():Void;
+}
+
+private class FlxButtonManager
+{
+	public static var activeButtons:Array<IMobileButton> = [];
+	public static var isGlobalHookInitialized:Bool = false;
+
+	public static function globalPreUpdate():Void
+	{
+		for (btn in activeButtons)
+		{
+			var basic = cast(btn, flixel.FlxBasic);
+			if (basic != null && basic.exists && basic.active && basic.visible)
+			{
+				#if FLX_POINTER_INPUT
+				btn.updateButton();
+				#end
+			}
+		}
+	}
+}
+
 class FlxButton extends FlxTypedButton<FlxText>
 {
 	public static inline var NORMAL:Int = 0;
@@ -59,25 +84,8 @@ class FlxButton extends FlxTypedButton<FlxText>
 #if !display
 @:generic
 #end
-class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput
+class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput implements IMobileButton
 {
-	public static var activeButtons:Array<Dynamic> = [];
-	static var isGlobalHookInitialized:Bool = false;
-
-	static function globalPreUpdate():Void
-	{
-		for (btn in activeButtons)
-		{
-			var button:FlxTypedButton<Dynamic> = btn;
-			if (button != null && button.exists && button.active && button.visible)
-			{
-				#if FLX_POINTER_INPUT
-				button.updateButton();
-				#end
-			}
-		}
-	}
-
 	public var label(default, set):T;
 
 	public var labelOffsets:Array<FlxPoint> = [FlxPoint.get(), FlxPoint.get(), FlxPoint.get(0, 1)];
@@ -119,11 +127,11 @@ class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput
 
 		input = new FlxInput(0);
 
-		activeButtons.push(this);
-		if (!isGlobalHookInitialized)
+		FlxButtonManager.activeButtons.push(this);
+		if (!FlxButtonManager.isGlobalHookInitialized)
 		{
-			FlxG.signals.preUpdate.add(globalPreUpdate);
-			isGlobalHookInitialized = true;
+			FlxG.signals.preUpdate.add(FlxButtonManager.globalPreUpdate);
+			FlxButtonManager.isGlobalHookInitialized = true;
 		}
 	}
 
@@ -163,7 +171,7 @@ class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput
 		currentInput = null;
 		input = null;
 
-		activeButtons.remove(this);
+		FlxButtonManager.activeButtons.remove(this);
 
 		super.destroy();
 	}
