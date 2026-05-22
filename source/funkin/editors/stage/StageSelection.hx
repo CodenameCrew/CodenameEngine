@@ -7,13 +7,26 @@ import funkin.options.type.NewOption;
 import funkin.options.type.OptionType;
 import funkin.options.type.TextOption;
 
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
+
 using StringTools;
 
 class StageSelection extends EditorTreeMenu {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
+		
 	override function create() {
 		super.create();
 		DiscordUtil.call("onEditorTreeLoaded", ["Stage Editor"]);
 		addMenu(new StageSelectionScreen());
+		#if mobile
+		virtualPad = new VirtualPad(UP_DOWN, A_B);
+        add(virtualPad);
+		#end
 	}
 }
 
