@@ -20,7 +20,15 @@ import funkin.editors.ui.UIImageExplorer.ImageSaveData;
 import sys.FileSystem;
 import sys.io.File;
 
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
+
 class CharacterEditor extends UIState {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
 	static var __character:String;
 	public var character:CharacterGhost;
 
@@ -335,6 +343,16 @@ class CharacterEditor extends UIState {
 		}
 
 		DiscordUtil.call("onEditorLoaded", ["Character Editor", __character]);
+
+		#if mobile
+		virtualPad = new VirtualPad(FULL, A_B_X_Y);
+        add(virtualPad);
+
+		virtualPad.rebind('A', 'SPACE');
+		virtualPad.rebind('B', 'SHIFT');
+		virtualPad.rebind('X', 'W');
+		virtualPad.rebind('Y', 'S');
+		#end
 	}
 
 	override function destroy() {
