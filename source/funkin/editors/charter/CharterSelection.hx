@@ -9,6 +9,11 @@ import funkin.menus.FreeplayState.FreeplaySonglist;
 import funkin.options.type.*;
 import haxe.Json;
 
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
+
 using StringTools;
 
 class CharterSelection extends EditorTreeMenu {
@@ -17,6 +22,9 @@ class CharterSelection extends EditorTreeMenu {
 		DiscordUtil.call("onEditorTreeLoaded", ["Chart Editor"]);
 		addMenu(new CharterSelectionScreen());
 		bgType = 'charter';
+
+		virtualPad = new VirtualPad(UP_DOWN, A_B);
+        add(virtualPad);
 	}
 }
 
