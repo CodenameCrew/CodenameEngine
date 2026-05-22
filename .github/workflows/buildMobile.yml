@@ -231,12 +231,8 @@ jobs:
         uses: actions/cache/save@v4
         with:
          path: |
-          ~/haxelib
-          ~/.lime
-          ~/.openfl
           ~/hxcpp_cache
-          ~/Library/Developer/Xcode/DerivedData
-          export/ios/build
+          export/ios
          key: ios-cache-${{ runner.os }}-${{ hashFiles('**/project.xml') }}
           
       - uses: actions/upload-artifact@v4
