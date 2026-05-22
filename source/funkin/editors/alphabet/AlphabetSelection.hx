@@ -7,12 +7,24 @@ import funkin.editors.EditorTreeMenu;
 import funkin.options.type.NewOption;
 import funkin.options.type.TextOption;
 import funkin.options.type.OptionType;
-
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
+	
 class AlphabetSelection extends EditorTreeMenu {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
+		
 	override function create() {
 		super.create();
 		DiscordUtil.call("onEditorTreeLoaded", ["Alphabet Editor"]);
 		addMenu(new AlphabetSelectionScreen());
+		#if mobile
+		virtualPad = new VirtualPad(UP_DOWN, A_B);
+        add(virtualPad);
+		#end
 	}
 }
 
