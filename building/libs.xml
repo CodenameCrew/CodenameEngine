@@ -4,7 +4,7 @@
 		<print pretty="true">Preparing installation...</print>
 
 		<!-- Mobile Libraries -->
-		<git name="extension-androidtools" url="https://github.com/ChanceXML/androidTools" />
+		<git name="extension-androidtools" url="https://github.com/ChanceXML/extension-androidtools" />
 		<git name="nativeiospopup" url="https://github.com/ChanceXML/nativeiospopup" />
 
 		<!-- OpenFL & Lime (Required for Flixel) -->
