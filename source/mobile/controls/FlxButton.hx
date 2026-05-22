@@ -5,7 +5,7 @@ interface IMobileButton
 	public function updateButton():Bool;
 }
 
-private class FlxButtonManager
+public class FlxButtonManager
 {
 	public static var activeButtons:Array<IMobileButton> = [];
 	public static var isGlobalHookInitialized:Bool = false;
