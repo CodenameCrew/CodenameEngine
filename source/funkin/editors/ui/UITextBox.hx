@@ -7,7 +7,7 @@ import openfl.desktop.Clipboard;
 import openfl.geom.Rectangle;
 #if mobile
 import lime.app.Application;
-#ene
+#end
 
 class UITextBox extends UISliceSprite implements IUIFocusable {
 	public var label:UIText;
