@@ -15,17 +15,23 @@ import mobile.controls.FlxButton;
 #end
 
 class CharacterSelection extends EditorTreeMenu {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
+	
 	override function create() {
 		super.create();
 		DiscordUtil.call("onEditorTreeLoaded", ["Character Editor"]);
 		addMenu(new CharacterSelectionScreen());
+
+		#if mobile
+		virtualPad = new VirtualPad(UP_DOWN, A_B);
+        add(virtualPad);
+		#end
 	}
 }
 
 class CharacterSelectionScreen extends EditorTreeMenuScreen {
-	#if mobile
-    public var virtualPad:VirtualPad;
-    #end
 	public var modsList:Array<String> = [];
 
 	public function new() {
@@ -65,13 +71,6 @@ class CharacterSelectionScreen extends EditorTreeMenuScreen {
 		}
 
 		for (o in generateList(modsList, isMods)) add(o);
-	}
-
-	public function postCreate() {
-		#if mobile
-		virtualPad = new VirtualPad(UP_DOWN, A_B);
-        add(virtualPad);
-		#end
 	}
 
 	public function createCharacter(name:String, imageSaveData:ImageSaveData, xml:Xml) {
