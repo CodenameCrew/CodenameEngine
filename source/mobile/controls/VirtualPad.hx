@@ -161,80 +161,74 @@ class VirtualPad extends FlxSpriteGroup
 	}
 
 	override function update(elapsed:Float) 
-    {
-	    this.alpha = Options.virtualPadOpacity; 
-	
-	    var overlappingPad:Bool = false;
+	{
+		this.alpha = Options.virtualPadOpacity; 
+	    
+		var overlappingPad:Bool = false;
+		var padButtons = [buttonLeft, buttonRight, buttonUp, buttonDown, buttonA, buttonB, buttonC, buttonX, buttonY];
 
-    	var padButtons = [
-		buttonLeft, buttonRight, buttonUp, buttonDown, 
-		buttonA, buttonB, buttonC, buttonX, buttonY];
+		for (btn in padButtons) {
+			if (btn == null || !btn.exists || !btn.active || !btn.visible) continue;
 
-	    for (btn in padButtons)
-    	{
-		    if (btn == null || !btn.exists || !btn.active || !btn.visible)
-			    continue;
+			var isPressed = false;
 
-		    var isPressed = false;
+			for (touch in FlxG.touches.list) {
+				if (touch.pressed) { 
+					var point = touch.getWorldPosition(virtualpadCamera);
+					if (btn.overlapsPoint(point, true, virtualpadCamera)) {
+						isPressed = true;
+						overlappingPad = true;
+						break;
+					}
+				}
+			}
 
-		    for (touch in FlxG.touches.list)
-		    {
-			    if (touch.pressed)
-			    {
-				    var point = touch.getWorldPosition(virtualpadCamera);
-   
-				    if (btn.overlapsPoint(point, true, virtualpadCamera))
-				    {
-					    isPressed = true;
-					    overlappingPad = true;
-					    break;
-				    }
-			    }
-		    }
+			var wasPressed = buttonStates.exists(btn) ? buttonStates.get(btn) : false;
+			var justPressed = isPressed && !wasPressed;
+			var justReleased = !isPressed && wasPressed;
 
-		    var wasPressed = buttonStates.exists(btn) ? buttonStates.get(btn) : false;
+			buttonStates.set(btn, isPressed);
+			buttonJustPressed.set(btn, justPressed);
+			buttonJustReleased.set(btn, justReleased);
 
-		    var justPressed = isPressed && !wasPressed;
-		    var justReleased = !isPressed && wasPressed;
+			var key = getBindForButton(btn);
 
-		    buttonStates.set(btn, isPressed);
-	    	buttonJustPressed.set(btn, justPressed);
-		    buttonJustReleased.set(btn, justReleased);
+            if (key != FlxKey.NONE)
+            {
+            	@:privateAccess
+            	{
+	        	if (justPressed)
+		        {
+        			FlxG.keys._keyListMap[key].current = JUST_PRESSED;
+        		}
+	            	else if (justReleased)
+	               	{
+		            	FlxG.keys._keyListMap[key].current = JUST_RELEASED;
+	                    }
+	            	else if (isPressed)
+          	        {
+	         		if (FlxG.keys._keyListMap[key].current == JUST_PRESSED)
+			        	FlxG.keys._keyListMap[key].current = PRESSED;
+					    }
+		            else
+            		{
+	              		if (FlxG.keys._keyListMap[key].current == JUST_RELEASED)
+			        	FlxG.keys._keyListMap[key].current = RELEASED;
+	            	}
+                }
+            }
+		}
+		
+		if (overlappingPad)
+        {
+            @:privateAccess
+            FlxG.mouse._leftButton.current = FlxInputState.RELEASED;
+		}
 
-		    var key = getBindForButton(btn);
+		VirtualPad.touchingPad = overlappingPad;
 
-	    	if (key != FlxKey.NONE)
-		    {
-			    @:privateAccess
-			    {
-			    	if (justPressed)
-				    {
-				    	FlxG.keys._keyListMap[key].current = JUST_PRESSED;
-			    	}
-			    	else if (justReleased)
-			     	{
-				    	FlxG.keys._keyListMap[key].current = JUST_RELEASED;
-				    }
-				    else if (isPressed)
-			    	{
-					    if (FlxG.keys._keyListMap[key].current == JUST_PRESSED)
-						    FlxG.keys._keyListMap[key].current = PRESSED;
-			    	}
-			    	else
-			    	{
-			     		if (FlxG.keys._keyListMap[key].current == JUST_RELEASED)
-					    	FlxG.keys._keyListMap[key].current = RELEASED;
-				    }
-		    	}
-		    }
-	    }
-
-    	FlxMouse.globallyBlocked = overlappingPad;
-    
-	    VirtualPad.touchingPad = overlappingPad;
-
-	    super.update(elapsed);
-    }
+		super.update(elapsed);
+	}
 	
 	private inline function getBind(keyName:String):FlxKey 
 	{
