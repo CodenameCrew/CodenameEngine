@@ -32,6 +32,10 @@ import mobile.controls.FlxButton;
 import flixel.util.FlxColor;
 
 class Charter extends UIState {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
+		
 	public static var __song:String;
 	static var __diff:String;
 	static var __variant:String;
