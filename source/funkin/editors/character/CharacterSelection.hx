@@ -68,7 +68,7 @@ class CharacterSelectionScreen extends EditorTreeMenuScreen {
 	}
 
 	public function create() {
-		if mobile
+		#if mobile
 		virtualPad = new VirtualPad(UP_DOWN, A_B);
         add(virtualPad);
 		#end
