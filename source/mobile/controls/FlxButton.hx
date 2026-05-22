@@ -283,20 +283,20 @@ class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput impleme
 	}
 
 	public function updateButton():Bool
-	{
-		var wasOwner = (currentInput != null); 
-		var overlapFound = checkTouchOverlap();
+    {
+        var wasOwner = (currentInput != null); 
+        var overlapFound = checkTouchOverlap();
 
-		var inputJustReleased = (currentInput != null && currentInput.justReleased);
+        var inputJustReleased = (currentInput != null && currentInput.justReleased);
+    
+        if (inputJustReleased && overlapFound)
+            onUpHandler();
 
-		if (inputJustReleased && overlapFound)
-			onUpHandler();
+        if (status != FlxButton.NORMAL && (!overlapFound || inputJustReleased))
+            onOutHandler();
 
-		if (status != FlxButton.NORMAL && (!overlapFound || inputJustReleased))
-			onOutHandler();
-
-		return (overlapFound || wasOwner);
-	}
+        return (currentInput != null) || overlapFound;
+    }
 
 	function checkTouchOverlap():Bool
 	{
