@@ -287,7 +287,8 @@ class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput impleme
 		var mouseConsumed = false;
 		for (camera in cameras)
 		{
-			if (checkInput(FlxG.mouse, FlxG.mouse, FlxG.mouse.justPressedPosition, camera))
+		    @:privateAccess
+		    if (checkInput(FlxG.mouse._leftButton, FlxG.mouse, FlxG.mouse.justPressedPosition,camera))
 			{
 				overlapFound = true;
 				mouseConsumed = true;
@@ -295,17 +296,16 @@ class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput impleme
 			}
 		}
 
-		if (mouseConsumed || currentInput == FlxG.mouse)
-		{
-			@:privateAccess 
-			{
-				if (FlxG.mouse._leftButton.current == 2)
-					FlxG.mouse._leftButton.current = 1;
-				if (FlxG.mouse._leftButton.current == -1)
-					FlxG.mouse._leftButton.current = 0;
-			}
-		}
-		#end
+		@:privateAccess
+	    if (mouseConsumed || currentInput == FlxG.mouse._leftButton)
+	    {
+		    if (FlxG.mouse._leftButton.current == JUST_PRESSED)
+		    	FlxG.mouse._leftButton.current = PRESSED;
+
+	    	if (FlxG.mouse._leftButton.current == JUST_RELEASED)
+	    		FlxG.mouse._leftButton.current = RELEASED;
+	    }
+	    #end
 
 		return overlapFound;
 	}
