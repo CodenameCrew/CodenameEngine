@@ -16,6 +16,7 @@ import flixel.input.FlxInput.FlxInputState;
 import flixel.input.FlxPointer;
 import flixel.input.IFlxInput;
 import flixel.input.keyboard.FlxKey;
+import flixel.input.mouse.FlxMouse;
 import flixel.text.FlxText;
 import flixel.util.FlxDestroyUtil;
 import flixel.group.FlxSpriteGroup;
