@@ -9,6 +9,11 @@ import funkin.options.type.NewOption;
 import funkin.options.type.TextOption;
 import funkin.options.type.OptionType;
 
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
+
 class CharacterSelection extends EditorTreeMenu {
 	override function create() {
 		super.create();
@@ -18,6 +23,9 @@ class CharacterSelection extends EditorTreeMenu {
 }
 
 class CharacterSelectionScreen extends EditorTreeMenuScreen {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
 	public var modsList:Array<String> = [];
 
 	public function new() {
@@ -57,6 +65,13 @@ class CharacterSelectionScreen extends EditorTreeMenuScreen {
 		}
 
 		for (o in generateList(modsList, isMods)) add(o);
+	}
+
+	public function create() {
+		if mobile
+		virtualPad = new VirtualPad(UP_DOWN, A_B);
+        add(virtualPad);
+		#end
 	}
 
 	public function createCharacter(name:String, imageSaveData:ImageSaveData, xml:Xml) {
