@@ -177,6 +177,9 @@
 		<str id="editorSFX-name">Editor SFXs</str>
 		<str id="editorSFX-desc">If checked, will play sound effects when working on editors (ex: will play sfxs when checking checkboxes...)</str>
 
+		<str id="charterSwapEventSides-name">Swap Event Sides</str>
+		<str id="charterSwapEventSides-desc">If checked, global events will be on the left of the strumlines.</str>
+
 		<str id="editorCharterPrettyPrint-name">Chart Pretty Print</str>
 		<str id="editorCharterPrettyPrint-desc">If checked, the saved files from the chart editor will be formatted to be easily viewable</str>
 

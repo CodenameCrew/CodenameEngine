@@ -443,25 +443,26 @@ class Charter extends UIState {
 		gridBackdrops = new CharterBackdropGroup(strumLines);
 		gridBackdrops.notesGroup = this.notesGroup;
 
-		leftEventRowText = new UIText(0, -40, 0, translate("info.localEvents"), 12);
+		leftEventRowText = new UIText(0, -40, 0, translate("info." + (Options.charterSwapEventSides ? "globalEvents" : "localEvents")), 12);
 		leftEventRowText.alignment = "center"; leftEventRowText.alpha = 0.75;
 
 		leftEventsBackdrop = new EventBackdrop(false);
 		leftEventsBackdrop.x = -leftEventsBackdrop.width;
 
 		leftEventRowText.cameras = leftEventsBackdrop.cameras = leftEventsGroup.cameras = [charterCamera];
-		leftEventsGroup.eventsBackdrop = leftEventsBackdrop;
-		leftEventsGroup.eventsRowText = leftEventRowText;
 
-		rightEventRowText = new UIText(0, -40, 0, translate("info.globalEvents"), 12);
+		rightEventRowText = new UIText(0, -40, 0, translate("info." + (Options.charterSwapEventSides ? "localEvents" : "globalEvents")), 12);
 		rightEventRowText.alignment = "center"; rightEventRowText.alpha = 0.75;
 
 		rightEventsBackdrop = new EventBackdrop(true);
 		rightEventsBackdrop.x = 0;
 
 		rightEventRowText.cameras = rightEventsBackdrop.cameras = rightEventsGroup.cameras = [charterCamera];
-		rightEventsGroup.eventsBackdrop = rightEventsBackdrop;
-		rightEventsGroup.eventsRowText = rightEventRowText;
+
+		leftEventsGroup.eventsBackdrop = Options.charterSwapEventSides ? rightEventsBackdrop : leftEventsBackdrop;
+		leftEventsGroup.eventsRowText = Options.charterSwapEventSides ? rightEventRowText : leftEventRowText;
+		rightEventsGroup.eventsBackdrop = Options.charterSwapEventSides ? leftEventsBackdrop : rightEventsBackdrop;
+		rightEventsGroup.eventsRowText = Options.charterSwapEventSides ? leftEventRowText : rightEventRowText;
 
 		// thank you neo for pointing out im stupid -lunar
 		// this is future lunar i completely forgot what neo pointed out but hes awesome go follow him on twitter
@@ -537,12 +538,12 @@ class Charter extends UIState {
 		strumlineInfoBG.cameras = [charterCamera];
 		strumLines.cameras = [charterCamera];
 
-		localAddEventSpr = new CharterEventAdd(false);
+		localAddEventSpr = new CharterEventAdd(Options.charterSwapEventSides);
 		localAddEventSpr.x -= localAddEventSpr.bWidth;
 		localAddEventSpr.cameras = [charterCamera];
 		localAddEventSpr.alpha = 0;
 
-		globalAddEventSpr = new CharterEventAdd(true);
+		globalAddEventSpr = new CharterEventAdd(!Options.charterSwapEventSides);
 		globalAddEventSpr.x = 0;
 		globalAddEventSpr.cameras = [charterCamera];
 		globalAddEventSpr.alpha = 0;
@@ -920,11 +921,12 @@ class Charter extends UIState {
 						n.cursor = HAND;
 					}, function (e:CharterEvent) {
 						e.snappedToGrid = false;
-						e.setPosition(e.eventsBackdrop.x + (e.global ? 0 : e.eventsBackdrop.width - e.bWidth) + (mousePos.x - dragStartPos.x), e.step * 40 + (mousePos.y - dragStartPos.y) - 17);
+						var isGlobal = e.global != Options.charterSwapEventSides;
+						e.setPosition(e.eventsBackdrop.x + (isGlobal ? 0 : e.eventsBackdrop.width - e.bWidth) + (mousePos.x - dragStartPos.x), e.step * 40 + (mousePos.y - dragStartPos.y) - 17);
 						e.y = CoolUtil.bound(e.y, -17, (__endStep*40)-17);
 						e.cursor = HAND;
 
-						e.displayGlobal = e.x + (e.bWidth/2) > ((strumLines.totalKeyCount*40)/2);
+						e.displayGlobal = e.x + (e.bWidth/2) > ((strumLines.totalKeyCount*40)/2) != Options.charterSwapEventSides;
 					});
 					currentCursor = HAND;
 				} else {
@@ -1045,7 +1047,7 @@ class Charter extends UIState {
 											var e:CharterEvent = cast s;
 											var newEvent = new CharterEvent(e.step, [for (event in e.events) Reflect.copy(event)], e.global);
 											newEvent.refreshEventIcons();
-											(e.global ? rightEventsGroup : leftEventsGroup).add(newEvent);
+											((e.global != Options.charterSwapEventSides) ? rightEventsGroup : leftEventsGroup).add(newEvent);
 											newSelection.push(newEvent);
 										}
 									}
@@ -1123,11 +1125,12 @@ class Charter extends UIState {
 		// Event Spr
 		for (addEventSpr in [localAddEventSpr, globalAddEventSpr]) {
 			addEventSpr.incorporeal = true;
-			if ((!addEventSpr.global ? mousePos.x < 0 : mousePos.x > strumLines.totalKeyCount * 40) && gridActionType == NONE && inBoundsY) {
+			var onLeft:Bool = (!addEventSpr.global) != Options.charterSwapEventSides;
+			if ((onLeft ? mousePos.x < 0 : mousePos.x > strumLines.totalKeyCount * 40) && gridActionType == NONE && inBoundsY) {
 				var event = getHoveredEvent(mousePos.y, !addEventSpr.global ? leftEventsGroup : rightEventsGroup);
 				var hoveredWidth:Float = event != null ? 27 + 40 + event.bWidth : addEventSpr.bWidth;
 
-				if ((!addEventSpr.global ? mousePos.x > -hoveredWidth : mousePos.x < strumLines.totalKeyCount * 40 + hoveredWidth)) {
+				if ((onLeft ? mousePos.x > -hoveredWidth : mousePos.x < strumLines.totalKeyCount * 40 + hoveredWidth)) {
 					addEventSpr.incorporeal = false;
 
 					if (event != null) addEventSpr.updateEdit(event);
