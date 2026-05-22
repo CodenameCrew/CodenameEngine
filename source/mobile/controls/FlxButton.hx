@@ -319,10 +319,10 @@ class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput impleme
 				}
 			}
 			
-			if (consumed || currentInput == touch)
-			{
-				FlxG.touches.list.remove(touch);
-			}
+			if (consumed)
+            {
+	            FlxG.touches.list.remove(touch);
+            }
 			i--;
 		}
 		#end
