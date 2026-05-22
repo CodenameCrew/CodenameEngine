@@ -2,26 +2,65 @@ package mobile.controls;
 
 interface IMobileButton
 {
-	public function updateButton():Void;
+	public function updateButton():Bool;
 }
 
 private class FlxButtonManager
 {
 	public static var activeButtons:Array<IMobileButton> = [];
 	public static var isGlobalHookInitialized:Bool = false;
+	
+	private static var _wasMouseHidden:Bool = false;
 
 	public static function globalPreUpdate():Void
 	{
+		var isInputOccupied = false;
+
 		for (btn in activeButtons)
 		{
 			var basic = cast(btn, flixel.FlxBasic);
 			if (basic != null && basic.exists && basic.active && basic.visible)
 			{
 				#if FLX_POINTER_INPUT
-				btn.updateButton();
+				if (btn.updateButton())
+					isInputOccupied = true;
 				#end
 			}
 		}
+
+		#if FLX_MOUSE
+		@:privateAccess
+		var mouseBtn = FlxG.mouse._leftButton;
+
+		if (isInputOccupied)
+		{
+			if (mouseBtn.current == 2)
+			{
+				mouseBtn.current = 0;
+			}
+			else if (mouseBtn.current == 1)
+			{
+				if (!_wasMouseHidden) 
+				{
+					mouseBtn.current = -1;
+				}
+				else 
+				{
+					mouseBtn.current = 0;
+				}
+			}
+			else if (mouseBtn.current == -1)
+			{
+				mouseBtn.current = 0;
+			}
+			
+			_wasMouseHidden = true;
+		}
+		else
+		{
+			_wasMouseHidden = false;
+		}
+		#end
 	}
 }
 
@@ -243,25 +282,20 @@ class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput impleme
 		return result;
 	}
 
-	public function updateButton():Void
+	public function updateButton():Bool
 	{
 		var wasOwner = (currentInput != null); 
-		
 		var overlapFound = checkTouchOverlap();
 
-		if (currentInput != null && currentInput.justReleased && overlapFound)
+		var inputJustReleased = (currentInput != null && currentInput.justReleased);
+
+		if (inputJustReleased && overlapFound)
 			onUpHandler();
 
-		if (status != FlxButton.NORMAL && (!overlapFound || (currentInput != null && currentInput.justReleased)))
+		if (status != FlxButton.NORMAL && (!overlapFound || inputJustReleased))
 			onOutHandler();
 
-		#if FLX_MOUSE
-		@:privateAccess
-		if (wasOwner || (overlapFound && FlxG.mouse._leftButton.current != 0))
-		{
-			FlxG.mouse._leftButton.current = 0; 
-		}
-		#end
+		return (overlapFound || wasOwner);
 	}
 
 	function checkTouchOverlap():Bool
