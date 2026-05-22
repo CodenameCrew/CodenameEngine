@@ -526,7 +526,7 @@ class Charter extends UIState {
 
 		strumlineLockButton = new CharterStrumlineButton("editors/charter/lock-strumline", translate("lock-unlock"));
 		strumlineLockButton.onClick = function () {
-			UIState.playEditorSound(!strumLines.draggable ? Flags.DEFAULT_CHARTER_STRUMUNLOCK_SOUND : Flags.DEFAULT_CHARTER_STRUMLOCK_SOUND);
+			if (!FlxG.sound.music.playing) UIState.playEditorSound(!strumLines.draggable ? Flags.DEFAULT_CHARTER_STRUMUNLOCK_SOUND : Flags.DEFAULT_CHARTER_STRUMLOCK_SOUND);
 			if (strumLines != null) {
 				strumLines.draggable = !strumLines.draggable;
 				strumlineLockButton.textTweenColor.color = strumLines.draggable ? 0xFF5C95CA : 0xFFE16565;
@@ -847,7 +847,7 @@ class Charter extends UIState {
 				else
 					Chart.save(PlayState.SONG, __diff.toLowerCase(), __variant, {saveMetaInChart: true, saveLocalEvents: true, seperateGlobalEvents: true, prettyPrint: Options.editorCharterPrettyPrint});
 
-				UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);
+				if (!FlxG.sound.music.playing) UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);
 				undos.save();
 			}
 			autoSaveNotif.cancelled = false;
@@ -1014,7 +1014,7 @@ class Charter extends UIState {
 							notesGroup.add(note);
 							selection = [note];
 							undos.addToUndo(CCreateSelection([note]));
-							UIState.playEditorSound(Flags.DEFAULT_CHARTER_NOTEPLACE_SOUND);
+							if (!FlxG.sound.music.playing) UIState.playEditorSound(Flags.DEFAULT_CHARTER_NOTEPLACE_SOUND);
 						}
 						isSelecting = false;
 					}
@@ -1053,7 +1053,7 @@ class Charter extends UIState {
 									selection = newSelection;
 									for (s in selection) s.selected = true;
 									isAltCopyDrag = true;
-									UIState.playEditorSound(Flags.DEFAULT_EDITOR_COPY_SOUND);
+									if (!FlxG.sound.music.playing) UIState.playEditorSound(Flags.DEFAULT_EDITOR_COPY_SOUND);
 								}
 								gridActionType = NOTE_DRAG;
 							}
@@ -1168,7 +1168,7 @@ class Charter extends UIState {
 		if (selected == null) return selected;
 
 		if (selected is CharterNote) {
-			UIState.playEditorSound(Flags.DEFAULT_CHARTER_NOTEDELETE_SOUND);
+			if (!FlxG.sound.music.playing) UIState.playEditorSound(Flags.DEFAULT_CHARTER_NOTEDELETE_SOUND);
 			var note:CharterNote = cast selected;
 			note.strumLineID = strumLines.members.indexOf(note.strumLine);
 			note.strumLine = null; // For static undos :D
@@ -2225,8 +2225,8 @@ class Charter extends UIState {
 	inline function _snap_decreasesnap(_) changequant(-1);
 	inline function _snap_resetsnap(_) setquant(16);
 
-	inline function changequant(change:Int) {UIState.playEditorSound(Flags.DEFAULT_CHARTER_SNAPPINGCHANGE_SOUND); quant = quants[FlxMath.wrap(quants.indexOf(quant) + change, 0, quants.length-1)]; buildSnapsUI();};
-	inline function setquant(newQuant:Int) {UIState.playEditorSound(Flags.DEFAULT_CHARTER_SNAPPINGCHANGE_SOUND); quant = newQuant; buildSnapsUI();}
+	inline function changequant(change:Int) {if (!FlxG.sound.music.playing) UIState.playEditorSound(Flags.DEFAULT_CHARTER_SNAPPINGCHANGE_SOUND); quant = quants[FlxMath.wrap(quants.indexOf(quant) + change, 0, quants.length-1)]; buildSnapsUI();};
+	inline function setquant(newQuant:Int) {if (!FlxG.sound.music.playing) UIState.playEditorSound(Flags.DEFAULT_CHARTER_SNAPPINGCHANGE_SOUND); quant = newQuant; buildSnapsUI();}
 
 	function buildSnapsUI():Array<UIContextMenuOption> {
 		var snapsTopButton:UITopMenuButton = topMenuSpr == null ? null : cast topMenuSpr.members[snapIndex];
@@ -2262,12 +2262,12 @@ class Charter extends UIState {
 	}
 
 	inline function _note_addsustain(t) {
-		UIState.playEditorSound(Flags.DEFAULT_CHARTER_SUSTAINADD_SOUND);
+		if (!FlxG.sound.music.playing) UIState.playEditorSound(Flags.DEFAULT_CHARTER_SUSTAINADD_SOUND);
 		changeNoteSustain(1);
 	}
 
 	inline function _note_subtractsustain(t) {
-		UIState.playEditorSound(Flags.DEFAULT_CHARTER_SUSTAINDELETE_SOUND);
+		if (!FlxG.sound.music.playing) UIState.playEditorSound(Flags.DEFAULT_CHARTER_SUSTAINDELETE_SOUND);
 		changeNoteSustain(-1);
 	}
 
