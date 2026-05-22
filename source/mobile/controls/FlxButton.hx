@@ -245,6 +245,8 @@ class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput impleme
 
 	public function updateButton():Void
 	{
+		var wasOwner = (currentInput != null); 
+		
 		var overlapFound = checkTouchOverlap();
 
 		if (currentInput != null && currentInput.justReleased && overlapFound)
@@ -252,6 +254,14 @@ class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput impleme
 
 		if (status != FlxButton.NORMAL && (!overlapFound || (currentInput != null && currentInput.justReleased)))
 			onOutHandler();
+
+		#if FLX_MOUSE
+		@:privateAccess
+		if (wasOwner || (overlapFound && FlxG.mouse._leftButton.current != 0))
+		{
+			FlxG.mouse._leftButton.current = 0; 
+		}
+		#end
 	}
 
 	function checkTouchOverlap():Bool
@@ -284,28 +294,16 @@ class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput impleme
 		#end
 
 		#if FLX_MOUSE
-		var mouseConsumed = false;
 		for (camera in cameras)
 		{
-		    @:privateAccess
-            if (checkInput(FlxG.mouse, FlxG.mouse._leftButton, FlxG.mouse._leftButton.justPressedPosition, camera))
+			@:privateAccess
+			if (checkInput(FlxG.mouse, FlxG.mouse._leftButton, FlxG.mouse._leftButton.justPressedPosition, camera))
 			{
 				overlapFound = true;
-				mouseConsumed = true;
 				break;
 			}
 		}
-
-		@:privateAccess
-	    if (mouseConsumed || currentInput == FlxG.mouse._leftButton)
-	    {
-		    if (FlxG.mouse._leftButton.current == JUST_PRESSED)
-		    	FlxG.mouse._leftButton.current = PRESSED;
-
-	    	if (FlxG.mouse._leftButton.current == JUST_RELEASED)
-	    		FlxG.mouse._leftButton.current = RELEASED;
-	    }
-	    #end
+		#end
 
 		return overlapFound;
 	}
