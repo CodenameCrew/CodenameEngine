@@ -161,83 +161,80 @@ class VirtualPad extends FlxSpriteGroup
 	}
 
 	override function update(elapsed:Float) 
-	{
-		this.alpha = Options.virtualPadOpacity; 
-	    
-		var overlappingPad:Bool = false;
-		var padButtons = [buttonLeft, buttonRight, buttonUp, buttonDown, buttonA, buttonB, buttonC, buttonX, buttonY];
+    {
+	    this.alpha = Options.virtualPadOpacity; 
+	
+	    var overlappingPad:Bool = false;
 
-		for (btn in padButtons) {
-			if (btn == null || !btn.exists || !btn.active || !btn.visible) continue;
+    	var padButtons = [
+		buttonLeft, buttonRight, buttonUp, buttonDown, 
+		buttonA, buttonB, buttonC, buttonX, buttonY];
 
-			var isPressed = false;
+	    for (btn in padButtons)
+    	{
+		    if (btn == null || !btn.exists || !btn.active || !btn.visible)
+			    continue;
 
-			for (touch in FlxG.touches.list) {
-				if (touch.pressed) { 
-					var point = touch.getWorldPosition(virtualpadCamera);
-					if (btn.overlapsPoint(point, true, virtualpadCamera)) {
-						isPressed = true;
-						overlappingPad = true;
-						break;
-					}
-				}
-			}
-			
-			#if desktop
-			if (!isPressed && FlxG.mouse.pressed) {
-				if (FlxG.mouse.overlaps(btn, virtualpadCamera)) {
-					isPressed = true;
-					overlappingPad = true;
-				}
-			}
-			#end
+		    var isPressed = false;
 
-			var wasPressed = buttonStates.exists(btn) ? buttonStates.get(btn) : false;
-			var justPressed = isPressed && !wasPressed;
-			var justReleased = !isPressed && wasPressed;
+		    for (touch in FlxG.touches.list)
+		    {
+			    if (touch.pressed)
+			    {
+				    var point = touch.getWorldPosition(virtualpadCamera);
+   
+				    if (btn.overlapsPoint(point, true, virtualpadCamera))
+				    {
+					    isPressed = true;
+					    overlappingPad = true;
+					    break;
+				    }
+			    }
+		    }
 
-			buttonStates.set(btn, isPressed);
-			buttonJustPressed.set(btn, justPressed);
-			buttonJustReleased.set(btn, justReleased);
+		    var wasPressed = buttonStates.exists(btn) ? buttonStates.get(btn) : false;
 
-			var key = getBindForButton(btn);
+		    var justPressed = isPressed && !wasPressed;
+		    var justReleased = !isPressed && wasPressed;
 
-            if (key != FlxKey.NONE)
-            {
-            	@:privateAccess
-            	{
-	        	if (justPressed)
-		        {
-        			FlxG.keys._keyListMap[key].current = JUST_PRESSED;
-        		}
-	            	else if (justReleased)
-	               	{
-		            	FlxG.keys._keyListMap[key].current = JUST_RELEASED;
-	                    }
-	            	else if (isPressed)
-          	        {
-	         		if (FlxG.keys._keyListMap[key].current == JUST_PRESSED)
-			        	FlxG.keys._keyListMap[key].current = PRESSED;
-					    }
-		            else
-            		{
-	              		if (FlxG.keys._keyListMap[key].current == JUST_RELEASED)
-			        	FlxG.keys._keyListMap[key].current = RELEASED;
-	            	}
-                }
-            }
-		}
-		
-		if (overlappingPad)
-        {
-            @:privateAccess
-            FlxG.mouse._leftButton.current = FlxInputState.RELEASED;
-		}
+		    buttonStates.set(btn, isPressed);
+	    	buttonJustPressed.set(btn, justPressed);
+		    buttonJustReleased.set(btn, justReleased);
 
-		VirtualPad.touchingPad = overlappingPad;
+		    var key = getBindForButton(btn);
 
-		super.update(elapsed);
-	}
+	    	if (key != FlxKey.NONE)
+		    {
+			    @:privateAccess
+			    {
+			    	if (justPressed)
+				    {
+				    	FlxG.keys._keyListMap[key].current = JUST_PRESSED;
+			    	}
+			    	else if (justReleased)
+			     	{
+				    	FlxG.keys._keyListMap[key].current = JUST_RELEASED;
+				    }
+				    else if (isPressed)
+			    	{
+					    if (FlxG.keys._keyListMap[key].current == JUST_PRESSED)
+						    FlxG.keys._keyListMap[key].current = PRESSED;
+			    	}
+			    	else
+			    	{
+			     		if (FlxG.keys._keyListMap[key].current == JUST_RELEASED)
+					    	FlxG.keys._keyListMap[key].current = RELEASED;
+				    }
+		    	}
+		    }
+	    }
+
+    	FlxMouse.globallyBlocked = overlappingPad;
+    
+	    VirtualPad.touchingPad = overlappingPad;
+
+	    super.update(elapsed);
+    }
 	
 	private inline function getBind(keyName:String):FlxKey 
 	{
