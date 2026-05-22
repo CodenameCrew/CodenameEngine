@@ -63,6 +63,7 @@ import mobile.*;
 import mobile.controls.*;
 import mobile.backend.*;
 import mobile.backend.assets.*;
+import mobile.backend.utils.*;
 
 // Funkin Imports
 import funkin.backend.system.Controls;
