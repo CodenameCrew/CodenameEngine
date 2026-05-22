@@ -62,7 +62,7 @@ class HScript extends Script {
         });
 		#end
 
-		interp.variables.set("addCustomButton", function(x:Float, y:Float, assetPath:String, keyStr:String) {
+		interp.variables.set("addCustomButton", function(x:Float, y:Float, assetPath:String, keyStr:String, size:Dynamic = 1.0) {
             var vpad = interp.variables.get("virtualPad");
             if (vpad == null) return null;
 
@@ -75,12 +75,18 @@ class HScript extends Script {
             var btn = new FlxButton(x, y);
             btn.loadGraphic(fullPath);
     
+            var scaleAmt:Float = Std.parseFloat(Std.string(size));
+            if (Math.isNaN(scaleAmt)) scaleAmt = 1.0;
+
+            btn.scale.set(scaleAmt, scaleAmt);
+            btn.updateHitbox();
+
             btn.solid = false;
             btn.immovable = true;
             btn.scrollFactor.set();
-    
+  
             var key = FlxKey.fromString(keyStr.toUpperCase());
-    
+
             vpad.add(btn); 
 
             var oldUpdate = vpad.update;
@@ -91,7 +97,7 @@ class HScript extends Script {
 
             return btn;
         });
-
+		
 		interp.variables.set("trace", Reflect.makeVarArgs((args) -> {
 			var v:String = Std.string(args.shift());
 			for (a in args) v += ", " + Std.string(a);
