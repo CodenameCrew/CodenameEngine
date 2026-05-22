@@ -288,7 +288,7 @@ class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput impleme
 		for (camera in cameras)
 		{
 		    @:privateAccess
-            if (checkInput(FlxG.mouse, FlxG.mouse._leftButton, FlxG.mouse.justPressedPosition, camera))
+            if (checkInput(FlxG.mouse, FlxG.mouse._leftButton, FlxG.mouse._leftButton.justPressedPosition, camera))
 			{
 				overlapFound = true;
 				mouseConsumed = true;
