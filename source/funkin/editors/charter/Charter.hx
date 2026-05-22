@@ -23,6 +23,12 @@ import haxe.Json;
 #if sys
 import sys.FileSystem;
 #end
+
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
+
 import flixel.util.FlxColor;
 
 class Charter extends UIState {
