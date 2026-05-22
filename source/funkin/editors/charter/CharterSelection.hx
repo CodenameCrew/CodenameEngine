@@ -22,15 +22,13 @@ class CharterSelection extends EditorTreeMenu {
 		DiscordUtil.call("onEditorTreeLoaded", ["Chart Editor"]);
 		addMenu(new CharterSelectionScreen());
 		bgType = 'charter';
-
-		#if mobile
-		virtualPad = new VirtualPad(UP_DOWN, A_B);
-        add(virtualPad);
-		#end
 	}
 }
 
 class CharterSelectionScreen extends EditorTreeMenuScreen {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
 	public var freeplayList:FreeplaySonglist;
 	public var songList:Array<String> = [];
 	public var curSong:ChartMetaData;
@@ -41,6 +39,13 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 
 	inline public function makeVariationOption(s:ChartMetaData):TextOption {
 		return new TextOption(s.variant, getID('acceptVariation'), " >", () -> openSongOption(s, false));
+	}
+
+	public function create() {
+		#if mobile
+		virtualPad = new VirtualPad(UP_DOWN, A_B);
+        add(virtualPad);
+		#end
 	}
 
 	public function openSongOption(s:ChartMetaData, first = true) {
