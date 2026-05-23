@@ -5,7 +5,7 @@ import lime.ui.FileDialog;
 #if android
 import extension.androidtools.Tools;
 #elseif ios
-import IOSTools.Tools;
+import iostools.IOSTools;
 #end
 
 class UIFileExplorer extends UISliceSprite {
