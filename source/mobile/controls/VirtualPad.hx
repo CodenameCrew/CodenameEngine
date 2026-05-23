@@ -166,7 +166,7 @@ class VirtualPad extends FlxSpriteGroup
 	    
 		var overlappingPad:Bool = false;
 		var padButtons = [buttonLeft, buttonRight, buttonUp, buttonDown, buttonA, buttonB, buttonC, buttonX, buttonY];
-		
+
 		for (btn in padButtons) {
 			if (btn == null || !btn.exists || !btn.active || !btn.visible) continue;
 
@@ -226,8 +226,6 @@ class VirtualPad extends FlxSpriteGroup
 		}
 
 		VirtualPad.touchingPad = overlappingPad;
-
-		FlxMouse.globallyBlocked = overlappingPad;
 
 		super.update(elapsed);
 	}
