@@ -38,11 +38,11 @@ class UIFileExplorer extends UISliceSprite {
 			});
 			
 			#elseif ios
-			IOSTools.pickFile(function(path:String) {
-				if (path != null && path != "") {
-					loadFile(path);
-				}
-			});
+			IOSTools.pickFiles(function(path:String) {
+            if (path != null && path != "") {
+                loadFile(path);
+                }
+            });
 			
 			#else
 			var fileDialog = new FileDialog();
