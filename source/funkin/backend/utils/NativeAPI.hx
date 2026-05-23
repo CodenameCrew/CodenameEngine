@@ -10,7 +10,7 @@ import flixel.util.FlxColor;
 #if android
 import extension.androidtools.Tools;
 #elseif ios
-import IOSTools.Tools; 
+import iostools.IOSTools; 
 #end
 
 /**
@@ -181,7 +181,7 @@ class NativeAPI {
         #if android
         extension.androidtools.Tools.showAlertDialog(caption, message, {name: buttonName, func: null});
 		#elseif ios
-		Tools.showAlert(caption, message, buttonText);
+		IOSTools.showAlert(caption, message, buttonText);
         #elseif (windows && !macro)
         var iconInt:Int = cast(icon, Int);
         untyped __cpp__('MessageBoxA(GetActiveWindow(), {0}.c_str(), {1}.c_str(), {2})', message, caption, iconInt);
