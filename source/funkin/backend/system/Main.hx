@@ -25,7 +25,7 @@ import sys.FileSystem;
 import sys.io.File;
 #if mobile
 import mobile.backend.utils.MobileTrace;
-import Mouse;
+import GlobalInputManager;
 #end
 #if android
 import extension.androidtools.content.Context;
