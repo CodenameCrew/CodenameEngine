@@ -4,6 +4,8 @@ import haxe.io.Bytes;
 import lime.ui.FileDialog;
 #if android
 import extension.androidtools.Tools;
+#elseif ios
+import IOSTools.Tools;
 #end
 
 class UIFileExplorer extends UISliceSprite {
@@ -28,7 +30,8 @@ class UIFileExplorer extends UISliceSprite {
 		if (onFile != null) this.onFile = onFile;
 
 		uploadButton = new UIButton(x + 8, y+ 8, null, function () {
-			#if android
+			#if mobile
+			// ios and android use the same function name. so whatever.
 			Tools.pickFile(function(path:String) {
 				if (path != null && path != "") {
 					loadFile(path);
