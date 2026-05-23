@@ -5,6 +5,7 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxBasic;
 
+#if mobile
 class GlobalInputManager extends FlxBasic {
     public static var holdDelay:Float = 0.25; 
     public static var clickThreshold:Float = 10.0;
@@ -74,3 +75,4 @@ class GlobalInputManager extends FlxBasic {
         super.destroy();
     }
 }
+#end
