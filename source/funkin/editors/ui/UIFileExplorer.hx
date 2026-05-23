@@ -30,7 +30,7 @@ class UIFileExplorer extends UISliceSprite {
 		if (onFile != null) this.onFile = onFile;
 
 		uploadButton = new UIButton(x + 8, y+ 8, null, function () {
-			#if mobile
+			#if android
 			Tools.pickFile(function(path:String) {
 				if (path != null && path != "") {
 					loadFile(path);
