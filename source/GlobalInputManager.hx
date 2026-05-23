@@ -22,12 +22,28 @@ class GlobalInputManager extends FlxBasic {
     private var simulatedState:Int = 0; 
     private var pendingTapRelease:Bool = false;
 
+    private var lastMouseX:Int = 0;
+    private var lastMouseY:Int = 0;
+    private var lastScreenX:Int = 0;
+    private var lastScreenY:Int = 0;
+
     public function new() {
         super();
         startPos = FlxPoint.get();
     }
 
     override public function update(elapsed:Float):Void {
+        var isAnyFingerDown = false;
+        for (touch in FlxG.touches.list) {
+            if (touch.pressed) {
+                isAnyFingerDown = true;
+                break;
+            }
+        }
+        if (!isAnyFingerDown) {
+            VirtualPad.touchingPad = false;
+        }
+
         if (VirtualPad.touchingPad) {
             isPressing = false;
             isDragging = false;
@@ -72,6 +88,11 @@ class GlobalInputManager extends FlxBasic {
             tx = activeTouch.x;
             ty = activeTouch.y;
             
+            lastMouseX = Std.int(tx);
+            lastMouseY = Std.int(ty);
+            lastScreenX = activeTouch.screenX;
+            lastScreenY = activeTouch.screenY;
+            
             if (rawJustReleased) {
                 trackedTouchID = -1;
             }
@@ -109,16 +130,18 @@ class GlobalInputManager extends FlxBasic {
         @:privateAccess {
             if (simulatedState == -1) {
                 FlxG.mouse._leftButton.current = -1;
+                FlxG.mouse.x = lastMouseX;
+                FlxG.mouse.y = lastMouseY;
+                FlxG.mouse.screenX = lastScreenX;
+                FlxG.mouse.screenY = lastScreenY;
                 simulatedState = 0;
             }
             else if (simulatedState == 2) {
                 FlxG.mouse._leftButton.current = 2;
-                if (activeTouch != null) {
-                    FlxG.mouse.x = Std.int(tx);
-                    FlxG.mouse.y = Std.int(ty);
-                    FlxG.mouse.screenX = activeTouch.screenX;
-                    FlxG.mouse.screenY = activeTouch.screenY;
-                }
+                FlxG.mouse.x = lastMouseX;
+                FlxG.mouse.y = lastMouseY;
+                FlxG.mouse.screenX = lastScreenX;
+                FlxG.mouse.screenY = lastScreenY;
                 
                 if (pendingTapRelease) {
                     simulatedState = -1;
@@ -133,12 +156,10 @@ class GlobalInputManager extends FlxBasic {
                     FlxG.mouse._leftButton.current = 0;
                 } else {
                     FlxG.mouse._leftButton.current = 1;
-                    if (activeTouch != null) {
-                        FlxG.mouse.x = Std.int(tx);
-                        FlxG.mouse.y = Std.int(ty);
-                        FlxG.mouse.screenX = activeTouch.screenX;
-                        FlxG.mouse.screenY = activeTouch.screenY;
-                    }
+                    FlxG.mouse.x = lastMouseX;
+                    FlxG.mouse.y = lastMouseY;
+                    FlxG.mouse.screenX = lastScreenX;
+                    FlxG.mouse.screenY = lastScreenY;
                 }
             }
             else {
