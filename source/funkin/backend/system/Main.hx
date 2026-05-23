@@ -25,6 +25,7 @@ import sys.FileSystem;
 import sys.io.File;
 #if mobile
 import mobile.backend.utils.MobileTrace;
+import Mouse;
 #end
 #if android
 import extension.androidtools.content.Context;
@@ -94,7 +95,9 @@ class Main extends Sprite
 
 		addChild(framerateSprite = new Framerate());
 		SystemInfo.init();
-
+        #if mobile
+		FlxG.plugins.add(new GlobalInputManager());
+        #end
 	}
 
 	#if android
