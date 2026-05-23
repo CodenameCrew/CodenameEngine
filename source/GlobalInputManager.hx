@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxBasic;
+import flixel.input.touch.FlxTouch;
 
 #if mobile
 class GlobalInputManager extends FlxBasic {
@@ -14,6 +15,11 @@ class GlobalInputManager extends FlxBasic {
     private var isPressing:Bool = false;
     private var isDragging:Bool = false;
     private var startPos:FlxPoint;
+    
+    private var trackedTouchID:Int = -1;
+
+    private var simulatedState:Int = 0; 
+    private var pendingTapRelease:Bool = false;
 
     public function new() {
         super();
@@ -21,49 +27,109 @@ class GlobalInputManager extends FlxBasic {
     }
 
     override public function update(elapsed:Float):Void {
-        var rawPressed:Bool = FlxG.mouse.pressed;
-        var rawJustPressed:Bool = FlxG.mouse.justPressed;
-        var rawJustReleased:Bool = FlxG.mouse.justReleased;
+        var activeTouch:FlxTouch = null;
+
+        if (trackedTouchID != -1) {
+            for (touch in FlxG.touches.list) {
+                if (touch.touchPointID == trackedTouchID) {
+                    activeTouch = touch;
+                    break;
+                }
+            }
+        } else {
+            for (touch in FlxG.touches.list) {
+                if (touch.justPressed) {
+                    activeTouch = touch;
+                    trackedTouchID = touch.touchPointID;
+                    break;
+                }
+            }
+        }
+
+        var rawJustPressed:Bool = false;
+        var rawPressed:Bool = false;
+        var rawJustReleased:Bool = false;
+        var tx:Float = 0;
+        var ty:Float = 0;
+
+        if (activeTouch != null) {
+            rawJustPressed = activeTouch.justPressed;
+            rawPressed = activeTouch.pressed;
+            rawJustReleased = activeTouch.justReleased;
+            tx = activeTouch.x;
+            ty = activeTouch.y;
+            
+            if (rawJustReleased) {
+                trackedTouchID = -1;
+            }
+        }
 
         if (rawJustPressed) {
             pressTime = 0;
             isPressing = true;
             isDragging = false;
-            startPos.set(FlxG.mouse.x, FlxG.mouse.y);
+            startPos.set(tx, ty);
         }
 
         if (isPressing && rawPressed) {
             pressTime += elapsed;
-            if (!isDragging && pressTime >= holdDelay) {
+            var currentPos = FlxPoint.weak(tx, ty);
+            var distance = startPos.distanceTo(currentPos);
+
+            if (!isDragging && (pressTime >= holdDelay || distance >= clickThreshold)) {
                 isDragging = true;
+                simulatedState = 2;
             }
         }
 
-        var triggerClick:Bool = false;
-
-        if (rawJustReleased) {
-            if (isPressing) {
-                var endPos:FlxPoint = FlxPoint.get(FlxG.mouse.x, FlxG.mouse.y);
-                var distance:Float = startPos.distanceTo(endPos);
-                endPos.put();
-
-                if (pressTime < holdDelay && distance < clickThreshold) {
-                    triggerClick = true;
-                }
+        if (rawJustReleased && isPressing) {
+            if (!isDragging) {
+                simulatedState = 2;
+                pendingTapRelease = true;
+            } else {
+                simulatedState = -1;
             }
             isPressing = false;
             isDragging = false;
         }
 
         @:privateAccess {
-            if (isDragging && rawPressed) {
-                FlxG.mouse._leftButton.current = 1;
-            } else if (triggerClick) {
-                FlxG.mouse._leftButton.current = 2;
-            } else if (rawJustReleased && !isDragging) {
+            if (simulatedState == -1) {
                 FlxG.mouse._leftButton.current = -1;
-            } else {
-                FlxG.mouse._leftButton.current = FlxG.mouse.pressed ? 1 : 0;
+                simulatedState = 0;
+            }
+            else if (simulatedState == 2) {
+                FlxG.mouse._leftButton.current = 2;
+                if (activeTouch != null) {
+                    FlxG.mouse.x = Std.int(tx);
+                    FlxG.mouse.y = Std.int(ty);
+                    FlxG.mouse.screenX = activeTouch.screenX;
+                    FlxG.mouse.screenY = activeTouch.screenY;
+                }
+                
+                if (pendingTapRelease) {
+                    simulatedState = -1;
+                    pendingTapRelease = false;
+                } else {
+                    simulatedState = 1;
+                }
+            }
+            else if (simulatedState == 1) {
+                if (!isDragging && !isPressing) {
+                    simulatedState = 0;
+                    FlxG.mouse._leftButton.current = 0;
+                } else {
+                    FlxG.mouse._leftButton.current = 1;
+                    if (activeTouch != null) {
+                        FlxG.mouse.x = Std.int(tx);
+                        FlxG.mouse.y = Std.int(ty);
+                        FlxG.mouse.screenX = activeTouch.screenX;
+                        FlxG.mouse.screenY = activeTouch.screenY;
+                    }
+                }
+            }
+            else {
+                FlxG.mouse._leftButton.current = 0;
             }
         }
 
