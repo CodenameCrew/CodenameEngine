@@ -4,7 +4,7 @@ import flixel.FlxG;
 import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxBasic;
-#if mobile
+
 class GlobalInputManager extends FlxBasic {
     public static var holdDelay:Float = 0.25; 
     public static var clickThreshold:Float = 10.0;
@@ -14,46 +14,40 @@ class GlobalInputManager extends FlxBasic {
     private var isDragging:Bool = false;
     private var startPos:FlxPoint;
 
-    private var realPressed:Bool = false;
-    private var realJustPressed:Bool = false;
-    private var realJustReleased:Bool = false;
-
     public function new() {
         super();
         startPos = FlxPoint.get();
     }
 
     override public function update(elapsed:Float):Void {
-        realPressed = FlxG.mouse.pressed;
-        realJustPressed = FlxG.mouse.justPressed;
-        realJustReleased = FlxG.mouse.justReleased;
+        var rawPressed:Bool = FlxG.mouse.pressed;
+        var rawJustPressed:Bool = FlxG.mouse.justPressed;
+        var rawJustReleased:Bool = FlxG.mouse.justReleased;
 
-        if (realJustPressed) {
+        if (rawJustPressed) {
             pressTime = 0;
             isPressing = true;
             isDragging = false;
             startPos.set(FlxG.mouse.x, FlxG.mouse.y);
         }
 
-        if (isPressing && realPressed) {
+        if (isPressing && rawPressed) {
             pressTime += elapsed;
             if (!isDragging && pressTime >= holdDelay) {
                 isDragging = true;
             }
         }
 
-        var forceJustPressed:Bool = false;
-        var forceJustReleased:Bool = false;
+        var triggerClick:Bool = false;
 
-        if (realJustReleased) {
+        if (rawJustReleased) {
             if (isPressing) {
                 var endPos:FlxPoint = FlxPoint.get(FlxG.mouse.x, FlxG.mouse.y);
                 var distance:Float = startPos.distanceTo(endPos);
                 endPos.put();
 
                 if (pressTime < holdDelay && distance < clickThreshold) {
-                    forceJustPressed = true;
-                    forceJustReleased = true;
+                    triggerClick = true;
                 }
             }
             isPressing = false;
@@ -61,16 +55,14 @@ class GlobalInputManager extends FlxBasic {
         }
 
         @:privateAccess {
-            if (isDragging) {
-                FlxG.mouse._leftButton.current = 1; 
+            if (isDragging && rawPressed) {
+                FlxG.mouse._leftButton.current = 1;
+            } else if (triggerClick) {
+                FlxG.mouse._leftButton.current = 2;
+            } else if (rawJustReleased && !isDragging) {
+                FlxG.mouse._leftButton.current = -1;
             } else {
-                if (forceJustPressed) {
-                    FlxG.mouse._leftButton.current = 2; 
-                } else if (forceJustReleased) {
-                    FlxG.mouse._leftButton.current = -1; 
-                } else {
-                    FlxG.mouse._leftButton.current = 0; 
-                }
+                FlxG.mouse._leftButton.current = FlxG.mouse.pressed ? 1 : 0;
             }
         }
 
@@ -82,4 +74,3 @@ class GlobalInputManager extends FlxBasic {
         super.destroy();
     }
 }
-#end
