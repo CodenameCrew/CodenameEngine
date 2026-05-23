@@ -181,7 +181,7 @@ class NativeAPI {
         #if android
         extension.androidtools.Tools.showAlertDialog(caption, message, {name: buttonName, func: null});
 		#elseif ios
-		IOSTools.showAlert(title, message, buttonText);
+		IOSTools.showAlert(caption, message, buttonName);
         #elseif (windows && !macro)
         var iconInt:Int = cast(icon, Int);
         untyped __cpp__('MessageBoxA(GetActiveWindow(), {0}.c_str(), {1}.c_str(), {2})', message, caption, iconInt);
