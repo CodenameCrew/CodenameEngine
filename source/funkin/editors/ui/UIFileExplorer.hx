@@ -31,12 +31,19 @@ class UIFileExplorer extends UISliceSprite {
 
 		uploadButton = new UIButton(x + 8, y+ 8, null, function () {
 			#if mobile
-			// ios and android use the same function name. so whatever.
 			Tools.pickFile(function(path:String) {
 				if (path != null && path != "") {
 					loadFile(path);
 				}
 			});
+			
+			#elseif ios
+			IOSTools.pickFile(function(path:String) {
+				if (path != null && path != "") {
+					loadFile(path);
+				}
+			});
+			
 			#else
 			var fileDialog = new FileDialog();
 			fileDialog.onSelect.add(loadFile);
