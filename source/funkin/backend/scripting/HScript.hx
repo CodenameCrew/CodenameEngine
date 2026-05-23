@@ -84,6 +84,13 @@ class HScript extends Script {
             btn.solid = false;
             btn.immovable = true;
             btn.scrollFactor.set();
+
+			var customCam = interp.variables.get("virtualpadCamera");
+            if (customCam != null) {
+                btn.cameras = [customCam];
+            } else {
+                btn.cameras = vpad.cameras; 
+			}
   
             var key = FlxKey.fromString(keyStr.toUpperCase());
 
@@ -100,7 +107,7 @@ class HScript extends Script {
 		
 		interp.variables.set("trace", Reflect.makeVarArgs((args) -> {
 			var v:String = Std.string(args.shift());
-			for (a in args) v += ", " + Std.string(a);
+			for (a in args) v += ", "+ Std.string(a);
 			this.trace(v);
 		}));
 
