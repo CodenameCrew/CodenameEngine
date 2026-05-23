@@ -248,7 +248,7 @@
 
 	<!-- iOS Section -->
 	<section if="ios">
-		<haxelib name="nativeiospopup" />
+		<haxelib name="IOSTools" />
 		
 	    <set name="IPHONEOS_DEPLOYMENT_TARGET" value="12.0" />
 		
