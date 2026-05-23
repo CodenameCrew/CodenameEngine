@@ -5,7 +5,7 @@
 
 		<!-- Mobile Libraries -->
 		<git name="extension-androidtools" url="https://github.com/ChanceXML/extension-androidtools" />
-		<git name="nativeiospopup" url="https://github.com/ChanceXML/nativeiospopup" />
+		<git name="IOSTools" url="https://github.com/ChanceXML/IOSTools" />
 
 		<!-- OpenFL & Lime (Required for Flixel) -->
 		<git name="openfl" url="https://github.com/CodenameCrew/cne-openfl" ref="old" />
