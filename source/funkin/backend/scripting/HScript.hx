@@ -71,39 +71,47 @@ class HScript extends Script {
                 trace("ERROR: Custom button image not found at: " + assetPath);
                 return null;
             }
-
+ 
             var btn = new FlxButton(x, y);
             btn.loadGraphic(fullPath);
-    
+
             var scaleAmt:Float = Std.parseFloat(Std.string(size));
             if (Math.isNaN(scaleAmt)) scaleAmt = 1.0;
-
+    
             btn.scale.set(scaleAmt, scaleAmt);
             btn.updateHitbox();
 
             btn.solid = false;
             btn.immovable = true;
             btn.scrollFactor.set();
-
-			var customCam = interp.variables.get("virtualpadCamera");
+  
+            var customCam = interp.variables.get("virtualpadCamera");
             if (customCam != null) {
                 btn.cameras = [customCam];
             } else {
-                btn.cameras = vpad.cameras; 
-			}
-  
-            var key = FlxKey.fromString(keyStr.toUpperCase());
+		        btn.cameras = vpad.cameras; 
+            }
 
+            var key = FlxKey.fromString(keyStr.toUpperCase());
             vpad.add(btn); 
 
-            var oldUpdate = vpad.update;
-            vpad.update = function(elapsed:Float) {
-                oldUpdate(elapsed);
-                @:privateAccess vpad.updateButtonKey(btn, key, "custom_" + assetPath, elapsed);
+            var updateHook:Void->Void = null;
+            updateHook = function() {
+                try {
+                    if (btn == null || !btn.exists || vpad == null) {
+                        flixel.FlxG.signals.postUpdate.remove(updateHook);
+                        return;
+                    }
+                    @:privateAccess vpad.updateButtonKey(btn, key, "custom_" + assetPath, flixel.FlxG.elapsed);
+                } catch(e:Dynamic) {
+                    flixel.FlxG.signals.postUpdate.remove(updateHook);
+                }
             };
+            flixel.FlxG.signals.postUpdate.add(updateHook);
 
             return btn;
         });
+		
 		
 		interp.variables.set("trace", Reflect.makeVarArgs((args) -> {
 			var v:String = Std.string(args.shift());
