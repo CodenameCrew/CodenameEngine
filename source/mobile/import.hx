@@ -70,6 +70,7 @@ import funkin.backend.system.Controls;
 import funkin.game.PlayState;
 import funkin.options.Options;
 import funkin.backend.assets.Paths; 
+import funkin.editors.charter.Charter;
 
 // OpenFL Imports
 import openfl.Lib;
