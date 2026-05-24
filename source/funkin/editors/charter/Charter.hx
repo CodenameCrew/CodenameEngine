@@ -616,8 +616,8 @@ class Charter extends UIState {
 		virtualPad.rebind('A', 'ENTER');
 		virtualPad.rebind('B', 'SPACE');
 		virtualPad.rebind('C', 'DELETE');
-		virtualPad.rebind('X', 'E');
-		virtualPad.rebind('Y', 'Q');
+		virtualPad.rebind('X', 'Q');
+		virtualPad.rebind('Y', 'E');
 		virtualPad.rebind('UP', 'W');
 		virtualPad.rebind('DOWN', 'S');
 		virtualPad.rebind('LEFT', 'A');
