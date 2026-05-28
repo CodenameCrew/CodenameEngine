@@ -357,6 +357,7 @@
 			<str id="icon">Icon</str>
 			<str id="iconColor">Icon Color</str>
 			<str id="singDuration">Sing Duration</str>
+			<str id="defaultFPS">Default FPS</str>
 			<str id="useSingDuration">Use Sing Duration?</str>
 			<str id="customValues">Custom Values (Advanced)</str>
 		</group>
