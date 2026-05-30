@@ -1663,6 +1663,9 @@ class PlayState extends MusicBeatState
 			case "Camera Flash":
 				var camera:FlxCamera = event.params[3] == "camHUD" ? camHUD : camGame;
 
+				//   is playtesting?            get time in which the tween is supposed to end        if it's behind the start time early break
+				if (Charter.startHere && (Conductor.stepCrochet * event.params[2] + Conductor.songPosition) > Charter.startTime) break;
+
 				if (event.params[0]) // reversed
 					camera.fade(event.params[1], (Conductor.stepCrochet / 1000) * event.params[2], false, () -> {camera._fxFadeAlpha = 0;}, true);
 				else // Not Reversed
