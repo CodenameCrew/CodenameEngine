@@ -317,9 +317,8 @@ class Note extends FlxSprite
     return super.isOnScreen(camera);
 	}
 
-	// The * 0.5 is so that it's easier to hit them too late, instead of too early
-	public var earlyPressWindow:Float = 0.5;
-	public var latePressWindow:Float = 1;
+	public var earlyPressWindow:Float = Flags.EARLY_HIT_WINDOW_RANGE;
+	public var latePressWindow:Float = Flags.LATE_HIT_WINDOW_RANGE;
 
 	public function updateSustain(strum:Strum) {
 		var scrollSpeed = strum.getScrollSpeed(this);
