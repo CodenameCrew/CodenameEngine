@@ -1,5 +1,7 @@
 package funkin.game;
 
+import animate.internal.RenderTexture;
+
 import funkin.game.Stage.StageCharPos;
 import funkin.game.Stage.StageCharPosInfo;
 import funkin.backend.utils.XMLUtil;
@@ -8,7 +10,6 @@ import funkin.backend.scripting.events.stage.StageXMLEvent;
 import funkin.backend.system.interfaces.IBeatReceiver;
 
 import flixel.group.FlxGroup;
-import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.util.FlxSignal.FlxTypedSignal;
@@ -36,13 +37,38 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	public var onAddSprite:FlxTypedSignal<FlxObject -> Void> = new FlxTypedSignal();
 	public var onAddLayer:FlxTypedSignal<StageLayer -> Void> = new FlxTypedSignal();
 
+	/**
+	 * Whether to internally use a render texture when drawing the stage layer.
+	 * This flattens all of the sprites and subsequent layers into a single graphic, making effects such as alpha or shaders apply to
+	 * the entire sprite instead of individual members of the group.
+	 */
+	public var useRenderTexture:Bool = false;
+	private var _renderTexture:RenderTexture;
+
 	// TODO: better way to set all members that have the `shader` value ig??
 	// Also use FlxAnimate's implementation on useRenderTexture so we can apply the shader onto all sprites as 1 sprite !!!
 	public var shader(default, set):FlxShader;
 	private function set_shader(s:FlxShader):FlxShader {
-		for (key=>ref in this.members) cast(ref, FlxSprite).shader = s;
+		for (member in this.members) {
+			if(member is FlxSprite)
+				cast(member, FlxSprite).shader = s;
+			else if(member is StageLayer)
+				cast(member, StageLayer).shader = s;
+		}
 		this.shader = s;
 		return s;
+	}
+
+	public var alpha(default, set):Float = 1.0;
+	private function set_alpha(a:Float):Float {
+		for (member in this.members) {
+			if(member is FlxSprite)
+				cast(member, FlxSprite).alpha = a;
+			else if(member is StageLayer)
+				cast(member, StageLayer).alpha = a;
+		}
+		this.alpha = a;
+		return a;
 	}
 
 	public inline function getSprite(name:String):Null<Dynamic> {
@@ -53,9 +79,28 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		return stageLayers.exists(name) ? cast stageLayers[name] : null;
 	}
 
-	public function new(name:String = "stage_layer") {
+	public function new(name:String = "stage_layer", useRenderTexture:Bool = false) {
 		super();
 		this.name = name;
+		this.useRenderTexture = useRenderTexture;
+		this.memberAdded.add((obj) -> {
+			if(obj is FlxObject) {
+				if(obj is StageCharPos) return;
+				if(obj is StageLayer)
+					onAddLayer.dispatch(cast obj);
+				else
+					onAddSprite.dispatch(cast obj);
+				updateBounds();
+			}
+		});
+		this.memberRemoved.add((obj) -> {
+			if(obj == null || obj is FlxObject)
+				updateBounds();
+		});
+	}
+
+	function checkRenderTexture():Bool {
+		return useRenderTexture && (/*alpha != 1 || */shader != null /*|| (blend != null && blend != NORMAL)*/);
 	}
 
 	private var stageSprites:Map<String, FlxBasic> = [];
@@ -64,25 +109,19 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	// Stage Sprite Management
 	public function addSprite(name:String, spr:FlxObject):FlxObject {
 		if (stageSprites.exists(name)) return spr;
-		this.add(spr);
-
 		stageSprites.set(name, spr);
-		updateBounds();
-
-		onAddSprite.dispatch(spr);
-
+		this.add(spr);
+		//updateBounds();
+		//onAddSprite.dispatch(spr);
 		return spr;
 	}
 
 	public function insertSprite(index:Int, name:String, spr:FlxObject):FlxObject {
 		if (stageSprites.exists(name)) return spr;
-		this.insert(index, spr);
-
 		stageSprites.set(name, spr);
-		updateBounds();
-
-		onAddSprite.dispatch(spr);
-
+		this.insert(index, spr);
+		//updateBounds();
+		//onAddSprite.dispatch(spr);
 		return spr;
 	}
 
@@ -100,7 +139,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 			this.remove(this.members[idx], splice);
 		} else
 			this.remove(spr, splice);
-		updateBounds();
+		//updateBounds();
 		
 		return true;
 	}	
@@ -108,25 +147,19 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	// Stage Layer Management
 	public function addLayer(layer:StageLayer):StageLayer {
 		if (stageLayers.exists(layer.name)) return layer;
-		
-		this.add(layer);
 		stageLayers.set(layer.name, layer);
-
-		updateBounds();
-		onAddLayer.dispatch(layer);
-
+		this.add(layer);
+		//updateBounds();
+		//onAddLayer.dispatch(layer);
 		return layer;
 	}
 
 	public function insertLayer(index:Int, layer:StageLayer):StageLayer {
 		if (stageLayers.exists(layer.name)) return layer;
-
-		this.insert(index, layer);
 		stageLayers.set(layer.name, layer);
-
-		updateBounds();
-		onAddLayer.dispatch(layer);
-
+		this.insert(index, layer);
+		//updateBounds();
+		//onAddLayer.dispatch(layer);
 		return layer;
 	}
 
@@ -144,7 +177,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 			this.remove(this.members[idx], splice);
 		} else
 			this.remove(layer, splice);
-		updateBounds();
+		//updateBounds();
 		
 		return true;
 	}
@@ -295,7 +328,7 @@ class NewStage extends StageLayer {
 		return new NewStage(name);
 	}
 
-	private static final DEFAULT_ATTRIBUTES:Array<String> = ["name", "startCamPosX", "startCamPosY", "zoom", "folder"];
+	private static final DEFAULT_ATTRIBUTES:Array<String> = ["name", "startCamPosX", "startCamPosY", "zoom", "folder", "useRenderTexture"];
 
 	private static inline function getDefaultPos(name:String):StageCharPosInfo {
 		return switch(name) {
@@ -384,6 +417,7 @@ class NewStage extends StageLayer {
 		loadStartCam();
 
 		this.name = xmlFile.getAtt("name").getDefault(fileName);
+		this.useRenderTexture = xmlFile.has.useRenderTexture ? xmlFile.att.useRenderTexture == "true" : false;
 
 		if (onStartCamSet != null) 
 			onStartCamSet(startCam, defaultZoom);
@@ -433,8 +467,9 @@ class NewStage extends StageLayer {
 				case "layer":
 					if (!node.has.name) continue;
 
-					var layerName = node.att.name;
-					var layer = new StageLayer(layerName);
+					var layerName:String = node.att.name;
+					var renderLayer:Bool = node.has.useRenderTexture ? node.att.useRenderTexture == "true" : false;
+					var layer:StageLayer = new StageLayer(layerName, renderLayer);
 					// recursive so it will allow nested layers
 					loadLayer(layer, [for(n in node.elements) n]);
 					addLayer(layer);
@@ -650,7 +685,7 @@ class NewStage extends StageLayer {
 	override function hget(name:String):Dynamic {
 		if (__instanceFields.contains(name) || __instanceFields.contains('get_$name'))
 			return Reflect.getProperty(this, name);
-		if (PlayState.__instanceFields.contains(name) || PlayState.__instanceFields.contains('get_$name'))
+		if (PlayState.instance != null && (PlayState.__instanceFields.contains(name) || PlayState.__instanceFields.contains('get_$name')))
 			return Reflect.getProperty(PlayState.instance, name);
 		return super.hget(name);
 	}
@@ -660,7 +695,7 @@ class NewStage extends StageLayer {
 			Reflect.setProperty(this, name, val);
 			return val;
 		}
-		if (PlayState.__instanceFields.contains(name) || PlayState.__instanceFields.contains('set_$name')) {
+		if (PlayState.instance != null && (PlayState.__instanceFields.contains(name) || PlayState.__instanceFields.contains('set_$name'))) {
 			Reflect.setProperty(PlayState.instance, name, val);
 			return val;
 		}
