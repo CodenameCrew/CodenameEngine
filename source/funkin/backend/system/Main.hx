@@ -24,8 +24,8 @@ import openfl.utils.AssetLibrary;
 import sys.FileSystem;
 import sys.io.File;
 #if android
-import android.content.Context;
-import android.os.Build;
+import extension.androidtools.content.Context;
+import extension.androidtools.os.Build;
 #end
 
 class Main extends Sprite
@@ -33,7 +33,7 @@ class Main extends Sprite
 	public static var instance:Main;
 
 	public static var modToLoad:String = null;
-	public static var forceGPUOnlyBitmapsOff:Bool = #if desktop false #else true #end;
+	public static var forceGPUOnlyBitmapsOff:Bool = false;
 	public static var noTerminalColor:Bool = false;
 	public static var verbose:Bool = false;
 
@@ -58,9 +58,11 @@ class Main extends Sprite
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
 	public static function preInit() {
+		#if sys
 		funkin.backend.utils.NativeAPI.registerAsDPICompatible();
 		funkin.backend.system.CommandLineHandler.parseCommandLine(Sys.args());
 		funkin.backend.system.Main.fixWorkingDirectory();
+		#end
 	}
 
 	public function new()
@@ -95,16 +97,10 @@ class Main extends Sprite
 	// DEPRECATED
 	@:dox(hide) public static function execAsync(func:Void->Void) ThreadUtil.execAsync(func);
 
-	private static function getTimer():Int {
-		return time = Lib.getTimer();
-	}
-
 	public static function loadGameSettings() {
 		WindowUtils.init();
 		SaveWarning.init();
 		MemoryUtil.init();
-		@:privateAccess
-		FlxG.game.getTimer = getTimer;
 		FunkinCache.init();
 		Paths.assetsTree = new AssetsLibraryList();
 
@@ -129,12 +125,11 @@ class Main extends Sprite
 		funkin.options.PlayerSettings.init();
 		Options.load();
 
+		game.focusLostFramerate = 30;
 		FlxG.fixedTimestep = false;
-
 		FlxG.scaleMode = scaleMode = new FunkinRatioScaleMode();
 
 		Conductor.init();
-		AudioSwitchFix.init();
 		EventManager.init();
 		FlxG.signals.focusGained.add(onFocus);
 		FlxG.signals.preStateSwitch.add(onStateSwitch);
@@ -205,16 +200,6 @@ class Main extends Sprite
 	private static function onStateSwitchPost() {
 		// manual asset clearing since base openfl one does'nt clear lime one
 		// does'nt clear bitmaps since flixel fork does it auto
-
-		@:privateAccess {
-			// clear uint8 pools
-			for(length=>pool in openfl.display3D.utils.UInt8Buff._pools) {
-				for(b in pool.clear())
-					b.destroy();
-			}
-
-			openfl.display3D.utils.UInt8Buff._pools.clear();
-		}
 
 		MemoryUtil.clearMajor();
 	}

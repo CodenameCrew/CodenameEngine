@@ -8,7 +8,6 @@ import lime.utils.AssetLibrary;
 import haxe.ds.Map;
 
 class AssetsLibraryList extends AssetLibrary {
-
 	public var libraries:Array<AssetLibrary> = [];
 	public var cleanLibraries(get, never):Array<AssetLibrary>;
 	function get_cleanLibraries():Array<AssetLibrary> {
@@ -30,6 +29,9 @@ class AssetsLibraryList extends AssetLibrary {
 	#if TRANSLATIONS_SUPPORT
 	public var transLib:TranslatedAssetLibrary;
 	#end
+
+	private var cachePaths:Map<String, AssetLibrary> = [];
+	private var cacheNonExistentPaths:Map<String, Int> = [];
 
 	public function removeLibrary(lib:AssetLibrary) {
 		if (lib != null) {
@@ -54,12 +56,29 @@ class AssetsLibraryList extends AssetLibrary {
 	public function existsSpecific(id:String, type:String, source:AssetSource = BOTH) {
 		if (!id.startsWith("assets/") && existsSpecific('assets/$id', type, source))
 			return true;
+
+		// There's a mod that heavily relies on addons and that can causes lags just to get a path.
+		final sec = Date.now().getSeconds();
+		if (cacheNonExistentPaths.exists(id) && sec - 10 < cacheNonExistentPaths.get(id)) {
+			return false;
+		}
+		else if (cachePaths.exists(id)) {
+			if (cachePaths.get(id).exists(id, type)) return true;
+			else cachePaths.remove(id);
+		}
+
+
 		for(k=>l in libraries) {
 			if (shouldSkipLib(l, source)) continue;
 			if (l.exists(id, type)) {
+				//trace("EXISTS", id, type, source);
+				cachePaths.set(id, l);
 				return true;
 			}
 		}
+
+		//trace("DOESNT EXISTS", id, type, source);
+		cacheNonExistentPaths.set(id, sec);
 		return false;
 	}
 	public override inline function exists(id:String, type:String):Bool
@@ -198,6 +217,7 @@ class AssetsLibraryList extends AssetLibrary {
 	public function reset() {
 		unloadLibraries();
 
+		cachePaths.clear();
 		libraries = [];
 
 		// adds default libraries in again
