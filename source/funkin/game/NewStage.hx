@@ -109,19 +109,23 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	// Stage Sprite Management
 	public function addSprite(name:String, spr:FlxObject):FlxObject {
 		if (stageSprites.exists(name)) return spr;
-		stageSprites.set(name, spr);
 		this.add(spr);
+		stageSprites.set(name, spr);
+
 		//updateBounds();
 		//onAddSprite.dispatch(spr);
+
 		return spr;
 	}
 
 	public function insertSprite(index:Int, name:String, spr:FlxObject):FlxObject {
 		if (stageSprites.exists(name)) return spr;
-		stageSprites.set(name, spr);
 		this.insert(index, spr);
+		stageSprites.set(name, spr);
+
 		//updateBounds();
 		//onAddSprite.dispatch(spr);
+
 		return spr;
 	}
 
@@ -129,16 +133,10 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		if (!stageSprites.exists(name)) return false;
 
 		var spr:FlxBasic = stageSprites.get(name);
-		stageSprites.remove(name);
 		
-		// If it's null we want to still attempt to remove the reference from the Array methinks.
-		if (spr == null) {
-			var idx:Int = this.members.indexOf(spr);
-			if (idx < 0) return false;
+		this.remove(spr, splice);
+		stageSprites.remove(name);
 
-			this.remove(this.members[idx], splice);
-		} else
-			this.remove(spr, splice);
 		//updateBounds();
 		
 		return true;
@@ -147,19 +145,23 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	// Stage Layer Management
 	public function addLayer(layer:StageLayer):StageLayer {
 		if (stageLayers.exists(layer.name)) return layer;
-		stageLayers.set(layer.name, layer);
 		this.add(layer);
+		stageLayers.set(layer.name, layer);
+
 		//updateBounds();
 		//onAddLayer.dispatch(layer);
+
 		return layer;
 	}
 
 	public function insertLayer(index:Int, layer:StageLayer):StageLayer {
 		if (stageLayers.exists(layer.name)) return layer;
-		stageLayers.set(layer.name, layer);
 		this.insert(index, layer);
+		stageLayers.set(layer.name, layer);
+
 		//updateBounds();
 		//onAddLayer.dispatch(layer);
+
 		return layer;
 	}
 
@@ -167,16 +169,10 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		if (!stageLayers.exists(layer.name)) return false;
 
 		var layer:StageLayer = stageLayers.get(layer.name);
+		
+		this.remove(layer, splice);
 		stageLayers.remove(layer.name);
 		
-		// If it's null we want to still attempt to remove the reference from the Array methinks.
-		if (layer == null) {
-			var idx:Int = this.members.indexOf(layer);
-			if (idx < 0) return false;
-
-			this.remove(this.members[idx], splice);
-		} else
-			this.remove(layer, splice);
 		//updateBounds();
 		
 		return true;
