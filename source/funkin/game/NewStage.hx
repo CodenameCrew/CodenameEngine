@@ -237,7 +237,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		var value = Math.POSITIVE_INFINITY;
 
 		for(m in this.members) {
-			if(m == null) continue;
+			if(m == null || m is FlxBasic) continue;
 
 			var minX:Float;
 			if(m is StageLayer) minX = cast(m, StageLayer).findMinX();
@@ -254,7 +254,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		var value = Math.NEGATIVE_INFINITY;
 
 		for(m in this.members) {
-			if(m == null) continue;
+			if(m == null || m is FlxBasic) continue;
 
 			var maxX:Float;
 			if(m is StageLayer) maxX = cast(m, StageLayer).findMaxX();
@@ -274,7 +274,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		var value = Math.POSITIVE_INFINITY;
 
 		for(m in this.members) {
-			if(m == null) continue;
+			if(m == null || m is FlxBasic) continue;
 
 			var minY:Float;
 			if(m is StageLayer) minY = cast(m, StageLayer).findMinY();
@@ -291,7 +291,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		var value = Math.NEGATIVE_INFINITY;
 
 		for(m in this.members) {
-			if(m == null) continue;
+			if(m == null || m is FlxBasic) continue;
 
 			var maxY:Float;
 			if(m is StageLayer) maxY = cast(m, StageLayer).findMaxY();
