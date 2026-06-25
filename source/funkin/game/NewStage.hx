@@ -45,10 +45,14 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	public var useRenderTexture:Bool = false;
 	private var _renderTexture:RenderTexture;
 
-	// TODO: better way to set all members that have the `shader` value ig??
-	// Also use FlxAnimate's implementation on useRenderTexture so we can apply the shader onto all sprites as 1 sprite !!!
+	// TODO: use FlxAnimate's implementation on useRenderTexture so we can apply the shader onto all sprites as 1 sprite !!!
 	public var shader(default, set):FlxShader;
+	// this setter is a temporary plug until we get `useRenderTexture` working
 	private function set_shader(s:FlxShader):FlxShader {
+		if (useRenderTexture) {
+			this.shader = s;
+			return s;
+		}
 		for (member in this.members) {
 			if(member is FlxSprite)
 				cast(member, FlxSprite).shader = s;
@@ -61,14 +65,40 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 
 	public var alpha(default, set):Float = 1.0;
 	private function set_alpha(a:Float):Float {
+		if (useRenderTexture) {
+			this.alpha = a;
+			return a;
+		}
 		for (member in this.members) {
-			if(member is FlxSprite)
+			if (member is FlxSprite)
 				cast(member, FlxSprite).alpha = a;
-			else if(member is StageLayer)
+			else if (member is StageLayer)
 				cast(member, StageLayer).alpha = a;
 		}
 		this.alpha = a;
 		return a;
+	}
+
+	public var scrollFactor(default, set):FlxPoint = FlxPoint.get(1, 1);
+	private function set_scrollFactor(s:FlxPoint):FlxPoint {
+		if (useRenderTexture) {
+			this.scrollFactor = s;
+			return s;
+		}
+		for (member in this.members) {
+			if (member is FlxSprite) {
+				var spr:FlxSprite = cast member;
+				spr.scrollFactor.x += s.x;
+				spr.scrollFactor.y += s.y;
+			}
+			else if (member is StageLayer) {
+				var layer:StageLayer = cast member;
+				layer.scrollFactor.x += s.x;
+				layer.scrollFactor.y += s.y;
+			}
+		}
+		this.scrollFactor = s;
+		return s;
 	}
 
 	public inline function getSprite(name:String):Null<Dynamic> {
@@ -106,25 +136,21 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	private var stageSprites:Map<String, FlxBasic> = [];
 	private var stageLayers:Map<String, StageLayer> = [];
 
-	// Stage Sprite Management
+	//region Stage Sprite Management
 	public function addSprite(name:String, spr:FlxObject):FlxObject {
 		if (stageSprites.exists(name)) return spr;
+
 		this.add(spr);
 		stageSprites.set(name, spr);
-
-		//updateBounds();
-		//onAddSprite.dispatch(spr);
 
 		return spr;
 	}
 
 	public function insertSprite(index:Int, name:String, spr:FlxObject):FlxObject {
 		if (stageSprites.exists(name)) return spr;
+
 		this.insert(index, spr);
 		stageSprites.set(name, spr);
-
-		//updateBounds();
-		//onAddSprite.dispatch(spr);
 
 		return spr;
 	}
@@ -136,31 +162,26 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		
 		this.remove(spr, splice);
 		stageSprites.remove(name);
-
-		//updateBounds();
 		
 		return true;
-	}	
+	}
+	//endregion
 
-	// Stage Layer Management
+	//region Stage Layer Management
 	public function addLayer(layer:StageLayer):StageLayer {
 		if (stageLayers.exists(layer.name)) return layer;
+
 		this.add(layer);
 		stageLayers.set(layer.name, layer);
-
-		//updateBounds();
-		//onAddLayer.dispatch(layer);
 
 		return layer;
 	}
 
 	public function insertLayer(index:Int, layer:StageLayer):StageLayer {
 		if (stageLayers.exists(layer.name)) return layer;
+
 		this.insert(index, layer);
 		stageLayers.set(layer.name, layer);
-
-		//updateBounds();
-		//onAddLayer.dispatch(layer);
 
 		return layer;
 	}
@@ -173,12 +194,11 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		this.remove(layer, splice);
 		stageLayers.remove(layer.name);
 		
-		//updateBounds();
-		
 		return true;
 	}
+	//endregion
 
-	// IBeatReceiver implementation
+	//region IBeatReceiver implementation
 	public function beatHit(curBeat:Int) {
 		for(m in members) if(m != null && m is IBeatReceiver) cast(m, IBeatReceiver).beatHit(curBeat);
 	}
@@ -188,8 +208,9 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	public function measureHit(curMeasure:Int) {
 		for(m in members) if(m != null && m is IBeatReceiver) cast(m, IBeatReceiver).measureHit(curMeasure);
 	}
+	//endregion
 
-	// IHScriptCustomBehaviour implementation
+	//region IHScriptCustomBehaviour implementation
 	public function hget(name:String):Dynamic {
 		if (__instanceFields.contains(name) || __instanceFields.contains('get_$name'))
 			return Reflect.getProperty(this, name);
@@ -207,6 +228,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		if (stageLayers.exists(name)) return stageLayers[name] = val;
 		return null;
 	}
+	//endregion
 
 	// then whatever below
 	override function destroy() {
@@ -217,17 +239,49 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	private var _bounds:FlxRect = FlxRect.get();
 	private function get_bounds():FlxRect { return _bounds; }
 
-	private function updateBounds() {
+	/**
+	 * Updates the bounds of the layer.
+	 * Without `hard_check` enabled, it will check values of `x`, `y`, `width` and `height` of the members directly.
+	 * This won't propagate `updateBounds` or `findMinX`, `findMinY`, `findMaxX` and `findMaxY` to the members, since it access the values directly.
+	 * This is faster but under some circumstances, it might not be 100% accurate.
+	 * @param hard_check If true, it will use `findMinX`, `findMinY`, `findMaxX` and `findMaxY` to find the bounds, which is slower but is guaranteed to be accurate when running
+	 */
+	private function updateBounds(hard_check:Bool = false) {
 		if (this.length == 0) return;
 
-		// TODO: Optimize the code so that we don't run 4 for loops every time we update the bounds.
-		// We should just do one giant loop and check the bounds all here without wasting time, keep the other functions for specific checks.
-		var x = findMinX();
-		var y = findMinY();
-		var width = findMaxX() - x;
-		var height = findMaxY() - y;
+		if (hard_check) {
+			var x = findMinX();
+			var y = findMinY();
+			var width = findMaxX() - x;
+			var height = findMaxY() - y;
+			
+			_bounds.set(x, y, width, height);
+		} else {
+			var minX:Float = Math.POSITIVE_INFINITY;
+			var minY:Float = Math.POSITIVE_INFINITY;
 
-		_bounds.set(x, y, width, height);
+			var maxX:Float = Math.NEGATIVE_INFINITY;
+			var maxY:Float = Math.NEGATIVE_INFINITY;
+			for (m in this.members) {
+				if (m == null || !(m is FlxObject)) continue;
+
+				if (m is StageLayer) {
+					var layer:StageLayer = cast m;
+					if (layer.x < minX) minX = layer.x;
+					if (layer.y < minY) minY = layer.y;
+					if (layer.x + layer.width > maxX) maxX = layer.x + layer.width;
+					if (layer.y + layer.height > maxY) maxY = layer.y + layer.height;
+				} else {
+					var obj:FlxObject = cast m;
+					if (obj.x < minX) minX = obj.x;
+					if (obj.y < minY) minY = obj.y;
+					if (obj.x + obj.width > maxX) maxX = obj.x + obj.width;
+					if (obj.y + obj.height > maxY) maxY = obj.y + obj.height;
+				}
+			}
+
+			_bounds.set(minX, minY, maxX - minX, maxY - minY);
+		}
 	}
 
 	// From FlxSpriteGroup
@@ -237,7 +291,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		var value = Math.POSITIVE_INFINITY;
 
 		for(m in this.members) {
-			if(m == null || m is FlxBasic) continue;
+			if(m == null || !(m is FlxObject)) continue;
 
 			var minX:Float;
 			if(m is StageLayer) minX = cast(m, StageLayer).findMinX();
@@ -254,7 +308,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		var value = Math.NEGATIVE_INFINITY;
 
 		for(m in this.members) {
-			if(m == null || m is FlxBasic) continue;
+			if(m == null || !(m is FlxObject)) continue;
 
 			var maxX:Float;
 			if(m is StageLayer) maxX = cast(m, StageLayer).findMaxX();
@@ -274,7 +328,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		var value = Math.POSITIVE_INFINITY;
 
 		for(m in this.members) {
-			if(m == null || m is FlxBasic) continue;
+			if(m == null || !(m is FlxObject)) continue;
 
 			var minY:Float;
 			if(m is StageLayer) minY = cast(m, StageLayer).findMinY();
@@ -291,7 +345,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		var value = Math.NEGATIVE_INFINITY;
 
 		for(m in this.members) {
-			if(m == null || m is FlxBasic) continue;
+			if(m == null || !(m is FlxObject)) continue;
 
 			var maxY:Float;
 			if(m is StageLayer) maxY = cast(m, StageLayer).findMaxY();
@@ -403,6 +457,11 @@ class NewStage extends StageLayer {
 			if (onStageScriptLoad != null) onStageScriptLoad(script);
 			script.setParent(this);
 			script.load();
+			script.call("create");
+			script.call("onStageLoad");
+
+			onAddSprite.add((obj:Dynamic) -> script.call("onAddSprite", [obj]));
+			onAddLayer.add((layer:StageLayer) -> script.call("onAddLayer", [layer]));
 		}
 
 		if (xmlFile == null) {
@@ -440,6 +499,8 @@ class NewStage extends StageLayer {
 		loadLayer(this, elems);
 
 		postLoadStage(elems);
+		script?.call("postCreate");
+		script?.call("onPostStageLoad");
 	}
 
 	private inline function loadStartCam() {
@@ -467,7 +528,9 @@ class NewStage extends StageLayer {
 					var renderLayer:Bool = node.has.useRenderTexture ? node.att.useRenderTexture == "true" : false;
 					var layer:StageLayer = new StageLayer(layerName, renderLayer);
 					// recursive so it will allow nested layers
+					script?.call("onLoadLayer", [layer]);
 					loadLayer(layer, [for(n in node.elements) n]);
+					script?.call("onPostLoadLayer", [layer]);
 					addLayer(layer);
 				case "sprite" | "spr" | "sparrow":
 					if (!node.has.name) continue;
@@ -484,10 +547,12 @@ class NewStage extends StageLayer {
 					var w:Int = Std.parseInt(node.att.width);
 					var h:Int = Std.parseInt(node.att.height);
 					var c:flixel.util.FlxColor = (node.has.color) ? CoolUtil.getColorFromDynamic(node.att.color) : -1;
-					if (isSolid) spr.makeSolid(w, h, c);
-					else spr.makeGraphic(w, h, c);
+					if (isSolid) {
+						spr.makeSolid(w, h, c);
+						node.x.remove("updateHitbox");
+					} else
+						spr.makeGraphic(w, h, c);
 
-					if (isSolid) node.x.remove("updateHitbox");
 					node.x.remove("width"); node.x.remove("height"); node.x.remove("color");
 					XMLUtil.loadSpriteFromXML(spr, node, "", NONE, false);
 
@@ -503,20 +568,19 @@ class NewStage extends StageLayer {
 					setCharPos(node.att.name, node);
 				case "ratings" | "combo":
 					if (onRatingSet == null) continue;
-					var ratingPos = {
-						x: Std.parseFloat(node.getAtt("x")),
-						y: Std.parseFloat(node.getAtt("y"))
-					}
-					onRatingSet(ratingPos.x, ratingPos.y);
+					onRatingSet(Std.parseFloat(node.getAtt("x")), Std.parseFloat(node.getAtt("y")));
 				case "use-extension" | "extension" | "ext":
-					if(XMLImportedScriptInfo.shouldLoadBefore(node)) continue;
-					if(onPrepareInfo != null && onPrepareInfo(node) == null) continue;
+					if (XMLImportedScriptInfo.shouldLoadBefore(node)) continue;
+					if (onPrepareInfo != null && onPrepareInfo(node) == null) continue;
 					null;
 				default: null;
 			}
 
 			if (onNodeLoaded != null) {
+				var _prevSprite = sprite;
 				sprite = onNodeLoaded(node, sprite);
+				// cleanup since there will be a random sprite floating around in memory
+				if (_prevSprite != sprite && _prevSprite != null) _prevSprite.destroy();
 			}
 
 			if (sprite != null) {
@@ -541,8 +605,8 @@ class NewStage extends StageLayer {
 
 			// i know this for gets run twice under, but its better like this in case a script modifies the short lived ones, i dont wanna save them in an array; more dynamic like this  - Nex
 			for (info in xmlImportedScripts) if (info.importStageSprites) {
-				var script = info.getScript();
-				if (script != null) setStagesSprites(script);
+				var scriptInfo = info.getScript();
+				if (scriptInfo != null) setStagesSprites(scriptInfo);
 			}
 
 			// idk lemme check anyways just in case scripts did smth  - Nex
@@ -551,11 +615,11 @@ class NewStage extends StageLayer {
 
 			// shortlived scripts destroy when the stage finishes setting up  - Nex
 			for (info in xmlImportedScripts) if (info.shortLived) {
-				var script = info.getScript();
-				if (script == null) continue;
+				var scriptInfo = info.getScript();
+				if (scriptInfo == null) continue;
 
-				if (onRemoveInfo != null) onRemoveInfo(script);
-				script.destroy();
+				if (onRemoveInfo != null) onRemoveInfo(scriptInfo);
+				scriptInfo.destroy();
 			}
 		}
 
@@ -660,6 +724,18 @@ class NewStage extends StageLayer {
 		destroySilently();
 	}
 
+	override function update(elapsed:Float) {
+		script?.call("update", [elapsed]);
+		super.update(elapsed);
+		script?.call("postUpdate", [elapsed]);
+	}
+
+	override function draw() {
+		script?.call("draw");
+		super.draw();
+		script?.call("postDraw");
+	}
+
 	@:dox(hide) private function checkMemoryMode(xml:Access, loadAll:Bool, elems:Array<Access>) {
 		for(node in xml.elements) {
 			if (node.name == "high-memory" && (!Options.lowMemoryMode || loadAll))
@@ -677,7 +753,7 @@ class NewStage extends StageLayer {
 			if (onPrepareInfo != null) onPrepareInfo(node);
 	}
 
-	// bruh...
+	//region IHScriptCustomBehaviour implementation
 	override function hget(name:String):Dynamic {
 		if (__instanceFields.contains(name) || __instanceFields.contains('get_$name'))
 			return Reflect.getProperty(this, name);
@@ -697,6 +773,7 @@ class NewStage extends StageLayer {
 		}
 		return super.hset(name, val);
 	}
+	//endregion
 
 	// Backwards compatibility
 	public var stagePath(get, never):String;
