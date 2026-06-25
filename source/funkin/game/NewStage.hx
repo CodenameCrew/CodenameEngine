@@ -135,6 +135,33 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 
 	private var stageSprites:Map<String, FlxBasic> = [];
 	private var stageLayers:Map<String, StageLayer> = [];
+	
+	override public function add(basic:T):T {
+		if (!(basic is StageLayer)) return super.add(basic, splice);
+		
+		var layer:StageLayer = cast basic;
+		if (stageLayers.exists(layer.name)) return stageLayers.get(layer.name);
+
+		stageLayers.set(layer.name, layer);
+		return super.add(layer);
+	}
+
+	override public function insert(position:Int, basic:T):T {
+		if (!(basic is StageLayer)) return super.insert(basic, splice);
+		var layer:StageLayer = cast basic;
+		if (stageLayers.exists(layer.name)) return stageLayers.get(layer.name);
+
+		stageLayers.set(layer.name, layer);
+		return super.insert(position, layer);
+	}
+
+	override public function remove(basic:T, splice:Bool = false):T {
+		if (!(basic is StageLayer)) return super.remove(basic, splice);
+
+		var layer:StageLayer = cast basic;
+		stageLayers.remove(layer.name);
+		return super.remove(layer, splice);
+	}
 
 	//region Stage Sprite Management
 	public function addSprite(name:String, spr:FlxObject):FlxObject {
@@ -162,37 +189,6 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		
 		this.remove(spr, splice);
 		stageSprites.remove(name);
-		
-		return true;
-	}
-	//endregion
-
-	//region Stage Layer Management
-	public function addLayer(layer:StageLayer):StageLayer {
-		if (stageLayers.exists(layer.name)) return layer;
-
-		this.add(layer);
-		stageLayers.set(layer.name, layer);
-
-		return layer;
-	}
-
-	public function insertLayer(index:Int, layer:StageLayer):StageLayer {
-		if (stageLayers.exists(layer.name)) return layer;
-
-		this.insert(index, layer);
-		stageLayers.set(layer.name, layer);
-
-		return layer;
-	}
-
-	public function removeLayer(layer:StageLayer, splice:Bool = false):Bool {
-		if (!stageLayers.exists(layer.name)) return false;
-
-		var layer:StageLayer = stageLayers.get(layer.name);
-		
-		this.remove(layer, splice);
-		stageLayers.remove(layer.name);
 		
 		return true;
 	}
@@ -521,8 +517,8 @@ class NewStage extends StageLayer {
 
 	private function loadLayer(layer:StageLayer, elems:Array<Access>) {
 		for(node in elems) {
-			// If `onNodeInitalize` returns a valid value, then why waste time on checking other values, since we should only care about what the user
-			// sets it too. Optimizations be like:
+			// If `onNodeInitalize` returns a valid value, then why waste time on checking other values, 
+			// since we should only care about what the user sets it too. Optimizations be like:
 			var sprite:Dynamic = (onNodeInitalize != null) ? onNodeInitalize(node) : null;
 			if (sprite == null) sprite = switch(node.name) {
 				case "layer":
@@ -535,7 +531,7 @@ class NewStage extends StageLayer {
 					script?.call("onLoadLayer", [layer]);
 					loadLayer(layer, [for(n in node.elements) n]);
 					script?.call("onPostLoadLayer", [layer]);
-					addLayer(layer);
+					add(layer);
 				case "sprite" | "spr" | "sparrow":
 					if (!node.has.name) continue;
 
@@ -573,11 +569,14 @@ class NewStage extends StageLayer {
 				case "ratings" | "combo":
 					if (onRatingSet == null) continue;
 					onRatingSet(Std.parseFloat(node.getAtt("x")), Std.parseFloat(node.getAtt("y")));
-				case "use-extension" | "extension" | "ext":
-					if (XMLImportedScriptInfo.shouldLoadBefore(node)) continue;
-					if (onPrepareInfo != null && onPrepareInfo(node) == null) continue;
+				default:
+					// moved it to be like this, so we can just update the inline function - LJ
+					if (__isExtensionNode(node)) {
+						if (XMLImportedScriptInfo.shouldLoadBefore(node)) continue;
+						if (onPrepareInfo != null && onPrepareInfo(node) == null) continue;
+						null;
+					}
 					null;
-				default: null;
 			}
 
 			if (onNodeLoaded != null) {
@@ -740,6 +739,10 @@ class NewStage extends StageLayer {
 		script?.call("postDraw");
 	}
 
+	@:dox(hide) private inline function __isExtensionNode(node:Access):Bool {
+		return node.name == "use-extension" || node.name == "extension" || node.name == "ext";
+	}
+
 	@:dox(hide) private function checkMemoryMode(xml:Access, loadAll:Bool, elems:Array<Access>) {
 		for(node in xml.elements) {
 			if (node.name == "high-memory" && (!Options.lowMemoryMode || loadAll))
@@ -753,7 +756,7 @@ class NewStage extends StageLayer {
 
 	@:dox(hide) private function pushNode(node:Access, elems:Array<Access>) {
 		elems.push(node);
-		if ((node.name == "use-extension" || node.name == "extension" || node.name == "ext") && XMLImportedScriptInfo.shouldLoadBefore(node))
+		if (__isExtensionNode(node) && XMLImportedScriptInfo.shouldLoadBefore(node))
 			if (onPrepareInfo != null) onPrepareInfo(node);
 	}
 
