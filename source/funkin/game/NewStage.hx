@@ -239,6 +239,10 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	private var _bounds:FlxRect = FlxRect.get();
 	private function get_bounds():FlxRect { return _bounds; }
 
+	private inline function __allowedToUpdateBounds(m:FlxBasic):Bool {
+		return (m != null && !(m is StageCharPos) && m is FlxObject);
+	}
+
 	/**
 	 * Updates the bounds of the layer.
 	 * Without `hard_check` enabled, it will check values of `x`, `y`, `width` and `height` of the members directly.
@@ -263,7 +267,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 			var maxX:Float = Math.NEGATIVE_INFINITY;
 			var maxY:Float = Math.NEGATIVE_INFINITY;
 			for (m in this.members) {
-				if (m == null || !(m is FlxObject)) continue;
+				if (!__allowedToUpdateBounds(m)) continue;
 
 				if (m is StageLayer) {
 					var layer:StageLayer = cast m;
@@ -291,7 +295,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		var value = Math.POSITIVE_INFINITY;
 
 		for(m in this.members) {
-			if(m == null || !(m is FlxObject)) continue;
+			if (!__allowedToUpdateBounds(m)) continue;
 
 			var minX:Float;
 			if(m is StageLayer) minX = cast(m, StageLayer).findMinX();
@@ -308,7 +312,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		var value = Math.NEGATIVE_INFINITY;
 
 		for(m in this.members) {
-			if(m == null || !(m is FlxObject)) continue;
+			if (!__allowedToUpdateBounds(m)) continue;
 
 			var maxX:Float;
 			if(m is StageLayer) maxX = cast(m, StageLayer).findMaxX();
@@ -328,7 +332,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		var value = Math.POSITIVE_INFINITY;
 
 		for(m in this.members) {
-			if(m == null || !(m is FlxObject)) continue;
+			if (!__allowedToUpdateBounds(m)) continue;
 
 			var minY:Float;
 			if(m is StageLayer) minY = cast(m, StageLayer).findMinY();
@@ -345,7 +349,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		var value = Math.NEGATIVE_INFINITY;
 
 		for(m in this.members) {
-			if(m == null || !(m is FlxObject)) continue;
+			if (!__allowedToUpdateBounds(m)) continue;
 
 			var maxY:Float;
 			if(m is StageLayer) maxY = cast(m, StageLayer).findMaxY();
