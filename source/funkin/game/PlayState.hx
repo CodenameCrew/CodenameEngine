@@ -2038,7 +2038,7 @@ class PlayState extends MusicBeatState
 
 		if (event.cancelled || !event.displayRating) return;
 
-		var rating:FlxSprite = event.ratingSprite.loadAnimatedGraphic(Paths.image('${event.ratingPrefix}combo${event.ratingSuffix}'));
+		var rating:FlxSprite = event.ratingSprite.loadAnimatedGraphic(Paths.image('${event.ratingPrefix}${myRating}${event.ratingSuffix}'));
 		if (event.resetSprite) {
 			CoolUtil.resetSprite(rating, event.position.x, event.position.y);
 		}
