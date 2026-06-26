@@ -2059,6 +2059,9 @@ class PlayState extends MusicBeatState
 			});
 		}
 		gameAndCharsEvent("onPostRatingsShown", event);
+
+		event.velocity.put();
+		event.position.put();
 	}
 
 	public function displayCombo():Void {
@@ -2091,6 +2094,9 @@ class PlayState extends MusicBeatState
 				}
 			}
 			gameAndCharsEvent("onPostRatingsShown", event);
+
+			event.velocity.put();
+			event.position.put();
 		}
 	}
 
@@ -2118,7 +2124,7 @@ class PlayState extends MusicBeatState
 				numScore.velocity.x = event.velocity.x;
 
 				if (event.tween) {
-					FlxTween.tween(numScore, {alpha: 0}, 0.2, {
+					FlxTween.tween(numScore, {alpha: 0}, event.tweenDuration, {
 						onComplete: function(tween:FlxTween)
 						{
 							numScore.kill();
@@ -2127,6 +2133,9 @@ class PlayState extends MusicBeatState
 					});
 				}
 				gameAndCharsEvent("onPostRatingsShown", event);
+
+				event.velocity.put();
+				event.position.put();
 			}
 		}
 	}
