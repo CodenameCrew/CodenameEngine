@@ -1990,7 +1990,7 @@ class PlayState extends MusicBeatState
 				} else if (event.countAsCombo)
 					combo++;
 
-				if (event.player)
+				if (event.showRating || (event.showRating == null && event.player))
 				{
 					displayCombo(event);
 					displayRatingNumbers(event);
