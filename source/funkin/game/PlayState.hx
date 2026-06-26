@@ -1966,9 +1966,9 @@ class PlayState extends MusicBeatState
 
 		var event:NoteHitEvent;
 		if (strumLine != null && !strumLine.cpu)
-			event = EventManager.get(NoteHitEvent).recycle(rating.breaksCombo, !note.isSustainNote, !note.isSustainNote, null, defaultDisplayRating, defaultDisplayCombo, note, strumLine.characters, true, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), "game/score/", "", note.strumID, rating.score, note.isSustainNote ? null : rating.accuracy, rating.health, rating.name, Options.splashesEnabled && !note.isSustainNote && rating.splash, 0.5, true, 0.7, true, true, iconP1);
+			event = EventManager.get(NoteHitEvent).recycle(rating.breaksCombo, !note.isSustainNote, !note.isSustainNote, note, strumLine.characters, true, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), note.strumID, rating.score, note.isSustainNote ? null : rating.accuracy, rating.health, rating.name, Options.splashesEnabled && !note.isSustainNote && rating.splash, true, iconP1);
 		else
-			event = EventManager.get(NoteHitEvent).recycle(rating.breaksCombo, false, false, null, defaultDisplayRating, defaultDisplayCombo, note, strumLine.characters, false, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), "game/score/", "", note.strumID, 0, null, 0, rating.name, false, 0.5, true, 0.7, true, true, iconP2);
+			event = EventManager.get(NoteHitEvent).recycle(rating.breaksCombo, false, false, note, strumLine.characters, false, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), note.strumID, 0, null, 0, rating.name, false, true, iconP2);
 		event.deleteNote = !note.isSustainNote; // work around, to allow sustain notes to be deleted
 		event = scripts.event(strumLine != null && !strumLine.cpu ? "onPlayerHit" : "onDadHit", event);
 		strumLine.onHit.dispatch(event);
@@ -1990,11 +1990,11 @@ class PlayState extends MusicBeatState
 				} else if (event.countAsCombo)
 					combo++;
 
-				if (event.showRating || (event.showRating == null && event.player))
+				if (event.player)
 				{
-					displayCombo(event);
-					if (event.displayRating)
-						displayRating(event.rating, event);
+					displayCombo();
+					displayRatingNumbers();
+					displayRating(event.rating);
 					ratingNum += 1;
 				}
 				if (event.player) hits[rating.name] += 1;
@@ -2031,81 +2031,102 @@ class PlayState extends MusicBeatState
 		gameAndCharsEvent("onPostNoteHit", event);
 	}
 
-	public function displayRating(myRating:String, ?evt:NoteHitEvent = null):Void {
-		var hasEvent = evt != null;
-		var pre:String = hasEvent ? evt.ratingPrefix : "";
-		var suf:String = hasEvent ? evt.ratingSuffix : "";
+	public function displayRating(myRating:String):Void 
+	{
+		var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(comboGroup.recycleLoop(FlxSprite), null, null, null, true, 0.7, true, "game/score/", "", 550, FlxPoint.get(FlxG.random.int(0, 10), FlxG.random.int(140, 175)), 0.2, (Conductor.crochet * 0.001), true, false, false, true, null, FlxPoint.get(comboGroup.x + -40, comboGroup.y + -60), true);
+		gameAndCharsEvent("onRatingsShown", event);
 
-		var rating:FlxSprite = comboGroup.recycleLoop(FlxSprite);
-		CoolUtil.resetSprite(rating, comboGroup.x + -40, comboGroup.y + -60);
-		rating.loadAnimatedGraphic(Paths.image('${pre}${myRating}${suf}'));
-		rating.acceleration.y = 550;
-		rating.velocity.y -= FlxG.random.int(140, 175);
-		rating.velocity.x -= FlxG.random.int(0, 10);
-		if (hasEvent) {
-			rating.scale.set(evt.ratingScale, evt.ratingScale);
-			rating.antialiasing = evt.ratingAntialiasing;
+		if (event.cancelled || !event.displayRating) return;
+
+		var rating:FlxSprite = event.ratingSprite.loadAnimatedGraphic(Paths.image('${event.ratingPrefix}combo${event.ratingSuffix}'));
+		if (event.resetSprite) {
+			CoolUtil.resetSprite(rating, event.position.x, event.position.y);
 		}
+		rating.loadAnimatedGraphic(Paths.image('${event.ratingPrefix}${myRating}${event.ratingSuffix}'));
+		rating.acceleration.y = event.acceleration;
+		rating.velocity.y -= event.velocity.y;
+		rating.velocity.x -= event.velocity.x;
+		rating.scale.set(event.ratingScale, event.ratingScale);
+		rating.antialiasing = event.ratingAntialiasing;
 		rating.updateHitbox();
 
-		FlxTween.tween(rating, {alpha: 0}, 0.2, {
-			startDelay: Conductor.crochet * 0.001,
-			onComplete: function(tween:FlxTween) {
-				rating.kill();
-			}
-		});
+		if (event.tween) {
+			FlxTween.tween(rating, {alpha: 0}, event.tweenDuration, {
+				startDelay: event.startDelay,
+				onComplete: function(tween:FlxTween) {
+					rating.kill();
+				}
+			});
+		}
+		gameAndCharsEvent("onPostRatingsShown", event);
 	}
 
-	public function displayCombo(?evt:NoteHitEvent = null):Void {
+	public function displayCombo():Void {
 		if (minDigitDisplay >= 0 && (combo == 0 || combo >= minDigitDisplay)) {
-			var hasEvent = evt != null;
-			var pre:String = hasEvent ? evt.ratingPrefix : "";
-			var suf:String = hasEvent ? evt.ratingSuffix : "";
+			var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(null, null, comboGroup.recycleLoop(FlxSprite), null, true, 0.7, true, "game/score/", "", 600, FlxPoint.get(FlxG.random.int(0, 10), 150), 0.2, (Conductor.crochet * 0.001), false, false, false, true, null, FlxPoint.get(comboGroup.x, comboGroup.y), true);
+			gameAndCharsEvent("onRatingsShown", event);
 
-			if (evt.displayCombo) {
-				var comboSpr:FlxSprite = comboGroup.recycleLoop(FlxSprite).loadAnimatedGraphic(Paths.image('${pre}combo${suf}'));
-				CoolUtil.resetSprite(comboSpr, comboGroup.x, comboGroup.y);
-				comboSpr.acceleration.y = 600;
-				comboSpr.velocity.y -= 150;
-				comboSpr.velocity.x += FlxG.random.int(1, 10);
+			if (event.cancelled || !event.displayCombo) return;
 
-				if (hasEvent) {
-					comboSpr.scale.set(evt.ratingScale, evt.ratingScale);
-					comboSpr.antialiasing = evt.ratingAntialiasing;
+			if (event.displayCombo) {
+				var comboSpr:FlxSprite = event.comboSprite.loadAnimatedGraphic(Paths.image('${event.ratingPrefix}combo${event.ratingSuffix}'));
+				if (event.resetSprite) {
+					CoolUtil.resetSprite(comboSpr, event.position.x, event.position.y);
 				}
+				comboSpr.acceleration.y = event.acceleration;
+				comboSpr.velocity.y -= event.velocity.y;
+				comboSpr.velocity.x += event.velocity.x;
+				comboSpr.scale.set(event.ratingScale, event.ratingScale);
+				comboSpr.antialiasing = event.ratingAntialiasing;
 				comboSpr.updateHitbox();
 
-				FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
-					onComplete: function(tween:FlxTween)
-					{
-						comboSpr.kill();
-					},
-					startDelay: Conductor.crochet * 0.001
-				});
+				if (event.tween) {
+					FlxTween.tween(comboSpr, {alpha: 0}, event.tweenDuration, {
+						onComplete: function(tween:FlxTween)
+						{
+							comboSpr.kill();
+						},
+						startDelay: event.startDelay
+					});
+				}
 			}
+			gameAndCharsEvent("onPostRatingsShown", event);
+		}
+	}
 
+	public function displayRatingNumbers():Void {
+		if (minDigitDisplay >= 0 && (combo == 0 || combo >= minDigitDisplay)) {
 			var separatedScore:String = Std.string(combo).addZeros(3);
 			for (i in 0...separatedScore.length)
 			{
-				var numScore:FlxSprite = comboGroup.recycleLoop(FlxSprite).loadAnimatedGraphic(Paths.image('${pre}num${separatedScore.charAt(i)}${suf}'));
-				CoolUtil.resetSprite(numScore, comboGroup.x + (43 * i) - 90, comboGroup.y + 80);
-				if (hasEvent) {
-					numScore.antialiasing = evt.numAntialiasing;
-					numScore.scale.set(evt.numScale, evt.numScale);
+				var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(null, comboGroup.recycleLoop(FlxSprite), null, null, true, 0.7, true, "game/score/", "", FlxG.random.int(200, 300), FlxPoint.get(FlxG.random.float(-5, 5), FlxG.random.int(140, 160)), 0.2, (Conductor.crochet * 0.002), false, true, false, true, 43, FlxPoint.get(), true);
+				gameAndCharsEvent("onRatingsShown", event);
+
+				if (event.cancelled || !event.displayNumbers) continue;
+
+				var numScore:FlxSprite = event.numberSprite.loadAnimatedGraphic(Paths.image('${event.ratingPrefix}num${separatedScore.charAt(i)}${event.ratingSuffix}'));
+				event.position.set(comboGroup.x + (event.numSpacing * i) - 90, comboGroup.y + 80); // TODO: Maybe find a better way to do this?
+				if (event.resetSprite) {
+					CoolUtil.resetSprite(numScore, event.position.x, event.position.y);
 				}
+				numScore.antialiasing = event.numAntialiasing;
+				numScore.scale.set(event.numScale, event.numScale);
 				numScore.updateHitbox();
 
-				numScore.acceleration.y = FlxG.random.int(200, 300);
-				numScore.velocity.y -= FlxG.random.int(140, 160);
-				numScore.velocity.x = FlxG.random.float(-5, 5);
+				numScore.acceleration.y = event.acceleration;
+				numScore.velocity.y -= event.velocity.y;
+				numScore.velocity.x = event.velocity.x;
 
-				FlxTween.tween(numScore, {alpha: 0}, 0.2, {
-					onComplete: function(tween:FlxTween)
-					{
-						numScore.kill();
-					},
-					startDelay: Conductor.crochet * 0.002
-				});
+				if (event.tween) {
+					FlxTween.tween(numScore, {alpha: 0}, 0.2, {
+						onComplete: function(tween:FlxTween)
+						{
+							numScore.kill();
+						},
+						startDelay: event.startDelay
+					});
+				}
+				gameAndCharsEvent("onPostRatingsShown", event);
 			}
 		}
 	}
