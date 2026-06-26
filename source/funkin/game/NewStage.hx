@@ -13,6 +13,8 @@ import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.util.FlxSignal.FlxTypedSignal;
+import flixel.util.FlxStringUtil; 
+import flixel.util.FlxStringUtil.LabelValuePair;
 
 import flixel.system.FlxAssets.FlxShader;
 
@@ -136,6 +138,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	private var stageSprites:Map<String, FlxBasic> = [];
 	private var stageLayers:Map<String, StageLayer> = [];
 	
+	//region Stage Layer Management
 	override public function add(basic:FlxBasic):FlxBasic {
 		if (!(basic is StageLayer)) return super.add(basic);
 		
@@ -162,6 +165,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		stageLayers.remove(layer.name);
 		return super.remove(layer, splice);
 	}
+	//endregion
 
 	//region Stage Sprite Management
 	public function addSprite(name:String, spr:FlxObject):FlxObject {
@@ -368,6 +372,15 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		return _bounds.width;
 	private function get_height():Float 
 		return _bounds.height;
+	
+	override public function toString():String {
+		return '(Stage Layer) $name: ${FlxStringUtil.getDebugString([
+			LabelValuePair.weak("x", x),
+			LabelValuePair.weak("y", y),
+			LabelValuePair.weak("width", width),
+			LabelValuePair.weak("height", height),
+		])}';
+	}
 }
 
 class NewStage extends StageLayer {
