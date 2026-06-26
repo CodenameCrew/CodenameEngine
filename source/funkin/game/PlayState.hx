@@ -2071,27 +2071,25 @@ class PlayState extends MusicBeatState
 
 			if (event.cancelled || !event.displayCombo) return;
 
-			if (event.displayCombo) {
-				var comboSpr:FlxSprite = event.comboSprite.loadAnimatedGraphic(Paths.image('${event.ratingPrefix}combo${event.ratingSuffix}'));
-				if (event.resetSprite) {
-					CoolUtil.resetSprite(comboSpr, event.position.x, event.position.y);
-				}
-				comboSpr.acceleration.y = event.acceleration;
-				comboSpr.velocity.y -= event.velocity.y;
-				comboSpr.velocity.x += event.velocity.x;
-				comboSpr.scale.set(event.ratingScale, event.ratingScale);
-				comboSpr.antialiasing = event.ratingAntialiasing;
-				comboSpr.updateHitbox();
+			var comboSpr:FlxSprite = event.comboSprite.loadAnimatedGraphic(Paths.image('${event.ratingPrefix}combo${event.ratingSuffix}'));
+			if (event.resetSprite) {
+				CoolUtil.resetSprite(comboSpr, event.position.x, event.position.y);
+			}
+			comboSpr.acceleration.y = event.acceleration;
+			comboSpr.velocity.y -= event.velocity.y;
+			comboSpr.velocity.x += event.velocity.x;
+			comboSpr.scale.set(event.ratingScale, event.ratingScale);
+			comboSpr.antialiasing = event.ratingAntialiasing;
+			comboSpr.updateHitbox();
 
-				if (event.tween) {
-					FlxTween.tween(comboSpr, {alpha: 0}, event.tweenDuration, {
-						onComplete: function(tween:FlxTween)
-						{
-							comboSpr.kill();
-						},
-						startDelay: event.startDelay
-					});
-				}
+			if (event.tween) {
+				FlxTween.tween(comboSpr, {alpha: 0}, event.tweenDuration, {
+					onComplete: function(tween:FlxTween)
+					{
+						comboSpr.kill();
+					},
+					startDelay: event.startDelay
+				});
 			}
 			gameAndCharsEvent("onPostRatingsShown", event);
 
