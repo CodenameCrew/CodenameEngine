@@ -2028,6 +2028,8 @@ class PlayState extends MusicBeatState
 		if (event.deleteNote) strumLine.deleteNote(note);
 		else note.updateSustainClip();
 
+		event.numPosition.putWeak();
+
 		gameAndCharsEvent("onPostNoteHit", event);
 	}
 
@@ -2107,9 +2109,6 @@ class PlayState extends MusicBeatState
 					startDelay: Conductor.crochet * 0.002
 				});
 			}
-
-			if (hasEvent)
-				e.numPosition.putWeak();
 		}
 	}
 
