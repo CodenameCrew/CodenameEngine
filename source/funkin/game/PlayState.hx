@@ -2037,7 +2037,6 @@ class PlayState extends MusicBeatState
 		gameAndCharsEvent("onRatingsShown", event);
 
 		var hasEvent:Bool = evt != null;
-
 		if (event.cancelled || !event.displayRating || hasEvent && evt.displayRating != null && !evt.displayRating) return;
 
 		var pre:String = hasEvent && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
@@ -2076,12 +2075,13 @@ class PlayState extends MusicBeatState
 			var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(null, null, comboGroup.recycleLoop(FlxSprite), null, true, 0.7, true, "game/score/", "", 600, FlxPoint.get(FlxG.random.int(0, 10), 150), 0.2, (Conductor.crochet * 0.001), false, false, false, true, null, FlxPoint.get(comboGroup.x, comboGroup.y), true);
 			gameAndCharsEvent("onRatingsShown", event);
 
-			if (event.cancelled || !event.displayCombo || !evt?.displayCombo) return;
+			var hasEvent:Bool = evt != null;
+			if (event.cancelled || !event.displayCombo || hasEvent && evt.displayCombo != null && !evt.displayCombo) return;
 
-			var pre:String = evt != null && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
-			var suf:String = evt != null && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
+			var pre:String = hasEvent && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
+			var suf:String = hasEvent && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
 
-			var ratingScale:Float = evt != null && evt.ratingScale != null ? evt.ratingScale : event.ratingScale;
+			var ratingScale:Float = hasEvent && evt.ratingScale != null ? evt.ratingScale : event.ratingScale;
 
 			var comboSpr:FlxSprite = event.comboSprite.loadAnimatedGraphic(Paths.image('${pre}combo${suf}'));
 			if (event.resetSprite) {
@@ -2091,7 +2091,7 @@ class PlayState extends MusicBeatState
 			comboSpr.velocity.y -= event.velocity.y;
 			comboSpr.velocity.x += event.velocity.x;
 			comboSpr.scale.set(ratingScale, ratingScale);
-			comboSpr.antialiasing = evt != null && evt.ratingAntialiasing != null ? evt.ratingAntialiasing : event.ratingAntialiasing;
+			comboSpr.antialiasing = hasEvent && evt.ratingAntialiasing != null ? evt.ratingAntialiasing : event.ratingAntialiasing;
 			comboSpr.updateHitbox();
 
 			if (event.tween) {
@@ -2117,19 +2117,20 @@ class PlayState extends MusicBeatState
 				var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(null, comboGroup.recycleLoop(FlxSprite), null, null, true, 0.7, true, "game/score/", "", FlxG.random.int(200, 300), FlxPoint.get(FlxG.random.float(-5, 5), FlxG.random.int(140, 160)), 0.2, (Conductor.crochet * 0.002), false, true, false, true, 43, FlxPoint.get(), true);
 				gameAndCharsEvent("onRatingsShown", event);
 
+				var hasEvent:Bool = evt != null;
 				if (event.cancelled || !event.displayNumbers) continue;
 
-				var pre:String = evt != null && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
-				var suf:String = evt != null && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
+				var pre:String = hasEvent && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
+				var suf:String = hasEvent && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
 
-				var numScale:Float = evt != null && evt.numScale != null ? evt.numScale : event.numScale;
+				var numScale:Float = hasEvent && evt.numScale != null ? evt.numScale : event.numScale;
 
 				var numScore:FlxSprite = event.numberSprite.loadAnimatedGraphic(Paths.image('${pre}num${separatedScore.charAt(i)}${suf}'));
 				event.position.set(comboGroup.x + (event.numSpacing * i) - 90, comboGroup.y + 80); // TODO: Maybe find a better way to do this?
 				if (event.resetSprite) {
 					CoolUtil.resetSprite(numScore, event.position.x, event.position.y);
 				}
-				numScore.antialiasing = evt != null && evt.numAntialiasing != null ? evt.numAntialiasing : event.numAntialiasing;
+				numScore.antialiasing = hasEvent && evt.numAntialiasing != null ? evt.numAntialiasing : event.numAntialiasing;
 				numScore.scale.set(numScale, numScale);
 				numScore.updateHitbox();
 
