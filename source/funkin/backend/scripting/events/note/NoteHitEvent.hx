@@ -4,6 +4,8 @@ import funkin.game.Character;
 import funkin.game.HealthIcon;
 import funkin.game.Note;
 
+import flixel.math.FlxPoint;
+
 final class NoteHitEvent extends CancellableEvent {
 	@:dox(hide) public var animCancelled:Bool = false;
 	@:dox(hide) public var strumGlowCancelled:Bool = false;
@@ -99,6 +101,10 @@ final class NoteHitEvent extends CancellableEvent {
 	 * Scale of combo numbers.
 	 */
 	public var numScale:Float = 0.5;
+	/**
+	 * Starting position of combo numbers.
+	 */
+	public var numPosition:FlxPoint;
 	/**
 	 * Whenever antialiasing should be enabled on combo number.
 	 */
