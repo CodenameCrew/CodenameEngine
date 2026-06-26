@@ -136,8 +136,8 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	private var stageSprites:Map<String, FlxBasic> = [];
 	private var stageLayers:Map<String, StageLayer> = [];
 	
-	override public function add(basic:T):T {
-		if (!(basic is StageLayer)) return super.add(basic, splice);
+	override public function add(basic:FlxBasic):FlxBasic {
+		if (!(basic is StageLayer)) return super.add(basic);
 		
 		var layer:StageLayer = cast basic;
 		if (stageLayers.exists(layer.name)) return stageLayers.get(layer.name);
@@ -146,8 +146,8 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		return super.add(layer);
 	}
 
-	override public function insert(position:Int, basic:T):T {
-		if (!(basic is StageLayer)) return super.insert(basic, splice);
+	override public function insert(position:Int, basic:FlxBasic):FlxBasic {
+		if (!(basic is StageLayer)) return super.insert(position, basic);
 		var layer:StageLayer = cast basic;
 		if (stageLayers.exists(layer.name)) return stageLayers.get(layer.name);
 
@@ -155,7 +155,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		return super.insert(position, layer);
 	}
 
-	override public function remove(basic:T, splice:Bool = false):T {
+	override public function remove(basic:FlxBasic, splice:Bool = false):FlxBasic {
 		if (!(basic is StageLayer)) return super.remove(basic, splice);
 
 		var layer:StageLayer = cast basic;
