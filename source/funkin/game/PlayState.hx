@@ -1966,9 +1966,9 @@ class PlayState extends MusicBeatState
 
 		var event:NoteHitEvent;
 		if (strumLine != null && !strumLine.cpu)
-			event = EventManager.get(NoteHitEvent).recycle(rating.breaksCombo, !note.isSustainNote, !note.isSustainNote, note, strumLine.characters, true, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), note.strumID, rating.score, note.isSustainNote ? null : rating.accuracy, rating.health, rating.name, Options.splashesEnabled && !note.isSustainNote && rating.splash, true, iconP1);
+			event = EventManager.get(NoteHitEvent).recycle(false, !note.isSustainNote, !note.isSustainNote, null, null, null, note, strumLine.characters, true, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), null, null, note.strumID, rating.score, note.isSustainNote ? null : rating.accuracy, 0.023, rating.name, Options.splashesEnabled && !note.isSustainNote && rating.splash, null, null, null, null, null, iconP1);
 		else
-			event = EventManager.get(NoteHitEvent).recycle(rating.breaksCombo, false, false, note, strumLine.characters, false, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), note.strumID, 0, null, 0, rating.name, false, true, iconP2);
+			event = EventManager.get(NoteHitEvent).recycle(false, false, false, null, null, null, note, strumLine.characters, false, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), null, null, note.strumID, 0, null, 0, rating.name, false, null, null, null, null, true, iconP2);
 		event.deleteNote = !note.isSustainNote; // work around, to allow sustain notes to be deleted
 		event = scripts.event(strumLine != null && !strumLine.cpu ? "onPlayerHit" : "onDadHit", event);
 		strumLine.onHit.dispatch(event);
@@ -1992,9 +1992,9 @@ class PlayState extends MusicBeatState
 
 				if (event.player)
 				{
-					displayCombo();
-					displayRatingNumbers();
-					displayRating(event.rating);
+					displayCombo(event);
+					displayRatingNumbers(event);
+					displayRating(event.rating, event);
 					ratingNum += 1;
 				}
 				if (event.player) hits[rating.name] += 1;
@@ -2031,23 +2031,30 @@ class PlayState extends MusicBeatState
 		gameAndCharsEvent("onPostNoteHit", event);
 	}
 
-	public function displayRating(myRating:String):Void 
+	public function displayRating(myRating:String, ?evt:NoteHitEvent):Void 
 	{
 		var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(comboGroup.recycleLoop(FlxSprite), null, null, null, true, 0.7, true, "game/score/", "", 550, FlxPoint.get(FlxG.random.int(0, 10), FlxG.random.int(140, 175)), 0.2, (Conductor.crochet * 0.001), true, false, false, true, null, FlxPoint.get(comboGroup.x + -40, comboGroup.y + -60), true);
 		gameAndCharsEvent("onRatingsShown", event);
 
-		if (event.cancelled || !event.displayRating) return;
+		var hasEvent:Bool = evt != null;
 
-		var rating:FlxSprite = event.ratingSprite.loadAnimatedGraphic(Paths.image('${event.ratingPrefix}${myRating}${event.ratingSuffix}'));
+		if (event.cancelled || !event.displayRating || hasEvent && evt.displayRating != null && !evt.displayRating) return;
+
+		var pre:String = hasEvent && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
+		var suf:String = hasEvent && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
+
+		var ratingScale:Float = hasEvent && evt.ratingScale != null ? evt.ratingScale : event.ratingScale;
+
+		var rating:FlxSprite = event.ratingSprite;
 		if (event.resetSprite) {
 			CoolUtil.resetSprite(rating, event.position.x, event.position.y);
 		}
-		rating.loadAnimatedGraphic(Paths.image('${event.ratingPrefix}${myRating}${event.ratingSuffix}'));
+		rating.loadAnimatedGraphic(Paths.image('${pre}${myRating}${suf}'));
 		rating.acceleration.y = event.acceleration;
 		rating.velocity.y -= event.velocity.y;
 		rating.velocity.x -= event.velocity.x;
-		rating.scale.set(event.ratingScale, event.ratingScale);
-		rating.antialiasing = event.ratingAntialiasing;
+		rating.scale.set(ratingScale, ratingScale);
+		rating.antialiasing = hasEvent && evt.ratingAntialiasing != null ? evt.ratingAntialiasing : event.ratingAntialiasing;
 		rating.updateHitbox();
 
 		if (event.tween) {
@@ -2064,28 +2071,32 @@ class PlayState extends MusicBeatState
 		event.position.put();
 	}
 
-	public function displayCombo():Void {
+	public function displayCombo(?evt:NoteHitEvent):Void {
 		if (minDigitDisplay >= 0 && (combo == 0 || combo >= minDigitDisplay)) {
 			var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(null, null, comboGroup.recycleLoop(FlxSprite), null, true, 0.7, true, "game/score/", "", 600, FlxPoint.get(FlxG.random.int(0, 10), 150), 0.2, (Conductor.crochet * 0.001), false, false, false, true, null, FlxPoint.get(comboGroup.x, comboGroup.y), true);
 			gameAndCharsEvent("onRatingsShown", event);
 
-			if (event.cancelled || !event.displayCombo) return;
+			if (event.cancelled || !event.displayCombo || !evt?.displayCombo) return;
 
-			var comboSpr:FlxSprite = event.comboSprite.loadAnimatedGraphic(Paths.image('${event.ratingPrefix}combo${event.ratingSuffix}'));
+			var pre:String = evt != null && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
+			var suf:String = evt != null && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
+
+			var ratingScale:Float = evt != null && evt.ratingScale != null ? evt.ratingScale : event.ratingScale;
+
+			var comboSpr:FlxSprite = event.comboSprite.loadAnimatedGraphic(Paths.image('${pre}combo${suf}'));
 			if (event.resetSprite) {
 				CoolUtil.resetSprite(comboSpr, event.position.x, event.position.y);
 			}
 			comboSpr.acceleration.y = event.acceleration;
 			comboSpr.velocity.y -= event.velocity.y;
 			comboSpr.velocity.x += event.velocity.x;
-			comboSpr.scale.set(event.ratingScale, event.ratingScale);
-			comboSpr.antialiasing = event.ratingAntialiasing;
+			comboSpr.scale.set(ratingScale, ratingScale);
+			comboSpr.antialiasing = evt != null && evt.ratingAntialiasing != null ? evt.ratingAntialiasing : event.ratingAntialiasing;
 			comboSpr.updateHitbox();
 
 			if (event.tween) {
 				FlxTween.tween(comboSpr, {alpha: 0}, event.tweenDuration, {
-					onComplete: function(tween:FlxTween)
-					{
+					onComplete: function(tween:FlxTween) {
 						comboSpr.kill();
 					},
 					startDelay: event.startDelay
@@ -2098,7 +2109,7 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	public function displayRatingNumbers():Void {
+	public function displayRatingNumbers(?evt:NoteHitEvent):Void {
 		if (minDigitDisplay >= 0 && (combo == 0 || combo >= minDigitDisplay)) {
 			var separatedScore:String = Std.string(combo).addZeros(3);
 			for (i in 0...separatedScore.length)
@@ -2108,13 +2119,18 @@ class PlayState extends MusicBeatState
 
 				if (event.cancelled || !event.displayNumbers) continue;
 
-				var numScore:FlxSprite = event.numberSprite.loadAnimatedGraphic(Paths.image('${event.ratingPrefix}num${separatedScore.charAt(i)}${event.ratingSuffix}'));
+				var pre:String = evt != null && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
+				var suf:String = evt != null && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
+
+				var numScale:Float = evt != null && evt.numScale != null ? evt.numScale : event.numScale;
+
+				var numScore:FlxSprite = event.numberSprite.loadAnimatedGraphic(Paths.image('${pre}num${separatedScore.charAt(i)}${suf}'));
 				event.position.set(comboGroup.x + (event.numSpacing * i) - 90, comboGroup.y + 80); // TODO: Maybe find a better way to do this?
 				if (event.resetSprite) {
 					CoolUtil.resetSprite(numScore, event.position.x, event.position.y);
 				}
-				numScore.antialiasing = event.numAntialiasing;
-				numScore.scale.set(event.numScale, event.numScale);
+				numScore.antialiasing = evt != null && evt.numAntialiasing != null ? evt.numAntialiasing : event.numAntialiasing;
+				numScore.scale.set(numScale, numScale);
 				numScore.updateHitbox();
 
 				numScore.acceleration.y = event.acceleration;
@@ -2123,8 +2139,7 @@ class PlayState extends MusicBeatState
 
 				if (event.tween) {
 					FlxTween.tween(numScore, {alpha: 0}, event.tweenDuration, {
-						onComplete: function(tween:FlxTween)
-						{
+						onComplete: function(tween:FlxTween) {
 							numScore.kill();
 						},
 						startDelay: event.startDelay
