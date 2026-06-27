@@ -2033,7 +2033,7 @@ class PlayState extends MusicBeatState
 
 	public function displayRating(myRating:String, ?evt:NoteHitEvent):Void 
 	{
-		var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(comboGroup.recycleLoop(FlxSprite), null, null, null, true, 0.7, true, "game/score/", "", 550, FlxPoint.get(FlxG.random.int(0, 10), FlxG.random.int(140, 175)), 0.2, (Conductor.crochet * 0.001), true, false, false, true, null, FlxPoint.get(comboGroup.x + -40, comboGroup.y + -60), true);
+		var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(comboGroup.recycleLoop(FlxSprite), null, null, null, true, 0.7, true, "game/score/", "", 550, FlxPoint.get(FlxG.random.int(0, 10), FlxG.random.int(140, 175)), 0.2, (Conductor.crochet * 0.001), true, false, false, true, null, FlxPoint.get(comboGroup.x + -40, comboGroup.y + -60), true, myRating);
 		gameAndCharsEvent("onRatingsShown", event);
 
 		var hasEvent:Bool = evt != null;
@@ -2048,7 +2048,7 @@ class PlayState extends MusicBeatState
 		if (event.resetSprite) {
 			CoolUtil.resetSprite(rating, event.position.x, event.position.y);
 		}
-		rating.loadAnimatedGraphic(Paths.image('${pre}${myRating}${suf}'));
+		rating.loadAnimatedGraphic(Paths.image('${pre}${event.rating}${suf}'));
 		rating.acceleration.y = event.acceleration;
 		rating.velocity.y -= event.velocity.y;
 		rating.velocity.x -= event.velocity.x;
@@ -2072,7 +2072,7 @@ class PlayState extends MusicBeatState
 
 	public function displayCombo(?evt:NoteHitEvent):Void {
 		if (minDigitDisplay >= 0 && (combo == 0 || combo >= minDigitDisplay)) {
-			var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(null, null, comboGroup.recycleLoop(FlxSprite), null, true, 0.7, true, "game/score/", "", 600, FlxPoint.get(FlxG.random.int(0, 10), 150), 0.2, (Conductor.crochet * 0.001), false, false, false, true, null, FlxPoint.get(comboGroup.x, comboGroup.y), true);
+			var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(null, null, comboGroup.recycleLoop(FlxSprite), null, true, 0.7, true, "game/score/", "", 600, FlxPoint.get(FlxG.random.int(0, 10), 150), 0.2, (Conductor.crochet * 0.001), false, false, false, true, null, FlxPoint.get(comboGroup.x, comboGroup.y), true, null);
 			gameAndCharsEvent("onRatingsShown", event);
 
 			var hasEvent:Bool = evt != null;
@@ -2114,7 +2114,7 @@ class PlayState extends MusicBeatState
 			var separatedScore:String = Std.string(combo).addZeros(3);
 			for (i in 0...separatedScore.length)
 			{
-				var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(null, comboGroup.recycleLoop(FlxSprite), null, null, true, 0.7, true, "game/score/", "", FlxG.random.int(200, 300), FlxPoint.get(FlxG.random.float(-5, 5), FlxG.random.int(140, 160)), 0.2, (Conductor.crochet * 0.002), false, true, false, true, 43, FlxPoint.get(), true);
+				var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(null, comboGroup.recycleLoop(FlxSprite), null, null, true, 0.7, true, "game/score/", "", FlxG.random.int(200, 300), FlxPoint.get(FlxG.random.float(-5, 5), FlxG.random.int(140, 160)), 0.2, (Conductor.crochet * 0.002), false, true, false, true, 43, FlxPoint.get(), true, null);
 				gameAndCharsEvent("onRatingsShown", event);
 
 				var hasEvent:Bool = evt != null;
