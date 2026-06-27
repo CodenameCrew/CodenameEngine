@@ -84,4 +84,8 @@ final class RatingsShowEvent extends CancellableEvent
   	 * Whether to reset the sprite or not.
      */
 	public var resetSprite:Bool;
+	/**
+     * The rating name of the rating sprite. (may be null)
+	 */
+	public var rating:Null<String>;
 }
