@@ -2033,11 +2033,11 @@ class PlayState extends MusicBeatState
 
 	public function displayRating(myRating:String, ?evt:NoteHitEvent):Void 
 	{
-		var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(comboGroup.recycleLoop(FlxSprite), null, null, null, true, 0.7, true, "game/score/", "", 550, FlxPoint.get(FlxG.random.int(0, 10), FlxG.random.int(140, 175)), 0.2, (Conductor.crochet * 0.001), true, false, false, true, null, FlxPoint.get(comboGroup.x + -40, comboGroup.y + -60), true, myRating);
+		var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(comboGroup.recycleLoop(FlxSprite), null, null, null, true, 0.7, true, "game/score/", "", 550, FlxPoint.get(FlxG.random.int(0, 10), FlxG.random.int(140, 175)), 0.2, (Conductor.crochet * 0.001), evt != null && evt.displayRating != null ? evt.displayRating : defaultDisplayRating, false, false, true, null, FlxPoint.get(comboGroup.x + -40, comboGroup.y + -60), true, myRating);
 		gameAndCharsEvent("onRatingsShown", event);
 
 		var hasEvent:Bool = evt != null;
-		if (event.cancelled || !event.displayRating || hasEvent && evt.displayRating != null && !evt.displayRating) return;
+		if (event.cancelled || !event.displayRating) return;
 
 		var pre:String = hasEvent && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
 		var suf:String = hasEvent && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
@@ -2072,11 +2072,11 @@ class PlayState extends MusicBeatState
 
 	public function displayCombo(?evt:NoteHitEvent):Void {
 		if (minDigitDisplay >= 0 && (combo == 0 || combo >= minDigitDisplay)) {
-			var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(null, null, comboGroup.recycleLoop(FlxSprite), null, true, 0.7, true, "game/score/", "", 600, FlxPoint.get(FlxG.random.int(0, 10), 150), 0.2, (Conductor.crochet * 0.001), false, false, false, true, null, FlxPoint.get(comboGroup.x, comboGroup.y), true, null);
+			var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(null, null, comboGroup.recycleLoop(FlxSprite), null, true, 0.7, true, "game/score/", "", 600, FlxPoint.get(FlxG.random.int(0, 10), 150), 0.2, (Conductor.crochet * 0.001), false, false, evt != null && evt.displayCombo != null ? evt.displayCombo : defaultDisplayCombo, true, null, FlxPoint.get(comboGroup.x, comboGroup.y), true, null);
 			gameAndCharsEvent("onRatingsShown", event);
 
 			var hasEvent:Bool = evt != null;
-			if (event.cancelled || !event.displayCombo || hasEvent && evt.displayCombo != null && !evt.displayCombo) return;
+			if (event.cancelled || !event.displayCombo) return;
 
 			var pre:String = hasEvent && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
 			var suf:String = hasEvent && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
