@@ -943,7 +943,7 @@ class PlayState extends MusicBeatState
 
 		// Make icons appear in the correct spot during cutscenes
 		healthBar.update(0);
-		if (updateIconPositions != null)
+		if (updateIconPositions != null && Flags.ICONS_AUTOPOSITION)
 			updateIconPositions();
 
 		__updateNote_event = EventManager.get(NoteUpdateEvent);
