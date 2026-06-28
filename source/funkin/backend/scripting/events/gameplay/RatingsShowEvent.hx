@@ -1,6 +1,7 @@
 package funkin.backend.scripting.events.gameplay;
 
 import flixel.math.FlxPoint;
+import flixel.tweens.FlxTween;
 
 final class RatingsShowEvent extends CancellableEvent 
 {
@@ -71,7 +72,7 @@ final class RatingsShowEvent extends CancellableEvent
 	/**
 	 * Whether the sprite should be tweened or not.
 	 */
-	public var tween:Bool;
+	public var playTween:Bool;
 	/**
 	 * The amount of spacing for the combo numbers. (may be null)
 	 */
@@ -88,4 +89,8 @@ final class RatingsShowEvent extends CancellableEvent
      * The rating name of the rating sprite. (may be null)
 	 */
 	public var rating:Null<String>;
+	/**
+	 * The FlxTween instance. (null before "onPostRatingsShown")
+	 */
+	public var tween:Null<FlxTween>;
 }
