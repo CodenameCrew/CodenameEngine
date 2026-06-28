@@ -75,7 +75,7 @@ function onCountdown(event) {
 	};
 }
 
-function onPlayerHit(event:NoteHitEvent) {
+function onRatingsShown(event:RatingsShowEvent) {
 	if (!enablePixelUI) return;
 	event.ratingPrefix = "stages/school/ui/";
 	event.ratingScale = daPixelZoom * 0.7;
