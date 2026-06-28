@@ -343,9 +343,8 @@ class StrumLine extends FlxTypedGroup<Strum> {
 			notes.forEachAlive(__inputProcessPressed);
 		}
 
-		forEach(function(str:Strum) {
-			str.updatePlayerInput(__pressed[str.ID], __justPressed[str.ID], __justReleased[str.ID]);
-		});
+		for (i => str in members)
+			str.updatePlayerInput(__pressed[i], __justPressed[i], __justReleased[i]);
 
 		PlayState.instance.gameAndCharsCall("onPostInputUpdate");
 	}

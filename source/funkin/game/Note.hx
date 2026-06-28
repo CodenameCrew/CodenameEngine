@@ -77,8 +77,9 @@ class Note extends FlxSprite
 
 	public var strumID(get, never):Int;
 	private function get_strumID() {
-		var id = noteData % strumLine.members.length;
+		var id = noteData;
 		if (id < 0) id = 0;
+		else if (id >= strumLine.members.length) id = noteData % strumLine.members.length;
 		return id;
 	}
 
