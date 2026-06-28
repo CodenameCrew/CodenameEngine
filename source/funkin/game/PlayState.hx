@@ -2059,8 +2059,8 @@ class PlayState extends MusicBeatState
 		rating.antialiasing = hasEvent && evt.ratingAntialiasing != null ? evt.ratingAntialiasing : event.ratingAntialiasing;
 		rating.updateHitbox();
 
-		if (event.playTween) {
-			event.tween = FlxTween.tween(rating, {alpha: 0}, event.tweenDuration, {
+		if (event.tween) {
+			event.tweenInstance = FlxTween.tween(rating, {alpha: 0}, event.tweenDuration, {
 				startDelay: event.startDelay,
 				onComplete: function(tween:FlxTween) {
 					rating.kill();
@@ -2101,8 +2101,8 @@ class PlayState extends MusicBeatState
 			comboSpr.antialiasing = hasEvent && evt.ratingAntialiasing != null ? evt.ratingAntialiasing : event.ratingAntialiasing;
 			comboSpr.updateHitbox();
 
-			if (event.playTween) {
-				event.tween = FlxTween.tween(comboSpr, {alpha: 0}, event.tweenDuration, {
+			if (event.tween) {
+				event.tweenInstance = FlxTween.tween(comboSpr, {alpha: 0}, event.tweenDuration, {
 					onComplete: function(tween:FlxTween) {
 						comboSpr.kill();
 					},
@@ -2149,8 +2149,8 @@ class PlayState extends MusicBeatState
 				numScore.velocity.y -= event.velocity.y;
 				numScore.velocity.x = event.velocity.x;
 
-				if (event.playTween) {
-					event.tween = FlxTween.tween(numScore, {alpha: 0}, event.tweenDuration, {
+				if (event.tween) {
+					event.tweenInstance = FlxTween.tween(numScore, {alpha: 0}, event.tweenDuration, {
 						onComplete: function(tween:FlxTween) {
 							numScore.kill();
 						},
