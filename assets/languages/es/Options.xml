@@ -117,7 +117,7 @@
 
 			<str id="streamedMusic-name">Transmición de Música</str>
 			<str id="streamedMusic-desc">Si está activado, la música será transmitida en tiempo real, liberando un montón de RAM, aunque usará más CPU si hay mucho audio al mismo tiempo (EXPERIMENTAL). Desactivarlo consumirá más RAM, especialmente en canciones más largas. Si no estás seguro, déjalo activado.</str>
-			
+
 			<str id="streamedVocals-name">Transmición de Vocales</str>
 			<str id="streamedVocals-desc">Si está activado, las vocales también serán transmitidas, impactará el rendimiento si hay muchas vocales (EXPERIMENTAL). Si no estás seguro, déjalo desactivade.</str>
 		</group>
@@ -158,9 +158,12 @@
 
 		<str id="bypassEditorsResize-name">Desactivar Tamaño Mínimo</str>
 		<str id="bypassEditorsResize-desc">Desactiva el tamaño mínimo de los editores (Editores Adaptables debe estar activado).</str>
-		
+
 		<str id="editorSFX-name">Sonidos del Editor</str>
 		<str id="editorSFX-desc">Si está activado, habran sonidos en los editores (ej: al activar opciones...)</str>
+
+		<str id="charterSwapEventSides-name">Cambiar Lados de Eventos</str>
+		<str id="charterSwapEventSides-desc">Si está activado, eventos globales estarán a la izquierda de las pistas.</str>
 
 		<str id="editorPrettyPrint-desc">Si está activado, los charts se guardarán de forma más legible (no aplica a XMLs)</str>
 
