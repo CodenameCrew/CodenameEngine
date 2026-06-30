@@ -9,6 +9,7 @@ using flixel.util.FlxSpriteUtil;
 class CharterAutoSaveUI extends UISliceSprite {
 	public var icon:FlxSprite;
 	public var autosavingText:UIText;
+	public var cancelText:UIText;
 	public var progressBarBack:FlxSprite;
 	public var progressBar:FlxSprite;
 
@@ -19,7 +20,7 @@ class CharterAutoSaveUI extends UISliceSprite {
 	public var cancelled:Bool = false;
 
 	public function new(x:Float, y:Float) {
-		super(x, y, 300, 46, "editors/ui/inputbox");
+		super(x, y, 0, 46, "editors/ui/inputbox");
 
 		icon = new FlxSprite(x+12, y+9).loadGraphic(Paths.image("editors/autosave-icons"), true, 10, 10);
 		icon.animation.add("icon", [for(i in 0...3) i], 0, true);
@@ -27,6 +28,11 @@ class CharterAutoSaveUI extends UISliceSprite {
 		members.push(icon);
 
 		members.push(autosavingText = new UIText(x+12+10+4, y+8, 0, TU.translate("editor.autosavingIn", ["?", "..."]), 12));
+		members.push(cancelText = new UIText(0, y+8, 0, TU.translate("editor.autosavingCanceledSuffix"), 12));
+		autosavingText.updateHitbox(); cancelText.updateHitbox();
+		bWidth = autosavingText.frameWidth + 150;
+		cancelText.x = x + bWidth - cancelText.frameWidth - 4;
+		cancelText.visible = false;
 
 		progressBarBack = new FlxSprite(x + 10, y + bHeight - 20).makeGraphic(Std.int(bWidth-20), 10, 0x00000000, true);
 		progressBarBack.drawRoundRect(0, 0, progressBarBack.width, progressBarBack.height, 4, 6, 0xFF727272, null, {smoothing: false});
@@ -45,9 +51,9 @@ class CharterAutoSaveUI extends UISliceSprite {
 
 			icon.animation.curAnim.curFrame = 2;
 			(new FlxTimer()).start(1, (_) -> {disappearAnimation(true);});
-			autosavingText.text += " " + TU.translate("editor.autosavingCanceledSuffix");
+			cancelText.visible = true;
 			cancelButton.visible = false;
-			for (member in [this, autosavingText]) member.color = 0xFFE67F7F;
+			for (member in [this, autosavingText, cancelText]) member.color = 0xFFE67F7F;
 			for (member in [progressBar, progressBarBack]) member.color = 0xFFE67F7F;
 		}, 24, 14);
 		cancelButton.frames = Paths.getFrames("editors/ui/grayscale-button");
@@ -106,6 +112,9 @@ class CharterAutoSaveUI extends UISliceSprite {
 		autosavingText.follow(this, 12+10+4, 8);
 		autosavingText.alpha = alpha;
 
+		cancelText.follow(this, bWidth - cancelText.frameWidth - 4, 8);
+		cancelText.alpha = alpha;
+
 		for (bar in [progressBar, progressBarBack]) {
 			bar.follow(this, 10, bHeight-20);
 			bar.alpha = alpha;
@@ -115,9 +124,9 @@ class CharterAutoSaveUI extends UISliceSprite {
 
 	public function appearAnimation() {
 		progress = 0; icon.animation.curAnim.curFrame = 0;
-		for (member in [this, autosavingText, progressBar, progressBarBack]) member.color = 0xFFFFFFFF;
+		for (member in [this, autosavingText, progressBar, progressBarBack, cancelText]) member.color = 0xFFFFFFFF;
 
-		x = -(320); alpha=0; FlxTween.cancelTweensOf(this); cancelled = false; cancelButton.visible = true;
+		x = -(320); alpha=0; FlxTween.cancelTweensOf(this); cancelled = false; cancelButton.visible = true; cancelText.visible = false;
 		FlxTween.tween(this, {x: 20}, .4, {ease: FlxEase.circInOut});
 		FlxTween.tween(this, {alpha: 1}, .3, {ease: FlxEase.sineOut, startDelay: .1});
 

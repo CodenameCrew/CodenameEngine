@@ -1,282 +1,346 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
--->
-<TextureAtlas imagePath="alphabet-bold.png" width="866" height="861">
-	<SubTexture name="character-a0000" x="713" y="1" width="54" height="67" frameX="-0" frameY="-0" frameWidth="54" frameHeight="67"/>
-	<SubTexture name="character-a0001" x="713" y="71" width="54" height="67" frameX="-0" frameY="-0" frameWidth="54" frameHeight="67"/>
-	<SubTexture name="character-ampersand0000" x="251" y="77" width="60" height="72" frameX="-0" frameY="-0" frameWidth="60" frameHeight="72"/>
-	<SubTexture name="character-ampersand0001" x="251" y="152" width="60" height="72" frameX="-0" frameY="-0" frameWidth="60" frameHeight="72"/>
-	<SubTexture name="character-anglebracket-left0000" x="245" y="452" width="42" height="70" frameX="-0" frameY="-0" frameWidth="42" frameHeight="70"/>
-	<SubTexture name="character-anglebracket-left0001" x="290" y="452" width="42" height="70" frameX="-0" frameY="-0" frameWidth="42" frameHeight="70"/>
-	<SubTexture name="character-anglebracket-right0000" x="56" y="324" width="45" height="71" frameX="-0" frameY="-0" frameWidth="45" frameHeight="71"/>
-	<SubTexture name="character-anglebracket-right0001" x="104" y="324" width="45" height="71" frameX="-0" frameY="-0" frameWidth="45" frameHeight="71"/>
-	<SubTexture name="character-angryfaic0000" x="152" y="304" width="71" height="71" frameX="-0" frameY="-0" frameWidth="71" frameHeight="71"/>
-	<SubTexture name="character-angryfaic0001" x="226" y="304" width="71" height="71" frameX="-0" frameY="-0" frameWidth="71" frameHeight="71"/>
-	<SubTexture name="character-angryfaic-alt0000" x="713" y="715" width="54" height="54" frameX="-0" frameY="-0" frameWidth="54" frameHeight="54"/>
-	<SubTexture name="character-angryfaic-alt0001" x="276" y="763" width="54" height="54" frameX="-0" frameY="-0" frameWidth="54" frameHeight="54"/>
-	<SubTexture name="character-arrow-down0000" x="370" y="1" width="71" height="71" frameX="-0" frameY="-0" frameWidth="71" frameHeight="71"/>
-	<SubTexture name="character-arrow-down0001" x="370" y="75" width="71" height="71" frameX="-0" frameY="-0" frameWidth="71" frameHeight="71"/>
-	<SubTexture name="character-arrow-down-alt0000" x="660" y="720" width="48" height="53" frameX="-0" frameY="-0" frameWidth="48" frameHeight="53"/>
-	<SubTexture name="character-arrow-down-alt0001" x="333" y="763" width="48" height="53" frameX="-0" frameY="-0" frameWidth="48" frameHeight="53"/>
-	<SubTexture name="character-arrow-left0000" x="367" y="149" width="71" height="71" frameX="-0" frameY="-0" frameWidth="71" frameHeight="71"/>
-	<SubTexture name="character-arrow-left0001" x="367" y="223" width="71" height="71" frameX="-0" frameY="-0" frameWidth="71" frameHeight="71"/>
-	<SubTexture name="character-arrow-left-alt0000" x="384" y="763" width="51" height="48" frameX="-0" frameY="-0" frameWidth="51" frameHeight="48"/>
-	<SubTexture name="character-arrow-left-alt0001" x="438" y="763" width="51" height="48" frameX="-0" frameY="-0" frameWidth="51" frameHeight="48"/>
-	<SubTexture name="character-arrow-right0000" x="360" y="297" width="71" height="71" frameX="-0" frameY="-0" frameWidth="71" frameHeight="71"/>
-	<SubTexture name="character-arrow-right0001" x="1" y="399" width="71" height="71" frameX="-0" frameY="-0" frameWidth="71" frameHeight="71"/>
-	<SubTexture name="character-arrow-right-alt0000" x="492" y="776" width="51" height="46" frameX="-0" frameY="-0" frameWidth="51" frameHeight="46"/>
-	<SubTexture name="character-arrow-right-alt0001" x="546" y="776" width="51" height="46" frameX="-0" frameY="-0" frameWidth="51" frameHeight="46"/>
-	<SubTexture name="character-arrow-up0000" x="75" y="398" width="71" height="71" frameX="-0" frameY="-0" frameWidth="71" frameHeight="71"/>
-	<SubTexture name="character-arrow-up0001" x="149" y="398" width="71" height="71" frameX="-0" frameY="-0" frameWidth="71" frameHeight="71"/>
-	<SubTexture name="character-arrow-up-alt0000" x="600" y="763" width="45" height="51" frameX="-0" frameY="-0" frameWidth="45" frameHeight="51"/>
-	<SubTexture name="character-arrow-up-alt0001" x="770" y="1" width="45" height="51" frameX="-0" frameY="-0" frameWidth="45" frameHeight="51"/>
-	<SubTexture name="character-ash0000" x="175" y="1" width="73" height="73" frameX="-0" frameY="-0" frameWidth="73" frameHeight="73"/>
-	<SubTexture name="character-ash0001" x="175" y="77" width="73" height="73" frameX="-0" frameY="-0" frameWidth="73" frameHeight="73"/>
-	<SubTexture name="character-asterisk0000" x="817" y="409" width="40" height="33" frameX="-0" frameY="-0" frameWidth="40" frameHeight="33"/>
-	<SubTexture name="character-asterisk0001" x="795" y="445" width="40" height="33" frameX="-0" frameY="-0" frameWidth="40" frameHeight="33"/>
-	<SubTexture name="character-at0000" x="141" y="153" width="68" height="73" frameX="-0" frameY="-0" frameWidth="68" frameHeight="73"/>
-	<SubTexture name="character-at0001" x="251" y="1" width="68" height="73" frameX="-0" frameY="-0" frameWidth="68" frameHeight="73"/>
-	<SubTexture name="character-b0000" x="335" y="452" width="46" height="70" frameX="-0" frameY="-0" frameWidth="46" frameHeight="70"/>
-	<SubTexture name="character-b0001" x="384" y="450" width="46" height="70" frameX="-0" frameY="-0" frameWidth="46" frameHeight="70"/>
-	<SubTexture name="character-backslash0000" x="433" y="445" width="51" height="70" frameX="-0" frameY="-0" frameWidth="51" frameHeight="70"/>
-	<SubTexture name="character-backslash0001" x="506" y="1" width="51" height="70" frameX="-0" frameY="-0" frameWidth="51" frameHeight="70"/>
-	<SubTexture name="character-backtick0000" x="829" y="799" width="33" height="31" frameX="-0" frameY="-0" frameWidth="33" frameHeight="31"/>
-	<SubTexture name="character-backtick0001" x="214" y="825" width="33" height="31" frameX="-0" frameY="-0" frameWidth="33" frameHeight="31"/>
-	<SubTexture name="character-c0000" x="223" y="378" width="58" height="71" frameX="-0" frameY="-0" frameWidth="58" frameHeight="71"/>
-	<SubTexture name="character-c0001" x="284" y="378" width="58" height="71" frameX="-0" frameY="-0" frameWidth="58" frameHeight="71"/>
-	<SubTexture name="character-caret0000" x="817" y="131" width="46" height="34" frameX="-0" frameY="-0" frameWidth="46" frameHeight="34"/>
-	<SubTexture name="character-caret0001" x="817" y="168" width="46" height="34" frameX="-0" frameY="-0" frameWidth="46" frameHeight="34"/>
-	<SubTexture name="character-colon0000" x="770" y="55" width="22" height="49" frameX="-0" frameY="-0" frameWidth="22" frameHeight="49"/>
-	<SubTexture name="character-colon0001" x="770" y="435" width="22" height="49" frameX="-0" frameY="-0" frameWidth="22" frameHeight="49"/>
-	<SubTexture name="character-comma0000" x="838" y="445" width="25" height="32" frameX="-0" frameY="-0" frameWidth="25" frameHeight="32"/>
-	<SubTexture name="character-comma0001" x="838" y="675" width="25" height="32" frameX="-0" frameY="-0" frameWidth="25" frameHeight="32"/>
-	<SubTexture name="character-curlybracket-left0000" x="300" y="302" width="46" height="71" frameX="-0" frameY="-0" frameWidth="46" frameHeight="71"/>
-	<SubTexture name="character-curlybracket-left0001" x="345" y="376" width="46" height="71" frameX="-0" frameY="-0" frameWidth="46" frameHeight="71"/>
-	<SubTexture name="character-curlybracket-right0000" x="468" y="371" width="47" height="70" frameX="-0" frameY="-0" frameWidth="47" frameHeight="70"/>
-	<SubTexture name="character-curlybracket-right0001" x="506" y="74" width="47" height="70" frameX="-0" frameY="-0" frameWidth="47" frameHeight="70"/>
-	<SubTexture name="character-d0000" x="653" y="365" width="53" height="68" frameX="-0" frameY="-0" frameWidth="53" frameHeight="68"/>
-	<SubTexture name="character-d0001" x="649" y="436" width="53" height="68" frameX="-0" frameY="-0" frameWidth="53" frameHeight="68"/>
-	<SubTexture name="character-dollar0000" x="506" y="147" width="47" height="70" frameX="-0" frameY="-0" frameWidth="47" frameHeight="70"/>
-	<SubTexture name="character-dollar0001" x="502" y="220" width="47" height="70" frameX="-0" frameY="-0" frameWidth="47" frameHeight="70"/>
-	<SubTexture name="character-doublequote0000" x="818" y="1" width="47" height="32" frameX="-0" frameY="-0" frameWidth="47" frameHeight="32"/>
-	<SubTexture name="character-doublequote0001" x="818" y="36" width="47" height="32" frameX="-0" frameY="-0" frameWidth="47" frameHeight="32"/>
-	<SubTexture name="character-doublequote-alt0000" x="770" y="159" width="43" height="45" frameX="-0" frameY="-0" frameWidth="43" frameHeight="45"/>
-	<SubTexture name="character-doublequote-alt0001" x="770" y="207" width="43" height="45" frameX="-0" frameY="-0" frameWidth="43" frameHeight="45"/>
-	<SubTexture name="character-e0000" x="705" y="577" width="43" height="66" frameX="-0" frameY="-0" frameWidth="43" frameHeight="66"/>
-	<SubTexture name="character-e0001" x="708" y="289" width="43" height="66" frameX="-0" frameY="-0" frameWidth="43" frameHeight="66"/>
-	<SubTexture name="character-eight0000" x="699" y="507" width="49" height="67" frameX="-0" frameY="-0" frameWidth="49" frameHeight="67"/>
-	<SubTexture name="character-eight0001" x="705" y="436" width="49" height="67" frameX="-0" frameY="-0" frameWidth="49" frameHeight="67"/>
-	<SubTexture name="character-equal0000" x="751" y="562" width="48" height="34" frameX="-0" frameY="-0" frameWidth="48" frameHeight="34"/>
-	<SubTexture name="character-equal0001" x="751" y="599" width="48" height="34" frameX="-0" frameY="-0" frameWidth="48" frameHeight="34"/>
-	<SubTexture name="character-ethel0000" x="93" y="1" width="79" height="71" frameX="-0" frameY="-0" frameWidth="79" frameHeight="71"/>
-	<SubTexture name="character-ethel0001" x="93" y="75" width="79" height="71" frameX="-0" frameY="-0" frameWidth="79" frameHeight="71"/>
-	<SubTexture name="character-exclamationmark0000" x="212" y="153" width="33" height="72" frameX="-0" frameY="-0" frameWidth="33" frameHeight="72"/>
-	<SubTexture name="character-exclamationmark0001" x="1" y="249" width="33" height="72" frameX="-0" frameY="-0" frameWidth="33" frameHeight="72"/>
-	<SubTexture name="character-exclamationmark-alt0000" x="1" y="87" width="29" height="76" frameX="-0" frameY="-0" frameWidth="29" frameHeight="76"/>
-	<SubTexture name="character-exclamationmark-alt0001" x="109" y="149" width="29" height="76" frameX="-0" frameY="-0" frameWidth="29" frameHeight="76"/>
-	<SubTexture name="character-f0000" x="653" y="507" width="43" height="68" frameX="-0" frameY="-0" frameWidth="43" frameHeight="68"/>
-	<SubTexture name="character-f0001" x="662" y="289" width="43" height="68" frameX="-0" frameY="-0" frameWidth="43" frameHeight="68"/>
-	<SubTexture name="character-five0000" x="37" y="249" width="47" height="72" frameX="-0" frameY="-0" frameWidth="47" frameHeight="72"/>
-	<SubTexture name="character-five0001" x="87" y="249" width="47" height="72" frameX="-0" frameY="-0" frameWidth="47" frameHeight="72"/>
-	<SubTexture name="character-four0000" x="544" y="439" width="53" height="69" frameX="-0" frameY="-0" frameWidth="53" frameHeight="69"/>
-	<SubTexture name="character-four0001" x="544" y="511" width="53" height="69" frameX="-0" frameY="-0" frameWidth="53" frameHeight="69"/>
-	<SubTexture name="character-g0000" x="248" y="227" width="54" height="72" frameX="-0" frameY="-0" frameWidth="54" frameHeight="72"/>
-	<SubTexture name="character-g0001" x="137" y="229" width="54" height="72" frameX="-0" frameY="-0" frameWidth="54" frameHeight="72"/>
-	<SubTexture name="character-h0000" x="560" y="1" width="45" height="69" frameX="-0" frameY="-0" frameWidth="45" frameHeight="69"/>
-	<SubTexture name="character-h0001" x="555" y="366" width="45" height="69" frameX="-0" frameY="-0" frameWidth="45" frameHeight="69"/>
-	<SubTexture name="character-heart0000" x="608" y="1" width="67" height="69" frameX="-0" frameY="-0" frameWidth="67" frameHeight="69"/>
-	<SubTexture name="character-heart0001" x="592" y="293" width="67" height="69" frameX="-0" frameY="-0" frameWidth="67" frameHeight="69"/>
-	<SubTexture name="character-heart-alt0000" x="160" y="763" width="55" height="54" frameX="-0" frameY="-0" frameWidth="55" frameHeight="54"/>
-	<SubTexture name="character-heart-alt0001" x="218" y="763" width="55" height="54" frameX="-0" frameY="-0" frameWidth="55" frameHeight="54"/>
-	<SubTexture name="character-hyphen0000" x="757" y="487" width="49" height="20" frameX="-0" frameY="-0" frameWidth="49" frameHeight="20"/>
-	<SubTexture name="character-hyphen0001" x="648" y="776" width="49" height="20" frameX="-0" frameY="-0" frameWidth="49" frameHeight="20"/>
-	<SubTexture name="character-i0000" x="697" y="141" width="43" height="66" frameX="-0" frameY="-0" frameWidth="43" frameHeight="66"/>
-	<SubTexture name="character-i0001" x="709" y="358" width="43" height="66" frameX="-0" frameY="-0" frameWidth="43" frameHeight="66"/>
-	<SubTexture name="character-j0000" x="487" y="444" width="54" height="70" frameX="-0" frameY="-0" frameWidth="54" frameHeight="70"/>
-	<SubTexture name="character-j0001" x="1" y="547" width="54" height="70" frameX="-0" frameY="-0" frameWidth="54" frameHeight="70"/>
-	<SubTexture name="character-k0000" x="194" y="229" width="45" height="72" frameX="-0" frameY="-0" frameWidth="45" frameHeight="72"/>
-	<SubTexture name="character-k0001" x="322" y="1" width="45" height="72" frameX="-0" frameY="-0" frameWidth="45" frameHeight="72"/>
-	<SubTexture name="character-l0000" x="603" y="365" width="43" height="69" frameX="-0" frameY="-0" frameWidth="43" frameHeight="69"/>
-	<SubTexture name="character-l0001" x="603" y="437" width="43" height="69" frameX="-0" frameY="-0" frameWidth="43" frameHeight="69"/>
-	<SubTexture name="character-m0000" x="58" y="547" width="61" height="70" frameX="-0" frameY="-0" frameWidth="61" frameHeight="70"/>
-	<SubTexture name="character-m0001" x="122" y="547" width="61" height="70" frameX="-0" frameY="-0" frameWidth="61" frameHeight="70"/>
-	<SubTexture name="character-multiply0000" x="817" y="205" width="46" height="46" frameX="-0" frameY="-0" frameWidth="46" frameHeight="46"/>
-	<SubTexture name="character-multiply0001" x="817" y="254" width="46" height="46" frameX="-0" frameY="-0" frameWidth="46" frameHeight="46"/>
-	<SubTexture name="character-n0000" x="658" y="578" width="44" height="68" frameX="-0" frameY="-0" frameWidth="44" frameHeight="68"/>
-	<SubTexture name="character-n0001" x="1" y="692" width="44" height="68" frameX="-0" frameY="-0" frameWidth="44" frameHeight="68"/>
-	<SubTexture name="character-nine0000" x="658" y="649" width="52" height="68" frameX="-0" frameY="-0" frameWidth="52" frameHeight="68"/>
-	<SubTexture name="character-nine0001" x="48" y="692" width="52" height="68" frameX="-0" frameY="-0" frameWidth="52" frameHeight="68"/>
-	<SubTexture name="character-o0000" x="601" y="73" width="50" height="69" frameX="-0" frameY="-0" frameWidth="50" frameHeight="69"/>
-	<SubTexture name="character-o0001" x="556" y="145" width="50" height="69" frameX="-0" frameY="-0" frameWidth="50" frameHeight="69"/>
-	<SubTexture name="character-one0000" x="601" y="217" width="51" height="69" frameX="-0" frameY="-0" frameWidth="51" frameHeight="69"/>
-	<SubTexture name="character-one0001" x="609" y="145" width="51" height="69" frameX="-0" frameY="-0" frameWidth="51" frameHeight="69"/>
-	<SubTexture name="character-p0000" x="186" y="546" width="46" height="70" frameX="-0" frameY="-0" frameWidth="46" frameHeight="70"/>
-	<SubTexture name="character-p0001" x="235" y="546" width="46" height="70" frameX="-0" frameY="-0" frameWidth="46" frameHeight="70"/>
-	<SubTexture name="character-percent0000" x="444" y="1" width="59" height="71" frameX="-0" frameY="-0" frameWidth="59" frameHeight="71"/>
-	<SubTexture name="character-percent0001" x="444" y="75" width="59" height="71" frameX="-0" frameY="-0" frameWidth="59" frameHeight="71"/>
-	<SubTexture name="character-period0000" x="109" y="228" width="23" height="18" frameX="-0" frameY="-0" frameWidth="23" frameHeight="18"/>
-	<SubTexture name="character-period0001" x="770" y="700" width="23" height="18" frameX="-0" frameY="-0" frameWidth="23" frameHeight="18"/>
-	<SubTexture name="character-plus0000" x="757" y="279" width="51" height="50" frameX="-0" frameY="-0" frameWidth="51" frameHeight="50"/>
-	<SubTexture name="character-plus0001" x="757" y="332" width="51" height="50" frameX="-0" frameY="-0" frameWidth="51" frameHeight="50"/>
-	<SubTexture name="character-pound0000" x="441" y="149" width="58" height="71" frameX="-0" frameY="-0" frameWidth="58" frameHeight="71"/>
-	<SubTexture name="character-pound0001" x="441" y="223" width="58" height="71" frameX="-0" frameY="-0" frameWidth="58" frameHeight="71"/>
-	<SubTexture name="character-q0000" x="487" y="517" width="52" height="70" frameX="-0" frameY="-0" frameWidth="52" frameHeight="70"/>
-	<SubTexture name="character-q0001" x="284" y="525" width="52" height="70" frameX="-0" frameY="-0" frameWidth="52" frameHeight="70"/>
-	<SubTexture name="character-questionmark0000" x="600" y="509" width="50" height="69" frameX="-0" frameY="-0" frameWidth="50" frameHeight="69"/>
-	<SubTexture name="character-questionmark0001" x="1" y="620" width="50" height="69" frameX="-0" frameY="-0" frameWidth="50" frameHeight="69"/>
-	<SubTexture name="character-questionmark-alt0000" x="1" y="169" width="51" height="77" frameX="-0" frameY="-0" frameWidth="51" frameHeight="77"/>
-	<SubTexture name="character-questionmark-alt0001" x="55" y="169" width="51" height="77" frameX="-0" frameY="-0" frameWidth="51" frameHeight="77"/>
-	<SubTexture name="character-r0000" x="103" y="692" width="46" height="68" frameX="-0" frameY="-0" frameWidth="46" frameHeight="68"/>
-	<SubTexture name="character-r0001" x="152" y="692" width="46" height="68" frameX="-0" frameY="-0" frameWidth="46" frameHeight="68"/>
-	<SubTexture name="character-roundbracket-left0000" x="560" y="73" width="34" height="69" frameX="-0" frameY="-0" frameWidth="34" frameHeight="69"/>
-	<SubTexture name="character-roundbracket-left0001" x="54" y="620" width="34" height="69" frameX="-0" frameY="-0" frameWidth="34" frameHeight="69"/>
-	<SubTexture name="character-roundbracket-right0000" x="394" y="371" width="34" height="71" frameX="-0" frameY="-0" frameWidth="34" frameHeight="71"/>
-	<SubTexture name="character-roundbracket-right0001" x="431" y="371" width="34" height="71" frameX="-0" frameY="-0" frameWidth="34" frameHeight="71"/>
-	<SubTexture name="character-s0000" x="201" y="691" width="49" height="68" frameX="-0" frameY="-0" frameWidth="49" frameHeight="68"/>
-	<SubTexture name="character-s0001" x="253" y="691" width="49" height="68" frameX="-0" frameY="-0" frameWidth="49" frameHeight="68"/>
-	<SubTexture name="character-semicolon0000" x="743" y="141" width="24" height="63" frameX="-0" frameY="-0" frameWidth="24" frameHeight="63"/>
-	<SubTexture name="character-semicolon0001" x="447" y="668" width="24" height="63" frameX="-0" frameY="-0" frameWidth="24" frameHeight="63"/>
-	<SubTexture name="character-seven0000" x="91" y="620" width="48" height="69" frameX="-0" frameY="-0" frameWidth="48" frameHeight="69"/>
-	<SubTexture name="character-seven0001" x="142" y="620" width="48" height="69" frameX="-0" frameY="-0" frameWidth="48" frameHeight="69"/>
-	<SubTexture name="character-singlequote0000" x="797" y="809" width="27" height="31" frameX="-0" frameY="-0" frameWidth="27" frameHeight="31"/>
-	<SubTexture name="character-singlequote0001" x="322" y="825" width="27" height="31" frameX="-0" frameY="-0" frameWidth="27" frameHeight="31"/>
-	<SubTexture name="character-six0000" x="600" y="653" width="54" height="68" frameX="-0" frameY="-0" frameWidth="54" frameHeight="68"/>
-	<SubTexture name="character-six0001" x="539" y="655" width="54" height="68" frameX="-0" frameY="-0" frameWidth="54" frameHeight="68"/>
-	<SubTexture name="character-slash0000" x="314" y="77" width="50" height="72" frameX="-0" frameY="-0" frameWidth="50" frameHeight="72"/>
-	<SubTexture name="character-slash0001" x="314" y="152" width="50" height="72" frameX="-0" frameY="-0" frameWidth="50" frameHeight="72"/>
-	<SubTexture name="character-squarebracket-left0000" x="434" y="297" width="33" height="71" frameX="-0" frameY="-0" frameWidth="33" frameHeight="71"/>
-	<SubTexture name="character-squarebracket-left0001" x="470" y="297" width="33" height="71" frameX="-0" frameY="-0" frameWidth="33" frameHeight="71"/>
-	<SubTexture name="character-squarebracket-right0000" x="506" y="293" width="34" height="70" frameX="-0" frameY="-0" frameWidth="34" frameHeight="70"/>
-	<SubTexture name="character-squarebracket-right0001" x="518" y="366" width="34" height="70" frameX="-0" frameY="-0" frameWidth="34" frameHeight="70"/>
-	<SubTexture name="character-t0000" x="193" y="619" width="47" height="69" frameX="-0" frameY="-0" frameWidth="47" frameHeight="69"/>
-	<SubTexture name="character-t0001" x="243" y="619" width="47" height="69" frameX="-0" frameY="-0" frameWidth="47" frameHeight="69"/>
-	<SubTexture name="character-three0000" x="433" y="518" width="46" height="70" frameX="-0" frameY="-0" frameWidth="46" frameHeight="70"/>
-	<SubTexture name="character-three0001" x="384" y="523" width="46" height="70" frameX="-0" frameY="-0" frameWidth="46" frameHeight="70"/>
-	<SubTexture name="character-tilde0000" x="101" y="794" width="52" height="28" frameX="-0" frameY="-0" frameWidth="52" frameHeight="28"/>
-	<SubTexture name="character-tilde0001" x="711" y="772" width="52" height="28" frameX="-0" frameY="-0" frameWidth="52" frameHeight="28"/>
-	<SubTexture name="character-two0000" x="476" y="662" width="51" height="68" frameX="-0" frameY="-0" frameWidth="51" frameHeight="68"/>
-	<SubTexture name="character-two0001" x="305" y="670" width="51" height="68" frameX="-0" frameY="-0" frameWidth="51" frameHeight="68"/>
-	<SubTexture name="character-u0000" x="543" y="293" width="46" height="70" frameX="-0" frameY="-0" frameWidth="46" frameHeight="70"/>
-	<SubTexture name="character-u0001" x="552" y="220" width="46" height="70" frameX="-0" frameY="-0" frameWidth="46" frameHeight="70"/>
-	<SubTexture name="character-underscore0000" x="447" y="734" width="56" height="18" frameX="-0" frameY="-0" frameWidth="56" frameHeight="18"/>
-	<SubTexture name="character-underscore0001" x="101" y="763" width="56" height="18" frameX="-0" frameY="-0" frameWidth="56" frameHeight="18"/>
-	<SubTexture name="character-v0000" x="713" y="646" width="54" height="66" frameX="-0" frameY="-0" frameWidth="54" frameHeight="66"/>
-	<SubTexture name="character-v0001" x="713" y="210" width="54" height="66" frameX="-0" frameY="-0" frameWidth="54" frameHeight="66"/>
-	<SubTexture name="character-verticalbar0000" x="654" y="73" width="21" height="69" frameX="-0" frameY="-0" frameWidth="21" frameHeight="69"/>
-	<SubTexture name="character-verticalbar0001" x="655" y="217" width="21" height="69" frameX="-0" frameY="-0" frameWidth="21" frameHeight="69"/>
-	<SubTexture name="character-w0000" x="1" y="473" width="63" height="71" frameX="-0" frameY="-0" frameWidth="63" frameHeight="71"/>
-	<SubTexture name="character-w0001" x="67" y="473" width="63" height="71" frameX="-0" frameY="-0" frameWidth="63" frameHeight="71"/>
-	<SubTexture name="character-x0000" x="600" y="581" width="55" height="69" frameX="-0" frameY="-0" frameWidth="55" frameHeight="69"/>
-	<SubTexture name="character-x0001" x="542" y="583" width="55" height="69" frameX="-0" frameY="-0" frameWidth="55" frameHeight="69"/>
-	<SubTexture name="character-y0000" x="482" y="590" width="54" height="69" frameX="-0" frameY="-0" frameWidth="54" frameHeight="69"/>
-	<SubTexture name="character-y0001" x="293" y="598" width="54" height="69" frameX="-0" frameY="-0" frameWidth="54" frameHeight="69"/>
-	<SubTexture name="character-z0000" x="305" y="227" width="52" height="72" frameX="-0" frameY="-0" frameWidth="52" frameHeight="72"/>
-	<SubTexture name="character-z0001" x="1" y="324" width="52" height="72" frameX="-0" frameY="-0" frameWidth="52" frameHeight="72"/>
-	<SubTexture name="character-zero0000" x="133" y="472" width="53" height="71" frameX="-0" frameY="-0" frameWidth="53" frameHeight="71"/>
-	<SubTexture name="character-zero0001" x="189" y="472" width="53" height="71" frameX="-0" frameY="-0" frameWidth="53" frameHeight="71"/>
-	<SubTexture name="diacritic-acute-fill0000" x="811" y="723" width="14" height="16" frameX="-0" frameY="-0" frameWidth="14" frameHeight="16"/>
-	<SubTexture name="diacritic-acute-fill0001" x="810" y="751" width="14" height="16" frameX="-0" frameY="-0" frameWidth="14" frameHeight="16"/>
-	<SubTexture name="diacritic-acute-outline0000" x="553" y="825" width="25" height="26" frameX="-0" frameY="-0" frameWidth="25" frameHeight="26"/>
-	<SubTexture name="diacritic-acute-outline0001" x="581" y="825" width="25" height="26" frameX="-0" frameY="-0" frameWidth="25" frameHeight="26"/>
-	<SubTexture name="diacritic-apostophe-fill0000" x="198" y="378" width="17" height="17" frameX="-0" frameY="-0" frameWidth="17" frameHeight="17"/>
-	<SubTexture name="diacritic-apostophe-fill0001" x="791" y="843" width="17" height="17" frameX="-0" frameY="-0" frameWidth="17" frameHeight="17"/>
-	<SubTexture name="diacritic-apostophe-outline0000" x="384" y="814" width="29" height="26" frameX="-0" frameY="-0" frameWidth="29" frameHeight="26"/>
-	<SubTexture name="diacritic-apostophe-outline0001" x="827" y="833" width="29" height="26" frameX="-0" frameY="-0" frameWidth="29" frameHeight="26"/>
-	<SubTexture name="diacritic-breve-fill0000" x="678" y="109" width="30" height="15" frameX="-0" frameY="-0" frameWidth="30" frameHeight="15"/>
-	<SubTexture name="diacritic-breve-fill0001" x="374" y="843" width="30" height="15" frameX="-0" frameY="-0" frameWidth="30" frameHeight="15"/>
-	<SubTexture name="diacritic-breve-outline0000" x="797" y="639" width="38" height="25" frameX="-0" frameY="-0" frameWidth="38" frameHeight="25"/>
-	<SubTexture name="diacritic-breve-outline0001" x="797" y="667" width="38" height="25" frameX="-0" frameY="-0" frameWidth="38" frameHeight="25"/>
-	<SubTexture name="diacritic-cadilla-fill0000" x="795" y="55" width="19" height="31" frameX="-0" frameY="-0" frameWidth="19" frameHeight="31"/>
-	<SubTexture name="diacritic-cadilla-fill0001" x="352" y="825" width="19" height="31" frameX="-0" frameY="-0" frameWidth="19" frameHeight="31"/>
-	<SubTexture name="diacritic-cadilla-outline0000" x="797" y="771" width="29" height="35" frameX="-0" frameY="-0" frameWidth="29" frameHeight="35"/>
-	<SubTexture name="diacritic-cadilla-outline0001" x="829" y="723" width="29" height="35" frameX="-0" frameY="-0" frameWidth="29" frameHeight="35"/>
-	<SubTexture name="diacritic-circumflex-fill0000" x="480" y="843" width="28" height="14" frameX="-0" frameY="-0" frameWidth="28" frameHeight="14"/>
-	<SubTexture name="diacritic-circumflex-fill0001" x="480" y="825" width="28" height="14" frameX="-0" frameY="-0" frameWidth="28" frameHeight="14"/>
-	<SubTexture name="diacritic-circumflex-outline0000" x="797" y="695" width="38" height="25" frameX="-0" frameY="-0" frameWidth="38" frameHeight="25"/>
-	<SubTexture name="diacritic-circumflex-outline0001" x="770" y="723" width="38" height="25" frameX="-0" frameY="-0" frameWidth="38" frameHeight="25"/>
-	<SubTexture name="diacritic-dot-fill0000" x="682" y="847" width="12" height="12" frameX="-0" frameY="-0" frameWidth="12" frameHeight="12"/>
-	<SubTexture name="diacritic-dot-fill0001" x="811" y="843" width="12" height="12" frameX="-0" frameY="-0" frameWidth="12" frameHeight="12"/>
-	<SubTexture name="diacritic-dot-outline0000" x="648" y="799" width="23" height="23" frameX="-0" frameY="-0" frameWidth="23" frameHeight="23"/>
-	<SubTexture name="diacritic-dot-outline0001" x="765" y="825" width="23" height="23" frameX="-0" frameY="-0" frameWidth="23" frameHeight="23"/>
-	<SubTexture name="diacritic-hookabove-fill0000" x="609" y="825" width="20" height="26" frameX="-0" frameY="-0" frameWidth="20" frameHeight="26"/>
-	<SubTexture name="diacritic-hookabove-fill0001" x="632" y="825" width="20" height="26" frameX="-0" frameY="-0" frameWidth="20" frameHeight="26"/>
-	<SubTexture name="diacritic-hookabove-outline0000" x="829" y="761" width="30" height="35" frameX="-0" frameY="-0" frameWidth="30" frameHeight="35"/>
-	<SubTexture name="diacritic-hookabove-outline0001" x="1" y="825" width="30" height="35" frameX="-0" frameY="-0" frameWidth="30" frameHeight="35"/>
-	<SubTexture name="diacritic-hookhorizontal-fill0000" x="250" y="833" width="33" height="23" frameX="-0" frameY="-0" frameWidth="33" frameHeight="23"/>
-	<SubTexture name="diacritic-hookhorizontal-fill0001" x="286" y="833" width="33" height="23" frameX="-0" frameY="-0" frameWidth="33" frameHeight="23"/>
-	<SubTexture name="diacritic-hookhorizontal-outline0000" x="817" y="481" width="39" height="34" frameX="-0" frameY="-0" frameWidth="39" frameHeight="34"/>
-	<SubTexture name="diacritic-hookhorizontal-outline0001" x="817" y="518" width="39" height="34" frameX="-0" frameY="-0" frameWidth="39" frameHeight="34"/>
-	<SubTexture name="diacritic-hookside-fill0000" x="766" y="772" width="28" height="50" frameX="-0" frameY="-0" frameWidth="28" frameHeight="50"/>
-	<SubTexture name="diacritic-hookside-fill0001" x="339" y="525" width="28" height="50" frameX="-0" frameY="-0" frameWidth="28" frameHeight="50"/>
-	<SubTexture name="diacritic-hookside-outline0000" x="359" y="668" width="34" height="62" frameX="-0" frameY="-0" frameWidth="34" frameHeight="62"/>
-	<SubTexture name="diacritic-hookside-outline0001" x="396" y="668" width="34" height="62" frameX="-0" frameY="-0" frameWidth="34" frameHeight="62"/>
-	<SubTexture name="diacritic-hookvertical-fill0000" x="34" y="825" width="23" height="35" frameX="-0" frameY="-0" frameWidth="23" frameHeight="35"/>
-	<SubTexture name="diacritic-hookvertical-fill0001" x="60" y="825" width="23" height="35" frameX="-0" frameY="-0" frameWidth="23" frameHeight="35"/>
-	<SubTexture name="diacritic-hookvertical-outline0000" x="817" y="555" width="34" height="39" frameX="-0" frameY="-0" frameWidth="34" frameHeight="39"/>
-	<SubTexture name="diacritic-hookvertical-outline0001" x="802" y="597" width="34" height="39" frameX="-0" frameY="-0" frameWidth="34" frameHeight="39"/>
-	<SubTexture name="diacritic-horn-fill0000" x="751" y="510" width="16" height="18" frameX="-0" frameY="-0" frameWidth="16" frameHeight="18"/>
-	<SubTexture name="diacritic-horn-fill0001" x="751" y="531" width="16" height="18" frameX="-0" frameY="-0" frameWidth="16" frameHeight="18"/>
-	<SubTexture name="diacritic-horn-outline0000" x="655" y="825" width="24" height="26" frameX="-0" frameY="-0" frameWidth="24" frameHeight="26"/>
-	<SubTexture name="diacritic-horn-outline0001" x="682" y="818" width="24" height="26" frameX="-0" frameY="-0" frameWidth="24" frameHeight="26"/>
-	<SubTexture name="diacritic-macron-fill0000" x="516" y="763" width="35" height="10" frameX="-0" frameY="-0" frameWidth="35" frameHeight="10"/>
-	<SubTexture name="diacritic-macron-fill0001" x="554" y="763" width="35" height="10" frameX="-0" frameY="-0" frameWidth="35" frameHeight="10"/>
-	<SubTexture name="diacritic-macron-outline0000" x="817" y="303" width="46" height="20" frameX="-0" frameY="-0" frameWidth="46" frameHeight="20"/>
-	<SubTexture name="diacritic-macron-outline0001" x="817" y="326" width="46" height="20" frameX="-0" frameY="-0" frameWidth="46" frameHeight="20"/>
-	<SubTexture name="diacritic-ogonek-fill0000" x="770" y="636" width="19" height="29" frameX="-0" frameY="-0" frameWidth="19" frameHeight="29"/>
-	<SubTexture name="diacritic-ogonek-fill0001" x="770" y="668" width="19" height="29" frameX="-0" frameY="-0" frameWidth="19" frameHeight="29"/>
-	<SubTexture name="diacritic-ogonek-outline0000" x="86" y="825" width="28" height="34" frameX="-0" frameY="-0" frameWidth="28" frameHeight="34"/>
-	<SubTexture name="diacritic-ogonek-outline0001" x="117" y="825" width="28" height="34" frameX="-0" frameY="-0" frameWidth="28" frameHeight="34"/>
-	<SubTexture name="diacritic-ring-fill0000" x="223" y="452" width="19" height="16" frameX="-0" frameY="-0" frameWidth="19" frameHeight="16"/>
-	<SubTexture name="diacritic-ring-fill0001" x="674" y="799" width="19" height="16" frameX="-0" frameY="-0" frameWidth="19" frameHeight="16"/>
-	<SubTexture name="diacritic-ring-outline0000" x="416" y="825" width="29" height="25" frameX="-0" frameY="-0" frameWidth="29" frameHeight="25"/>
-	<SubTexture name="diacritic-ring-outline0001" x="448" y="825" width="29" height="25" frameX="-0" frameY="-0" frameWidth="29" frameHeight="25"/>
-	<SubTexture name="diacritic-sicilicus-fill0000" x="802" y="562" width="12" height="24" frameX="-0" frameY="-0" frameWidth="12" frameHeight="24"/>
-	<SubTexture name="diacritic-sicilicus-fill0001" x="750" y="803" width="12" height="24" frameX="-0" frameY="-0" frameWidth="12" frameHeight="24"/>
-	<SubTexture name="diacritic-sicilicus-outline0000" x="839" y="597" width="25" height="36" frameX="-0" frameY="-0" frameWidth="25" frameHeight="36"/>
-	<SubTexture name="diacritic-sicilicus-outline0001" x="839" y="636" width="25" height="36" frameX="-0" frameY="-0" frameWidth="25" frameHeight="36"/>
-	<SubTexture name="diacritic-stroke0-long-fill0000" x="101" y="784" width="55" height="7" frameX="-0" frameY="-0" frameWidth="55" frameHeight="7"/>
-	<SubTexture name="diacritic-stroke0-long-fill0001" x="101" y="784" width="55" height="7" frameX="-0" frameY="-0" frameWidth="55" frameHeight="7"/>
-	<SubTexture name="diacritic-stroke0-long-outline0000" x="305" y="741" width="68" height="19" frameX="-0" frameY="-0" frameWidth="68" frameHeight="19"/>
-	<SubTexture name="diacritic-stroke0-long-outline0001" x="376" y="733" width="68" height="19" frameX="-0" frameY="-0" frameWidth="68" frameHeight="19"/>
-	<SubTexture name="diacritic-stroke0-short-fill0000" x="376" y="755" width="30" height="5" frameX="-0" frameY="-0" frameWidth="30" frameHeight="5"/>
-	<SubTexture name="diacritic-stroke0-short-fill0001" x="409" y="755" width="30" height="5" frameX="-0" frameY="-0" frameWidth="30" frameHeight="5"/>
-	<SubTexture name="diacritic-stroke0-short-outline0000" x="152" y="378" width="43" height="17" frameX="-0" frameY="-0" frameWidth="43" frameHeight="17"/>
-	<SubTexture name="diacritic-stroke0-short-outline0001" x="770" y="255" width="43" height="17" frameX="-0" frameY="-0" frameWidth="43" frameHeight="17"/>
-	<SubTexture name="diacritic-stroke30-fill0000" x="757" y="385" width="50" height="22" frameX="-0" frameY="-0" frameWidth="50" frameHeight="22"/>
-	<SubTexture name="diacritic-stroke30-fill0001" x="755" y="410" width="50" height="22" frameX="-0" frameY="-0" frameWidth="50" frameHeight="22"/>
-	<SubTexture name="diacritic-stroke30-outline0000" x="530" y="726" width="62" height="34" frameX="-0" frameY="-0" frameWidth="62" frameHeight="34"/>
-	<SubTexture name="diacritic-stroke30-outline0001" x="595" y="726" width="62" height="34" frameX="-0" frameY="-0" frameWidth="62" frameHeight="34"/>
-	<SubTexture name="diacritic-stroke45-long-fill0000" x="1" y="763" width="47" height="57" frameX="-0" frameY="-0" frameWidth="47" frameHeight="57"/>
-	<SubTexture name="diacritic-stroke45-long-fill0001" x="51" y="763" width="47" height="57" frameX="-0" frameY="-0" frameWidth="47" frameHeight="57"/>
-	<SubTexture name="diacritic-stroke45-long-outline0000" x="350" y="596" width="60" height="69" frameX="-0" frameY="-0" frameWidth="60" frameHeight="69"/>
-	<SubTexture name="diacritic-stroke45-long-outline0001" x="413" y="596" width="60" height="69" frameX="-0" frameY="-0" frameWidth="60" frameHeight="69"/>
-	<SubTexture name="diacritic-stroke45-short-fill0000" x="148" y="825" width="30" height="34" frameX="-0" frameY="-0" frameWidth="30" frameHeight="34"/>
-	<SubTexture name="diacritic-stroke45-short-fill0001" x="181" y="825" width="30" height="34" frameX="-0" frameY="-0" frameWidth="30" frameHeight="34"/>
-	<SubTexture name="diacritic-stroke45-short-outline0000" x="770" y="107" width="44" height="49" frameX="-0" frameY="-0" frameWidth="44" frameHeight="49"/>
-	<SubTexture name="diacritic-stroke45-short-outline0001" x="770" y="510" width="44" height="49" frameX="-0" frameY="-0" frameWidth="44" frameHeight="49"/>
-	<SubTexture name="diacritic-stroke60-fill0000" x="663" y="145" width="31" height="69" frameX="-0" frameY="-0" frameWidth="31" frameHeight="69"/>
-	<SubTexture name="diacritic-stroke60-fill0001" x="679" y="217" width="31" height="69" frameX="-0" frameY="-0" frameWidth="31" frameHeight="69"/>
-	<SubTexture name="diacritic-stroke60-outline0000" x="45" y="1" width="45" height="81" frameX="-0" frameY="-0" frameWidth="45" frameHeight="81"/>
-	<SubTexture name="diacritic-stroke60-outline0001" x="45" y="85" width="45" height="81" frameX="-0" frameY="-0" frameWidth="45" frameHeight="81"/>
-	<SubTexture name="diacritic-stroke90-long-fill0000" x="349" y="302" width="8" height="70" frameX="-0" frameY="-0" frameWidth="8" frameHeight="70"/>
-	<SubTexture name="diacritic-stroke90-long-fill0001" x="33" y="87" width="8" height="70" frameX="-0" frameY="-0" frameWidth="8" frameHeight="70"/>
-	<SubTexture name="diacritic-stroke90-long-outline0000" x="1" y="1" width="19" height="83" frameX="-0" frameY="-0" frameWidth="19" frameHeight="83"/>
-	<SubTexture name="diacritic-stroke90-long-outline0001" x="23" y="1" width="19" height="83" frameX="-0" frameY="-0" frameWidth="19" frameHeight="83"/>
-	<SubTexture name="diacritic-stroke90-short-fill0000" x="506" y="733" width="7" height="39" frameX="-0" frameY="-0" frameWidth="7" frameHeight="39"/>
-	<SubTexture name="diacritic-stroke90-short-fill0001" x="700" y="776" width="7" height="39" frameX="-0" frameY="-0" frameWidth="7" frameHeight="39"/>
-	<SubTexture name="diacritic-stroke90-short-outline0000" x="678" y="1" width="19" height="51" frameX="-0" frameY="-0" frameWidth="19" frameHeight="51"/>
-	<SubTexture name="diacritic-stroke90-short-outline0001" x="678" y="55" width="19" height="51" frameX="-0" frameY="-0" frameWidth="19" frameHeight="51"/>
-	<SubTexture name="diacritic-tilde-fill0000" x="339" y="578" width="34" height="15" frameX="-0" frameY="-0" frameWidth="34" frameHeight="15"/>
-	<SubTexture name="diacritic-tilde-fill0001" x="245" y="525" width="34" height="15" frameX="-0" frameY="-0" frameWidth="34" frameHeight="15"/>
-	<SubTexture name="diacritic-tilde-outline0000" x="817" y="349" width="44" height="27" frameX="-0" frameY="-0" frameWidth="44" frameHeight="27"/>
-	<SubTexture name="diacritic-tilde-outline0001" x="817" y="379" width="44" height="27" frameX="-0" frameY="-0" frameWidth="44" frameHeight="27"/>
-	<SubTexture name="diacritic-titlo-fill0000" x="770" y="751" width="37" height="17" frameX="-0" frameY="-0" frameWidth="37" frameHeight="17"/>
-	<SubTexture name="diacritic-titlo-fill0001" x="710" y="803" width="37" height="17" frameX="-0" frameY="-0" frameWidth="37" frameHeight="17"/>
-	<SubTexture name="diacritic-titlo-outline0000" x="817" y="71" width="47" height="27" frameX="-0" frameY="-0" frameWidth="47" frameHeight="27"/>
-	<SubTexture name="diacritic-titlo-outline0001" x="817" y="101" width="47" height="27" frameX="-0" frameY="-0" frameWidth="47" frameHeight="27"/>
-	<SubTexture name="diacritic-verticalline-fill0000" x="93" y="149" width="8" height="17" frameX="-0" frameY="-0" frameWidth="8" frameHeight="17"/>
-	<SubTexture name="diacritic-verticalline-fill0001" x="137" y="304" width="8" height="17" frameX="-0" frameY="-0" frameWidth="8" frameHeight="17"/>
-	<SubTexture name="diacritic-verticalline-outline0000" x="511" y="825" width="18" height="27" frameX="-0" frameY="-0" frameWidth="18" frameHeight="27"/>
-	<SubTexture name="diacritic-verticalline-outline0001" x="532" y="825" width="18" height="27" frameX="-0" frameY="-0" frameWidth="18" frameHeight="27"/>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="alphabet-bold.png">
+	<!-- Created with Adobe Animate version 24.0.11.4 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="character-a0000" x="425" y="235" width="55" height="67"/>
+	<SubTexture name="character-a0001" x="599" y="232" width="55" height="67"/>
+	<SubTexture name="character-ampersand0000" x="224" y="309" width="60" height="72"/>
+	<SubTexture name="character-ampersand0001" x="141" y="318" width="60" height="72"/>
+	<SubTexture name="character-anglebracket-left0000" x="420" y="835" width="42" height="70"/>
+	<SubTexture name="character-anglebracket-left0001" x="369" y="908" width="42" height="70"/>
+	<SubTexture name="character-anglebracket-right0000" x="764" y="76" width="45" height="71"/>
+	<SubTexture name="character-anglebracket-right0001" x="750" y="152" width="45" height="71"/>
+	<SubTexture name="character-angryfaic0000" x="84" y="167" width="71" height="71"/>
+	<SubTexture name="character-angryfaic0001" x="240" y="157" width="71" height="71"/>
+	<SubTexture name="character-angryfaic-alt0000" x="863" y="79" width="54" height="54"/>
+	<SubTexture name="character-angryfaic-alt0001" x="911" y="5" width="54" height="54"/>
+	<SubTexture name="character-arrow-down0000" x="271" y="5" width="71" height="71"/>
+	<SubTexture name="character-arrow-down0001" x="271" y="81" width="71" height="71"/>
+	<SubTexture name="character-arrow-down-alt0000" x="105" y="935" width="48" height="53"/>
+	<SubTexture name="character-arrow-down-alt0001" x="515" y="891" width="48" height="53"/>
+	<SubTexture name="character-arrow-left0000" x="316" y="157" width="71" height="71"/>
+	<SubTexture name="character-arrow-left0001" x="347" y="5" width="71" height="71"/>
+	<SubTexture name="character-arrow-left-alt0000" x="416" y="910" width="51" height="48"/>
+	<SubTexture name="character-arrow-left-alt0001" x="785" y="750" width="51" height="48"/>
+	<SubTexture name="character-arrow-right0000" x="347" y="81" width="71" height="71"/>
+	<SubTexture name="character-arrow-right0001" x="392" y="157" width="71" height="71"/>
+	<SubTexture name="character-arrow-right-alt0000" x="862" y="225" width="51" height="46"/>
+	<SubTexture name="character-arrow-right-alt0001" x="897" y="138" width="51" height="46"/>
+	<SubTexture name="character-arrow-up0000" x="423" y="5" width="71" height="71"/>
+	<SubTexture name="character-arrow-up0001" x="423" y="81" width="71" height="71"/>
+	<SubTexture name="character-arrow-up-alt0000" x="824" y="670" width="45" height="51"/>
+	<SubTexture name="character-arrow-up-alt0001" x="845" y="594" width="45" height="51"/>
+	<SubTexture name="character-ash0000" x="5" y="89" width="73" height="73"/>
+	<SubTexture name="character-ash0001" x="83" y="89" width="73" height="73"/>
+	<SubTexture name="character-asterisk0000" x="967" y="390" width="40" height="33"/>
+	<SubTexture name="character-asterisk0001" x="947" y="537" width="40" height="33"/>
+	<SubTexture name="character-at0000" x="468" y="157" width="68" height="73"/>
+	<SubTexture name="character-at0001" x="499" y="5" width="68" height="73"/>
+	<SubTexture name="character-b0000" x="54" y="924" width="46" height="70"/>
+	<SubTexture name="character-b0001" x="369" y="833" width="46" height="70"/>
+	<SubTexture name="character-backslash0000" x="601" y="377" width="51" height="70"/>
+	<SubTexture name="character-backslash0001" x="657" y="377" width="51" height="70"/>
+	<SubTexture name="character-backtick0000" x="640" y="909" width="33" height="31"/>
+	<SubTexture name="character-backtick0001" x="767" y="863" width="33" height="31"/>
+	<SubTexture name="character-c0000" x="70" y="465" width="58" height="71"/>
+	<SubTexture name="character-c0001" x="5" y="539" width="58" height="71"/>
+	<SubTexture name="character-caret0000" x="785" y="803" width="46" height="34"/>
+	<SubTexture name="character-caret0001" x="732" y="824" width="46" height="34"/>
+	<SubTexture name="character-colon0000" x="989" y="278" width="22" height="49"/>
+	<SubTexture name="character-colon0001" x="836" y="840" width="22" height="49"/>
+	<SubTexture name="character-comma0000" x="866" y="918" width="25" height="32"/>
+	<SubTexture name="character-comma0001" x="924" y="909" width="25" height="32"/>
+	<SubTexture name="character-curlybracket-left0000" x="658" y="452" width="46" height="70" frameX="0" frameY="-1" frameWidth="46" frameHeight="71"/>
+	<SubTexture name="character-curlybracket-left0001" x="318" y="785" width="46" height="71"/>
+	<SubTexture name="character-curlybracket-right0000" x="584" y="614" width="47" height="70"/>
+	<SubTexture name="character-curlybracket-right0001" x="514" y="684" width="47" height="70"/>
+	<SubTexture name="character-d0000" x="706" y="76" width="53" height="67" frameX="0" frameY="0" frameWidth="53" frameHeight="68"/>
+	<SubTexture name="character-d0001" x="62" y="692" width="53" height="68"/>
+	<SubTexture name="character-dollar0000" x="388" y="758" width="47" height="70"/>
+	<SubTexture name="character-dollar0001" x="266" y="785" width="47" height="70"/>
+	<SubTexture name="character-doublequote0000" x="836" y="803" width="47" height="32"/>
+	<SubTexture name="character-doublequote0001" x="874" y="650" width="47" height="32"/>
+	<SubTexture name="character-doublequote-alt0000" x="969" y="189" width="43" height="45"/>
+	<SubTexture name="character-doublequote-alt0001" x="970" y="5" width="42" height="44" frameX="-1" frameY="0" frameWidth="43" frameHeight="45"/>
+	<SubTexture name="character-e0000" x="765" y="5" width="43" height="66"/>
+	<SubTexture name="character-e0001" x="636" y="762" width="43" height="66"/>
+	<SubTexture name="character-eight0000" x="158" y="848" width="49" height="67"/>
+	<SubTexture name="character-eight0001" x="212" y="847" width="49" height="67"/>
+	<SubTexture name="character-equal0000" x="511" y="949" width="48" height="34"/>
+	<SubTexture name="character-equal0001" x="936" y="307" width="48" height="34"/>
+	<SubTexture name="character-ethel0000" x="187" y="5" width="79" height="71"/>
+	<SubTexture name="character-ethel0001" x="187" y="81" width="79" height="71"/>
+	<SubTexture name="character-exclamationmark0000" x="825" y="299" width="33" height="72"/>
+	<SubTexture name="character-exclamationmark0001" x="813" y="376" width="33" height="72"/>
+	<SubTexture name="character-exclamationmark-alt0000" x="850" y="453" width="29" height="76"/>
+	<SubTexture name="character-exclamationmark-alt0001" x="607" y="897" width="28" height="75" frameX="0" frameY="-1" frameWidth="29" frameHeight="76"/>
+	<SubTexture name="character-f0000" x="467" y="835" width="43" height="68"/>
+	<SubTexture name="character-f0001" x="588" y="762" width="43" height="68"/>
+	<SubTexture name="character-five0000" x="532" y="607" width="47" height="72"/>
+	<SubTexture name="character-five0001" x="409" y="681" width="47" height="72"/>
+	<SubTexture name="character-four0000" x="486" y="308" width="53" height="69"/>
+	<SubTexture name="character-four0001" x="600" y="454" width="53" height="69"/>
+	<SubTexture name="character-g0000" x="267" y="463" width="54" height="72"/>
+	<SubTexture name="character-g0001" x="196" y="471" width="54" height="72"/>
+	<SubTexture name="character-h0000" x="709" y="521" width="45" height="69"/>
+	<SubTexture name="character-h0001" x="5" y="925" width="44" height="69" frameX="0" frameY="0" frameWidth="45" frameHeight="69"/>
+	<SubTexture name="character-heart0000" x="69" y="243" width="67" height="69"/>
+	<SubTexture name="character-heart0001" x="69" y="317" width="67" height="69"/>
+	<SubTexture name="character-heart-alt0000" x="5" y="327" width="55" height="54"/>
+	<SubTexture name="character-heart-alt0001" x="765" y="301" width="55" height="54"/>
+	<SubTexture name="character-hyphen0000" x="957" y="672" width="49" height="20"/>
+	<SubTexture name="character-hyphen0001" x="957" y="697" width="49" height="20"/>
+	<SubTexture name="character-i0000" x="684" y="751" width="43" height="66"/>
+	<SubTexture name="character-i0001" x="684" y="822" width="43" height="66"/>
+	<SubTexture name="character-j0000" x="541" y="157" width="54" height="70"/>
+	<SubTexture name="character-j0001" x="573" y="79" width="54" height="70"/>
+	<SubTexture name="character-k0000" x="108" y="858" width="45" height="72"/>
+	<SubTexture name="character-k0001" x="440" y="758" width="45" height="72"/>
+	<SubTexture name="character-l0000" x="737" y="750" width="43" height="69"/>
+	<SubTexture name="character-l0001" x="540" y="762" width="43" height="69"/>
+	<SubTexture name="character-m0000" x="289" y="311" width="61" height="70"/>
+	<SubTexture name="character-m0001" x="355" y="311" width="61" height="70"/>
+	<SubTexture name="character-multiply0000" x="918" y="189" width="46" height="46"/>
+	<SubTexture name="character-multiply0001" x="953" y="138" width="46" height="46"/>
+	<SubTexture name="character-n0000" x="765" y="228" width="44" height="68"/>
+	<SubTexture name="character-n0001" x="800" y="152" width="44" height="68"/>
+	<SubTexture name="character-nine0000" x="364" y="542" width="52" height="68"/>
+	<SubTexture name="character-nine0001" x="421" y="534" width="52" height="68"/>
+	<SubTexture name="character-o0000" x="232" y="700" width="50" height="69"/>
+	<SubTexture name="character-o0001" x="354" y="628" width="50" height="69"/>
+	<SubTexture name="character-one0000" x="120" y="701" width="51" height="69"/>
+	<SubTexture name="character-one0001" x="5" y="767" width="51" height="69"/>
+	<SubTexture name="character-p0000" x="318" y="861" width="46" height="70"/>
+	<SubTexture name="character-p0001" x="636" y="614" width="46" height="70"/>
+	<SubTexture name="character-percent0000" x="421" y="383" width="59" height="71"/>
+	<SubTexture name="character-percent0001" x="204" y="395" width="58" height="71" frameX="-1" frameY="0" frameWidth="59" frameHeight="71"/>
+	<SubTexture name="character-period0000" x="851" y="430" width="23" height="18"/>
+	<SubTexture name="character-period0001" x="796" y="933" width="23" height="18"/>
+	<SubTexture name="character-plus0000" x="264" y="936" width="51" height="50"/>
+	<SubTexture name="character-plus0001" x="515" y="836" width="51" height="50"/>
+	<SubTexture name="character-pound0000" x="133" y="469" width="58" height="71"/>
+	<SubTexture name="character-pound0001" x="68" y="541" width="58" height="71"/>
+	<SubTexture name="character-q0000" x="127" y="626" width="52" height="70"/>
+	<SubTexture name="character-q0001" x="5" y="692" width="52" height="70"/>
+	<SubTexture name="character-questionmark0000" x="477" y="607" width="50" height="69"/>
+	<SubTexture name="character-questionmark0001" x="478" y="533" width="50" height="69"/>
+	<SubTexture name="character-questionmark-alt0000" x="329" y="386" width="51" height="77"/>
+	<SubTexture name="character-questionmark-alt0001" x="131" y="545" width="50" height="76" frameX="-1" frameY="-1" frameWidth="51" frameHeight="77"/>
+	<SubTexture name="character-r0000" x="616" y="689" width="45" height="68" frameX="0" frameY="0" frameWidth="46" frameHeight="68"/>
+	<SubTexture name="character-r0001" x="158" y="920" width="46" height="68"/>
+	<SubTexture name="character-roundbracket-left0000" x="443" y="459" width="34" height="69"/>
+	<SubTexture name="character-roundbracket-left0001" x="922" y="64" width="34" height="69"/>
+	<SubTexture name="character-roundbracket-right0000" x="472" y="908" width="34" height="71"/>
+	<SubTexture name="character-roundbracket-right0001" x="640" y="833" width="34" height="71"/>
+	<SubTexture name="character-s0000" x="158" y="775" width="49" height="68"/>
+	<SubTexture name="character-s0001" x="212" y="774" width="49" height="68"/>
+	<SubTexture name="character-semicolon0000" x="659" y="222" width="24" height="63"/>
+	<SubTexture name="character-semicolon0001" x="385" y="386" width="24" height="63"/>
+	<SubTexture name="character-seven0000" x="335" y="702" width="48" height="69"/>
+	<SubTexture name="character-seven0001" x="461" y="681" width="48" height="69"/>
+	<SubTexture name="character-singlequote0000" x="992" y="523" width="27" height="31"/>
+	<SubTexture name="character-singlequote0001" x="984" y="722" width="27" height="31"/>
+	<SubTexture name="character-six0000" x="632" y="149" width="54" height="68"/>
+	<SubTexture name="character-six0001" x="599" y="304" width="54" height="68"/>
+	<SubTexture name="character-slash0000" x="691" y="220" width="50" height="71" frameX="0" frameY="0" frameWidth="50" frameHeight="72"/>
+	<SubTexture name="character-slash0001" x="659" y="296" width="50" height="71" frameX="0" frameY="-1" frameWidth="50" frameHeight="72"/>
+	<SubTexture name="character-squarebracket-left0000" x="807" y="594" width="33" height="71"/>
+	<SubTexture name="character-squarebracket-left0001" x="786" y="670" width="33" height="71"/>
+	<SubTexture name="character-squarebracket-right0000" x="568" y="897" width="34" height="70"/>
+	<SubTexture name="character-squarebracket-right0001" x="811" y="519" width="34" height="70"/>
+	<SubTexture name="character-t0000" x="266" y="860" width="47" height="69"/>
+	<SubTexture name="character-t0001" x="212" y="919" width="47" height="69"/>
+	<SubTexture name="character-three0000" x="658" y="527" width="46" height="70"/>
+	<SubTexture name="character-three0001" x="687" y="602" width="46" height="70"/>
+	<SubTexture name="character-tilde0000" x="895" y="592" width="52" height="28"/>
+	<SubTexture name="character-tilde0001" x="908" y="504" width="52" height="28"/>
+	<SubTexture name="character-two0000" x="485" y="235" width="51" height="68"/>
+	<SubTexture name="character-two0001" x="176" y="701" width="51" height="68"/>
+	<SubTexture name="character-u0000" x="714" y="296" width="46" height="70"/>
+	<SubTexture name="character-u0001" x="687" y="677" width="45" height="69" frameX="-1" frameY="-1" frameWidth="46" frameHeight="70"/>
+	<SubTexture name="character-underscore0000" x="926" y="649" width="56" height="18"/>
+	<SubTexture name="character-underscore0001" x="923" y="727" width="56" height="18"/>
+	<SubTexture name="character-v0000" x="691" y="149" width="54" height="66"/>
+	<SubTexture name="character-v0001" x="706" y="5" width="54" height="66"/>
+	<SubTexture name="character-verticalbar0000" x="600" y="154" width="21" height="69"/>
+	<SubTexture name="character-verticalbar0001" x="920" y="428" width="21" height="69"/>
+	<SubTexture name="character-w0000" x="224" y="233" width="63" height="71"/>
+	<SubTexture name="character-w0001" x="292" y="235" width="63" height="71"/>
+	<SubTexture name="character-x0000" x="67" y="617" width="55" height="69"/>
+	<SubTexture name="character-x0001" x="485" y="383" width="55" height="69"/>
+	<SubTexture name="character-y0000" x="326" y="468" width="54" height="69"/>
+	<SubTexture name="character-y0001" x="255" y="540" width="54" height="69"/>
+	<SubTexture name="character-z0000" x="543" y="457" width="52" height="71" frameX="0" frameY="0" frameWidth="52" frameHeight="72"/>
+	<SubTexture name="character-z0001" x="545" y="377" width="51" height="72" frameX="0" frameY="0" frameWidth="52" frameHeight="72"/>
+	<SubTexture name="character-zero0000" x="541" y="232" width="53" height="71"/>
+	<SubTexture name="character-zero0001" x="485" y="457" width="53" height="71"/>
+	<SubTexture name="character-а0000" x="425" y="235" width="55" height="67"/>
+	<SubTexture name="character-а0001" x="599" y="232" width="55" height="67"/>
+	<SubTexture name="character-б0000" x="814" y="225" width="43" height="69"/>
+	<SubTexture name="character-б0001" x="849" y="151" width="43" height="69"/>
+	<SubTexture name="character-в0000" x="54" y="924" width="46" height="70"/>
+	<SubTexture name="character-в0001" x="369" y="833" width="46" height="70"/>
+	<SubTexture name="character-г0000" x="737" y="677" width="44" height="68"/>
+	<SubTexture name="character-г0001" x="763" y="446" width="44" height="68"/>
+	<SubTexture name="character-д0000" x="421" y="607" width="51" height="69"/>
+	<SubTexture name="character-д0001" x="298" y="628" width="51" height="69"/>
+	<SubTexture name="character-е0000" x="765" y="5" width="43" height="66"/>
+	<SubTexture name="character-е0001" x="636" y="762" width="43" height="66"/>
+	<SubTexture name="character-ж0000" x="360" y="233" width="60" height="70"/>
+	<SubTexture name="character-ж0001" x="421" y="308" width="60" height="70"/>
+	<SubTexture name="character-з (code)0000" x="658" y="527" width="46" height="70"/>
+	<SubTexture name="character-и (code)0000" x="814" y="5" width="44" height="68"/>
+	<SubTexture name="character-и (code)0001" x="814" y="78" width="44" height="68"/>
+	<SubTexture name="character-й (code)0000" x="61" y="767" width="44" height="79"/>
+	<SubTexture name="character-й (code)0001" x="5" y="841" width="44" height="79"/>
+	<SubTexture name="character-к0000" x="108" y="858" width="45" height="72"/>
+	<SubTexture name="character-к0001" x="440" y="758" width="45" height="72"/>
+	<SubTexture name="character-л0000" x="646" y="5" width="55" height="67"/>
+	<SubTexture name="character-л0001" x="646" y="77" width="55" height="67"/>
+	<SubTexture name="character-м0000" x="289" y="311" width="61" height="70"/>
+	<SubTexture name="character-м0001" x="355" y="311" width="61" height="70"/>
+	<SubTexture name="character-н0000" x="709" y="521" width="45" height="69"/>
+	<SubTexture name="character-н0001" x="5" y="925" width="44" height="69" frameX="0" frameY="0" frameWidth="45" frameHeight="69"/>
+	<SubTexture name="character-о0000" x="232" y="700" width="50" height="69"/>
+	<SubTexture name="character-о0001" x="354" y="628" width="50" height="69"/>
+	<SubTexture name="character-п0000" x="54" y="851" width="49" height="68" frameX="0" frameY="0" frameWidth="49" frameHeight="69"/>
+	<SubTexture name="character-п0001" x="533" y="533" width="49" height="69"/>
+	<SubTexture name="character-р0000" x="318" y="861" width="46" height="70"/>
+	<SubTexture name="character-р0001" x="636" y="614" width="46" height="70"/>
+	<SubTexture name="character-с0000" x="70" y="465" width="58" height="71"/>
+	<SubTexture name="character-с0001" x="5" y="539" width="58" height="71"/>
+	<SubTexture name="character-т0000" x="266" y="860" width="47" height="69"/>
+	<SubTexture name="character-т0001" x="212" y="919" width="47" height="69"/>
+	<SubTexture name="character-у0000" x="186" y="548" width="53" height="70"/>
+	<SubTexture name="character-у0001" x="385" y="459" width="53" height="70"/>
+	<SubTexture name="character-ф0000" x="5" y="615" width="57" height="72"/>
+	<SubTexture name="character-ф0001" x="267" y="386" width="57" height="72"/>
+	<SubTexture name="character-х0000" x="67" y="617" width="55" height="69"/>
+	<SubTexture name="character-х0001" x="485" y="383" width="55" height="69"/>
+	<SubTexture name="character-ц0000" x="160" y="233" width="59" height="80"/>
+	<SubTexture name="character-ц0001" x="5" y="243" width="59" height="79" frameX="0" frameY="0" frameWidth="59" frameHeight="80"/>
+	<SubTexture name="character-ч0000" x="714" y="371" width="45" height="70"/>
+	<SubTexture name="character-ч0001" x="713" y="446" width="45" height="70"/>
+	<SubTexture name="character-ш0000" x="161" y="157" width="74" height="71"/>
+	<SubTexture name="character-ш0001" x="5" y="167" width="74" height="71"/>
+	<SubTexture name="character-щ0000" x="5" y="5" width="86" height="79"/>
+	<SubTexture name="character-щ0001" x="96" y="5" width="86" height="79"/>
+	<SubTexture name="character-ъ0000" x="184" y="626" width="52" height="69"/>
+	<SubTexture name="character-ъ0001" x="241" y="623" width="52" height="69"/>
+	<SubTexture name="character-ы0000" x="5" y="391" width="62" height="69"/>
+	<SubTexture name="character-ы0001" x="72" y="391" width="62" height="69"/>
+	<SubTexture name="character-ь0000" x="863" y="5" width="43" height="69"/>
+	<SubTexture name="character-ь0001" x="765" y="360" width="43" height="69"/>
+	<SubTexture name="character-э0000" x="763" y="519" width="43" height="69"/>
+	<SubTexture name="character-э0001" x="759" y="593" width="43" height="69"/>
+	<SubTexture name="character-ю0000" x="499" y="83" width="69" height="69"/>
+	<SubTexture name="character-ю0001" x="572" y="5" width="69" height="69"/>
+	<SubTexture name="character-я0000" x="566" y="689" width="45" height="68"/>
+	<SubTexture name="character-я0001" x="490" y="759" width="45" height="68"/>
+	<SubTexture name="character-ё (code)0000" x="287" y="702" width="43" height="78"/>
+	<SubTexture name="character-ё (code)0001" x="110" y="775" width="43" height="78"/>
+	<SubTexture name="diacritic-acute-fill0000" x="783" y="842" width="14" height="16"/>
+	<SubTexture name="diacritic-acute-fill0001" x="897" y="189" width="14" height="16"/>
+	<SubTexture name="diacritic-acute-outline0000" x="973" y="873" width="25" height="26"/>
+	<SubTexture name="diacritic-acute-outline0001" x="977" y="816" width="25" height="26"/>
+	<SubTexture name="diacritic-apostophe-fill0000" x="949" y="968" width="17" height="17"/>
+	<SubTexture name="diacritic-apostophe-fill0001" x="995" y="789" width="17" height="17"/>
+	<SubTexture name="diacritic-apostophe-outline0000" x="990" y="428" width="29" height="26"/>
+	<SubTexture name="diacritic-apostophe-outline0001" x="939" y="873" width="29" height="26"/>
+	<SubTexture name="diacritic-breve-fill0000" x="726" y="933" width="30" height="15"/>
+	<SubTexture name="diacritic-breve-fill0001" x="761" y="933" width="30" height="15"/>
+	<SubTexture name="diacritic-breve-outline0000" x="714" y="903" width="38" height="25"/>
+	<SubTexture name="diacritic-breve-outline0001" x="757" y="903" width="38" height="25"/>
+	<SubTexture name="diacritic-cadilla-fill0000" x="900" y="949" width="19" height="31"/>
+	<SubTexture name="diacritic-cadilla-fill0001" x="1000" y="54" width="19" height="31"/>
+	<SubTexture name="diacritic-cadilla-outline0000" x="923" y="687" width="29" height="35"/>
+	<SubTexture name="diacritic-cadilla-outline0001" x="888" y="790" width="29" height="35"/>
+	<SubTexture name="diacritic-circumflex-fill0000" x="726" y="953" width="28" height="14"/>
+	<SubTexture name="diacritic-circumflex-fill0001" x="759" y="953" width="28" height="14"/>
+	<SubTexture name="diacritic-circumflex-outline0000" x="896" y="879" width="38" height="25"/>
+	<SubTexture name="diacritic-circumflex-outline0001" x="922" y="790" width="38" height="25"/>
+	<SubTexture name="diacritic-dot-fill0000" x="832" y="970" width="12" height="12"/>
+	<SubTexture name="diacritic-dot-fill0001" x="849" y="970" width="12" height="12"/>
+	<SubTexture name="diacritic-dot-outline0000" x="996" y="965" width="23" height="23"/>
+	<SubTexture name="diacritic-dot-outline0001" x="988" y="904" width="23" height="23"/>
+	<SubTexture name="diacritic-hookabove-fill0000" x="924" y="968" width="20" height="26"/>
+	<SubTexture name="diacritic-hookabove-fill0001" x="678" y="933" width="20" height="26"/>
+	<SubTexture name="diacritic-hookabove-outline0000" x="732" y="863" width="30" height="35"/>
+	<SubTexture name="diacritic-hookabove-outline0001" x="679" y="893" width="30" height="35"/>
+	<SubTexture name="diacritic-hookhorizontal-fill0000" x="939" y="845" width="33" height="23"/>
+	<SubTexture name="diacritic-hookhorizontal-fill0001" x="898" y="845" width="33" height="23"/>
+	<SubTexture name="diacritic-hookhorizontal-outline0000" x="975" y="239" width="39" height="34"/>
+	<SubTexture name="diacritic-hookhorizontal-outline0001" x="946" y="428" width="39" height="34"/>
+	<SubTexture name="diacritic-hookside-fill0000" x="850" y="534" width="28" height="50"/>
+	<SubTexture name="diacritic-hookside-fill0001" x="812" y="453" width="28" height="50"/>
+	<SubTexture name="diacritic-hookside-outline0000" x="961" y="64" width="34" height="62"/>
+	<SubTexture name="diacritic-hookside-outline0001" x="936" y="240" width="34" height="62"/>
+	<SubTexture name="diacritic-hookvertical-fill0000" x="896" y="909" width="23" height="35"/>
+	<SubTexture name="diacritic-hookvertical-fill0001" x="838" y="918" width="23" height="35"/>
+	<SubTexture name="diacritic-hookvertical-outline0000" x="967" y="346" width="34" height="39"/>
+	<SubTexture name="diacritic-hookvertical-outline0001" x="908" y="537" width="34" height="39"/>
+	<SubTexture name="diacritic-horn-fill0000" x="678" y="964" width="16" height="18"/>
+	<SubTexture name="diacritic-horn-fill0001" x="699" y="965" width="16" height="18"/>
+	<SubTexture name="diacritic-horn-outline0000" x="995" y="758" width="24" height="26"/>
+	<SubTexture name="diacritic-horn-outline0001" x="972" y="934" width="24" height="26"/>
+	<SubTexture name="diacritic-macron-fill0000" x="471" y="984" width="35" height="10"/>
+	<SubTexture name="diacritic-macron-fill0001" x="792" y="970" width="35" height="9" frameX="0" frameY="-1" frameWidth="35" frameHeight="10"/>
+	<SubTexture name="diacritic-macron-outline0000" x="931" y="750" width="46" height="20"/>
+	<SubTexture name="diacritic-macron-outline0001" x="922" y="820" width="46" height="20"/>
+	<SubTexture name="diacritic-ogonek-fill0000" x="1000" y="90" width="19" height="29"/>
+	<SubTexture name="diacritic-ogonek-fill0001" x="972" y="965" width="19" height="29"/>
+	<SubTexture name="diacritic-ogonek-outline0000" x="863" y="879" width="28" height="34"/>
+	<SubTexture name="diacritic-ogonek-outline0001" x="805" y="894" width="28" height="34"/>
+	<SubTexture name="diacritic-ring-fill0000" x="845" y="650" width="19" height="15" frameX="0" frameY="-1" frameWidth="19" frameHeight="16"/>
+	<SubTexture name="diacritic-ring-fill0001" x="838" y="894" width="19" height="16"/>
+	<SubTexture name="diacritic-ring-outline0000" x="866" y="955" width="29" height="25"/>
+	<SubTexture name="diacritic-ring-outline0001" x="954" y="904" width="29" height="25"/>
+	<SubTexture name="diacritic-sicilicus-fill0000" x="1007" y="811" width="12" height="24"/>
+	<SubTexture name="diacritic-sicilicus-fill0001" x="918" y="240" width="12" height="24"/>
+	<SubTexture name="diacritic-sicilicus-outline0000" x="805" y="842" width="25" height="36"/>
+	<SubTexture name="diacritic-sicilicus-outline0001" x="965" y="775" width="25" height="36"/>
+	<SubTexture name="diacritic-stroke0-long-fill0000" x="792" y="958" width="55" height="7"/>
+	<SubTexture name="diacritic-stroke0-long-fill0001" x="792" y="958" width="55" height="7"/>
+	<SubTexture name="diacritic-stroke0-long-outline0000" x="946" y="467" width="68" height="19"/>
+	<SubTexture name="diacritic-stroke0-long-outline0001" x="895" y="625" width="68" height="19"/>
+	<SubTexture name="diacritic-stroke0-short-fill0000" x="650" y="602" width="30" height="5"/>
+	<SubTexture name="diacritic-stroke0-short-fill0001" x="863" y="364" width="30" height="5"/>
+	<SubTexture name="diacritic-stroke0-short-outline0000" x="824" y="726" width="43" height="17"/>
+	<SubTexture name="diacritic-stroke0-short-outline0001" x="924" y="946" width="43" height="17"/>
+	<SubTexture name="diacritic-stroke30-fill0000" x="416" y="963" width="50" height="22"/>
+	<SubTexture name="diacritic-stroke30-fill0001" x="841" y="751" width="50" height="22"/>
+	<SubTexture name="diacritic-stroke30-outline0000" x="900" y="350" width="62" height="34"/>
+	<SubTexture name="diacritic-stroke30-outline0001" x="900" y="389" width="62" height="34"/>
+	<SubTexture name="diacritic-stroke45-long-fill0000" x="544" y="308" width="47" height="57"/>
+	<SubTexture name="diacritic-stroke45-long-fill0001" x="588" y="835" width="47" height="57"/>
+	<SubTexture name="diacritic-stroke45-long-outline0000" x="139" y="395" width="60" height="69"/>
+	<SubTexture name="diacritic-stroke45-long-outline0001" x="5" y="465" width="60" height="69"/>
+	<SubTexture name="diacritic-stroke45-short-fill0000" x="863" y="840" width="30" height="34"/>
+	<SubTexture name="diacritic-stroke45-short-fill0001" x="896" y="751" width="30" height="34"/>
+	<SubTexture name="diacritic-stroke45-short-outline0000" x="320" y="936" width="44" height="49"/>
+	<SubTexture name="diacritic-stroke45-short-outline0001" x="851" y="376" width="44" height="49"/>
+	<SubTexture name="diacritic-stroke60-fill0000" x="884" y="430" width="31" height="69"/>
+	<SubTexture name="diacritic-stroke60-fill0001" x="900" y="276" width="31" height="69"/>
+	<SubTexture name="diacritic-stroke60-outline0000" x="600" y="528" width="45" height="81"/>
+	<SubTexture name="diacritic-stroke60-outline0001" x="314" y="542" width="45" height="81"/>
+	<SubTexture name="diacritic-stroke90-long-fill0000" x="587" y="533" width="7" height="70" frameX="0" frameY="0" frameWidth="8" frameHeight="70"/>
+	<SubTexture name="diacritic-stroke90-long-fill0001" x="206" y="318" width="8" height="70"/>
+	<SubTexture name="diacritic-stroke90-long-outline0000" x="863" y="276" width="19" height="83"/>
+	<SubTexture name="diacritic-stroke90-long-outline0001" x="884" y="504" width="19" height="83"/>
+	<SubTexture name="diacritic-stroke90-short-fill0000" x="1004" y="559" width="7" height="39"/>
+	<SubTexture name="diacritic-stroke90-short-fill0001" x="388" y="702" width="7" height="39"/>
+	<SubTexture name="diacritic-stroke90-short-outline0000" x="987" y="607" width="19" height="51"/>
+	<SubTexture name="diacritic-stroke90-short-outline0001" x="161" y="89" width="19" height="51"/>
+	<SubTexture name="diacritic-tilde-fill0000" x="841" y="778" width="34" height="15"/>
+	<SubTexture name="diacritic-tilde-fill0001" x="640" y="945" width="33" height="15" frameX="-1" frameY="0" frameWidth="34" frameHeight="15"/>
+	<SubTexture name="diacritic-tilde-outline0000" x="874" y="687" width="44" height="27"/>
+	<SubTexture name="diacritic-tilde-outline0001" x="874" y="719" width="44" height="27"/>
+	<SubTexture name="diacritic-titlo-fill0000" x="564" y="972" width="37" height="17"/>
+	<SubTexture name="diacritic-titlo-fill0001" x="977" y="847" width="37" height="16" frameX="0" frameY="-1" frameWidth="37" frameHeight="17"/>
+	<SubTexture name="diacritic-titlo-outline0000" x="965" y="491" width="47" height="27"/>
+	<SubTexture name="diacritic-titlo-outline0001" x="952" y="575" width="47" height="27"/>
+	<SubTexture name="diacritic-verticalline-fill0000" x="824" y="933" width="8" height="17"/>
+	<SubTexture name="diacritic-verticalline-fill0001" x="975" y="278" width="8" height="17"/>
+	<SubTexture name="diacritic-verticalline-outline0000" x="1001" y="932" width="18" height="27"/>
+	<SubTexture name="diacritic-verticalline-outline0001" x="703" y="933" width="18" height="27"/>
 </TextureAtlas>
