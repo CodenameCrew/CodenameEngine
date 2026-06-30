@@ -2263,12 +2263,12 @@ class Charter extends UIState {
 
 	inline function _note_addsustain(t) {
 		UIState.playEditorSound(Flags.DEFAULT_CHARTER_SUSTAINADD_SOUND);
-		changeNoteSustain(1);
+		changeNoteSustain(16/quant);
 	}
 
 	inline function _note_subtractsustain(t) {
 		UIState.playEditorSound(Flags.DEFAULT_CHARTER_SUSTAINDELETE_SOUND);
-		changeNoteSustain(-1);
+		changeNoteSustain(-16/quant);
 	}
 
 	function _note_selectall(_) {
