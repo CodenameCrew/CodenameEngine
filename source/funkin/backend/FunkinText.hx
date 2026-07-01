@@ -47,17 +47,17 @@ class FunkinText extends FlxText
 	private inline function __getZoomAnchorX(camera:FlxCamera):Float
 	{
 		if (Flags.USE_LEGACY_ZOOM_FACTOR)
-			return camera.width * 0.5;
+			return camera.width * 0.5 - origin.x;
 
-		return camera.width * 0.5 + camera.scroll.x * scrollFactor.x;
+		return camera.width * 0.5 + camera.scroll.x * scrollFactor.x - origin.x;
 	}
 
 	private inline function __getZoomAnchorY(camera:FlxCamera):Float
 	{
 		if (Flags.USE_LEGACY_ZOOM_FACTOR)
-			return camera.height * 0.5;
+			return camera.height * 0.5 - origin.y;
 
-		return camera.height * 0.5 + camera.scroll.y * scrollFactor.y;
+		return camera.height * 0.5 + camera.scroll.y * scrollFactor.y - origin.y;
 	}
 
 	override public function draw():Void
