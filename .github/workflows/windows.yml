@@ -4,6 +4,10 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  HAXE_VERSION: 4.3.7
+  HXCPP_COMPILE_CACHE: ${{ github.workspace }}/.hxcpp_cache
+
 jobs:
   build:
     name: Windows Build
@@ -17,7 +21,7 @@ jobs:
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
-          haxe-version: 4.3.7
+          haxe-version: ${{ env.HAXE_VERSION }}
       - name: Restore existing build cache for faster compilation
         uses: actions/cache@v4.2.3
         with:
@@ -27,8 +31,6 @@ jobs:
             .haxelib/
             export/release/windows/haxe/
             export/release/windows/obj/
-      - run: |
-          echo "HXCPP_COMPILE_CACHE=~/.hxcpp" >> $GITHUB_ENV
       - name: Installing/Updating libraries
         run: |
           haxe -cp commandline -D analyzer-optimize --run Main setup -s --no-vscheck
@@ -86,7 +88,7 @@ jobs:
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
-          haxe-version: 4.3.7
+          haxe-version: ${{ env.HAXE_VERSION }}
       - name: Restore existing build cache for faster compilation
         uses: actions/cache@v4.2.3
         with:
@@ -96,8 +98,6 @@ jobs:
             .haxelib/
             export/debug/windows/haxe/
             export/debug/windows/obj/
-      - run: |
-          echo "HXCPP_COMPILE_CACHE=~/.hxcpp" >> $GITHUB_ENV
       - name: Installing/Updating libraries
         run: |
           haxe -cp commandline -D analyzer-optimize --run Main setup -s --no-vscheck
