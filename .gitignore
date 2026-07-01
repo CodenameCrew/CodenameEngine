@@ -13,3 +13,4 @@ addons/*
 addons/*
 !addons/readme.txt
 dev-libs/
+.vs/
