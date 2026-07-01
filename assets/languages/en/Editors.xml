@@ -262,6 +262,7 @@
 					<str id="subtractSustainLength">Subtract sustain length</str>
 					<str id="selectAll">Select all</str>
 					<str id="selectMeasure">Select measure</str>
+					<str id="selectStrumline">Select Strumline</str>
 					<str id="noteTypesList">Note Types List</str>
 					<str id="editNoteTypesList">Edit Note Types List</str>
 				</group>
