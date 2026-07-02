@@ -386,9 +386,26 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 class NewStage extends StageLayer {
 	private static final __instanceFields = Type.getInstanceFields(NewStage);
 
-	// TODO: Preload the Assets and scripts of the stage before returning 👀
-	public static function getStage(name:String):NewStage {
-		return new NewStage(name);
+	public static var CACHE:Map<String, NewStage> = [];
+	public inline static function clear_cache() {
+		for (name=>stage in CACHE) stage?.destroy();
+		CACHE.clear();
+	}
+
+	public static function cache(name:String, reload:Bool = false):NewStage {
+		if (CACHE.exists(name) && !reload) return CACHE[name];
+		else if (CACHE.exists(name) && reload) {
+			var stage:NewStage = CACHE[name];
+			stage?.destroy();
+			FlxG.state?.remove(stage, true);
+		}
+
+		var stage:NewStage = new NewStage(name, true);
+		stage.active = stage.exists = stage.visible = false;
+
+		CACHE[name] = stage;
+
+		return stage;
 	}
 
 	private static final DEFAULT_ATTRIBUTES:Array<String> = ["name", "startCamPosX", "startCamPosY", "zoom", "folder", "useRenderTexture"];
@@ -442,6 +459,8 @@ class NewStage extends StageLayer {
 
 	private var characterPosLookup:Map<String, StageCharPos> = [];
 
+	public var hasLoaded:Bool = false;
+
 	/**
 	 * Sets the sprites in the script, so you can access them by the name.
 	**/
@@ -464,7 +483,8 @@ class NewStage extends StageLayer {
 
 	private var stageEvent:StageXMLEvent;
 
-	public function loadStage(loadAll:Bool = false) {
+	public function loadStage(loadAll:Bool = false):Void {
+		if (hasLoaded) return;
 		if (allowScripts) {
 			script = Script.create(scriptFilePath);
 			if (onStageScriptLoad != null) onStageScriptLoad(script);
@@ -514,6 +534,7 @@ class NewStage extends StageLayer {
 		postLoadStage(elems);
 		script?.call("postCreate");
 		script?.call("onPostStageLoad");
+		hasLoaded = true;
 	}
 
 	private inline function loadStartCam() {
@@ -777,9 +798,15 @@ class NewStage extends StageLayer {
 	override function hget(name:String):Dynamic {
 		if (__instanceFields.contains(name) || __instanceFields.contains('get_$name'))
 			return Reflect.getProperty(this, name);
+
+		// We should check PlayState last, and check sub-layers before.
+		var og_val:Dynamic = super.hget(name);
+		if (og_val != null) return og_val;
+
 		if (PlayState.instance != null && (PlayState.__instanceFields.contains(name) || PlayState.__instanceFields.contains('get_$name')))
 			return Reflect.getProperty(PlayState.instance, name);
-		return super.hget(name);
+		
+		return null;
 	}
 
 	override function hset(name:String, val:Dynamic):Dynamic {
@@ -787,11 +814,15 @@ class NewStage extends StageLayer {
 			Reflect.setProperty(this, name, val);
 			return val;
 		}
+
+		var og_val:Dynamic = super.hget(name);
+		if (og_val != null) return og_val;
+
 		if (PlayState.instance != null && (PlayState.__instanceFields.contains(name) || PlayState.__instanceFields.contains('set_$name'))) {
 			Reflect.setProperty(PlayState.instance, name, val);
 			return val;
 		}
-		return super.hset(name, val);
+		return null;
 	}
 	//endregion
 

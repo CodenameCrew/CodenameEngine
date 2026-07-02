@@ -37,6 +37,7 @@ import funkin.menus.*;
 import funkin.backend.week.WeekData;
 import funkin.savedata.FunkinSave;
 import haxe.io.Path;
+import haxe.xml.Access;
 
 using StringTools;
 
@@ -578,6 +579,34 @@ class PlayState extends MusicBeatState
 		return super.remove(basic, splice);
 	}
 
+	private var CHARACTER_CACHE:Map<String, Array<Character>> = [];
+	private function cache_character(character:Character, index:Int = 0):Character {
+		if (CHARACTER_CACHE.exists(character.curCharacter)) {
+			var stack:Array<Character> = CHARACTER_CACHE.get(character.curCharacter);
+			trace('stack[index]: ${stack[index]}');
+			if (stack[index] != null) return stack[index];
+
+			stack.insert(index, character);
+			trace('Stacking Character ${character.curCharacter} at index $index');
+			return character;
+		}
+		
+		CHARACTER_CACHE.set(character.curCharacter, [character]);
+		trace('Caching ${character.curCharacter} at index $index');
+
+		return character;
+	}
+
+	private function get_character_cache(index:Int, name:String):Character {
+		if (!CHARACTER_CACHE.exists(name)) return cache_character(new Character(0, 0, name, false), index);
+
+		var stack:Array<Character> = CHARACTER_CACHE[name];
+		if (stack.length <= 0) return cache_character(new Character(0, 0, name, false), index);
+		
+		index = CoolUtil.boundInt(index, 0, stack.length - 1);
+		return stack[index];
+	}
+
 	/**
 	 * Hit window, in milliseconds. A Legacy CNE Hit window configuration,
 	 * Don't use this, it's for mods that still uses the old judgement timing, instead use ratingManager.
@@ -746,7 +775,7 @@ class PlayState extends MusicBeatState
 		add(camFollow);
 
 		if (SONG.stage == null || SONG.stage.trim() == "") SONG.stage = Flags.DEFAULT_STAGE;
-		add(stage = NewStage.getStage(SONG.stage));
+		add(stage = NewStage.cache(SONG.stage));
 
 		if (!chartingMode || Options.charterEnablePlaytestScripts) {
 			switch(SONG.meta.name) {
@@ -961,6 +990,36 @@ class PlayState extends MusicBeatState
 
 		__updateNote_event = EventManager.get(NoteUpdateEvent);
 
+		for (event in events) {
+			switch(event.name) {
+				case "Change Character":
+					if (!event.params[5]) continue;
+					var strumline_index:Int = CoolUtil.boundInt(event.params[0], 0, strumLines.members.length - 1);
+					var char_idx:Int = event.params[1];
+					var name:String = event.params[2];
+					var override_isPlayer:Bool = event.params[3];
+					
+					var strumline:StrumLine = (strumLines.members[strumline_index] ?? cpuStrums);
+					var character:Character = strumline.characters[char_idx];
+					var isPlayer:Bool = (override_isPlayer) ? event.params[4] : (character?.isPlayer ?? false);
+					trace('character: ${character.curCharacter} ($name) | isPlayer: $isPlayer | override_isPlayer: $override_isPlayer | event.params[4]: ${event.params[4]}');
+
+					var path:String = Paths.xml('characters/$name');
+					if (Assets.exists(path)) {
+						try {
+							var node:Access = new Access(Xml.parse(Assets.getText(path)).firstElement());
+
+							var folder:String = (node.has.sprite) ? node.att.sprite : name;
+							var iconPath:String = (node.has.icon) ? node.att.icon : name;
+
+							graphicCache.cache(Paths.image('characters/$folder'));
+							graphicCache.cache(Paths.image('icons/$iconPath'));
+						}
+						catch (e) Logs.trace('Couldn\'t load character XML "$path": ${e.message}', ERROR);
+					}
+					cache_character(new Character(0, 0, name, isPlayer), char_idx);
+			}
+		}
 		gameAndCharsCall("postCreate", null, "gamePostCreate");
 	}
 
@@ -1127,6 +1186,8 @@ class PlayState extends MusicBeatState
 			remove(stage, true);
 		}
 
+		NewStage.clear_cache();
+
 		scripts = FlxDestroyUtil.destroy(scripts);
 
 		super.destroy();
@@ -1156,13 +1217,15 @@ class PlayState extends MusicBeatState
 		else events = [
 			for (e in songData.events) {
 				switch (e.name) {
-					case "Camera Movement": if (!foundCam && e.time < 10) {
-						foundCam = true;
-						executeEvent(e);
-					}
-					case "Time Signature Change": if (!foundSigs && (e.params[0] != 4 || e.params[1] != 4)) {
-						foundSigs = true;
-					}
+					case "Camera Movement":
+						if (!foundCam && e.time < 10) {
+							foundCam = true;
+							executeEvent(e);
+						}
+					case "Time Signature Change":
+						if (!foundSigs && (e.params[0] != 4 || e.params[1] != 4)) foundSigs = true;
+					case "Change Stage":
+						NewStage.cache(e.params[0]);
 				}
 				e;
 			}
@@ -1707,6 +1770,56 @@ class PlayState extends MusicBeatState
 				if (strumLines.members[event.params[0]] != null && strumLines.members[event.params[0]].characters != null)
 					for (char in strumLines.members[event.params[0]].characters)
 						if (char != null && char.hasAnim(event.params[1])) char.playAnim(event.params[1], event.params[2], event.params[3] == "NONE" ? null : event.params[3]);
+			
+			case "Change Stage":
+				var stage_name:String = event.params[0];
+				var use_cache:Bool = event.params[1];
+				var destroy_previous:Bool = event.params[2];
+				var force_reload:Bool = event.params[3];
+
+				var new_stage:NewStage = use_cache ? NewStage.cache(stage_name, force_reload) : new NewStage(stage_name);
+
+				if (destroy_previous) stage?.destroy();
+				stage = new_stage;
+
+			case "Change Character":
+				var strumline_index:Int = CoolUtil.boundInt(event.params[0], 0, strumLines.members.length - 1);
+				var char_index:Int = event.params[1];
+				var char_name:String = event.params[2];
+				
+				var override_isPlayer:Bool = event.params[3];
+				var isPlayer:Bool = event.params[4];
+
+				var cached:Bool = event.params[5];
+
+				var destroy_previous:Bool = event.params[6];
+				var auto_stage_position:Bool = event.params[7];
+
+				var strumline:StrumLine = (strumLines.members[strumline_index] ?? cpuStrums);
+				var character:Character = strumline.characters[char_index];
+				if (character != null) {
+					var new_character:Character = (cached) ? get_character_cache(char_index, char_name) : new Character(character.x, character.y, char_name, false);
+					
+					new_character.isPlayer = (override_isPlayer) ? isPlayer : character.isPlayer;
+					new_character.__switchAnims = (strumline.data.type == 1);
+					new_character.fixChar(new_character.__switchAnims, new_character.__autoInterval);
+					if (new_character.isPlayer) new_character.flipX = !new_character.flipX; // to re-flip 😭
+					new_character.__baseFlipped = new_character.flipX;
+					new_character.dance();
+
+					var icon:HealthIcon = (new_character.isPlayer) ? iconP1 : iconP2;
+					icon.setIcon(new_character.icon);
+
+					strumline.characters[char_index] = new_character;
+
+					stage.remove(character, true);
+					if (destroy_previous) character?.destroy();
+
+					if (auto_stage_position) reposition_characters();
+
+				}
+
+
 			case "Unknown": // nothing
 		}
 		
@@ -2314,13 +2427,23 @@ class PlayState extends MusicBeatState
 			return this.gameAndCharsEvent("onStageNodeParsed", EventManager.get(StageNodeEvent).recycle(new_stage, node, sprite, node.name)).sprite;
 		}
 		new_stage.onPostStageCreation = (stageEvent) -> this.gameAndCharsEvent("onPostStageCreation", stageEvent);
-		new_stage.onSilentDestroy = (script) -> this.scripts?.remove(script);
 		new_stage.onStageDestroy = (_) -> this.gameAndCharsCall("onStageDestroy", [_]);
 
+		new_stage.active = new_stage.exists = new_stage.visible = true;
 		new_stage.loadStage();
 
 		if (!isReplacing) return this.stage = new_stage;
-		
+
+		replace(this.stage, new_stage);
+		this.stage = new_stage;
+
+		reposition_characters();
+
+		return this.stage;
+	}
+	#end
+
+	private function reposition_characters() {
 		// reset the characters positions with the new stage
 		for (strumline in this.strumLines.members) {
 			if (strumline.characters.length == 0) continue;
@@ -2330,16 +2453,11 @@ class PlayState extends MusicBeatState
 					case 1: "boyfriend";
 					case 2: "girlfriend";
 				};
-				// var char = new Character(0, 0, charName, new_stage.isCharFlipped(new_stage.characterPoses[charName] != null ? charName : charPosName, strumLine.type == 1));
-				char.isPlayer = new_stage.isCharFlipped(new_stage.characterPoses[char.curCharacter] != null ? char.curCharacter : posName, !strumline.opponentSide);
-				new_stage.applyCharPos(char, posName, i);
+				char.isPlayer = this.stage.isCharFlipped(this.stage.characterPoses[char.curCharacter] != null ? char.curCharacter : posName, !strumline.opponentSide);
+				this.stage.applyCharPos(char, posName, i);
 			}
 		}
-
-		replace(this.stage, new_stage);
-		return this.stage = new_stage;
 	}
-	#end
 
 	/**
 	 * Load a week into PlayState.
