@@ -568,6 +568,16 @@ class PlayState extends MusicBeatState
 	 */
 	public var noteTypesArray:Array<String> = [null];
 
+	// Backwards compatability for removing sprites from the Stage...
+	@:dox(hide) override public function remove(basic:FlxBasic, splice:Bool = false):FlxBasic {
+		if (members == null) return null;
+		
+		final index = members.indexOf(basic);
+
+		if (index < 0) return stage.remove(basic, splice);
+		return super.remove(basic, splice);
+	}
+
 	/**
 	 * Hit window, in milliseconds. A Legacy CNE Hit window configuration,
 	 * Don't use this, it's for mods that still uses the old judgement timing, instead use ratingManager.

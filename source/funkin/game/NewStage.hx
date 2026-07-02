@@ -808,4 +808,5 @@ class NewStage extends StageLayer {
 	function get_stageName():String { return this.name; }
 	function set_stageName(name:String):String { return this.name = name; }
 	function get_characterPoses():Map<String, StageCharPos> { return this.characterPosLookup; }
+	inline function applyCharStuff(char:Character, posName:String, id:Float = 0) { return applyCharPos(char, posName, id); }
 }
