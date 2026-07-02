@@ -31,7 +31,9 @@ class EventsData {
 				type: TDropDown(['In', 'Out', 'InOut']),
 				defValue: "In",
 				saveIfDefault: false
-			}
+			},
+			{name: "Offset X", type: TFloat(null, null, 10, 3), defValue: 0},
+			{name: "Offset Y", type: TFloat(null, null, 10, 3), defValue: 0},
 		],
 		"Camera Position" => [
 			{name: "X", type: TFloat(null, null, 10, 3), defValue: 0},
