@@ -1,8 +1,11 @@
 package funkin.backend.system.net;
 
+import funkin.backend.utils.ThreadUtil;
+
 import flixel.util.typeLimit.OneOfThree;
 
 import haxe.io.Bytes;
+import openfl.utils.ByteArray;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
 import hx.ws.Log as LogWs;
@@ -196,7 +199,7 @@ class FunkinWebSocket implements IFlxDestroyable {
 			// Do an outside check to see if it wants to log before we try decoding stuff into raw bytes, to save on some unnecessary work.
 			if (metrics.IS_LOGGING) {
 				if (data is String) metrics.updateBytesSent(Bytes.ofString(data).length);
-				else if (data is Bytes) metrics.updateBytesSent(data.length);
+				else if (data is Bytes || data is ByteArrayData) metrics.updateBytesSent(data.length);
 				else if (data is FunkinPacket) metrics.updateBytesSent(data.toBytes().length);
 			}
 
@@ -208,6 +211,43 @@ class FunkinWebSocket implements IFlxDestroyable {
 			]);
 		}
 		return false;
+	}
+
+	
+	public static var MAX_BYTES_PER_CHUNK:Int = 16 * 1024; // 16KB
+
+	public function send_bytes(bytes:ByteArrayData, ?extra_start_data:Dynamic, ?extra_end_data:Dynamic):Void {
+		var bytes_start:FunkinPacket = new FunkinPacket();
+		bytes_start.set("sending_byte_chunks", true);
+		bytes_start.set("total_size", bytes.bytesAvailable);
+		bytes_start.appendJson(extra_start_data);
+
+		this.send(bytes_start);
+
+		// ensure we start at the beginning of the bytes
+		bytes.position = 0;
+		ThreadUtil.execAsync(() -> {
+			while (bytes.bytesAvailable > 0) {
+				try {
+					var size = Std.int(Math.min(MAX_BYTES_PER_CHUNK, bytes.bytesAvailable));
+
+					var chunk = new ByteArrayData();
+					bytes.readBytes(chunk, 0, size);
+					this._ws.send(chunk);
+				} catch(e) {
+					Logs.traceColored([
+						Logs.logText('[FunkinWebSocket] ', CYAN),
+						Logs.logText('Failed to compile a chunk: ${e}', NONE),
+					]);
+				};
+			}
+			bytes.position = 0;
+			
+			var bytes_end:FunkinPacket = new FunkinPacket();
+			bytes_end.set("chunks_complete", true);
+			bytes_end.appendJson(extra_end_data);
+			this.send(bytes_end);
+		});
 	}
 
 	/**
