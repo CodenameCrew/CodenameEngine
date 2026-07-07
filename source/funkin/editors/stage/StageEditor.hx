@@ -2,6 +2,7 @@ package funkin.editors.stage;
 
 import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
+import flixel.math.FlxMath;
 import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
@@ -401,7 +402,7 @@ class StageEditor extends UIState {
 
 		remove(charPos, true);
 		charPos.destroy();
-		
+
 		return char;
 	}
 
@@ -642,19 +643,19 @@ class StageEditor extends UIState {
 				var node:Access = cast sprite.extra.get(exID("node"));
 				var spriteXML = Xml.createElement("sprite");
 				saveToXml(spriteXML, "name", sprite.name);
-				saveToXml(spriteXML, "x", sprite.x, 0);
-				saveToXml(spriteXML, "y", sprite.y, 0);
+				saveToXml(spriteXML, "x", FlxMath.roundDecimal(sprite.x, 2), 0);
+				saveToXml(spriteXML, "y", FlxMath.roundDecimal(sprite.y, 2), 0);
 				saveToXml(spriteXML, "sprite", sprite.extra.get(exID("imageFile")));
 				savePointToXml(spriteXML, "scale", sprite.scale, 1);
 				savePointToXml(spriteXML, "scroll", sprite.scrollFactor, 1);
-				saveToXml(spriteXML, "skewx", sprite.skew.x, 0);
-				saveToXml(spriteXML, "skewy", sprite.skew.y, 0);
-				saveToXml(spriteXML, "alpha", sprite.alpha, 1);
-				saveToXml(spriteXML, "angle", sprite.angle, 0);
+				saveToXml(spriteXML, "skewx", FlxMath.roundDecimal(sprite.skew.x, 2), 0);
+				saveToXml(spriteXML, "skewy", FlxMath.roundDecimal(sprite.skew.y, 2), 0);
+				saveToXml(spriteXML, "alpha", FlxMath.roundDecimal(sprite.alpha, 2), 1);
+				saveToXml(spriteXML, "angle", FlxMath.roundDecimal(sprite.angle, 2), 0);
 				//saveToXml(spriteXML, "graphicSize", sprite.width, sprite.width);
 				//saveToXml(spriteXML, "graphicSizex", sprite.height, sprite.height);
 				//saveToXml(spriteXML, "graphicSizey", sprite.height, sprite.height);
-				saveToXml(spriteXML, "zoomfactor", sprite.zoomFactor, 1);
+				saveToXml(spriteXML, "zoomfactor", FlxMath.roundDecimal(sprite.zoomFactor, 4), 1);
 				saveToXml(spriteXML, "updateHitbox", getBoolOfNode(node, "updateHitbox"), false);
 				saveToXml(spriteXML, "antialiasing", sprite.antialiasing, true);
 				//saveToXml(spriteXML, "width", sprite.width);
@@ -677,17 +678,17 @@ class StageEditor extends UIState {
 				var charXML:Xml = Xml.createElement(node.name);
 				if(!char.name.startsWith("NO_DELETE_"))
 					saveToXml(charXML, "name", char.name);
-				saveToXml(charXML, "x", char.x, defaultPos.x);
-				saveToXml(charXML, "y", char.y, defaultPos.y);
+				saveToXml(charXML, "x", FlxMath.roundDecimal(char.x, 2), defaultPos.x);
+				saveToXml(charXML, "y", FlxMath.roundDecimal(char.y, 2), defaultPos.y);
 				saveToXml(charXML, "camxoffset", char.extra.get(exID("camX")), 0);
 				saveToXml(charXML, "camyoffset", char.extra.get(exID("camY")), 0);
-				saveToXml(charXML, "skewx", char.skew.x, 0);
-				saveToXml(charXML, "skewy", char.skew.y, 0);
+				saveToXml(charXML, "skewx", FlxMath.roundDecimal(char.skew.x, 2), 0);
+				saveToXml(charXML, "skewy", FlxMath.roundDecimal(char.skew.y, 2), 0);
 				saveToXml(charXML, "spacingx", char.extra.get(exID("spacingX")), 20);
 				saveToXml(charXML, "spacingy", char.extra.get(exID("spacingY")), 0);
-				saveToXml(charXML, "alpha", char.alpha / 0.75, 1);
-				saveToXml(charXML, "angle", char.angle, 0);
-				saveToXml(charXML, "zoomfactor", char.zoomFactor, 1);
+				saveToXml(charXML, "alpha", FlxMath.roundDecimal(char.alpha / 0.75, 2), 1);
+				saveToXml(charXML, "angle", FlxMath.roundDecimal(char.angle, 2), 0);
+				saveToXml(charXML, "zoomfactor", FlxMath.roundDecimal(char.zoomFactor, 2), 1);
 				saveToXml(charXML, "flipX", char.isPlayer, defaultPos.flip);
 				savePointToXml(charXML, "scroll", char.scrollFactor, defaultPos.scroll);
 				savePointToXml(charXML, "scale", char.scale.scaleNew(button.charScale), 1);
@@ -919,14 +920,14 @@ class StageEditor extends UIState {
 		for (corner in transformedCorners) {
 			corner.x -= sprite.cameras[0].viewX;
 			corner.y -= sprite.cameras[0].viewY;
-	
+
 			corner.x *= sprite.cameras[0].zoom;
 			corner.y *= sprite.cameras[0].zoom;
 		}
 
 		if (DrawUtil.line == null) DrawUtil.createDrawers();
 		DrawUtil.line.cameras = [gizmosCamera]; DrawUtil.line.alpha = 0.85;
-		DrawUtil.dot.cameras = [gizmosCamera]; DrawUtil.dot.alpha = 1; 
+		DrawUtil.dot.cameras = [gizmosCamera]; DrawUtil.dot.alpha = 1;
 
 		DrawUtil.drawLine(transformedCorners[0], transformedCorners[1], 1, 0xFF007B8F); // tl - tr
 		DrawUtil.drawLine(transformedCorners[0], transformedCorners[2], 1, 0xFF007B8F); // tl - bl
@@ -1118,7 +1119,7 @@ class StageEditor extends UIState {
 					storedScale.copyFrom(sprite.scale);
 					storedAngle = sprite.angle;
 				}
-				
+
 				if(mouseMode == MOVE_CENTER){
 					trace(mouseMode);
 					storedPos.set(sprite.x, sprite.y);
@@ -1135,9 +1136,9 @@ class StageEditor extends UIState {
 					case TOP_MIDDLE: RESIZE_T;
 					case TOP_RIGHT: RESIZE_TR;
 					case MIDDLE_LEFT: RESIZE_L;
-					case CENTER_CIRCLE: 
-						#if (mac) FlxG.mouse.pressed ? DRAG : DRAG_OPEN 
-						#elseif (linux) FlxG.mouse.pressed ? DRAG : CLICK 
+					case CENTER_CIRCLE:
+						#if (mac) FlxG.mouse.pressed ? DRAG : DRAG_OPEN
+						#elseif (linux) FlxG.mouse.pressed ? DRAG : CLICK
 						#else MOVE #end;
 					case MIDDLE_RIGHT: RESIZE_R;
 					case BOTTOM_LEFT: RESIZE_BL;
@@ -1214,7 +1215,7 @@ class StageEditor extends UIState {
 		inc = dy * ((mousePoint.x - point1.x) / dx);
 		topRegion += inc;
 		bottomRegion += inc;
-			
+
 		return (mousePoint.x >= leftRegion && mousePoint.x <= rightRegion)
 			&& (mousePoint.y >= topRegion && mousePoint.y <= bottomRegion);
 	}
