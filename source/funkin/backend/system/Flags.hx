@@ -106,6 +106,7 @@ class Flags {
 	public static var DEFAULT_BEATS_PER_MEASURE:Int = 4;
 	public static var DEFAULT_STEPS_PER_BEAT:Int = 4;
 	public static var DEFAULT_LOOP_TIME:Float = 0.0;
+	public static var ICONS_AUTOPOSITION:Bool = true;
 
 	@:lazy public static var DEFAULT_SOUND_TIME_SCALED_PITCH:Null<Bool> = null;
 	@:lazy public static var USE_FLXTRAIL_FRAMES:Null<Bool> = null;
@@ -133,6 +134,9 @@ class Flags {
 	@:also(funkin.game.PlayState.opponentMode)
 	public static var DEFAULT_OPPONENT_MODE:Bool = false;
 
+	public static var EARLY_HIT_WINDOW_RANGE:Float = 1.0; // was 0.5 for easier early hitting, but now 1 to demotivate mashing and getting away with it.
+	public static var LATE_HIT_WINDOW_RANGE:Float = 1.0;
+	public static var SHITS_BREAK_COMBO:Bool = true;
 	public static var USE_LEGACY_TIMING:Null<Bool> = null;
 
 	public static var DEFAULT_NOTE_MS_LIMIT:Float = 1500;
