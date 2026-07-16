@@ -30,6 +30,7 @@ class ModSwitchMenu extends MusicBeatSubstate {
 		FlxTween.tween(bg, {alpha: 0.5}, 0.25, {ease: FlxEase.cubeOut});
 
 		mods = ModsFolder.getModsList();
+		CoolUtil.sortAlphabetically(ModsFolder.getModsList(),true);
 		mods.push(null);
 
 		alphabets = new FlxTypedGroup<Alphabet>();
