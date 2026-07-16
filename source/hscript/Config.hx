@@ -5,6 +5,7 @@ class Config {
 	public static final ALLOWED_CUSTOM_CLASSES = [
 		#if !DOCUMENTATION
 		"flixel",
+		"openfl.filters.BitmapFilter",
 
 		"funkin",
 		#if MODCHARTING_FEATURES
