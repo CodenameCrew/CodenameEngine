@@ -1,6 +1,5 @@
 #pragma header
-
-// Used in charter by waveforms
+#version 120 // this shader doesnt require expensive calculations
 
 const vec3 gradient1 = vec3(114.0/255.0, 81.0/255.0, 135.0/255.0);
 const vec3 gradient2 = vec3(144.0/255.0, 80.0/255.0, 186.0/255.0);
@@ -17,6 +16,21 @@ uniform sampler2D waveformTexture;
 uniform vec2 waveformSize;
 
 uniform bool lowDetail;
+
+float catmullRom(
+	float p0, float p1, float p2, float p3,
+	float t
+) {
+	float t2 = t * t;
+	float t3 = t2 * t;
+
+	return 0.5 * (
+		(2.0 * p1) +
+		(-p0 + p2) * t +
+		(2.0*p0 - 5.0*p1 + 4.0*p2 - p3) * t2 +
+		(-p0 + 3.0*p1 - 3.0*p2 + p3) * t3
+	);
+}
 
 float getAmplitude(vec2 pixel) {
 	float pixelID = floor((pixel.y+pixelOffset)/3.0);

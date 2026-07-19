@@ -9,7 +9,7 @@ class StatsInfo extends FramerateCategory {
 		super("Asset Libraries Tree Info");
 	}
 
-	public override function __enterFrame(t:Int) {
+	public override function __enterFrame(t:Float) {
 		if (alpha <= 0.05) return;
 		_text = "totalDC: " + Context3DStats.totalDrawCalls();
 		_text += "\nstageDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE);

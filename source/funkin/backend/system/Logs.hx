@@ -115,7 +115,7 @@ final class Logs {
 			Sys.print(t.text);
 		}
 		NativeAPI.setConsoleColors();
-		Sys.print("\r\n");
+		Sys.println("\r");
 		__showing = false;
 		#elseif mobile
 		while(__showing) {

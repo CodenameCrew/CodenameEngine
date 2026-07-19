@@ -47,7 +47,7 @@ class MultiFramesCollection extends FlxFramesCollection
 	public function addFrames(collection:FlxFramesCollection) {
 		if (collection == null || collection.frames == null) return;
 
-		collection.parent.useCount++;
+		collection.parent.incrementUseCount();
 		parentedFrames.push(collection);
 
 		for(f in collection.frames) {
@@ -63,7 +63,7 @@ class MultiFramesCollection extends FlxFramesCollection
 		if(parentedFrames != null) {
 			for(collection in parentedFrames) {
 				if(collection != null)
-					collection.parent.useCount--;
+					collection.parent.decrementUseCount();
 			}
 			parentedFrames = null;
 		}
