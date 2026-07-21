@@ -201,7 +201,7 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 			case END:
 				position = label.text.length;
 			case V:
-				UIState.playEditorSound(Flags.DEFAULT_EDITOR_PASTE_SOUND);
+				UIState.playEditorSound(modifier.ctrlKey ? Flags.DEFAULT_EDITOR_PASTE_SOUND : Flags.DEFAULT_EDITOR_TEXTTYPE_SOUND);
 				// Hey lj here, fixed copying because before we checked if the modifier was left or right ctrl
 				// but somehow it gave a int outside of the KeyModifier's range :sob:
 				// apparently there is a boolean that just checks for you. yw :D
@@ -214,7 +214,7 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 				if (data != null)
 					onTextInput(data);
 			case C:
-				UIState.playEditorSound(Flags.DEFAULT_EDITOR_COPY_SOUND);
+				UIState.playEditorSound(modifier.ctrlKey ? Flags.DEFAULT_EDITOR_COPY_SOUND : Flags.DEFAULT_EDITOR_TEXTTYPE_SOUND);
 				// if we are not holding ctrl, ignore
 				if (!modifier.ctrlKey)
 					return;
@@ -222,7 +222,7 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 				// copying
 				Clipboard.generalClipboard.setData(TEXT_FORMAT, label.text);
 			case X:
-				UIState.playEditorSound(Flags.DEFAULT_EDITOR_CUT_SOUND);
+				UIState.playEditorSound(modifier.ctrlKey ? Flags.DEFAULT_EDITOR_CUT_SOUND : Flags.DEFAULT_EDITOR_TEXTTYPE_SOUND);
 
 				// if we are not holding ctrl, ignore
 				if (!modifier.ctrlKey)
