@@ -642,15 +642,16 @@ class StageEditor extends UIState {
 				var node:Access = cast sprite.extra.get(exID("node"));
 				var spriteXML = Xml.createElement("sprite");
 				saveToXml(spriteXML, "name", sprite.name);
-				saveToXml(spriteXML, "x", sprite.x, 0);
-				saveToXml(spriteXML, "y", sprite.y, 0);
+				saveToXml(spriteXML, "x", FlxMath.roundDecimal(sprite.x, 2), 0);
+				saveToXml(spriteXML, "y", FlxMath.roundDecimal(sprite.y, 2), 0);
 				saveToXml(spriteXML, "sprite", sprite.extra.get(exID("imageFile")));
-				savePointToXml(spriteXML, "scale", sprite.scale, 1);
+				var roundedScale:FlxPoint = FlxPoint.get(FlxMath.roundDecimal(sprite.scale.x, 2), FlxMath.roundDecimal(sprite.scale.y, 2));
+				savePointToXml(spriteXML, "scale", roundedScale, 1, 1);
 				savePointToXml(spriteXML, "scroll", sprite.scrollFactor, 1);
-				saveToXml(spriteXML, "skewx", sprite.skew.x, 0);
-				saveToXml(spriteXML, "skewy", sprite.skew.y, 0);
+				saveToXml(spriteXML, "skewx", FlxMath.roundDecimal(sprite.skew.x, 2), 0);
+				saveToXml(spriteXML, "skewy", FlxMath.roundDecimal(sprite.skew.y, 2), 0);
 				saveToXml(spriteXML, "alpha", sprite.alpha, 1);
-				saveToXml(spriteXML, "angle", sprite.angle, 0);
+				saveToXml(spriteXML, "angle", FlxMath.roundDecimal(sprite.angle, 2), 0);
 				//saveToXml(spriteXML, "graphicSize", sprite.width, sprite.width);
 				//saveToXml(spriteXML, "graphicSizex", sprite.height, sprite.height);
 				//saveToXml(spriteXML, "graphicSizey", sprite.height, sprite.height);
@@ -677,20 +678,22 @@ class StageEditor extends UIState {
 				var charXML:Xml = Xml.createElement(node.name);
 				if(!char.name.startsWith("NO_DELETE_"))
 					saveToXml(charXML, "name", char.name);
-				saveToXml(charXML, "x", char.x, defaultPos.x);
-				saveToXml(charXML, "y", char.y, defaultPos.y);
+				saveToXml(charXML, "x", FlxMath.roundDecimal(char.x, 2), defaultPos.x);
+				saveToXml(charXML, "y", FlxMath.roundDecimal(char.y, 2), defaultPos.y);
 				saveToXml(charXML, "camxoffset", char.extra.get(exID("camX")), 0);
 				saveToXml(charXML, "camyoffset", char.extra.get(exID("camY")), 0);
-				saveToXml(charXML, "skewx", char.skew.x, 0);
-				saveToXml(charXML, "skewy", char.skew.y, 0);
+				saveToXml(charXML, "skewx", FlxMath.roundDecimal(char.skew.x, 2), 0);
+				saveToXml(charXML, "skewy", FlxMath.roundDecimal(char.skew.y, 2), 0);
 				saveToXml(charXML, "spacingx", char.extra.get(exID("spacingX")), 20);
 				saveToXml(charXML, "spacingy", char.extra.get(exID("spacingY")), 0);
 				saveToXml(charXML, "alpha", char.alpha / 0.75, 1);
-				saveToXml(charXML, "angle", char.angle, 0);
+				saveToXml(charXML, "angle", FlxMath.roundDecimal(char.angle, 2), 0);
 				saveToXml(charXML, "zoomfactor", char.zoomFactor, 1);
 				saveToXml(charXML, "flipX", char.isPlayer, defaultPos.flip);
 				savePointToXml(charXML, "scroll", char.scrollFactor, defaultPos.scroll);
-				savePointToXml(charXML, "scale", char.scale.scaleNew(button.charScale), 1);
+				var charScale:FlxPoint = char.scale.scaleNew(button.charScale);
+				var roundedScale:FlxPoint = FlxPoint.get(FlxMath.roundDecimal(charScale.x, 2), FlxMath.roundDecimal(charScale.y, 2));
+				savePointToXml(charXML, "scale", roundedScale, 1, 1);
 				// TODO: save custom parameters
 				newNode = charXML;
 			} else if(button is StageUnknownButton) {
