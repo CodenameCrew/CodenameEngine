@@ -59,7 +59,7 @@ class AlphabetEditor extends UIState {
 	public override function create() {
 		super.create();
 
-		WindowUtils.suffix = " (" + translate("name") + ")";
+		WindowUtils.suffix = " (" + TU.translate("editor.alphabet.name", true) + ")";
 		SaveWarning.selectionClass = AlphabetSelection;
 		SaveWarning.saveFunc = () -> {_file_save(null);};
 
@@ -102,7 +102,7 @@ class AlphabetEditor extends UIState {
 						
 					},
 					{
-						label: "Edit Main Data", // TODO: add translations
+						label: translate("edit.editMainData"),
 						onSelect: _edit_main
 					}
 				]
@@ -128,15 +128,15 @@ class AlphabetEditor extends UIState {
 				]
 			},
 			{
-				label: "Tape",
+				label: translate("topBar.tape"),
 				childs: [
 					{
-						label: "Move Tape Left",
+						label: translate("tape.MoveTapeLeft"),
 						keybind: [LEFT],
 						onSelect: _tape_left
 					},
 					{
-						label: "Move Tape Right",
+						label: translate("tape.MoveTapeRight"),
 						keybind: [RIGHT],
 						onSelect: _tape_right
 					}
