@@ -52,4 +52,8 @@ class FramerateCategory extends Sprite {
 		bgSprite.scaleX = width;
 		bgSprite.scaleY = height;
 	}
+
+	public static inline function addLine(buf:StringBuf, ...values:Array<Dynamic>):Void {
+		for (v in values) buf.add(v);
+	}
 }
