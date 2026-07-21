@@ -142,6 +142,25 @@ class MainMenuState extends MusicBeatState
 			if (controls.BACK)
 				FlxG.switchState(new TitleState());
 
+			if (FlxG.mouse.justPressed){
+				for(index => sprite in menuItems.members){
+					if(FlxG.mouse.overlaps(sprite)){
+						if(curSelected != index)
+							changeItem(index-curSelected);
+						else
+							selectItem();
+						break;
+					}
+				}
+				#if MOD_SUPPORT
+				if(FlxG.mouse.overlaps(versionText)){
+					openSubState(new ModSwitchMenu());
+					persistentUpdate = false;
+					persistentDraw = true;
+					
+				}
+				#end
+			}
 			#if MOD_SUPPORT
 			if (controls.SWITCHMOD) {
 				openSubState(new ModSwitchMenu());
@@ -157,10 +176,10 @@ class MainMenuState extends MusicBeatState
 		super.update(elapsed);
 
 		if (forceCenterX)
-		menuItems.forEach(function(spr:FlxSprite)
-		{
-			spr.screenCenter(X);
-		});
+			menuItems.forEach(function(spr:FlxSprite)
+			{
+				spr.screenCenter(X);
+			});
 	}
 
 	public override function switchTo(nextState:FlxState):Bool {
