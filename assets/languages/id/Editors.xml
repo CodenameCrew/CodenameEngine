@@ -1,0 +1,692 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<group name="General Editor Translations" prefix="editor.">
+		<str id="autosavingIn">Penyimpanan otomatis dalam {0} detik{1}</str>
+		<str id="autosavingCanceledSuffix">(Dibatalkan)!</str>
+
+		<str id="ok">Oke</str>
+		<str id="cancel">Batal</str>
+		<str id="save">Simpan</str>
+		<str id="saveClose">Simpan &amp; Tutup</str>
+		<str id="close">Tutup</str>
+		<str id="notNow">Tidak Sekarang</str>
+		<str id="yes">Iya</str>
+	</group>
+
+	<group name="UIImageExplorer" prefix="uiImageExplorer.">
+		<str id="symbol">Simbol</str>
+		<str id="animation">Animasi</str>
+		<str id="atlas">Atlas</str>
+		<str id="spritemap">Spritemap</str>
+
+		<str id="directory">Direktori ({0}/)</str>
+		<str id="found">{0} {1} Ditemukan</str>
+		<str id="foundplural">{0} {1} Ditemukan</str>
+		<str id="notFound">#TIDAK Ditemukan {0}#</str>
+		<str id="foundAtlas">{0} Ditemukan Spritemap</str>
+		<str id="foundAtlasplural">{0} Ditemukan Spritemaps</str>
+
+		<str id="fileAlreadyExists">File-file berikut ini sudah ada: \n\n{0}\n\nPENTING: PENGGANTIAN INI TIDAK DAPAT DIBATALKAN!</str>
+		<str id="override">File Pengganti</str>
+		<str id="useExisting">Gunakan yang Sudah Ada</str>
+	</group>
+
+	<group name="EditorPicker" prefix="editor.">
+		<str id="alphabet.name">Editor Alfabet</str>
+		<str id="chart.name">Editor Bagan</str>
+		<str id="character.name">Editor Karakter</str>
+		<str id="stage.name">Editor Panggung</str>
+		<str id="uiDebug.name">Debug Antarmuka Pengguna</str>
+		<str id="wiki.name">Wiki</str>
+		<str id="debugOptions.name">Opsi Debug</str>
+	</group>
+
+	<group name="ChartEditor">
+		<group name="CharterSelection" prefix="charterSelection.">
+			<str id="desc">Pilih lagu yang partiturnya ingin Anda ubah.</str>
+			<str id="acceptSong">Tekan ACCEPT untuk memilih tingkat kesulitan yang akan diedit.</str>
+			<str id="acceptVariation">Tekan ACCEPT untuk memilih variasi lagu yang akan diedit.</str>
+			<str id="acceptDifficulty">Tekan ACCEPT untuk mengedit grafik pada tingkat kesulitan yang dipilih.</str>
+			<str id="selectDifficulty">Pilih tingkat kesulitan untuk melanjutkan.</str>
+			<str id="newDifficulty">Tingkat Kesulitan Baru</str>
+			<str id="newDifficultyDesc">Tekan ACCEPT untuk membuat tingkat kesulitan grafik baru.</str>
+			<str id="newSong">Lagu Baru</str>
+			<str id="newSongDesc">Tekan ACCEPT untuk membuat lagu baru.</str>
+			<str id="newVariation">Variasi Baru</str>
+			<str id="newVariationDesc">Tekan ACCEPT untuk membuat variasi lagu baru.</str>
+		</group>
+
+		<group name="ChartCreationScreen" prefix="chartCreation.">
+			<str id="title">Membuat Bagan Baru</str>
+			<str id="info">Info Bagan</str>
+			<str id="diffName">Nama Tingkat Kesulitan</str>
+			<str id="stage">Panggung</str>
+			<str id="scrollSpeed">Kecepatan Gulir</str>
+
+			<str id="strumLineList">Strumlines $* Diperlukan setidaknya 1 Strumline$</str>
+			<str id="strumLine.format">Strumline - #{0}</str>
+
+			<group name="Warnings" prefix="warnings.">
+				<str id="song-exists-title">Membuat Lagu: Error!</str>
+				<str id="song-exists-body">Lagu yang ingin Anda buat sudah ada; jika Anda ingin menggantinya, hapus dulu lagu tersebut!</str>
+				<str id="chart-exists-title">Membuat Bagan: Error!</str>
+				<str id="chart-exists-body">Bagan yang ingin Anda buat sudah ada; jika Anda ingin menggantinya, hapus dulu bagan tersebut!</str>
+			</group>
+		</group>
+
+		<group name="ChartDataScreen" prefix="chartDataScreen.">
+			<str id="title">Properti Bagan</str>
+			<str id="editChartData">Edit Data Bagan</str>
+			<str id="stage">Panggung</str>
+			<str id="scrollSpeed">Kecepatan Gulir</str>
+		</group>
+
+		<group name="SongPosInfo" prefix="songPosInfo.">
+			<str id="step">Step: {0}</str>
+			<str id="beat">Beat: {0}</str>
+			<str id="measure">Measure: {0}</str>
+			<str id="bpm">BPM: {0}</str>
+			<str id="timeSignature">Iramah Waktu: {0}/{1}</str>
+		</group>
+
+		<group name="CharterEventScreen" prefix="charterEventScreen.">
+			<str id="title-creating">Buat Grup Event</str>
+			<str id="title-editing">Edit Grup Event</str>
+
+			<str id="noEvent">Tidak Ada Event</str>
+
+			<str id="strumLine.format">Strumline #{0} ({1})</str>
+		</group>
+
+		<group name="CharterEventTypeSelection" prefix="charterEventTypeSelection.">
+			<str id="title">Pilih jenis event...</str>
+		</group>
+
+		<group name="CharterMetaDataScreen" prefix="charterMetaDataScreen.">
+			<str id="title">Edit Metadata</str>
+
+			<str id="songData">Data Lagu</str>
+			<str id="songName">Nama Lagu</str>
+			<str id="variation">Variasi Lagu</str>
+			<str id="bpm">BPM</str>
+			<str id="timeSignature">Iramah Waktu</str>
+			<str id="menusData">Data Menu (Freeplay/Story)</str>
+			<str id="displayName">Nama Tampilan</str>
+			<str id="icon">Ikon</str>
+			<str id="modesAllowed">Mode yang Diizinkan</str>
+			<str id="color">Warna</str>
+			<str id="difficulties">Kesulitan</str>
+			<str id="customValues">Nilai Kustom (Tingkat Lanjut)</str>
+			<str id="needsVoices">Butuh Voices</str>
+
+			<str id="opponentMode">Mode Lawan</str>
+			<str id="coopAllowed">Mode Co-op</str>
+		</group>
+
+		<group name="CharterNoteTypesList" prefix="charterNoteTypesList.">
+			<str id="title">Editor Daftar Jenis Note</str>
+
+			<str id="editNoteTypes">Edit Jenis Note</str>
+			<str id="editType">Jenis Note {0}</str>
+		</group>
+
+		<group name="CharterStrumlineScreen" prefix="charterStrumlineScreen.">
+			<str id="win-title-creating">Membuat strumline {0}</str>
+			<str id="win-title-editing">Mengedit properti strumline {0}</str>
+
+			<str id="title-creating">Buat Strumline Baru</str>
+			<str id="title-editing">Edit Properti Strumline</str>
+		</group>
+
+		<group name="SongCreationScreen" prefix="songCreationScreen.">
+			<str id="win-title">Membuat Lagu Baru</str>
+			<str id="win-title-importing">Mengimpor Lagu</str>
+			<str id="title">Info Lagu</str>
+
+			<str id="instAudio">File Audio Inst $* Diperlukan*$</str>
+			<str id="voicesAudio">Berkas Audio Vokal</str>
+
+			<str id="importFrom">Impor dari...</str>
+			<str id="importSource">Impor Sumber:</str>
+			<str id="legacyOrPsych">Psych/Legacy FNF</str>
+			<str id="vslice">V-Slice</str>
+			<str id="vsliceProject">Projek V-Slice (.fnfc)</str>
+			<str id="importChartFormat">Format Bagan</str>
+			<str id="importAudios">Tambahkan Audio</str>
+			<str id="songFileName">Nama file lagu $* Diperlukan$</str>
+			<str id="songDataFile">File Data/Bagan $* Diperlukan$</str>
+			<str id="songMetaFile">File Meta $* Diperlukan$</str>
+
+			<str id="back">Kembali</str>
+			<str id="next">Lanjut</str>
+		</group>
+
+		<group name="StrumlineOptions" prefix="charterStrumLine.">
+			<str id="characters">Karakter</str>
+			<str id="newChar">Karakter Baru</str>
+			<str id="type">Jenis</str>
+			<str id="scrollSpeed">Kecepatan Gulir</str>
+			<str id="stagePos">Posisi Panggung</str>
+			<str id="scale">Skala</str>
+			<str id="spacing">Jarak</str>
+			<str id="hudPos">Posisi Hud (X [Rasio 0-1], Y)</str>
+			<str id="visible">Terlihat?</str>
+			<str id="useChartScrollSpeed">Apakah menggunakan kecepatan gulir bagan?</str>
+			<str id="vocalSuffix">Sufiks Vokal</str>
+			<str id="keyCount">Jumlah Key</str>
+		</group>
+
+		<group name="ChartEditor" prefix="charter.">
+			<!-- Charter.hx -->
+			<group name="TopBar">
+				<str id="topBar.file">File</str>
+				<group name="FileMenu" prefix="file.">
+					<str id="new">Baru</str>
+					<str id="save">Simpan</str>
+					<str id="saveAs">Simpan Sebagai...</str>
+					<str id="saveGlobalEvents">Simpan Event Global</str>
+					<str id="saveGlobalEventsAs">Simpan Event Global Sebagai...</str>
+					<str id="saveNoLocalEvents">Simpan Bagan tanpa Acara Lokal</str>
+					<str id="saveNoLocalEventsAs">Simpan Bagan tanpa Acara Lokal Sebagai...</str>
+					<str id="saveMeta">Simpan Meta</str>
+					<str id="saveMetaAs">Simpan Meta Sebagai...</str>
+					<str id="exportFnfLegacy">Ekspor Untuk FNF Legacy...</str>
+					<str id="exportPsych">Ekspor Untuk Psych Engine...</str>
+					<str id="exit">Keluar</str>
+				</group>
+
+				<str id="topBar.edit">Edit</str>
+				<group name="EditMenu" prefix="edit.">
+					<str id="undo">Batal</str>
+					<str id="redo">Ulangi</str>
+					<str id="copy">Salin</str>
+					<str id="paste">Tempel</str>
+					<str id="cut">Potong</str>
+					<str id="delete">Hapus</str>
+					<str id="deletestacked">Hapus Note yang Bertumpuk</str>
+				</group>
+
+				<str id="topBar.chart">Chart</str>
+				<group name="ChartMenu" prefix="chart.">
+					<str id="playtest">Uji Coba</str>
+					<str id="playtestHere">Coba mainkan disini</str>
+					<str id="playtestOpponent">Uji coba sebagai lawan</str>
+					<str id="playtestOpponentHere">Uji coba sebagai lawan disini</str>
+					<str id="enableScripts">Aktifkan skrip selama pengujian</str>
+					<str id="editChartData">Edit data bagan</str>
+					<str id="editMetadata">Edit informasi metadata</str>
+				</group>
+
+				<str id="topBar.view">View</str>
+				<group name="ViewMenu" prefix="view.">
+					<str id="zoomIn">Perbesar</str>
+					<str id="zoomOut">Perkecil</str>
+					<str id="resetZoom">Atur Ulang Perbesaran</str>
+					<str id="showSectionsSeparator">Tampilkan Pemisah Bagian</str>
+					<str id="showBeatsSeparator">Tampilkan Pemisah Beats</str>
+					<str id="showCameraHighlights">Tampilkan Sorotan Kamera</str>
+					<str id="rainbowWaveforms">Gelombang Pelangi</str>
+					<str id="lowDetailWaveforms">Gelombang Detail Rendah</str>
+					<str id="scrollLeft">Gulir kiri</str>
+					<str id="scrollRight">Gulir kanan</str>
+					<str id="scrollReset">Atur Ulang Gulir</str>
+				</group>
+
+				<str id="topBar.song">Lagu</str>
+				<group name="SongMenu" prefix="song.">
+					<str id="goStart">Kembali ke awal</str>
+					<str id="goEnd">Lanjutkan sampai akhir</str> <!-- used to be "Go to the end" -->
+					<str id="addOpponentCamera">Tambahkan kamera pada Lawan</str>
+					<str id="addPlayerCamera">Tambahkan kamera pada Pemain</str>
+					<str id="inst">Intrumental</str>
+					<str id="voices">Suara</str>
+					<str id="hitsounds">Hitsounds</str>
+				</group>
+
+				<group name="BookmarkMenu" prefix="bookmarks.">
+					<str id="addBookmarkHere">Tambahkan Bookmark disini</str>
+					<str id="editBookmarkList">Edit Daftar Bookmark</str>
+					<str id="goTo">Pergi ke "{0}"</str>
+					<str id="createBookmarkTitle">Membuat Bookmark Baru...</str>
+					<str id="createBookmarkName">Nama Bookmark:</str>
+					<str id="createBookmarkColor">Warna Bookmark:</str>
+					<str id="editBookmarkListTitle">Daftar Bookmark</str>
+					<str id="editBookmarksTitle">Edit Bookmarks</str>
+					<str id="newBookmarkName">Bookmark Baru</str>
+					<str id="bookmarkList">Daftar Bookmark</str>
+				</group>
+
+				<str id="topBar.note">Note</str>
+				<group name="NoteMenu" prefix="note.">
+					<str id="addSustainLength">Tambahkan durasi sustain</str>
+					<str id="subtractSustainLength">Kurangi durasi sustain</str>
+					<str id="selectAll">Pilih semua</str>
+					<str id="selectMeasure">Pilih measure</str>
+					<str id="noteTypesList">Daftar Jenis Note</str>
+					<str id="editNoteTypesList">Edit Daftar Jenis Note</str>
+				</group>
+				<str id="topBar.snap">Jepret</str>
+				<group name="SnapMenu" prefix="snap.">
+					<str id="increaseSnap">↑ Penyesuaian Jaring</str>
+					<str id="resetSnap">Atur Ulang Penyesuaian Jaring</str>
+					<str id="decreaseSnap">↓ Penyesuaian Jaring</str>
+
+					<str id="snap">{0}x Penyesuaian Jaring</str>
+				</group>
+
+				<str id="topBar.playback">Pemutaran</str>
+				<group name="PlaybackMenu" prefix="playback.">
+					<str id="play">Putar/Jeda</str>
+					<str id="speedRaise">↑ Kecepatan {0}%</str>
+					<str id="speedReset">Atur Ulang Kecepatan</str>
+					<str id="speedLower">↓ Kecepatan {0}%</str>
+					<str id="sectionBack">Kembali ke bagian sebelumnya</str>
+					<str id="sectionForward">Pergi ke bagian berikutnya</str>
+					<str id="sectionStart">Pergi ke awal bagian</str>
+					<str id="backStep">Kembali ke step sebelumnya</str>
+					<str id="forwardStep">Pergi step maju</str>
+					<str id="metronome">Metronome</str>
+					<str id="visualMetronome">Visual metronome</str>
+				</group>
+			</group>
+
+			<group name="NoteTypes" prefix="noteTypes.">
+				<str id="default">Default Note</str>
+			</group>
+
+			<group name="EventTypes" prefix="events.">
+				<!-- You can add your custom event types here! -->
+				<!-- Just need to do some conversion from the raw name to the id -->
+				<!-- Example: HScript Call -> hscriptCall -->
+				<!-- Example: Change Character -> changeCharacter -->
+				<str id="hscriptCall">Panggil HScript</str>
+				<str id="cameraMovement">Pergerakan Kamera</str>
+				<str id="addCameraZoom">Tambahkan Zoom Kamera</str>
+				<str id="cameraModuloChange">Penggantian Modul Kamera</str>
+				<str id="cameraFlash">Lampu Kilat Kamera</str>
+				<str id="bpmChange">Ganti BPM</str>
+				<str id="scrollSpeedChange">Ganti Kecepatan Gulir</str>
+				<str id="altAnimationToggle">Tombol Beralih Animasi Alternatif</str>
+				<str id="playAnimation">Putar Animasi</str>
+			</group>
+
+			<group name="StrumlineOptions" prefix="strumLine.">
+				<str id="button-name">Opsi ↓</str>
+
+				<str id="waveforms">Gelombang</str>
+				<str id="hitsounds">Hitsounds</str>
+				<str id="vocals">Vokal</str>
+				<str id="edit">Edit</str>
+				<str id="delete">Hapus</str>
+
+				<str id="noWaveform">Tidak Ada Gelombang</str>
+			</group>
+
+			<str id="createNew">Buat Baru</str>
+			<str id="lock-unlock">Kunci/Buka Kunci</str>
+
+			<str id="info.localEvents">Event Lokal\n(Hanya Tingkat Kesulitan Ini)</str>
+			<str id="info.globalEvents">Event Global\n(Semua Tingkat Kesulitan)</str>
+			<str id="eventType-local">Event Local</str>
+			<str id="eventType-global">Event Global</str>
+
+			<!-- CharterEventAdd.hx -->
+			<str id="addEvent">Tambahkan Event</str>
+			<str id="editEvent">Edit</str> <!-- Should maybe be "Edit Event" -->
+			<str id="deleteEvent">Hapus Event</str>
+
+			<group name="Notifications" prefix="popup.">
+				<str id="savedChartAt">Bagan disimpan di {0}!</str>
+			</group>
+		</group>
+	</group>
+
+	<group name="CharacterEditor">
+		<group name="CharacterSelection" prefix="characterSelection.">
+			<str id="acceptFolder">Press ACCEPT to edit this folder.</str>
+			<str id="acceptCharacter">Press ACCEPT to edit this character.</str>
+			<str id="newCharacter">New Character</str>
+			<str id="newCharacterDesc">Press ACCEPT to create a new character.</str>
+			<str id="desc">Select a character to edit</str>
+			<str id="desc-folder">Select a character to edit in {0}</str>
+		</group>
+
+		<group name="CharacterInfoScreen" prefix="characterInfoScreen.">
+			<str id="win-title">Editing Character</str>
+			<str id="title">Edit Character Info</str>
+			<str id="icon">Icon</str>
+			<str id="iconColor">Icon Color</str>
+			<str id="singDuration">Sing Duration</str>
+			<str id="useSingDuration">Use Sing Duration?</str>
+			<str id="customValues">Custom Values (Advanced)</str>
+		</group>
+
+		<group name="CharacterEditor" prefix="characterEditor.">
+			<group name="TopBar">
+				<str id="topBar.file">File</str>
+				<group name="FileMenu" prefix="file.">
+					<str id="new">New</str>
+					<str id="save">Save</str>
+					<str id="saveAs">Save As...</str>
+					<str id="exit">Exit</str>
+				</group>
+
+				<str id="topBar.edit">Edit</str>
+				<group name="EditMenu" prefix="edit.">
+					<str id="copyOffset">Copy Offset</str>
+					<str id="pasteOffset">Paste Offset</str>
+					<str id="undo">Undo</str>
+					<str id="redo">Redo</str>
+					<str id="editInfo">Edit information</str>
+					<str id="editSprite">Edit sprite</str>
+				</group>
+
+				<str id="topBar.offset">Offsets</str>
+				<group name="OffsetsMenu" prefix="offset.">
+					<str id="moveLeft">Move Left</str>
+					<str id="moveUp">Move Up</str>
+					<str id="moveDown">Move Down</str>
+					<str id="moveRight">Move Right</str>
+					<str id="moveExtraLeft">Move Extra Left</str>
+					<str id="moveExtraUp">Move Extra Up</str>
+					<str id="moveExtraDown">Move Extra Down</str>
+					<str id="moveExtraRight">Move Extra Right</str>
+					<str id="dragOffsetsMouse">Drag Offsets With Mouse?</str>
+					<str id="clearOffsets">Clear Offsets</str>
+				</group>
+
+				<str id="topBar.stage">Stage</str>
+				<group name="StageMenu" prefix="stage.">
+					<str id="useStage">Use "{0}"</str>
+					<str id="useNone">Use No Stage</str>
+				</group>
+
+				<str id="topBar.view">View</str>
+				<group name="ViewMenu" prefix="view.">
+					<str id="zoomIn">Zoom in</str>
+					<str id="zoomOut">Zoom out</str>
+					<str id="resetZoom">Reset Zoom</str>
+					<str id="charHitbox">Character Hitbox?</str>
+					<str id="charCam">Character Camera?</str>
+					<str id="axis">XY Axis?</str>
+				</group>
+
+				<str id="topBar.animation">Animation</str>
+				<group name="AnimationMenu" prefix="animation.">
+					<str id="playAnim">Play Animation</str>
+					<str id="stopAnim">Stop Animation</str>
+					<str id="changeAnimUp">Change Animation ↑</str>
+					<str id="changeAnimDown">Change Animation ↓</str>
+					<str id="playAnimOnOffset">Play Animation On Offset?</str>
+				</group>
+
+				<group name="CharacterPropertiesWindow" prefix="characterProperties.">
+					<str id="position">Position (X, Y)</str>
+					<str id="scale">Scale</str>
+					<str id="editInfo">Edit Info</str>
+					<str id="editSprite">Edit Sprite</str>
+					<str id="camPosition">Camera Position (X, Y)</str>
+					<str id="charFlipped">Flipped?</str>
+					<str id="antialiased">Antialiased?</str>
+					<str id="testCharAs">Test Character As...</str>
+					<str id="charDesign">Char Designed As...</str>
+				</group>
+
+				<group name="CharacterAnimButton" prefix="characterAnim.">
+					<str id="defaultAnimName">New Anim</str>
+					<str id="name">Name</str>
+					<str id="anim">Animation</str>
+					<str id="position">Position (X, Y)</str>
+					<str id="fps">FPS</str>
+					<str id="indices">Indices (Frames)</str>
+					<str id="looping">Looping?</str>
+					<str id="label">Label</str>
+				</group>
+
+				<group name="CharacterSpriteScreen" prefix="characterSpriteScreen.">
+					<str id="win-title">Edit character sprite</str>
+					<str id="charImageFile">Character Image File $* Required$</str>
+				</group>
+			</group>
+		</group>
+
+		<group name="CharacterCreationScreen" prefix="characterCreationScreen.">
+			<str id="win-title">Creating New Character</str>
+			<str id="charName">Character Name $* Required$</str>
+			<str id="charImgName">Character Image File $* Required$</str>
+
+			<group name="Warnings" prefix="warnings.">
+				<str id="char-exists-title">Creating Character: Error!</str>
+				<str id="char-exists-body">The character you are trying to create already exists, if you would like to override it delete the character first!</str>
+			</group>
+		</group>
+	</group>
+
+	<group name="AlphabetEditor" prefix="editor.alphabet.">
+		<group name="AlphabetSelection" prefix="selection.">
+			<str id="acceptTypeface">Press ACCEPT to edit this typeface.</str>
+			<str id="newTypeface">New Typeface</str>
+			<str id="newTypefaceDesc">Press ACCEPT to create a new typeface.</str>
+			<str id="desc">Select a typeface to edit</str>
+
+			<group name="Warnings" prefix="warnings.">
+				<str id="notImplemented-title">New Typeface: Feature Not Implemented!</str>
+				<str id="notImplemented-body">This feature isn't implemented yet. Please wait for more cne updates to have this functional.\n\n\n- Codename Crew</str>
+			</group>
+		</group>
+
+		<group name="AlphabetEditor">
+			<group name="TopBar">
+				<str id="topBar.file">File</str>
+				<group name="FileMenu" prefix="file.">
+					<str id="new">New</str>
+					<str id="save">Save</str>
+					<str id="saveAs">Save As...</str>
+					<str id="exit">Exit</str>
+				</group>
+
+				<str id="topBar.edit">Edit</str>
+				<group name="EditMenu" prefix="edit.">
+					<str id="undo">Undo</str>
+					<str id="redo">Redo</str>
+				</group>
+
+				<str id="topBar.glyph">Glyph</str>
+				<group name="GlyphMenu" prefix="glyph.">
+					<str id="newGlyph">New Glyph</str>
+					<str id="editGlyph">Edit Glyph</str>
+					<str id="deleteGlyph">Delete Glyph</str>
+					<str id="deleteCurGlyph">Delete Current Glyph</str>
+				</group>
+
+				<str id="topBar.offset">Offsets</str>
+				<group name="OffsetsMenu" prefix="offset.">
+					<str id="moveLeft">Move Left</str>
+					<str id="moveUp">Move Up</str>
+					<str id="moveDown">Move Down</str>
+					<str id="moveRight">Move Right</str>
+					<str id="moveExtraLeft">Move Extra Left</str>
+					<str id="moveExtraUp">Move Extra Up</str>
+					<str id="moveExtraDown">Move Extra Down</str>
+					<str id="moveExtraRight">Move Extra Right</str>
+					<str id="clearOffsets">Clear Offsets</str>
+				</group>
+
+				<str id="topBar.view">View</str>
+				<group name="ViewMenu" prefix="view.">
+					<str id="zoomIn">Zoom in</str>
+					<str id="zoomOut">Zoom out</str>
+					<str id="resetZoom">Reset Zoom</str>
+				</group>
+			</group>
+		</group>
+	</group>
+
+	<group name="StageEditor">
+		<group name="StageSelection" prefix="stageSelection.">
+			<str id="desc">Select a stage to edit. HSCRIPT only stages are not supported.</str>
+			<str id="acceptStage">Press ACCEPT to edit this stage.</str>
+			<str id="newStage">New Stage</str>
+			<str id="acceptNewStage">Press ACCEPT to create a new stage.</str>
+		</group>
+
+		<group name="StageEditor" prefix="stageEditor.">
+			<group name="TopBar">
+				<str id="topBar.file">File</str>
+				<group name="FileMenu" prefix="file.">
+					<str id="save">Save</str>
+					<str id="saveAs">Save As...</str>
+					<str id="exit">Exit</str>
+				</group>
+
+				<str id="topBar.edit">Edit</str>
+				<group name="EditMenu" prefix="edit.">
+					<str id="undo">Undo</str>
+					<str id="redo">Redo</str>
+					<str id="editStageInfo">Edit Stage Info</str>
+				</group>
+
+				<str id="topBar.select">Selection</str>
+				<group name="SelectionMenu" prefix="select.">
+					<str id="all">Select All</str>
+					<str id="deselect">Deselect</str>
+					<str id="inverse">Inverse Selection</str>
+				</group>
+
+				<str id="topBar.view">View</str>
+				<group name="ViewMenu" prefix="view.">
+					<str id="zoomIn">Zoom in</str>
+					<str id="zoomOut">Zoom out</str>
+					<str id="zoomReset">Reset Zoom</str>
+					<str id="focusDad">Focus Dad</str>
+					<str id="focusGF">Focus GF</str>
+					<str id="focusBF">Focus BF</str>
+				</group>
+
+				<str id="topBar.editor">Editor</str>
+				<group name="EditorMenu" prefix="editor.">
+					<str id="showCharacters">Show Characters</str>
+				</group>
+
+				<group name="StageSpriteScreen" prefix="stageSpriteScreen.">
+					<str id="win-title">Edit stage sprite</str>
+					<str id="stageImageFile">Stage Image File $* Required$</str>
+				</group>
+			</group>
+		</group>
+
+		<group name="StageCreationScreen" prefix="stageCreationScreen.">
+			<str id="win-title">Creating New Stage</str>
+			<str id="title">Stage Info</str>
+			<str id="stageName">Stage Name</str>
+			<str id="stagePath">Stage Path</str>
+
+			<group name="Warnings" prefix="warnings.">
+				<str id="stage-exists-title">Creating Stage: Error!</str>
+				<str id="stage-exists-body">The stage you are trying to create alreadly exists, if you would like to override it delete the stage first!</str>
+			</group>
+		</group>
+
+		<group name="StageInfoScreen" prefix="stageInfoScreen.">
+			<str id="win-title">Editing Stage "{0}" Infos</str>
+			<str id="title">Stage Info</str>
+			<str id="stageName">Stage Name</str>
+			<str id="spritePath">Sprite Path\n(Needs Refresh)</str>
+			<str id="startCamPos">Start Camera Position (X, Y)</str>
+			<str id="zoom">Zoom</str>
+		</group>
+
+		<group name="StageElementEditScreen" prefix="stageElementEditScreen.">
+			<str id="win-character-title">Editing Character "{0}"</str>
+			<str id="win-sprite-title">Editing Sprite "{0}"</str>
+			<str id="win-title">Editing XML &lt;{0} /&gt;</str>
+
+			<str id="character-title">Character Data</str>
+			<str id="sprite-title">Sprite Data</str>
+			<str id="title">XML Data</str>
+
+			<str id="elementName">Element Name</str>
+			<str id="nameID">Name Identifier</str>
+			<str id="imageFile">Image File (WIP: needs reload)\nIn (${stage.spritesParentFolder})</str>
+			<str id="scroll">Scroll {0}</str>
+			<str id="scale">Scale {0}</str>
+			<str id="camera">Camera {0}</str>
+			<str id="spacing">Spacing (X, Y)</str>
+			<str id="skew">Skew {0}</str>
+			<str id="alpha">Alpha</str>
+			<str id="angle">Angle</str>
+			<str id="zoomFactor">Zoom Factor</str>
+			<str id="positionName">Position Name</str>
+			<str id="flipX">Flip X</str>
+			<str id="antialiasing">Antialiasing</str>
+			<str id="highMemory">High Memory</str>
+			<str id="lowMemory">Low Memory</str>
+			<str id="attributes">Attributes</str>
+			<str id="transformPreview">Transform Preview:</str>
+
+			<str id="animType">Animation Type</str>
+			<group name="AnimTypeDropdown" prefix="animType.">
+				<str id="none">NONE</str>
+				<str id="beat">BEAT</str>
+				<str id="loop">LOOP</str>
+			</group>
+			<str id="tipCustomProperties">Tip: To access custom properties,\nHold Shift when clicking edit</str>
+		</group>
+
+		<group name="StageXMLEditScreen" prefix="stageXMLEditScreen.">
+			<str id="win-title">Editing {0} XML</str>
+			<str id="title">Xml Data</str>
+			<str id="attributes">Attributes</str>
+		</group>
+
+		<str id="stageCharacters.requiredPosition">This character position is required in stages!</str>
+		<str id="stageCharacters.noDeleteGirlfriend">You can't delete Girlfriend</str>
+
+		<group name="StageElement" prefix="stageElement.">
+			<str id="scale">Scale: {0}, {1}</str>
+			<str id="scroll">Scroll: {0}, {1}</str>
+		</group>
+
+		<group name="StageSprites" prefix="stageSprites.">
+			<str id="win-title">Stage Sprites</str>
+			<str id="sprite">Sprite</str>
+			<str id="box">Box</str>
+			<str id="character">Character</str>
+			<str id="warnings.not-implemented">Creating a box isnt implemented yet!</str>
+		</group>
+	</group>
+
+	<!-- PlayTesting and SaveWarning are almost the same but with some small differences -->
+	<!-- PlayTesting allows color in the description by doing *hello* -->
+	<!-- SaveWarning doesn't allow color in the description -->
+	<group name="PlayTesting" prefix="playtesting.">
+		<str id="chartPlaytesting" notrim="true"> (Chart Playtesting)</str>
+		<str id="exitGame">Exit Game</str>
+		<str id="exitToMenu">Exit To Menu</str>
+		<str id="saveAndExitGame">Save &amp; Exit Game</str>
+		<str id="saveAndExitToMenu">Save &amp; Exit To Menu</str>
+		<str id="cancel">Cancel</str>
+
+		<str id="warningTitle">UNSAVED CHANGES!</str>
+		<str id="warningDesc">Your changes will be *lost* if you don't save them. (Can't be recovered)\n\n\nWould you like to Cancel?</str>
+	</group>
+
+	<group name="SaveWarning" prefix="saveWarning.">
+		<str id="warningTitle">Unsaved Changes!</str>
+		<str id="warningDesc">Your changes will be lost if you don't save them. (Can't be recovered)\n\n\nWould you like to Cancel?</str>
+
+		<str id="exitGame">Exit Game</str>
+		<str id="exitToMenu">Exit To Menu</str>
+		<str id="saveAndExitGame">Save &amp; Exit Game</str>
+		<str id="saveAndExitToMenu">Save &amp; Exit To Menu</str>
+		<str id="cancel">Cancel</str>
+	</group>
+
+	<group name="ModConfigWarning" prefix="modConfigWarning.">
+		<str id="warningTitle">Missing mod folder configuration!</str>
+		<str id="warningDesc">Your mod is currently missing a mod config file!\n\nWould you like to automatically generate one?\n\n(PS: If this is not your mod please disable Developer mode to stop this popup from appearing.)</str>
+
+		<str id="createdTitle">Created mod config!</str>
+		<str id="createdDesc">Your mod config file has been created at {0}!</str>
+	</group>
+</language>
