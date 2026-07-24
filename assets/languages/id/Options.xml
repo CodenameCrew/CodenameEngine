@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<str id="optionsMenu.desc-missing">Tidak Ada Deskripsi</str>
+
+	<group name="OptionsMenu">
+		<str id="optionsMenu.advanced">Lanjutan</str>
+		<str id="optionsMenu.header.title">Menu Opsi</str>
+		<str id="optionsMenu.header.desc">Pilih kategori untuk melanjutkan.</str>
+
+		<str id="optionsTree.controls-name">Kontrol</str>
+		<str id="optionsTree.controls-desc">Ubah Kontrol untuk Pemain 1 dan Pemain 2!</str>
+
+		<str id="optionsTree.gameplay-name">Gameplay</str>
+		<str id="optionsTree.gameplay-desc">Ubah opsi gameplay seperti Downscroll, Kecepatan Gulir, Kenakalan...</str>
+		<str id="optionsTree.gameplay.advanced-desc">Ubah opsi lanjutan seperti Streaming Audio...</str>
+
+		<str id="optionsTree.appearance-name">Tampilan</str>
+		<str id="optionsTree.appearance-desc">Ubah opsi Tampilan seperti menu berkedip...</str>
+		<str id="optionsTree.appearance.advanced-desc">Ubah opsi lanjutan seperti Sprite Hanya VRAM, Antialiasing, dan Shader</str>
+
+		<str id="optionsTree.language-name">Bahasa</str>
+		<str id="optionsTree.language-desc">Ubah bahasa yang digunakan oleh engine.</str>
+
+		<str id="optionsTree.miscellaneous-name">Lain-lain</str>
+		<str id="optionsTree.miscellaneous-desc">Gunakan menu ini untuk mengatur ulang data simpanan atau pengaturan engine.</str>
+
+		<str id="optionsTree.debug-name">Opsi Debug</str>
+		<str id="optionsTree.debug-desc">Opsi Debug Untuk Mode Developer.</str>
+	</group>
+
+	<group name="KeybindOptions" prefix="KeybindsOptions.">
+		<str id="left">Kiri</str>
+		<str id="down">Bawah</str>
+		<str id="up">Atas</str>
+		<str id="right">Kanan</str>
+
+		<str id="category.notes">Notes</str>
+
+		<str id="category.ui">UI</str>
+		<group name="ui" prefix="ui.">
+			<str id="accept">Terima</str>
+			<str id="back">Kembali</str>
+			<str id="reset">Atur ulang</str>
+			<str id="pause">Jeda</str>
+			<str id="changeMode">Ganti Mode</str>
+		</group>
+
+		<str id="category.engine">Engine</str>
+		<group name="engine" prefix="engine.">
+			<str id="switchMod">Mod Switch</str>
+			<str id="fpsCounter">Penghitung FPS</str>
+		</group>
+
+		<str id="category.volume">Volume</str>
+		<str id="volume.up">Atas</str>
+		<str id="volume.down">Bawah</str>
+		<str id="volume.mute">Bisukan</str>
+
+		<str id="category.developer">Developer</str>
+		<group name="developer" prefix="developer.">
+			<str id="devMenus">Menu Developer</str>
+			<str id="openConsole">Buka Konsol</str>
+			<str id="reloadState">Muat Ulang State</str>
+		</group>
+	</group>
+
+	<group name="AppearanceOptions" prefix="AppearanceOptions.">
+		<str id="framerate-name">Kecepatan bingkai</str>
+		<str id="framerate-desc">Cukup jelas, bukan?</str>
+
+		<str id="flashingMenu-name">Menu Berkedip</str>
+		<str id="flashingMenu-desc">Jika tidak dicentang, efek berkedip pada menu akan dinonaktifkan saat Anda memilih suatu opsi di Menu Utama, dan efek berkedip lainnya akan menjadi lebih lambat.</str>
+
+		<str id="colorHealthBar-name">Bar Kesehatan Berwarna</str>
+		<str id="colorHealthBar-desc">Jika tidak dicentang, game akan menggunakan bar kesehatan merah/hijau asli dari FNF minggu ke-6.</str>
+
+		<str id="week6PixelPerfect-name">Efek Pixel Perfect</str>
+		<str id="week6PixelPerfect-desc">Jika dicentang, Minggu ke-6 atau panggung piksel lainnya akan mengaktifkan efek pixel perfect, yang menyelaraskan setiap piksel di layar.</str>
+
+		<group name="AppearanceOptionsAdvanced" prefix="Advanced.">
+			<str id="quality-name">Kualitas</str>
+			<str id="quality-desc">Mode kualitas: "RENDAH" = Menonaktifkan semua efek visual yang berat agar game berjalan lebih lancar, 'TINGGI' = Mengaktifkan semua efek visual, dengan mengorbankan performa, "KUSTOM" = Memungkinkan pengaturan khusus yang tersedia di menu Lanjutan.</str>
+			<str id="quality-low">RENDAH</str>
+			<str id="quality-high">TINGGI</str>
+			<str id="quality-custom">KUSTOM</str>
+
+			<str id="antialiasing-name">Antialiasing</str>
+			<str id="antialiasing-desc">Jika tidak dicentang, antialiasing pada setiap sprite akan dinonaktifkan. Hal ini dapat meningkatkan kinerja, namun dengan konsekuensi sprite akan terlihat lebih tajam dan lebih berpiksel.</str>
+
+			<str id="lowMemoryMode-name">Mode Memori Rendah</str>
+			<str id="lowMemoryMode-desc">Jika dicentang, akan menonaktifkan beberapa elemen latar belakang secara bertahap untuk mengurangi penggunaan memori.</str>
+
+			<str id="gameplayShaders-name">Shader Gameplay</str>
+			<str id="gameplayShaders-desc">Jika tidak dicentang, shader gameplay (efek visual seperti Chromatic Aberration dari Thorns) tidak akan dimuat hal ini mungkin berguna pada perangkat dengan spesifikasi rendah.</str>
+
+			<str id="gpuOnlyBitmaps-name">Sprite Hanya VRAM</str>
+			<str id="gpuOnlyBitmaps-desc">If checked, will only store the bitmaps in the GPU, freeing a LOT of memory (EXPERIMENTAL). Turning this off will consume a lot of memory, especially on bigger sprites. If you aren't sure, leave this on.</str>
+		</group>
+	</group>
+
+	<group name="GameplayOptions" prefix="GameplayOptions.">
+		<str id="downscroll-name">Downscroll</str>
+		<str id="downscroll-desc">Jika dicentang, not akan bergerak dari atas ke bawah, bukan dari bawah ke atas, seolah-olah sedang jatuh.</str>
+
+		<str id="ghostTapping-name">Ketukan Hantu</str>
+		<str id="ghostTapping-desc">Jika tidak dicentang, mencoba memainkan strum apa pun yang tidak memiliki note yang dapat dimainkan akan mengakibatkan miss.</str>
+
+		<str id="naughtyness-name">Kenakalan</str>
+		<str id="naughtyness-desc">Jika tidak dicentang, adegan cutscene Minggu ke-7 atau yang lainnya akan disensor.</str>
+
+		<str id="camZoomOnBeat-name">Zoom Kamera sesuai Irama</str>
+		<str id="camZoomOnBeat-desc">Jika tidak dicentang, kamera tidak akan melakukan zoom in setiap 4 irama.</str>
+
+		<str id="autoPause-name">Otomatis Jeda</str>
+		<str id="autoPause-desc">Jika dicentang, berpindah jendela akan menghentikan game.</str>
+
+		<str id="volumeMusic-name">Musik Volume</str>
+		<str id="volumeMusic-desc">Hanya mengubah volume musik, bukan semuanya.</str>
+
+		<str id="volumeSFX-name">SFX Volume</str>
+		<str id="volumeSFX-desc">Hanya mengubah volume SFX, bukan semuanya.</str>
+
+		<str id="songOffset-name">Lagu Offset</str>
+		<str id="songOffset-desc">Mengubahoffset di mana lagu harus dimulai.</str>
+
+		<group name="GameplayOptionsAdvanced" prefix="Advanced.">
+			<str id="windowSize-name">Ukuran Jendela</str>
+			<str id="windowSize-desc">...</str>
+
+			<str id="streamedMusic-name">Musik Streaming</str>
+			<str id="streamedMusic-desc">Jika dicentang, hanya lagu yang akan memiliki audio streaming, SERTA membebaskan BANYAK memori dengan kelemahan berupa penggunaan CPU yang lebih tinggi jika lebih banyak audio yang di-streaming secara bersamaan (EKSPERIMENTAL). Menonaktifkan ini akan menghabiskan banyak memori, terutama pada lagu yang lebih panjang. Jika Anda ragu, biarkan ini tetap aktif.</str>
+
+			<str id="streamedVocals-name">Vokal Streaming</str>
+			<str id="streamedVocals-desc">Jika dicentang, vokal juga akan diputar jika "Musik Streaming" dicentang hal ini akan memengaruhi kinerja jika lagu tersebut mengandung banyak vokal (EKSPERIMENTAL). Jika Anda ragu, biarkan ini tidak dicentang.</str>
+		</group>
+	</group>
+
+	<group name="LanguageOptions" prefix="LanguageOptions.">
+		<str id="language-name">Bahasa</str>
+		<str id="language-desc">Bahasa oleh {0} (Versi: {1})</str>
+	</group>
+
+	<group name="MiscOptions" prefix="MiscOptions.">
+		<str id="forceCrash-name">Paksa Crash</str>
+		<str id="forceCrash-desc">Pilih opsi ini untuk memaksa terjadinya crash.</str>
+
+		<str id="betaUpdates-name">Pembaruan Nightly</str>
+		<str id="betaUpdates-desc">Jika dicentang, pembaruan nightly (pada dasarnya pembaruan commit dari repositori engine, menggunakan fitur Actions) juga akan disertakan dalam proses pemeriksaan pembaruan.</str>
+
+		<str id="checkForUpdates-name">Cek untuk Pembaruan</str>
+		<str id="checkForUpdates-desc">Pilih opsi ini untuk memeriksa pembaruan engine terbaru.</str>
+		<str id="checkForUpdates-noUpdateFound">Tidak ditemukan pembaruan.</str>
+
+		<str id="devMode-name">Mode Developer</str>
+		<str id="devMode-desc">Jika opsi ini dicentang, Anda akan dapat mengakses fitur-fitur developer seperti pengaturan tombol tertentu, editor, opsi developer, pemuatan ulang state, konsol, dan lainnya.</str>
+
+		<str id="allowConfigWarning-name">Tampilkan Peringatan Modpack</str>
+		<str id="allowConfigWarning-desc">Jika dicentang, jendela popup akan muncul di awal game jika terdapat peringatan terkait modpack, seperti konfigurasi yang hilang, versi yang tidak kompatibel, dan lain-lain</str>
+
+		<str id="resetSaveData-name">Atur Ulang Data Simpanan</str>
+		<str id="resetSaveData-desc">Pilih opsi ini untuk mengatur ulang data yang tersimpan. Tindakan ini akan menghapus semua skor tertinggi Anda.</str>
+	</group>
+
+	<group name="DebugOptions" prefix="DebugOptions.">
+		<str id="title">Opsi Debug</str>
+		<str id="desc">Gunakan menu ini untuk mengaktifkan atau menonaktifkan opsi debug.</str>
+
+		<str id="showConsole-name">Tampilkan Konsol</str>
+		<str id="showConsole-desc">Pilih opsi ini untuk menampilkan konsol debug, yang berisi informasi log mengenai game.</str>
+
+		<str id="editorsResizable-name">Editor yang Ukurannya Dapat Diubah</str>
+		<str id="editorsResizable-desc">Jika dicentang, opsi ini akan memungkinkan para editor menampilkan gambar melebihi resolusi dasar FNF sebesar 1280x720 (sehingga memungkinkan detail dan ruang yang lebih luas...)</str>
+
+		<str id="bypassEditorsResize-name">Lewati Editor Diukur Ulang</str>
+		<str id="bypassEditorsResize-desc">Menonaktifkan resolusi minimum untuk mengubah ukuran editor (Membutuhkan Editor yang Ukurannya Dapat Diubah Untuk Diaktifkan).</str>
+
+		<str id="editorSFX-name">Editor SFXs</str>
+		<str id="editorSFX-desc">Jika dicentang, sfx akan diputar saat menggunakan editor (misalnya: sfx akan diputar saat mencentang kotak centang...)</str>
+
+		<str id="editorCharterPrettyPrint-name">Tampilan Bagan yang Rapi</str>
+		<str id="editorCharterPrettyPrint-desc">Jika dicentang, file-file yang disimpan dari editor bagan akan diformat agar mudah dilihat</str>
+
+		<str id="editorCharacterPrettyPrint-name">Tampilan Rapi Karakter</str>
+		<str id="editorCharacterPrettyPrint-desc">Jika dicentang, file-file yang disimpan dari editor karakter akan diformat agar mudah dilihat</str>
+
+		<str id="editorStagePrettyPrint-name">Tampilan Rapi Panggung</str>
+		<str id="editorStagePrettyPrint-desc">Jika dicentang, file-file yang disimpan dari editor panggung akan diformat agar mudah dilihat</str>
+
+		<str id="intensiveBlur-name">Blur Intensif</str>
+		<str id="intensiveBlur-desc">Jika dicentang, akan menggunakan efek blur yang lebih intens, yang mungkin menyebabkan lag lebih parah tetapi hasilnya terlihat lebih baik.</str>
+
+		<str id="charterAutoSaves-name">Penyimpanan Otomatis Editor</str>
+		<str id="charterAutoSaves-desc">Jika dicentang, opsi ini akan menyimpan file Anda secara otomatis di editor, dengan pengaturan yang tercantum di bawah ini.</str>
+
+		<str id="charterAutoSaveTime-name">Waktu Penyimpanan Otomatis</str>
+		<str id="charterAutoSaveTime-desc">Pengaturan ini menentukan seberapa sering editor akan menyimpan file Anda secara otomatis (dalam detik...)</str>
+
+		<str id="charterAutoSaveWarningTime-name">Simpan Waktu Peringatan</str>
+		<str id="charterAutoSaveWarningTime-desc">Opsi ini mengatur berapa lama editor akan memberi peringatan sebelum melakukan penyimpanan otomatis (dalam detik..., 0 untuk menonaktifkan)</str>
+
+		<str id="charterAutoSavesSeparateFolder-name">Folder Penyimpanan Otomatis</str>
+		<str id="charterAutoSavesSeparateFolder-desc">Jika dicentang, opsi ini akan menyimpan file Anda secara otomatis di folder terpisah dengan cap waktu, alih-alih menimpa file Anda yang saat ini. (song/autosaves/)</str>
+
+		<str id="songOffsetAffectEditors-name">Offset di Charter</str>
+		<str id="songOffsetAffectEditors-desc">Jika dicentang, opsi Lagu Offset juga akan diaktifkan di Editor Bagan.</str>
+	</group>
+
+</language>
