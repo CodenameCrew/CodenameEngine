@@ -221,7 +221,7 @@
 				<group name="ViewMenu" prefix="view.">
 					<str id="zoomIn">Perbesar</str>
 					<str id="zoomOut">Perkecil</str>
-					<str id="resetZoom">Atur Ulang Perbesaran</str>
+					<str id="resetZoom">Atur Ulang Zoom</str>
 					<str id="showSectionsSeparator">Tampilkan Pemisah Bagian</str>
 					<str id="showBeatsSeparator">Tampilkan Pemisah Beats</str>
 					<str id="showCameraHighlights">Tampilkan Sorotan Kamera</str>
@@ -235,7 +235,7 @@
 				<str id="topBar.song">Lagu</str>
 				<group name="SongMenu" prefix="song.">
 					<str id="goStart">Kembali ke awal</str>
-					<str id="goEnd">Lanjutkan sampai akhir</str> <!-- used to be "Go to the end" -->
+					<str id="goEnd">Pergi ke akhir</str> <!-- used to be "Go to the end" -->
 					<str id="addOpponentCamera">Tambahkan kamera pada Lawan</str>
 					<str id="addPlayerCamera">Tambahkan kamera pada Pemain</str>
 					<str id="inst">Intrumental</str>
@@ -343,135 +343,135 @@
 
 	<group name="CharacterEditor">
 		<group name="CharacterSelection" prefix="characterSelection.">
-			<str id="acceptFolder">Press ACCEPT to edit this folder.</str>
-			<str id="acceptCharacter">Press ACCEPT to edit this character.</str>
-			<str id="newCharacter">New Character</str>
-			<str id="newCharacterDesc">Press ACCEPT to create a new character.</str>
-			<str id="desc">Select a character to edit</str>
-			<str id="desc-folder">Select a character to edit in {0}</str>
+			<str id="acceptFolder">Tekan ACCEPT untuk mengedit folder ini.</str>
+			<str id="acceptCharacter">Tekan ACCEPT untuk mengedit karakter ini.</str>
+			<str id="newCharacter">Karakter Baru</str>
+			<str id="newCharacterDesc">Tekan ACCEPT untuk membuat karakter baru.</str>
+			<str id="desc">Pilih karakter yang akan diedit</str>
+			<str id="desc-folder">Pilih karakter yang akan diedit di {0}</str>
 		</group>
 
 		<group name="CharacterInfoScreen" prefix="characterInfoScreen.">
-			<str id="win-title">Editing Character</str>
-			<str id="title">Edit Character Info</str>
-			<str id="icon">Icon</str>
-			<str id="iconColor">Icon Color</str>
+			<str id="win-title">Mengedit Karakter</str>
+			<str id="title">Edit Info Karakter</str>
+			<str id="icon">Ikon</str>
+			<str id="iconColor">Warna Ikon</str>
 			<str id="singDuration">Sing Duration</str>
-			<str id="useSingDuration">Use Sing Duration?</str>
-			<str id="customValues">Custom Values (Advanced)</str>
+			<str id="useSingDuration">Menggunakan Sing Duration?</str>
+			<str id="customValues">Nilai Kustom (Tingkat Lanjut)</str>
 		</group>
 
 		<group name="CharacterEditor" prefix="characterEditor.">
 			<group name="TopBar">
 				<str id="topBar.file">File</str>
 				<group name="FileMenu" prefix="file.">
-					<str id="new">New</str>
-					<str id="save">Save</str>
-					<str id="saveAs">Save As...</str>
-					<str id="exit">Exit</str>
+					<str id="new">Baru</str>
+					<str id="save">Simpan</str>
+					<str id="saveAs">Simpan Sebagai...</str>
+					<str id="exit">Keluar</str>
 				</group>
 
 				<str id="topBar.edit">Edit</str>
 				<group name="EditMenu" prefix="edit.">
-					<str id="copyOffset">Copy Offset</str>
-					<str id="pasteOffset">Paste Offset</str>
-					<str id="undo">Undo</str>
-					<str id="redo">Redo</str>
-					<str id="editInfo">Edit information</str>
+					<str id="copyOffset">Salin Offset</str>
+					<str id="pasteOffset">Tempel Offset</str>
+					<str id="undo">Batal</str>
+					<str id="redo">Ulangi</str>
+					<str id="editInfo">Edit informasi</str>
 					<str id="editSprite">Edit sprite</str>
 				</group>
 
 				<str id="topBar.offset">Offsets</str>
 				<group name="OffsetsMenu" prefix="offset.">
-					<str id="moveLeft">Move Left</str>
-					<str id="moveUp">Move Up</str>
-					<str id="moveDown">Move Down</str>
-					<str id="moveRight">Move Right</str>
-					<str id="moveExtraLeft">Move Extra Left</str>
-					<str id="moveExtraUp">Move Extra Up</str>
-					<str id="moveExtraDown">Move Extra Down</str>
-					<str id="moveExtraRight">Move Extra Right</str>
-					<str id="dragOffsetsMouse">Drag Offsets With Mouse?</str>
-					<str id="clearOffsets">Clear Offsets</str>
+					<str id="moveLeft">Gerak Kiri</str>
+					<str id="moveUp">Gerak Atas</str>
+					<str id="moveDown">Gerak Bawah</str>
+					<str id="moveRight">Gerak Kanan</str>
+					<str id="moveExtraLeft">Gerak Ekstra Kiri</str>
+					<str id="moveExtraUp">Gerak Ekstra Atas</str>
+					<str id="moveExtraDown">Gerak Ekstra Bawah</str>
+					<str id="moveExtraRight">Gerak Ekstra Kanan</str>
+					<str id="dragOffsetsMouse">Seret Offset dengan Mouse?</str>
+					<str id="clearOffsets">Hapus Offset</str>
 				</group>
 
-				<str id="topBar.stage">Stage</str>
+				<str id="topBar.stage">Panggung</str>
 				<group name="StageMenu" prefix="stage.">
-					<str id="useStage">Use "{0}"</str>
-					<str id="useNone">Use No Stage</str>
+					<str id="useStage">Gunakan "{0}"</str>
+					<str id="useNone">Gunakan Tanpa Panggung</str>
 				</group>
 
 				<str id="topBar.view">View</str>
 				<group name="ViewMenu" prefix="view.">
-					<str id="zoomIn">Zoom in</str>
-					<str id="zoomOut">Zoom out</str>
-					<str id="resetZoom">Reset Zoom</str>
-					<str id="charHitbox">Character Hitbox?</str>
-					<str id="charCam">Character Camera?</str>
-					<str id="axis">XY Axis?</str>
+					<str id="zoomIn">Perbesar</str>
+					<str id="zoomOut">Perkecil</str>
+					<str id="resetZoom">Atur Ulang Zoom</str>
+					<str id="charHitbox">Karakter Hitbox?</str>
+					<str id="charCam">Kamera Karakter?</str>
+					<str id="axis">Sumbu XY?</str>
 				</group>
 
-				<str id="topBar.animation">Animation</str>
+				<str id="topBar.animation">Animasi</str>
 				<group name="AnimationMenu" prefix="animation.">
-					<str id="playAnim">Play Animation</str>
-					<str id="stopAnim">Stop Animation</str>
-					<str id="changeAnimUp">Change Animation ↑</str>
-					<str id="changeAnimDown">Change Animation ↓</str>
-					<str id="playAnimOnOffset">Play Animation On Offset?</str>
+					<str id="playAnim">Putar Animasi</str>
+					<str id="stopAnim">Hentikan Animasi</str>
+					<str id="changeAnimUp">Ubah Animasi ↑</str>
+					<str id="changeAnimDown">Ubah Animasi ↓</str>
+					<str id="playAnimOnOffset">Putar Animasi pada Offset?</str>
 				</group>
 
 				<group name="CharacterPropertiesWindow" prefix="characterProperties.">
-					<str id="position">Position (X, Y)</str>
-					<str id="scale">Scale</str>
+					<str id="position">Posisi (X, Y)</str>
+					<str id="scale">Skala</str>
 					<str id="editInfo">Edit Info</str>
 					<str id="editSprite">Edit Sprite</str>
-					<str id="camPosition">Camera Position (X, Y)</str>
-					<str id="charFlipped">Flipped?</str>
-					<str id="antialiased">Antialiased?</str>
-					<str id="testCharAs">Test Character As...</str>
-					<str id="charDesign">Char Designed As...</str>
+					<str id="camPosition">Posisi Kamera (X, Y)</str>
+					<str id="charFlipped">Terbalik?</str>
+					<str id="antialiased">Antialias?</str>
+					<str id="testCharAs">Tes Karakter Sebagai...</str>
+					<str id="charDesign">Karakter Didesain Sebagai...</str>
 				</group>
 
 				<group name="CharacterAnimButton" prefix="characterAnim.">
-					<str id="defaultAnimName">New Anim</str>
-					<str id="name">Name</str>
-					<str id="anim">Animation</str>
-					<str id="position">Position (X, Y)</str>
+					<str id="defaultAnimName">Anim Baru</str>
+					<str id="name">Nama</str>
+					<str id="anim">Animasi</str>
+					<str id="position">Posisi (X, Y)</str>
 					<str id="fps">FPS</str>
-					<str id="indices">Indices (Frames)</str>
-					<str id="looping">Looping?</str>
+					<str id="indices">Indeks (Bingkai)</str>
+					<str id="looping">Perulangan?</str>
 					<str id="label">Label</str>
 				</group>
 
 				<group name="CharacterSpriteScreen" prefix="characterSpriteScreen.">
-					<str id="win-title">Edit character sprite</str>
-					<str id="charImageFile">Character Image File $* Required$</str>
+					<str id="win-title">Edit karakter sprite</str>
+					<str id="charImageFile">File Gambar Karakter $* Diperlukan$</str>
 				</group>
 			</group>
 		</group>
 
 		<group name="CharacterCreationScreen" prefix="characterCreationScreen.">
-			<str id="win-title">Creating New Character</str>
-			<str id="charName">Character Name $* Required$</str>
-			<str id="charImgName">Character Image File $* Required$</str>
+			<str id="win-title">Membuat Karakter Baru</str>
+			<str id="charName">Nama Karakter $* Diperlukan$</str>
+			<str id="charImgName">File Gambar Karakter $* Diperlukan$</str>
 
 			<group name="Warnings" prefix="warnings.">
-				<str id="char-exists-title">Creating Character: Error!</str>
-				<str id="char-exists-body">The character you are trying to create already exists, if you would like to override it delete the character first!</str>
+				<str id="char-exists-title">Membuat Karakter: Error!</str>
+				<str id="char-exists-body">Karakter yang ingin Anda buat sudah ada. Jika Anda ingin menggantinya, hapus karakter tersebut terlebih dahulu!</str>
 			</group>
 		</group>
 	</group>
 
 	<group name="AlphabetEditor" prefix="editor.alphabet.">
 		<group name="AlphabetSelection" prefix="selection.">
-			<str id="acceptTypeface">Press ACCEPT to edit this typeface.</str>
-			<str id="newTypeface">New Typeface</str>
-			<str id="newTypefaceDesc">Press ACCEPT to create a new typeface.</str>
-			<str id="desc">Select a typeface to edit</str>
+			<str id="acceptTypeface">Tekan ACCEPT untuk edit typeface ini.</str>
+			<str id="newTypeface">Typeface Baru</str>
+			<str id="newTypefaceDesc">Tekan ACCEPT untuk membuat typeface baru.</str>
+			<str id="desc">Pilih typeface untuk edit</str>
 
 			<group name="Warnings" prefix="warnings.">
-				<str id="notImplemented-title">New Typeface: Feature Not Implemented!</str>
-				<str id="notImplemented-body">This feature isn't implemented yet. Please wait for more cne updates to have this functional.\n\n\n- Codename Crew</str>
+				<str id="notImplemented-title">Typeface Baru: Fitur Belum Diimplementasikan!</str>
+				<str id="notImplemented-body">Fitur ini belum diimplementasikan. Mohon tunggu pembaruan cne berikutnya agar fitur ini dapat berfungsi.\n\n\n- Codename Crew</str>
 			</group>
 		</group>
 
@@ -479,44 +479,44 @@
 			<group name="TopBar">
 				<str id="topBar.file">File</str>
 				<group name="FileMenu" prefix="file.">
-					<str id="new">New</str>
-					<str id="save">Save</str>
-					<str id="saveAs">Save As...</str>
-					<str id="exit">Exit</str>
+					<str id="new">Baru</str>
+					<str id="save">Simpan</str>
+					<str id="saveAs">Simpan Sebagai...</str>
+					<str id="exit">Keluar</str>
 				</group>
 
 				<str id="topBar.edit">Edit</str>
 				<group name="EditMenu" prefix="edit.">
-					<str id="undo">Undo</str>
-					<str id="redo">Redo</str>
+					<str id="undo">Batal</str>
+					<str id="redo">Ulangi</str>
 				</group>
 
 				<str id="topBar.glyph">Glyph</str>
 				<group name="GlyphMenu" prefix="glyph.">
-					<str id="newGlyph">New Glyph</str>
+					<str id="newGlyph">Glyph Baru</str>
 					<str id="editGlyph">Edit Glyph</str>
-					<str id="deleteGlyph">Delete Glyph</str>
-					<str id="deleteCurGlyph">Delete Current Glyph</str>
+					<str id="deleteGlyph">Hapus Glyph</str>
+					<str id="deleteCurGlyph">Hapus Glyph Saat Ini</str>
 				</group>
 
 				<str id="topBar.offset">Offsets</str>
 				<group name="OffsetsMenu" prefix="offset.">
-					<str id="moveLeft">Move Left</str>
-					<str id="moveUp">Move Up</str>
-					<str id="moveDown">Move Down</str>
-					<str id="moveRight">Move Right</str>
-					<str id="moveExtraLeft">Move Extra Left</str>
-					<str id="moveExtraUp">Move Extra Up</str>
-					<str id="moveExtraDown">Move Extra Down</str>
-					<str id="moveExtraRight">Move Extra Right</str>
-					<str id="clearOffsets">Clear Offsets</str>
+					<str id="moveLeft">Gerak Kiri</str>
+					<str id="moveUp">Gerak Atas</str>
+					<str id="moveDown">Gerak Bawah</str>
+					<str id="moveRight">Gerak Kanan</str>
+					<str id="moveExtraLeft">Gerak Ekstra Kiri</str>
+					<str id="moveExtraUp">Gerak Ekstra Atas</str>
+					<str id="moveExtraDown">Gerak Ekstra Bawah</str>
+					<str id="moveExtraRight">Gerak Ekstra Kanan</str>
+					<str id="clearOffsets">Hapus Offset</str>
 				</group>
 
 				<str id="topBar.view">View</str>
 				<group name="ViewMenu" prefix="view.">
-					<str id="zoomIn">Zoom in</str>
-					<str id="zoomOut">Zoom out</str>
-					<str id="resetZoom">Reset Zoom</str>
+					<str id="zoomIn">Perbesar</str>
+					<str id="zoomOut">Perkecil</str>
+					<str id="resetZoom">Atur Ulang Zoom</str>
 				</group>
 			</group>
 		</group>
@@ -524,135 +524,135 @@
 
 	<group name="StageEditor">
 		<group name="StageSelection" prefix="stageSelection.">
-			<str id="desc">Select a stage to edit. HSCRIPT only stages are not supported.</str>
-			<str id="acceptStage">Press ACCEPT to edit this stage.</str>
-			<str id="newStage">New Stage</str>
-			<str id="acceptNewStage">Press ACCEPT to create a new stage.</str>
+			<str id="desc">Pilih panggung yang akan diedit. Panggung yang hanya menggunakan HSCRIPT tidak didukung.</str>
+			<str id="acceptStage">Tekan ACCEPT untuk edit panggung ini.</str>
+			<str id="newStage">Panggung Baru</str>
+			<str id="acceptNewStage">Tekan ACCEPT untuk membuat panggung baru.</str>
 		</group>
 
 		<group name="StageEditor" prefix="stageEditor.">
 			<group name="TopBar">
 				<str id="topBar.file">File</str>
 				<group name="FileMenu" prefix="file.">
-					<str id="save">Save</str>
-					<str id="saveAs">Save As...</str>
-					<str id="exit">Exit</str>
+					<str id="save">Simpan</str>
+					<str id="saveAs">Simpan Sebagai...</str>
+					<str id="exit">Keluar</str>
 				</group>
 
 				<str id="topBar.edit">Edit</str>
 				<group name="EditMenu" prefix="edit.">
-					<str id="undo">Undo</str>
-					<str id="redo">Redo</str>
-					<str id="editStageInfo">Edit Stage Info</str>
+					<str id="undo">Batal</str>
+					<str id="redo">Ulangi</str>
+					<str id="editStageInfo">Edit Info Panggung</str>
 				</group>
 
-				<str id="topBar.select">Selection</str>
+				<str id="topBar.select">Seleksi</str>
 				<group name="SelectionMenu" prefix="select.">
-					<str id="all">Select All</str>
-					<str id="deselect">Deselect</str>
-					<str id="inverse">Inverse Selection</str>
+					<str id="all">Pilih Semua</str>
+					<str id="deselect">Batalkan</str>
+					<str id="inverse">Seleksi Terbalik</str>
 				</group>
 
 				<str id="topBar.view">View</str>
 				<group name="ViewMenu" prefix="view.">
-					<str id="zoomIn">Zoom in</str>
-					<str id="zoomOut">Zoom out</str>
-					<str id="zoomReset">Reset Zoom</str>
-					<str id="focusDad">Focus Dad</str>
-					<str id="focusGF">Focus GF</str>
-					<str id="focusBF">Focus BF</str>
+					<str id="zoomIn">Perbesar</str>
+					<str id="zoomOut">Perkecil</str>
+					<str id="zoomReset">Atur Ulang Zoom</str>
+					<str id="focusDad">Fokus Dad</str>
+					<str id="focusGF">Fokus GF</str>
+					<str id="focusBF">Fokus BF</str>
 				</group>
 
 				<str id="topBar.editor">Editor</str>
 				<group name="EditorMenu" prefix="editor.">
-					<str id="showCharacters">Show Characters</str>
+					<str id="showCharacters">Tampilkan Karakter</str>
 				</group>
 
 				<group name="StageSpriteScreen" prefix="stageSpriteScreen.">
-					<str id="win-title">Edit stage sprite</str>
-					<str id="stageImageFile">Stage Image File $* Required$</str>
+					<str id="win-title">Edit sprite panggung</str>
+					<str id="stageImageFile">File Gambar Panggung $* Diperlukan$</str>
 				</group>
 			</group>
 		</group>
 
 		<group name="StageCreationScreen" prefix="stageCreationScreen.">
-			<str id="win-title">Creating New Stage</str>
-			<str id="title">Stage Info</str>
-			<str id="stageName">Stage Name</str>
-			<str id="stagePath">Stage Path</str>
+			<str id="win-title">Membuat Panggung Baru</str>
+			<str id="title">Info Panggung</str>
+			<str id="stageName">Nama Panggung</str>
+			<str id="stagePath">Jalur Panggung</str>
 
 			<group name="Warnings" prefix="warnings.">
-				<str id="stage-exists-title">Creating Stage: Error!</str>
-				<str id="stage-exists-body">The stage you are trying to create alreadly exists, if you would like to override it delete the stage first!</str>
+				<str id="stage-exists-title">Pembuatan Panggung: Error!</str>
+				<str id="stage-exists-body">Panggung yang ingin Anda buat sudah ada; jika Anda ingin menggantinya, hapus dulu panggung tersebut!</str>
 			</group>
 		</group>
 
 		<group name="StageInfoScreen" prefix="stageInfoScreen.">
-			<str id="win-title">Editing Stage "{0}" Infos</str>
-			<str id="title">Stage Info</str>
-			<str id="stageName">Stage Name</str>
-			<str id="spritePath">Sprite Path\n(Needs Refresh)</str>
-			<str id="startCamPos">Start Camera Position (X, Y)</str>
+			<str id="win-title">Informasi Pengeditan Panggung "{0}"</str>
+			<str id="title">Info Panggung</str>
+			<str id="stageName">Nama Panggung</str>
+			<str id="spritePath">Jalur Panggung\n(Perlu Diperbarui)</str>
+			<str id="startCamPos">Posisi Awal Kamera (X, Y)</str>
 			<str id="zoom">Zoom</str>
 		</group>
 
 		<group name="StageElementEditScreen" prefix="stageElementEditScreen.">
-			<str id="win-character-title">Editing Character "{0}"</str>
-			<str id="win-sprite-title">Editing Sprite "{0}"</str>
-			<str id="win-title">Editing XML &lt;{0} /&gt;</str>
+			<str id="win-character-title">Mengedit Karakter "{0}"</str>
+			<str id="win-sprite-title">Mengedit Sprite "{0}"</str>
+			<str id="win-title">Mengedit XML &lt;{0} /&gt;</str>
 
-			<str id="character-title">Character Data</str>
-			<str id="sprite-title">Sprite Data</str>
-			<str id="title">XML Data</str>
+			<str id="character-title">Data Karakter</str>
+			<str id="sprite-title">Data Sprite</str>
+			<str id="title">Data XML</str>
 
-			<str id="elementName">Element Name</str>
-			<str id="nameID">Name Identifier</str>
-			<str id="imageFile">Image File (WIP: needs reload)\nIn (${stage.spritesParentFolder})</str>
-			<str id="scroll">Scroll {0}</str>
-			<str id="scale">Scale {0}</str>
-			<str id="camera">Camera {0}</str>
-			<str id="spacing">Spacing (X, Y)</str>
-			<str id="skew">Skew {0}</str>
-			<str id="alpha">Alpha</str>
-			<str id="angle">Angle</str>
+			<str id="elementName">Nama Elemen</str>
+			<str id="nameID">Nama Identifikasi</str>
+			<str id="imageFile">File Gambar (WIP: perlu dimuat ulang)\nDi (${stage.spritesParentFolder})</str>
+			<str id="scroll">Gulir {0}</str>
+			<str id="scale">Skala {0}</str>
+			<str id="camera">Kamer {0}</str>
+			<str id="spacing">Jarak (X, Y)</str>
+			<str id="skew">Kemiringan {0}</str>
+			<str id="alpha">Alfa</str>
+			<str id="angle">Sudut</str>
 			<str id="zoomFactor">Zoom Factor</str>
-			<str id="positionName">Position Name</str>
-			<str id="flipX">Flip X</str>
+			<str id="positionName">Nama Posisi</str>
+			<str id="flipX">Balik X</str>
 			<str id="antialiasing">Antialiasing</str>
-			<str id="highMemory">High Memory</str>
-			<str id="lowMemory">Low Memory</str>
-			<str id="attributes">Attributes</str>
-			<str id="transformPreview">Transform Preview:</str>
+			<str id="highMemory">Memori Tinggi</str>
+			<str id="lowMemory">Memori Rendah</str>
+			<str id="attributes">Atribut</str>
+			<str id="transformPreview">Pratinjau Transformasi:</str>
 
-			<str id="animType">Animation Type</str>
+			<str id="animType">Jenis Animasi</str>
 			<group name="AnimTypeDropdown" prefix="animType.">
-				<str id="none">NONE</str>
+				<str id="none">TIDAK ADA</str>
 				<str id="beat">BEAT</str>
 				<str id="loop">LOOP</str>
 			</group>
-			<str id="tipCustomProperties">Tip: To access custom properties,\nHold Shift when clicking edit</str>
+			<str id="tipCustomProperties">Tips: Untuk mengakses properti kustom,\nTekan dan tahan Shift saat mengklik "Edit"</str>
 		</group>
 
 		<group name="StageXMLEditScreen" prefix="stageXMLEditScreen.">
-			<str id="win-title">Editing {0} XML</str>
-			<str id="title">Xml Data</str>
-			<str id="attributes">Attributes</str>
+			<str id="win-title">Mengedit {0} XML</str>
+			<str id="title">Data Xml</str>
+			<str id="attributes">Atribut</str>
 		</group>
 
-		<str id="stageCharacters.requiredPosition">This character position is required in stages!</str>
-		<str id="stageCharacters.noDeleteGirlfriend">You can't delete Girlfriend</str>
+		<str id="stageCharacters.requiredPosition">Posisi karakter ini diperlukan di panggung!</str>
+		<str id="stageCharacters.noDeleteGirlfriend">Kamu tidak bisa menghapus Girlfriend</str>
 
 		<group name="StageElement" prefix="stageElement.">
-			<str id="scale">Scale: {0}, {1}</str>
-			<str id="scroll">Scroll: {0}, {1}</str>
+			<str id="scale">Skala: {0}, {1}</str>
+			<str id="scroll">Gulir: {0}, {1}</str>
 		</group>
 
 		<group name="StageSprites" prefix="stageSprites.">
 			<str id="win-title">Stage Sprites</str>
 			<str id="sprite">Sprite</str>
-			<str id="box">Box</str>
-			<str id="character">Character</str>
-			<str id="warnings.not-implemented">Creating a box isnt implemented yet!</str>
+			<str id="box">Kotak</str>
+			<str id="character">Karakter</str>
+			<str id="warnings.not-implemented">Fitur pembuatan kotak belum diimplementasikan!</str>
 		</group>
 	</group>
 
@@ -660,33 +660,33 @@
 	<!-- PlayTesting allows color in the description by doing *hello* -->
 	<!-- SaveWarning doesn't allow color in the description -->
 	<group name="PlayTesting" prefix="playtesting.">
-		<str id="chartPlaytesting" notrim="true"> (Chart Playtesting)</str>
-		<str id="exitGame">Exit Game</str>
-		<str id="exitToMenu">Exit To Menu</str>
-		<str id="saveAndExitGame">Save &amp; Exit Game</str>
-		<str id="saveAndExitToMenu">Save &amp; Exit To Menu</str>
-		<str id="cancel">Cancel</str>
+		<str id="chartPlaytesting" notrim="true"> (Pengujian Bagan)</str>
+		<str id="exitGame">Keluar Game</str>
+		<str id="exitToMenu">Keluar ke Menu</str>
+		<str id="saveAndExitGame">Simpan &amp; Keluar Game</str>
+		<str id="saveAndExitToMenu">Simpan &amp; Keluar Ke Menu</str>
+		<str id="cancel">Batal</str>
 
-		<str id="warningTitle">UNSAVED CHANGES!</str>
-		<str id="warningDesc">Your changes will be *lost* if you don't save them. (Can't be recovered)\n\n\nWould you like to Cancel?</str>
+		<str id="warningTitle">PERUBAHAN BELUM DISIMPAN!</str>
+		<str id="warningDesc">Perubahan Anda akan *hilang* jika tidak disimpan. (Tidak dapat dipulihkan)\n\n\nApakah Anda ingin membatalkan?</str>
 	</group>
 
 	<group name="SaveWarning" prefix="saveWarning.">
-		<str id="warningTitle">Unsaved Changes!</str>
-		<str id="warningDesc">Your changes will be lost if you don't save them. (Can't be recovered)\n\n\nWould you like to Cancel?</str>
+		<str id="warningTitle">Perubahan Belum Disimpan!</str>
+		<str id="warningDesc">Perubahan Anda akan hilang jika tidak disimpan. (Tidak dapat dipulihkan)\n\n\nApakah Anda ingin membatalkan?</str>
 
-		<str id="exitGame">Exit Game</str>
-		<str id="exitToMenu">Exit To Menu</str>
-		<str id="saveAndExitGame">Save &amp; Exit Game</str>
-		<str id="saveAndExitToMenu">Save &amp; Exit To Menu</str>
-		<str id="cancel">Cancel</str>
+		<str id="exitGame">Keluar Game</str>
+		<str id="exitToMenu">Keluar Ke Menu</str>
+		<str id="saveAndExitGame">Simpan &amp; Keluar Game</str>
+		<str id="saveAndExitToMenu">Simpan &amp; Keluar Ke Menu</str>
+		<str id="cancel">Batal</str>
 	</group>
 
 	<group name="ModConfigWarning" prefix="modConfigWarning.">
-		<str id="warningTitle">Missing mod folder configuration!</str>
-		<str id="warningDesc">Your mod is currently missing a mod config file!\n\nWould you like to automatically generate one?\n\n(PS: If this is not your mod please disable Developer mode to stop this popup from appearing.)</str>
+		<str id="warningTitle">Konfigurasi folder mod tidak ditemukan!</str>
+		<str id="warningDesc">Mod Anda saat ini tidak memiliki berkas konfigurasi mod!\n\nApakah Anda ingin membuatnya secara otomatis?\n\n(PS: Jika ini bukan mod Anda, silakan nonaktifkan Mode Developer agar popup ini tidak muncul lagi.)</str>
 
-		<str id="createdTitle">Created mod config!</str>
-		<str id="createdDesc">Your mod config file has been created at {0}!</str>
+		<str id="createdTitle">Konfigurasi mod sudah dibuat!</str>
+		<str id="createdDesc">Berkas konfigurasi mod Anda telah dibuat di {0}!</str>
 	</group>
 </language>
