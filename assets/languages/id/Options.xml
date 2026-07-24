@@ -75,7 +75,7 @@
 		<str id="colorHealthBar-desc">Jika tidak dicentang, game akan menggunakan bar kesehatan merah/hijau asli dari FNF minggu ke-6.</str>
 
 		<str id="week6PixelPerfect-name">Efek Pixel Perfect</str>
-		<str id="week6PixelPerfect-desc">Jika dicentang, Minggu ke-6 atau panggung piksel lainnya akan mengaktifkan efek "pixel perfect", yang menyelaraskan setiap piksel di layar.</str>
+		<str id="week6PixelPerfect-desc">Jika dicentang, Minggu ke-6 atau panggung piksel lainnya akan mengaktifkan efek pixel perfect, yang menyelaraskan setiap piksel di layar.</str>
 
 		<group name="AppearanceOptionsAdvanced" prefix="Advanced.">
 			<str id="quality-name">Kualitas</str>
