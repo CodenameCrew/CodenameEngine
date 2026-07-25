@@ -13,6 +13,10 @@ class HScript extends Script {
 	//public var folderlessPath:String;
 	var __importedPaths:Array<String>;
 
+	#if HARDCODED_SCRIPTS
+	public var trackedSets:Array<String> = [];
+	#end
+
 	public static function initParser() {
 		var parser = new Parser();
 		parser.allowJSON = parser.allowMetadata = parser.allowTypes = true;
@@ -146,6 +150,10 @@ class HScript extends Script {
 		if (expr != null) {
 			interp.execute(expr);
 			call("new", []);
+
+			#if HARDCODED_SCRIPTS
+			if (Flags.CONVERT_HSCRIPT_TO_SOURCE) HardcodedScriptPrinter.convertHscript(this);
+			#end
 		}
 
 		#if GLOBAL_SCRIPT
@@ -195,6 +203,15 @@ class HScript extends Script {
 
 	public override function set(val:String, value:Dynamic) {
 		interp.variables.set(val, value);
+		#if HARDCODED_SCRIPTS
+		if (Flags.CONVERT_HSCRIPT_TO_SOURCE) {
+			if (!trackedSets.contains(val)) {
+				if (!(value is Class)) {
+					trackedSets.push(val);
+				}
+			}
+		}
+		#end
 	}
 
 	public override function trace(v:Dynamic) {

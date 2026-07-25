@@ -22,6 +22,7 @@ class Macros {
 			#if THREE_D_SUPPORT "away3d", "flx3d", #end
 			#if VIDEO_CUTSCENES "hxvlc.flixel", "hxvlc.openfl", #end
 			#if NAPE_ENABLED "nape", "flixel.addons.nape", #end
+			#if HARDCODED_SCRIPTS "scripts", #end
 			// BASE HAXE
 			"DateTools", "EReg", "Lambda", "StringBuf", "haxe.crypto", "haxe.display", "haxe.exceptions", "haxe.extern", "scripting", "animate"
 		])
@@ -63,6 +64,10 @@ class Macros {
 		if (Context.defined("hscript_improved") && !Context.defined("hscript")) {
 			Compiler.define('hscript');
 		}
+
+		#if HARDCODED_SCRIPTS
+		Compiler.addGlobalMetadata('scripts', '@:build(funkin.backend.system.macros.HardcodedScriptVarMacro.build())');
+		#end
 	}
 
 	public static function buildLimeAssetLibrary():Array<Field> {

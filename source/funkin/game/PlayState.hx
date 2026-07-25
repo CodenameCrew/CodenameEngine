@@ -750,6 +750,12 @@ class PlayState extends MusicBeatState
 
 							addScript(file);
 						}
+
+						#if HARDCODED_SCRIPTS
+						for (script in funkin.backend.scripting.HardcodedScriptRegistry.getFolderScripts(folder)) {
+							scripts.add(Script.create("assets/" + script));
+						}
+						#end
 					}
 
 					var songEvents:Array<String> = [];

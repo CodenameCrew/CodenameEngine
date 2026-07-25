@@ -118,6 +118,9 @@
 	<!-- Disable a optimization, to allow reflection to use more functions -->
 	<define name="FLX_NO_GENERIC" />
 
+	<!-- Uncomment this to enabled hardcoded scripts. -->
+	<!-- <define name="HARDCODED_SCRIPTS" /> -->
+
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<!-- KEEP BOTH OF THESE AS THERE ARE SOME PARTICULAR CASES! -->
@@ -150,6 +153,7 @@
 	<set name="BUILD_DIR" value="latest/" if="beta" />
 
 	<source name="source" />
+	<source name="modSource" if="HARDCODED_SCRIPTS" />
 
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>

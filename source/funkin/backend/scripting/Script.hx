@@ -215,6 +215,12 @@ class Script extends FlxBasic implements IFlxDestroyable {
 	 * @param path Path in assets
 	 */
 	public static function create(path:String):Script {
+		#if HARDCODED_SCRIPTS
+		if (Flags.PREFER_HARDCODED_SCRIPTS) {
+			var script = tryHardcodedScript(path);
+			if (script != null) return script;
+		}
+		#end
 		if (Assets.exists(path)) {
 			return switch(Path.extension(path).toLowerCase()) {
 				case "hx" | "hscript" | "hsc" | "hxs":
@@ -229,8 +235,32 @@ class Script extends FlxBasic implements IFlxDestroyable {
 					new DummyScript(path);
 			}
 		}
+		#if HARDCODED_SCRIPTS
+		if (!Flags.PREFER_HARDCODED_SCRIPTS) {
+			var script = tryHardcodedScript(path);
+			if (script != null) return script;
+		}
+		#end
 		return new DummyScript(path);
 	}
+
+	#if HARDCODED_SCRIPTS
+	private static function tryHardcodedScript(path:String):Script {
+		var hardcodedScripts = HardcodedScriptRegistry.getRegisteredScripts();
+		var hardcodedPath = Path.withoutExtension(path).replace("assets/", "");
+		for (p in [hardcodedPath, hardcodedPath.replace("/LIB_assets", "")]) {
+			if (hardcodedScripts.exists(p)) {
+				var cl = Type.resolveClass(hardcodedScripts.get(p));
+				if (cl != null) {
+					return Type.createInstance(cl, [path]);
+				} else {
+					trace("hardcoded script class is null?", p, hardcodedScripts.get(p));
+				}
+			}
+		}
+		return null;
+	}
+	#end
 
 	/**
 	 * Creates a script from the string. The language is determined based on the path.
