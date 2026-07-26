@@ -28,6 +28,15 @@ jobs:
       #       export/release/linux/obj/
       - run: |
           echo "HXCPP_COMPILE_CACHE=~/.hxcpp" >> $GITHUB_ENV
+      - name: Installing Packages for Building Lime (TEMPORARY)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -qq \
+          libegl1-mesa-dev libgl1-mesa-dev libibus-1.0-dev libdbus-1-dev libdecor-0-dev libudev-dev libgbm-dev libdrm-dev \
+          libpng-dev libturbojpeg-dev libvorbis-dev libopenal-dev libsdl2-dev libglu1-mesa-dev libmbedtls-dev libuv1-dev libsqlite3-dev \
+          libx11-dev libxext-dev libxfixes-dev libxi-dev libxinerama-dev libxkbcommon-dev libxcursor-dev libxrandr-dev libxss-dev libxt-dev libxtst-dev libxv-dev libxxf86vm-dev \
+          libpulse-dev libasound2-dev libpipewire-0.3-dev \
+          g++-multilib gcc-multilib
       - name: Installing LibVLC
         run: |
           sudo apt-get install libvlc-dev libvlccore-dev
@@ -36,7 +45,10 @@ jobs:
           haxe -cp commandline -D analyzer-optimize --run Main setup -s
       - name: Building the game
         run: |
-          haxelib run lime rebuild linux -nocolor -nocffi -release
+          haxelib run lime setup -alias -y -nocffi
+          haxelib run lime rebuild hxcpp
+          haxelib run lime rebuild tools
+          haxelib run lime rebuild linux -nocolor -release
           haxelib run lime build linux -DCOMPILE_EXPERIMENTAL
       # - name: Tar files
       #   run: tar -zcvf CodenameEngine.tar.gz -C export/release/linux/bin .
@@ -101,6 +113,15 @@ jobs:
       #       export/debug/linux/obj/
       - run: |
           echo "HXCPP_COMPILE_CACHE=~/.hxcpp" >> $GITHUB_ENV
+      - name: Installing Packages for Building Lime (TEMPORARY)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -qq \
+          libegl1-mesa-dev libgl1-mesa-dev libibus-1.0-dev libdbus-1-dev libdecor-0-dev libudev-dev libgbm-dev libdrm-dev \
+          libpng-dev libturbojpeg-dev libvorbis-dev libopenal-dev libsdl2-dev libglu1-mesa-dev libmbedtls-dev libuv1-dev libsqlite3-dev \
+          libx11-dev libxext-dev libxfixes-dev libxi-dev libxinerama-dev libxkbcommon-dev libxcursor-dev libxrandr-dev libxss-dev libxt-dev libxtst-dev libxv-dev libxxf86vm-dev \
+          libpulse-dev libasound2-dev libpipewire-0.3-dev \
+          g++-multilib gcc-multilib
       - name: Installing LibVLC
         run: |
           sudo apt-get install libvlc-dev libvlccore-dev
@@ -109,7 +130,10 @@ jobs:
           haxe -cp commandline -D analyzer-optimize --run Main setup -s
       - name: Building the game
         run: |
-          haxelib run lime rebuild linux -nocolor -nocffi -debug
+          haxelib run lime setup -alias -y -nocffi
+          haxelib run lime rebuild hxcpp
+          haxelib run lime rebuild tools
+          haxelib run lime rebuild linux -nocolor -debug
           haxelib run lime build linux -debug -DCOMPILE_EXPERIMENTAL
       # - name: Tar files
       #   run: tar -zcvf CodenameEngine.tar.gz -C export/debug/linux/bin .

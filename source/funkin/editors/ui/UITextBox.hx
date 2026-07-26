@@ -72,10 +72,7 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 		framesOffset = (selected ? 18 : (hovered ? 9 : 0));
 		@:privateAccess {
 			if (selected) {
-				if (!__wasFocused) {
-					__wasFocused = true;
-					FlxG.stage.window.textInputEnabled = true;
-				}
+				__wasFocused = true;
 				caretSpr.alpha = (FlxG.game.ticks % 666) >= 333 ? 1 : 0;
 
 				var curPos = switch (position) {
@@ -95,7 +92,6 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 			} else {
 				if (__wasFocused) {
 					__wasFocused = false;
-					FlxG.stage.window.textInputEnabled = false;
 					if (onChange != null)
 						onChange(label.text);
 				}
@@ -137,7 +133,6 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 				focused = false;
 				if (onChange != null)
 					onChange(label.text);
-				return;
 			case LEFT:
 				if (modifier.ctrlKey) {
 					if (position == 0)
@@ -154,7 +149,6 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 				}
 
 				changeSelection(-1);
-				return;
 			case RIGHT:
 				if (modifier.ctrlKey) {
 					if (position == label.text.length)
@@ -171,7 +165,6 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 				}
 
 				changeSelection(1);
-				return;
 			case BACKSPACE:
 				UIState.playEditorSound(Flags.DEFAULT_EDITOR_TEXTREMOVE_SOUND);
 
@@ -188,7 +181,6 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 					label.text = label.text.substr(0, position - 1) + label.text.substr(position);
 					changeSelection(-1);
 				}
-				return;
 			case DELETE:
 				UIState.playEditorSound(Flags.DEFAULT_EDITOR_TEXTREMOVE_SOUND);
 
@@ -204,46 +196,57 @@ class UITextBox extends UISliceSprite implements IUIFocusable {
 				if (position < label.text.length) {
 					label.text = label.text.substr(0, position) + label.text.substr(position + 1);
 				}
-				return;
 			case HOME:
 				position = 0;
-				return;
 			case END:
 				position = label.text.length;
-				return;
 			case V:
-				if (modifier.ctrlKey) {
-					UIState.playEditorSound(Flags.DEFAULT_EDITOR_PASTE_SOUND);
+				// Hey lj here, fixed copying because before we checked if the modifier was left or right ctrl
+				// but somehow it gave a int outside of the KeyModifier's range :sob:
+				// apparently there is a boolean that just checks for you. yw :D
 
-					// Hey lj here, fixed copying because before we checked if the modifier was left or right ctrl
-					// but somehow it gave a int outside of the KeyModifier's range :sob:
-					// apparently there is a boolean that just checks for you. yw :D
-
-					// we pasting
-					var data:String = Clipboard.generalClipboard.getData(TEXT_FORMAT);
-					if (data != null)
-						onTextInput(data);
-				}
-			case C:
-				if (modifier.ctrlKey) {
-					UIState.playEditorSound(Flags.DEFAULT_EDITOR_COPY_SOUND);
-
-					Clipboard.generalClipboard.setData(TEXT_FORMAT, label.text);
-				}
-			case X:
-				if (modifier.ctrlKey) {
-					UIState.playEditorSound(Flags.DEFAULT_EDITOR_CUT_SOUND);
-
-					Clipboard.generalClipboard.setData(TEXT_FORMAT, label.text);
-					position = 0;
-					label.text = "";
+				// if we are not holding ctrl, ignore
+				if (!modifier.ctrlKey) {
+				    UIState.playEditorSound(Flags.DEFAULT_EDITOR_TEXTTYPE_SOUND);
 					return;
 				}
-			default:
-		}
 
-		if (modifier.ctrlKey || modifier.altKey || modifier.shiftKey) return;
-		UIState.playEditorSound(Flags.DEFAULT_EDITOR_TEXTTYPE_SOUND);
+				UIState.playEditorSound(Flags.DEFAULT_EDITOR_PASTE_SOUND);
+				
+				// we pasting
+				var data:String = Clipboard.generalClipboard.getData(TEXT_FORMAT);
+				if (data != null)
+					onTextInput(data);
+			case C:
+				// if we are not holding ctrl, ignore
+				if (!modifier.ctrlKey) {
+				    UIState.playEditorSound(Flags.DEFAULT_EDITOR_TEXTTYPE_SOUND);
+					return;
+				}
+
+				UIState.playEditorSound(Flags.DEFAULT_EDITOR_COPY_SOUND);
+
+				// copying
+				Clipboard.generalClipboard.setData(TEXT_FORMAT, label.text);
+			case X:
+				// if we are not holding ctrl, ignore
+				if (!modifier.ctrlKey) {
+				    UIState.playEditorSound(Flags.DEFAULT_EDITOR_TEXTTYPE_SOUND);
+					return;
+				}
+
+				UIState.playEditorSound(Flags.DEFAULT_EDITOR_CUT_SOUND);
+
+				// cutting
+				Clipboard.generalClipboard.setData(TEXT_FORMAT, label.text);
+				position = 0;
+				label.text = "";
+			default:
+				if (modifier.ctrlKey || modifier.altKey || modifier.shiftKey)
+					return;
+
+				UIState.playEditorSound(Flags.DEFAULT_EDITOR_TEXTTYPE_SOUND);
+		}
 	}
 
 	public function changeSelection(change:Int) {

@@ -27,8 +27,9 @@
 		<lib name="nape-haxe4"/>
 
 		<!-- For building lime -->
-		<!-- <lib global="true" name="hxp"/> <lib name="hxp"/> -->
-		<!-- <lib global="true" name="format"/> <lib name="format"/> -->
+		<lib global="true" name="hxp"/> <lib name="hxp"/>
+		<lib global="true" name="format"/> <lib name="format"/>
+		<lib global="true" name="svg"/> <lib name="svg"/>
 	</if>
 
 	<!-- Hxcpp Building -->
