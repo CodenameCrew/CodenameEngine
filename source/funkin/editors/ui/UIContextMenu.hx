@@ -237,7 +237,7 @@ class UIContextMenuOptionSpr extends UISliceSprite {
 		label = new UIText(20, 2, 0, option.label);
 		this.option = option;
 		this.parent = parent;
-		this.color = option.color;
+		if (option.color != null) this.color = option.color;
 
 		var w:Int = label.frameWidth + 22;
 		var h:Int = label.frameHeight;
