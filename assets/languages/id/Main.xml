@@ -3,7 +3,7 @@
 	<group name="PlayState">
 		<str id="game.score">Skor:{0}</str>
 		<str id="game.misses">Misses:{0}</str>
-		<str id="game.comboBreaks">Kombo Breaks:{0}</str>
+		<str id="game.comboBreaks">Patahan Kombo:{0}</str>
 		<str id="game.accuracy">Akurasi:{0} - {1}</str>
 		<str id="game.combo">Kombo:{0}</str>
 
@@ -27,8 +27,8 @@
 		<str id="freeplay.score">REKOR PRIBADI:{0}</str>
 		<str id="freeplay.solo">Solo</str>
 		<str id="freeplay.opponentMode">Mode Lawan</str>
-		<str id="freeplay.coopMode">Mode Co-Op</str>
-		<str id="freeplay.coopModeSwitched">Mode Co-Op (Beralih)</str>
+		<str id="freeplay.coopMode">Mode Ko-Op</str>
+		<str id="freeplay.coopModeSwitched">Mode Ko-Op (Beralih)</str>
 	</group>
 
 	<group name="Pause">
