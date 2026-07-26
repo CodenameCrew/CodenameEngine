@@ -94,7 +94,7 @@
 			<str id="gameplayShaders-desc">Jika tidak dicentang, shader gameplay (efek visual seperti Chromatic Aberration dari Thorns) tidak akan dimuat hal ini mungkin berguna pada perangkat dengan spesifikasi rendah.</str>
 
 			<str id="gpuOnlyBitmaps-name">Sprite Hanya VRAM</str>
-			<str id="gpuOnlyBitmaps-desc">If checked, will only store the bitmaps in the GPU, freeing a LOT of memory (EXPERIMENTAL). Turning this off will consume a lot of memory, especially on bigger sprites. If you aren't sure, leave this on.</str>
+			<str id="gpuOnlyBitmaps-desc">Jika dicentang, bitmap hanya akan disimpan di GPU, sehingga membebaskan BANYAK memori (EKSPERIMENTAL). Menonaktifkan ini akan menghabiskan banyak memori, terutama pada sprite berukuran besar. Jika Anda ragu, biarkan ini tetap aktif.</str>
 		</group>
 	</group>
 
