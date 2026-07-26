@@ -42,6 +42,12 @@ class HardcodedScriptRegistry {
 		}
 		return scripts;
 	}
+
+	public static function exists(path:String) {
+		var registeredScripts = getRegisteredScripts();
+		if (path.startsWith("assets/")) path = path.replace("assets/", "");
+		return registeredScripts.exists(path);
+	}
 }
 #end
 

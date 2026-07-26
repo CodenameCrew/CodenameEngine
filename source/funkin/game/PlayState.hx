@@ -752,8 +752,10 @@ class PlayState extends MusicBeatState
 						}
 
 						#if HARDCODED_SCRIPTS
-						for (script in funkin.backend.scripting.HardcodedScriptRegistry.getFolderScripts(folder)) {
-							scripts.add(Script.create("assets/" + script));
+						for (file in funkin.backend.scripting.HardcodedScriptRegistry.getFolderScripts(folder)) {
+							if (!scripts.contains("assets/" + file)) {
+								scripts.add(Script.create("assets/" + file));
+							}
 						}
 						#end
 					}
@@ -767,6 +769,15 @@ class PlayState extends MusicBeatState
 							addScript(file);
 						}
 					}
+
+					#if HARDCODED_SCRIPTS
+					for (file in funkin.backend.scripting.HardcodedScriptRegistry.getFolderScripts('data/events/')) {
+						var fileName:String = CoolUtil.getFilename(file);
+						if (EventsData.eventsList.contains(fileName) && songEvents.contains(fileName) && !scripts.contains("assets/" + file)) {
+							scripts.add(Script.create("assets/" + file));
+						}
+					}
+					#end
 			}
 		}
 
@@ -792,11 +803,13 @@ class PlayState extends MusicBeatState
 
 		for(noteType in SONG.noteTypes) {
 			var scriptPath = Paths.script('data/notes/${noteType}');
-			if (Assets.exists(scriptPath) && !scripts.contains(scriptPath)) {
-				var script = Script.create(scriptPath);
-				if (!(script is DummyScript)) {
-					scripts.add(script);
-					script.load();
+			if (!scripts.contains(scriptPath)) {
+				if (Assets.exists(scriptPath) #if HARDCODED_SCRIPTS || funkin.backend.scripting.HardcodedScriptRegistry.exists(scriptPath) #end) {
+					var script = Script.create(scriptPath);
+					if (!(script is DummyScript)) {
+						scripts.add(script);
+						script.load();
+					}
 				}
 			}
 		}

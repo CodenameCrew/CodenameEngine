@@ -497,11 +497,9 @@ class HardcodedScriptPrinter {
 				if( first ) first = false else add(", ");
 				if( a.opt ) add("?");
 				add(a.name);
-				trace(name + ":" + a.name + ":" + a.t);
 				if (a.t == null) {
 					if (defaultFuncArgTypes.exists(name)) {
 						var arr = defaultFuncArgTypes.get(name);
-						trace(arr);
 						if (i < arr.length) add(" : " + arr[i]);
 					}
 				} else {
