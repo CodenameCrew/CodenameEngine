@@ -84,7 +84,7 @@
 		<group name="SongPosInfo" prefix="songPosInfo.">
 			<str id="step">Step: {0}</str>
 			<str id="beat">Beat: {0}</str>
-			<str id="measure">Measure: {0}</str>
+			<str id="measure">Berjangka: {0}</str>
 			<str id="bpm">BPM: {0}</str>
 			<str id="timeSignature">Iramah Waktu: {0}/{1}</str>
 		</group>
@@ -120,7 +120,7 @@
 			<str id="needsVoices">Butuh Voices</str>
 
 			<str id="opponentMode">Mode Lawan</str>
-			<str id="coopAllowed">Mode Co-op</str>
+			<str id="coopAllowed">Mode Ko-op</str>
 		</group>
 
 		<group name="CharterNoteTypesList" prefix="charterNoteTypesList.">
@@ -240,7 +240,7 @@
 					<str id="addPlayerCamera">Tambahkan kamera pada Pemain</str>
 					<str id="inst">Intrumental</str>
 					<str id="voices">Suara</str>
-					<str id="hitsounds">Hitsounds</str>
+					<str id="hitsounds">Hitsound</str>
 				</group>
 
 				<group name="BookmarkMenu" prefix="bookmarks.">
