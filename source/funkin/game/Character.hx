@@ -463,6 +463,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 		if (cameraOffset.x != 0) xml.set("camx", Std.string(FlxMath.roundDecimal(cameraOffset.x, 2)));
 		if (cameraOffset.y != 0) xml.set("camy", Std.string(FlxMath.roundDecimal(cameraOffset.y, 2)));
+		if (centeredCamera != !isAnimate) xml.set("centercam", centeredCamera);
 
 		if (holdTime != 4) xml.set("holdTime", Std.string(FlxMath.roundDecimal(holdTime, 4)));
 
