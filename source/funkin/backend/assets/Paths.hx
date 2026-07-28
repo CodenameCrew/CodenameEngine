@@ -136,6 +136,9 @@ class Paths
 		return getPath('songs/$song/charts/${variant != null ? variant + "/" : ""}$difficulty.json', null);
 	}
 
+	static public function meta(song:String, ?variant:String):String
+		return getPath('songs/$song/meta${variant != null ? varient : ""}.json', null);
+
 	public static function character(character:String):String {
 		return getPath('data/characters/$character.xml', null);
 	}
