@@ -2,7 +2,6 @@ package funkin.backend.system;
 
 import flixel.FlxGame;
 import flixel.FlxG;
-import flixel.FlxState;
 import openfl.events.KeyboardEvent;
 
 class FunkinGame extends FlxGame {
@@ -12,7 +11,7 @@ class FunkinGame extends FlxGame {
 	var fullscreenListener:KeyboardEvent->Void;
 
 	override function create(_):Void {
-		super.create();
+		super.create(_);
 		fullscreenListener = function(e:KeyboardEvent) {
 			if (e.keyCode == 122) {
 				FlxG.fullscreen = !FlxG.fullscreen;
