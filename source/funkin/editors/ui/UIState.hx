@@ -18,9 +18,11 @@ class UIState extends MusicBeatState {
 	public var curContextMenu:UIContextMenu = null;
 
 	public static var state(get, never):UIState;
+	
+	public static var fallbackState:UIState = null;
 
 	private inline static function get_state()
-		return FlxG.state is UIState ? cast FlxG.state : null;
+		return FlxG.state is UIState ? cast FlxG.state : fallbackState;
 
 	public var buttonHandler:Void->Void = null;
 	public var hoveredSprite:UISprite = null;
