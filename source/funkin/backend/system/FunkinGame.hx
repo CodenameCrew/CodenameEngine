@@ -10,10 +10,9 @@ class FunkinGame extends FlxGame {
 
 	#if desktop
 	var fullscreenListener:KeyboardEvent->Void;
-	
-	public function new(gameWidth:Int, gameHeight:Int, entryState:Class<FlxState>, updateFramerate:Int = 60, drawFramerate:Int = 60, skipSplash:Bool = false, startFullscreen:Bool = false) {
-		super(gameWidth, gameHeight, entryState, updateFramerate, drawFramerate, skipSplash, startFullscreen);
-		
+
+	override function create(_):Void {
+		super.create();
 		fullscreenListener = function(e:KeyboardEvent) {
 			if (e.keyCode == 122) {
 				FlxG.fullscreen = !FlxG.fullscreen;
