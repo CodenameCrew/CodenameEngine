@@ -45,7 +45,7 @@ class ModsFolder {
 	 */
 	private static var __firstTime:Bool = true;
 	
-	private static var modsListSortCache:StringMap<Array<String>> = new StringMap();
+	@:dox(hide) public static var modsListSortCache:StringMap<Array<String>> = new StringMap();
 
 	/**
 	 * Initializes `mods` folder.
@@ -125,18 +125,13 @@ class ModsFolder {
 			sortForge.add(sortingOptions.mode);
 			
 			final sortForgePure:String = sortForge.toString();
-			final sortForgeHashed:String = haxe.crypto.Sha256.encode(sortForgePure);
 
-			if (modsListSortCache.exists(sortForgeHashed))
-			    mods = modsListSortCache.get(sortForgeHashed);
+			if (modsListSortCache.exists(sortForgePure))
+			    mods = modsListSortCache.get(sortForgePure);
 				if (mods.length > 0 && mods[mods.length - 1] == null) mods.pop();
 			else {
 			    ModSortingController.sort(sortingOptions, mods);
-				Logs.traceColored([
-				    Logs.logText("Caching mod sort forge: "),
-					Logs.logText(sortForgePure, GREEN)
-				], VERBOSE);
-				modsListSortCache.set(sortForgeHashed, mods);
+				modsListSortCache.set(sortForgePure, mods);
 			}
 		}
 		#end
