@@ -175,15 +175,25 @@ final class MemoryUtil {
 		reg.match(process.stdout.readAll().toString());
 		if (process.exitCode() == 0) return reg.matched(1);
 		#elseif linux
-		/*var process = new HiddenProcess("sudo", ["dmidecode", "--type", "17"]);
+		var process = new HiddenProcess("pkexec", ["dmidecode", "--type", "17"]);
 		if (process.exitCode() != 0) return "Unknown";
+
 		var lines = process.stdout.readAll().toString().split("\n");
 		for (line in lines) {
-			if (line.startsWith("Type:")) {
-				return line.substring("Type:".length).trim();
-			}
-		}*/
-		// TODO: sort of unsafe? also requires users to use `sudo`
+
+   			 var trimmed = StringTools.trim(line);
+    
+    		if (trimmed.startsWith("Type:")) 
+			{
+        		var ramType = StringTools.trim(trimmed.substring("Type:".length));
+        
+        		if (ramType != "" && ramType != "Unknown" && ramType != "None") {
+            		return ramType;
+        		}
+    		}
+		}
+		// TODO: sort of unsafe? also requires users to use `sudo` (or pkexec because pkexec will attempting to drop PolicyPolkit popup if you have any polkit manager installed and running on autostart)
+		// You can have polkit-gnome, polkit-xfce, polkit-kde, polkit-lxde, polkit-lxqt, polkit-hyprland (it must needs to have at least one i mentioned here!!)
 		// when launching the engine through the CLI, REIMPLEMENT LATER. 
 		#end
 		return "Unknown";
