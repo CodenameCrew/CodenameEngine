@@ -2263,12 +2263,12 @@ class Charter extends UIState {
 
 	inline function _note_addsustain(t) {
 		UIState.playEditorSound(Flags.DEFAULT_CHARTER_SUSTAINADD_SOUND);
-		changeNoteSustain(1);
+		changeNoteSustain(16/quant);
 	}
 
 	inline function _note_subtractsustain(t) {
 		UIState.playEditorSound(Flags.DEFAULT_CHARTER_SUSTAINDELETE_SOUND);
-		changeNoteSustain(-1);
+		changeNoteSustain(-16/quant);
 	}
 
 	function _note_selectall(_) {
@@ -2279,6 +2279,14 @@ class Charter extends UIState {
 		selection = [for (note in notesGroup.members)
 			if (note.step > Conductor.curMeasure*Conductor.getMeasureLength() && note.step < (Conductor.curMeasure+1)*Conductor.getMeasureLength()) note
 		];
+	}
+
+	function _note_selectstrumline(_) {
+		if (strumLines.members.length == 0) return;
+		var strumId = Math.floor(FlxG.mouse.getWorldPosition(charterCamera).x / 40);
+		if (strumId < 0 || strumId >= strumLines.totalKeyCount) return;
+		var hoveredStrum = strumLines.members.indexOf(strumLines.getStrumlineFromID(strumId));
+		if (hoveredStrum != -1) selection = [for (note in notesGroup.members) if (note.strumLineID == hoveredStrum) note];
 	}
 	#end
 
@@ -2343,6 +2351,11 @@ class Charter extends UIState {
 				label: translate("note.selectMeasure"),
 				keybind: [CONTROL, SHIFT, A],
 				onSelect: _note_selectmeasure
+			},
+			{
+				label: translate("note.selectStrumline"),
+				keybind: [CONTROL, SHIFT, L],
+				onSelect: _note_selectstrumline
 			},
 			null
 		];

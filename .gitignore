@@ -14,3 +14,4 @@ addons/*
 !addons/readme.txt
 dev-libs/
 *.sum
+.vs/
