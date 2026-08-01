@@ -403,6 +403,11 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			Logs.logText(fileName, RED),
 			Logs.logText(text)
 		], ERROR);
+		_onError();
+	}
+
+	private function _onError() {
+		if (Flags.DISABLE_SCRIPT_ON_ERROR) active = false;
 	}
 
 	override public function toString():String {

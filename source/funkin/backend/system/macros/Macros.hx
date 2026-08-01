@@ -64,10 +64,6 @@ class Macros {
 		if (Context.defined("hscript_improved") && !Context.defined("hscript")) {
 			Compiler.define('hscript');
 		}
-
-		#if HARDCODED_SCRIPTS
-		Compiler.addGlobalMetadata('scripts', '@:build(funkin.backend.system.macros.HardcodedScriptVarMacro.build())');
-		#end
 	}
 
 	public static function buildLimeAssetLibrary():Array<Field> {

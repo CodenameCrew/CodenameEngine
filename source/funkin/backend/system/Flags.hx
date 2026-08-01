@@ -290,6 +290,8 @@ class Flags {
 	public static var CONVERT_HSCRIPT_TO_SOURCE:Bool = true;
 	public static var PREFER_HARDCODED_SCRIPTS:Bool = false;
 	#end
+	public static var DISABLE_SCRIPT_ON_ERROR:Bool = false;
+
 	// -- End of Codename's Default Flags --
 
 	/**

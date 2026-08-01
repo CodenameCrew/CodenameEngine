@@ -120,6 +120,7 @@ class HScript extends Script {
 			Logs.logText(fn, GREEN),
 			Logs.logText(err, RED)
 		], ERROR);
+		_onError();
 	}
 
 	private function _warnHandler(error:Error) {
