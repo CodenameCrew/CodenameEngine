@@ -4,6 +4,10 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  HAXE_VERSION: 4.3.7
+  HXCPP_COMPILE_CACHE: ${{ github.workspace }}/.hxcpp_cache
+
 jobs:
   build:
     name: Linux Build
@@ -17,7 +21,7 @@ jobs:
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
-          haxe-version: 4.3.7
+          haxe-version: ${{ env.HAXE_VERSION }}
       # - name: Restore existing build cache for faster compilation
       #   uses: actions/cache@v4.2.3
       #   with:
@@ -26,8 +30,6 @@ jobs:
       #     path: |
       #       .haxelib/
       #       export/release/linux/obj/
-      - run: |
-          echo "HXCPP_COMPILE_CACHE=~/.hxcpp" >> $GITHUB_ENV
       - name: Installing Packages for Building Lime (TEMPORARY)
         run: |
           sudo apt-get update
@@ -36,7 +38,7 @@ jobs:
           libpng-dev libturbojpeg-dev libvorbis-dev libopenal-dev libsdl2-dev libglu1-mesa-dev libmbedtls-dev libuv1-dev libsqlite3-dev \
           libx11-dev libxext-dev libxfixes-dev libxi-dev libxinerama-dev libxkbcommon-dev libxcursor-dev libxrandr-dev libxss-dev libxt-dev libxtst-dev libxv-dev libxxf86vm-dev \
           libpulse-dev libasound2-dev libpipewire-0.3-dev \
-          g++-multilib gcc-multilib
+          zlib1g-dev
       - name: Installing LibVLC
         run: |
           sudo apt-get install libvlc-dev libvlccore-dev
@@ -102,7 +104,7 @@ jobs:
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
-          haxe-version: 4.3.7
+          haxe-version: ${{ env.HAXE_VERSION }}
       # - name: Restore existing build cache for faster compilation
       #   uses: actions/cache@v4.2.3
       #   with:
@@ -111,8 +113,6 @@ jobs:
       #     path: |
       #       .haxelib/
       #       export/debug/linux/obj/
-      - run: |
-          echo "HXCPP_COMPILE_CACHE=~/.hxcpp" >> $GITHUB_ENV
       - name: Installing Packages for Building Lime (TEMPORARY)
         run: |
           sudo apt-get update
@@ -121,7 +121,7 @@ jobs:
           libpng-dev libturbojpeg-dev libvorbis-dev libopenal-dev libsdl2-dev libglu1-mesa-dev libmbedtls-dev libuv1-dev libsqlite3-dev \
           libx11-dev libxext-dev libxfixes-dev libxi-dev libxinerama-dev libxkbcommon-dev libxcursor-dev libxrandr-dev libxss-dev libxt-dev libxtst-dev libxv-dev libxxf86vm-dev \
           libpulse-dev libasound2-dev libpipewire-0.3-dev \
-          g++-multilib gcc-multilib
+          zlib1g-dev
       - name: Installing LibVLC
         run: |
           sudo apt-get install libvlc-dev libvlccore-dev
