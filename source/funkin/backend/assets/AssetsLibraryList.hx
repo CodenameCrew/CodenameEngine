@@ -174,20 +174,36 @@ class AssetsLibraryList extends AssetLibrary {
 		else this.base = base;
 		__defaultLibraries.push(this.base);
 
-		#if (sys && TEST_BUILD)
-		Logs.infos("Used cne test / cne build. Switching into source assets.");
+		#if sys
 
+		#if TEST_BUILD
+		Logs.infos("Used cne test / cne build. Switching into source assets.");
+		switchToSourceAssets();
+		#elseif USE_ADAPTED_ASSETS
+		if (sys.FileSystem.exists('./${Main.pathBack}assets/')) {
+			Logs.infos("Source assets detected. Switching into source assets.");
+			switchToSourceAssets();
+		}
+		else {
+			__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', './assets/', true, SOURCE));
+		}
+		#end
+
+		#end
+
+		for (d in __defaultLibraries) addLibrary(d);
+	}
+
+	#if sys
+	inline function switchToSourceAssets() {
 		#if MOD_SUPPORT
 		ModsFolder.modsPath = './${Main.pathBack}mods/';
 		ModsFolder.addonsPath = './${Main.pathBack}addons/';
 		#end
 
 		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', './${Main.pathBack}assets/', true, SOURCE));
-		#elseif USE_ADAPTED_ASSETS
-		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', './assets/', true, SOURCE));
-		#end
-		for (d in __defaultLibraries) addLibrary(d);
 	}
+	#end
 
 	public function unloadLibraries() {
 		for(l in libraries)

@@ -77,9 +77,7 @@ class Note extends FlxSprite
 
 	public var strumID(get, never):Int;
 	private function get_strumID() {
-		var id = noteData % strumLine.members.length;
-		if (id < 0) id = 0;
-		return id;
+		return if (noteData < 0) 0; else noteData % strumLine.members.length;
 	}
 
 	public var sustainLength:Float = 0;
@@ -317,9 +315,8 @@ class Note extends FlxSprite
     return super.isOnScreen(camera);
 	}
 
-	// The * 0.5 is so that it's easier to hit them too late, instead of too early
-	public var earlyPressWindow:Float = 0.5;
-	public var latePressWindow:Float = 1;
+	public var earlyPressWindow:Float = Flags.EARLY_HIT_WINDOW_RANGE;
+	public var latePressWindow:Float = Flags.LATE_HIT_WINDOW_RANGE;
 
 	public function updateSustain(strum:Strum) {
 		var scrollSpeed = strum.getScrollSpeed(this);

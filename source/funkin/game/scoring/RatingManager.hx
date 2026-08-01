@@ -56,7 +56,7 @@ class RatingManager
 		addRating({name: "sick", window: getWindow("sick"), accuracy: 1, score: 300, splash: true});
 		addRating({name: "good", window: getWindow("good"), accuracy: 0.75, score: 200, health: 0.015});
 		addRating({name: "bad", window: getWindow("bad"), accuracy: 0.45, score: 100, health: 0});
-		addRating({name: "shit", window: getWindow("shit"), accuracy: 0.25, score: 50, health: -0.05, breaksCombo: true});
+		addRating({name: "shit", window: getWindow("shit"), accuracy: 0.25, score: 50, health: -0.05, breaksCombo: Flags.SHITS_BREAK_COMBO});
 	}
 
 	public function addRating(data:Dynamic)
