@@ -198,6 +198,12 @@ class PlayState extends MusicBeatState
 	public var camFollow:FlxObject;
 
 	/**
+	 * Point defining the camera follow offset.
+	 * Used for the "Camera Movement" event.
+	 */
+	public var cameraFocusOffset:FlxPoint;
+
+	/**
 	 * Previous cam follow.
 	 */
 	private static var smoothTransitionData:PlayStateTransitionData;
@@ -774,6 +780,8 @@ class PlayState extends MusicBeatState
 		camFollow = new FlxObject(0, 0, 2, 2);
 		add(camFollow);
 
+		cameraFocusOffset = FlxPoint.get();
+
 		if (SONG.stage == null || SONG.stage.trim() == "") SONG.stage = Flags.DEFAULT_STAGE;
 		add(stage = NewStage.cache(SONG.stage));
 
@@ -1187,6 +1195,7 @@ class PlayState extends MusicBeatState
 		}
 
 		NewStage.clear_cache();
+		cameraFocusOffset.put();
 
 		scripts = FlxDestroyUtil.destroy(scripts);
 
@@ -1577,6 +1586,8 @@ class PlayState extends MusicBeatState
 
 	public function moveCamera() if (strumLines.members[curCameraTarget] != null) {
 		var data:CamPosData = getStrumlineCamPos(curCameraTarget);
+		data.pos.add(cameraFocusOffset.x, cameraFocusOffset.y);
+
 		if (data.amount > 0) {
 			var event = gameAndCharsEvent("onCameraMove", EventManager.get(CamMoveEvent).recycle(data.pos, strumLines.members[curCameraTarget], data.amount));
 			if (!event.cancelled)
@@ -1660,6 +1671,9 @@ class PlayState extends MusicBeatState
 				}
 
 				curCameraTarget = event.params[0];
+
+				cameraFocusOffset.set(event.params[5], event.params[6]);
+
 				moveCamera();
 
 				if (strumLines.members[curCameraTarget] != null) {
@@ -1726,6 +1740,9 @@ class PlayState extends MusicBeatState
 					eventsTween.set(name, FlxTween.tween(cam, {zoom: finalZoom}, (Conductor.stepCrochet / 1000) * event.params[3], {ease: CoolUtil.flxeaseFromString(event.params[4], event.params[5]), onUpdate: function(_) {
 						if (cam == camHUD) defaultHudZoom = cam.zoom;
 						else defaultCamZoom = cam.zoom;
+					}, onComplete: _ -> {
+						if (cam == camHUD) defaultHudZoom = finalZoom;
+						else defaultCamZoom = finalZoom;
 					}}));
 			case "Camera Modulo Change":
 				camZoomingInterval = event.params[0];
@@ -1822,7 +1839,7 @@ class PlayState extends MusicBeatState
 
 			case "Unknown": // nothing
 		}
-		
+
 		gameAndCharsEvent("onPostEvent", e);
 	}
 
@@ -2101,7 +2118,7 @@ class PlayState extends MusicBeatState
 		gameAndCharsEvent("onNoteHit", event);
 
 		note.noSustainClip = !event.clipSustain;
-		
+
 		if (!event.cancelled) {
 			if (!note.isSustainNote) {
 				if (event.countScore) songScore += event.score;

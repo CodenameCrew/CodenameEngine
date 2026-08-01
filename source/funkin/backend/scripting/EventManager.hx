@@ -4,29 +4,40 @@ import flixel.FlxState;
 import funkin.backend.scripting.events.*;
 
 final class EventManager {
-	// map doesn't work for that
-	public static var eventValues:Array<CancellableEvent> = [];
-	public static var eventKeys:Array<Class<CancellableEvent>> = [];
+	#if cpp
+	public static var eventCache:haxe.ds.ObjectMap<Dynamic, CancellableEvent> = new haxe.ds.ObjectMap();
 
-	public static function get<T:CancellableEvent>(cl:Class<T>):T {
-		var c:Class<CancellableEvent> = cast cl;
-
-		var index = eventKeys.indexOf(c);
-		if (index < 0) {
-			eventKeys.push(c);
-			var ret;
-			eventValues.push(ret = Type.createInstance(c, []));
-			return cast ret;
+	public static inline function get<T:CancellableEvent>(cl:Class<T>):T {
+		var event:CancellableEvent = eventCache.get(cl);
+		if (event == null) {
+			event = Type.createInstance(cl, []);
+			eventCache.set(cl, event);
 		}
-
-		return cast eventValues[index];
+		return cast event;
 	}
+	#else
+	public static var eventCache:Map<String, CancellableEvent> = [];
+
+	public static inline function get<T:CancellableEvent>(cl:Class<T>):T {
+		var className = Type.getClassName(cl);
+		var event = eventCache.get(className);
+		if (event == null) {
+			event = Type.createInstance(cl, []);
+			eventCache.set(className, event);
+		}
+		return cast event;
+	}
+	#end
 
 	public static function reset() {
-		for(v in eventValues)
-			v.destroy();
-		eventValues = [];
-		eventKeys = [];
+		#if cpp
+		eventCache = new haxe.ds.ObjectMap();
+		#else
+		for (event in eventCache) {
+			event.destroy();
+		}
+		eventCache = [];
+		#end
 	}
 
 	public static function init() {

@@ -8,7 +8,6 @@ import lime.utils.AssetLibrary;
 import haxe.ds.Map;
 
 class AssetsLibraryList extends AssetLibrary {
-
 	public var libraries:Array<AssetLibrary> = [];
 	public var cleanLibraries(get, never):Array<AssetLibrary>;
 	function get_cleanLibraries():Array<AssetLibrary> {
@@ -31,6 +30,9 @@ class AssetsLibraryList extends AssetLibrary {
 	public var transLib:TranslatedAssetLibrary;
 	#end
 
+	private var cacheLibraryTypePaths:Map<String, Map<String, AssetLibrary>> = [];
+	private var cacheTimeTypePaths:Map<String, Map<String, Float>> = [];
+
 	public function removeLibrary(lib:AssetLibrary) {
 		if (lib != null) {
 			libraries.remove(lib);
@@ -51,15 +53,49 @@ class AssetsLibraryList extends AssetLibrary {
 		}
 		return lib;
 	}
+
 	public function existsSpecific(id:String, type:String, source:AssetSource = BOTH) {
 		if (!id.startsWith("assets/") && existsSpecific('assets/$id', type, source))
 			return true;
-		for(k=>l in libraries) {
+
+		// Prevent massive lags on repetitive usage
+		final sec = haxe.Timer.stamp();
+
+		var cacheLibraryPaths:Map<String, AssetLibrary> = cacheLibraryTypePaths.get(type);
+		var cacheTimePaths:Map<String, Float> = cacheTimeTypePaths.get(type);
+		if (cacheLibraryPaths == null) {
+			cacheLibraryTypePaths.set(type, cacheLibraryPaths = []);
+			cacheTimeTypePaths.set(type, cacheTimePaths = []);
+		}
+
+		var cacheSafetime:Null<Float> = cacheTimePaths.get(id) + 6;
+		if (cacheSafetime != null) {
+			if (cacheLibraryPaths.exists(id)) {
+				if (sec < cacheSafetime) return true;
+				else if (cacheLibraryPaths.get(id).exists(id, type)) {
+					cacheTimePaths.set(id, sec);
+					return true;
+				}
+
+				cacheLibraryPaths.remove(id);
+			}
+			else if (sec < cacheSafetime) {
+				return false;
+			}
+
+			//cacheTimePaths.remove(id);
+		}
+
+		cacheTimePaths.set(id, sec);
+
+		for (k=>l in libraries) {
 			if (shouldSkipLib(l, source)) continue;
 			if (l.exists(id, type)) {
+				cacheLibraryPaths.set(id, l);
 				return true;
 			}
 		}
+
 		return false;
 	}
 	public override inline function exists(id:String, type:String):Bool
@@ -174,20 +210,36 @@ class AssetsLibraryList extends AssetLibrary {
 		else this.base = base;
 		__defaultLibraries.push(this.base);
 
-		#if (sys && TEST_BUILD)
-		Logs.infos("Used cne test / cne build. Switching into source assets.");
+		#if sys
 
+		#if TEST_BUILD
+		Logs.infos("Used cne test / cne build. Switching into source assets.");
+		switchToSourceAssets();
+		#elseif USE_ADAPTED_ASSETS
+		if (sys.FileSystem.exists('./${Main.pathBack}assets/') && !sys.FileSystem.exists('./assets/')) {
+			Logs.infos("Source assets detected. Switching into source assets.");
+			switchToSourceAssets();
+		}
+		else {
+			__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', './assets/', true, SOURCE));
+		}
+		#end
+
+		#end
+
+		for (d in __defaultLibraries) addLibrary(d);
+	}
+
+	#if sys
+	inline function switchToSourceAssets() {
 		#if MOD_SUPPORT
 		ModsFolder.modsPath = './${Main.pathBack}mods/';
 		ModsFolder.addonsPath = './${Main.pathBack}addons/';
 		#end
 
 		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', './${Main.pathBack}assets/', true, SOURCE));
-		#elseif USE_ADAPTED_ASSETS
-		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', './assets/', true, SOURCE));
-		#end
-		for (d in __defaultLibraries) addLibrary(d);
 	}
+	#end
 
 	public function unloadLibraries() {
 		for(l in libraries)
@@ -197,6 +249,9 @@ class AssetsLibraryList extends AssetLibrary {
 
 	public function reset() {
 		unloadLibraries();
+
+		cacheLibraryTypePaths.clear();
+		cacheTimeTypePaths.clear();
 
 		libraries = [];
 
