@@ -6,15 +6,21 @@
 
 	<exec>
 		function col(c:Int) {
-			return 20 + (200 + XOFFSET) * c;
+			return MARGIN + (200 + XOFFSET) * c;
 		}
 
 		if(sprite.animateAtlas == null) {
-			previewSprite =  new FunkinSprite(50, self.winHeight - 100);
+			previewSprite =  new FunkinSprite(MARGIN, self.winHeight - (100 + MARGIN));
 			previewSprite.frame = sprite.frame;
 
 			self.add(previewSprite);
 		}
+
+		function animTypeToString(animType:AnimType) { 
+			return ["none", "beat", "loop"][animType]; 
+		}
+		if (getEx('anims') == null)
+			setEx('anims', sprite.animDatas.copy());
 	</exec>
 
 	<title name="title" x="20" y="30 + 16" text="${translate('sprite-title')}" />
@@ -25,7 +31,7 @@
 		<textbox name="nameTextBox" label="${translate('nameID')}" value="button.getName()"   x="col(0)" y="curY" width="200" height="32" />
 		<textbox name="spriteTextBox" value="getEx('imageFile')" x="last.x + last.bWidth + XOFFSET" y="curY" width="200" height="32" />
 		<stepper name="alphaStepper" label="Alpha" value="sprite.alpha" x="spriteTextBox.x + spriteTextBox.bWidth + XOFFSET" y="curY" precision="2" step="0.01" width="100" />
-		<label name="imageFile" text="${translate('imageFile')}" x="spriteTextBox.x" y="spriteTextBox.y - 14" size="15" />
+		<label name="imageFile" text="${translate('imageFile', [stage.spritesParentFolder])}" x="spriteTextBox.x" y="spriteTextBox.y - 14" size="15" />
 	</section>
 
 	<section> <!-- ROW 2 -->
@@ -64,8 +70,6 @@
 		<checkbox name="antialiasingCheckbox" text="${translate('antialiasing')}" value="sprite.antialiasing" x="col(0)" y="curY" />
 		<radio for="memoryCheck" name="highMemoryRadio" text="${translate('highMemory')}" value="getEx('highMemory')" x="col(1)" y="curY" />
 		<radio for="memoryCheck" name="lowMemoryRadio" text="${translate('lowMemory')}" value="getEx('lowMemory')" x="col(2)" y="curY" />
-
-		<!-- TODO: Animation list -->
 	</section>
 
 	<section> <!-- RIGHT SIDE -->
@@ -77,30 +81,39 @@
 			<camSpacing value="0" />
 
 			<code>
-				buttonlist.addButton.exists = false;
-			</code>
-
-			<!-- <code>
-				import funkin.editors.extra.PropertyButton;
+				//import funkin.backend.utils.XMLUtil.AnimData;
+				import funkin.editors.stage.elements.StageSpriteAnimButton;
 
 				var buttonList = buttonlist; // important for now, since it gets reset after the code is run
-
 				var width = buttonList.buttonSize.x;
 				var height = buttonList.buttonSize.y;
 
-				buttonList.addButton.callback = function() {
-					buttonList.add(new PropertyButton("newProperty", "valueHere", buttonList, width, height, 150, 220, 25));
+				inline function addAnimBtn(animData:AnimData) {
+					var animButton = new StageSpriteAnimButton(animData, buttonList, width, height, width / 5, width / 3);
+					animButton.spriteXML = xml;
+					buttonList.add(animButton);
 				}
 
-				//var defaultAttribs = Stage.DEFAULT_ATTRIBUTES;
-				//for (i in stage.stageXML.attributes()) {
-				//	trace(i, defaultAttribs);
-				//	if (!defaultAttribs.contains(i))
-				//		buttonList.add(new PropertyButton(i, stage.stageXML.get(i), buttonList, width, height, 150, 220, 25));
-				//}
-				for(key =&gt; val in stage.extra)
-					buttonList.add(new PropertyButton(key, val, buttonList, width, height, 150, 220, 25));
-			</code> -->
+				buttonList.addButton.callback = function() {
+					final dummyAnim = {
+						name: TranslationUtil.translate('characterEditor.characterAnim.defaultAnimName'),
+						anim: translate('defaultAnimPrefix'),
+						fps: 24,
+						loop: false,
+						animType: animType.value,
+						x: 0,
+						y: 0,
+						indices: [],
+						label: false
+					};
+					addAnimBtn(dummyAnim);
+				}
+
+				for (animData in getEx('anims')) {
+					if (animData.name == 'idle' &amp;&amp; animData.anim == null) continue; // Skips dummy animation added by XMLUtil.loadSpriteFromXML
+					addAnimBtn(animData);
+				}
+			</code>
 		</buttonlist>
 
 		<text text="${translate('tipCustomProperties')}" x="col(2) - 60" y="self.winHeight - 50" size="15" />
@@ -111,10 +124,37 @@
 
 	<section if="previewSprite != null">
 		<title name="previewTitle" x="20" y="self.winHeight - 150" text="${translate('transformPreview')}" size="15" />
-    </section>
+	</section>
 
 	<exec>
+		var prevText = spriteTextBox.label.text;
+		var prevID = nameTextBox.label.text;
+		var spriteExists = true;
+		var ratio = sprite.width / sprite.height;
+
+		spriteTextBox.onChange = function(text) {
+			var newSprite = stage.spritesParentFolder + text;
+			var animated = Paths.framesExists(newSprite, true);
+			spriteExists = ( animated || Assets.exists(Paths.image(newSprite)) );
+
+			if (text != prevText &amp;&amp; spriteExists) {
+				if (animated) previewSprite.frames = Paths.getFrames(newSprite, previewSprite.animateSettings);
+				else previewSprite.loadGraphic(Paths.image(newSprite));
+				previewSprite.updateHitbox();
+				
+				ratio = previewSprite.width / previewSprite.height;
+				previewSprite.colorTransform.__identity();
+			} else if (!spriteExists) {
+				previewSprite.colorTransform.color = 0xFFEF0202;
+			}
+			prevText = text; 
+		}
+		
 		function onUpdate() {
+			if (nameTextBox.label.text != prevID)
+				self.winTitle = self.titleSpr.text = translate('win-sprite-title', [nameTextBox.label.text]);
+			prevID = nameTextBox.label.text;
+
 			if(previewSprite == null) return;
 			previewSprite.color = 0xFFFFFFFF; // TODO: Color Wheel
 			previewSprite.skew.x = skewXStepper.value;
@@ -122,11 +162,10 @@
 			previewSprite.angle = angleStepper.value;
 			previewSprite.alpha = alphaStepper.value;
 			previewSprite.antialiasing = antialiasingCheckbox.checked;
-			var ratio = sprite.width / sprite.height;
-			previewSprite.setGraphicSize(50 * scaleXStepper.value * ratio, 50 * scaleYStepper.value);
+			previewSprite.setGraphicSize(85 * scaleXStepper.value * ratio, 85 * scaleYStepper.value);
 			previewSprite.updateHitbox();
 		}
-
+		
 		function onSave() {
 			sprite.name = nameTextBox.label.text;
 			setEx("imageFile", spriteTextBox.label.text);
@@ -134,12 +173,12 @@
 			setEx("highMemory", highMemoryRadio.checked);
 			setEx("lowMemory", lowMemoryRadio.checked);
 
-			//sprite.x = xStepper.value;
-			//sprite.y = yStepper.value;
-			//sprite.zoomFactor = zoomFactorStepper.value;
-			//sprite.antialiasing = antialiasingCheckbox.checked;
+			sprite.x = xStepper.value;
+			sprite.y = yStepper.value;
+			sprite.zoomFactor = zoomFactorStepper.value;
+			sprite.antialiasing = antialiasingCheckbox.checked;
 			//sprite.color = colorWheel.color;
-			//sprite.spriteAnimType = animType.value;
+			sprite.spriteAnimType = animTypeToString(animType.value);
 			sprite.angle = angleStepper.value;
 			sprite.alpha = alphaStepper.value;
 
@@ -171,15 +210,48 @@
 			button.xml.set("x", xStepper.value);
 			button.xml.set("y", yStepper.value);
 			button.xml.set("zoom", zoomFactorStepper.value);
-			button.xml.set("type", animType.key);
+			button.xml.set("type", animTypeToString(animType.value));
 			button.xml.set("antialiasing", antialiasingCheckbox.checked);
 			button.xml.set("angle", angleStepper.value);
 			button.xml.set("alpha", alphaStepper.value);
+
+			getEx('anims').clear();
+			var allowedAnims:Array&lt;String&gt; = [for (b in animations.buttons.members) b.animData.name];
+			for (node in button.xml.elementsNamed('anim')) if (!allowedAnims.contains( node.get('name') ))
+				button.xml.removeChild(node);
+
+			for (i in 0...animations.buttons.length) {
+				var actualChildren:Array&lt;Xml&gt; = button.xml.children.filter((f) -&gt; f.nodeType == 0);
+				if (i &gt; actualChildren.length - 1) {
+					var newAnim = Xml.createElement('anim');
+					button.xml.addChild(newAnim);
+					actualChildren.push(newAnim);
+					//trace("added new at " + i + ": " + newAnim);
+				}
+
+				final animData:AnimData = animations.buttons.members[i].animData;
+				final animNode:Xml = actualChildren[i];
+				//trace(animNode + "(" + i + ") before");
+				animNode.set("name", animData.name);
+				animNode.set("type", animTypeToString(animData.animType)); // XMLAnimType is abstract of int, the code is treating it as just int 
+				animNode.set("anim", animData.anim);
+				animNode.set("fps", animData.fps);
+				animNode.set("x", animData.x);
+				animNode.set("y", animData.y);
+				animNode.set("loop", animData.loop);
+				animNode.set("forced", CoolUtil.getDefault(animData.forced, false));
+				animNode.set("indices", CoolUtil.formatNumberRange(animData.indices));
+				animNode.set("label", animData.label);
+				//trace(animNode + "(" + i + ")");
+				getEx('anims').set(animData.name, animData);
+			}
 
 			saveXY(sprite.scrollFactor, "scroll", scrollXStepper, scrollYStepper);
 			saveXY(sprite.scale, "scale", scaleXStepper, scaleYStepper);
 			saveXY(sprite.skew, "skew", skewXStepper, skewYStepper);
 			XMLUtil.loadSpriteFromXML(sprite, button.xml, stage.spritesParentFolder);
+			button.updateInfo();
+			setEx('node', button.xml);
 		}
 	</exec>
 </window>
