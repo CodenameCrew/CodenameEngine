@@ -36,7 +36,7 @@ jobs:
           sudo apt-get install libvlc-dev libvlccore-dev
       - name: Installing/Updating libraries
         run: |
-          haxe -cp commandline -D analyzer-optimize --run Main setup -s
+          haxe -cp commandline -D analyzer-optimize --run Main setup -si
       - name: Building the game
         run: |
           haxelib run lime build linux -DCOMPILE_EXPERIMENTAL
@@ -108,7 +108,7 @@ jobs:
           sudo apt-get install libvlc-dev libvlccore-dev
       - name: Installing/Updating libraries
         run: |
-          haxe -cp commandline -D analyzer-optimize --run Main setup -s
+          haxe -cp commandline -D analyzer-optimize --run Main setup -si
       - name: Building the game
         run: |
           haxelib run lime build linux -debug

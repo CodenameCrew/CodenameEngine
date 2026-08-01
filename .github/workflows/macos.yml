@@ -33,7 +33,7 @@ jobs:
             export/release/macos/obj/
       - name: Installing/Updating libraries
         run: |
-          haxe -cp commandline -D analyzer-optimize --run Main setup -s
+          haxe -cp commandline -D analyzer-optimize --run Main setup -si
       - name: Building the game
         run: |
           arch -x86_64 haxelib run lime build mac -DCOMPILE_EXPERIMENTAL
@@ -102,7 +102,7 @@ jobs:
             export/debug/macos/obj/
       - name: Installing/Updating libraries
         run: |
-          haxe -cp commandline -D analyzer-optimize --run Main setup -s
+          haxe -cp commandline -D analyzer-optimize --run Main setup -si
       - name: Building the game
         run: |
           arch -x86_64 haxelib run lime build mac -debug

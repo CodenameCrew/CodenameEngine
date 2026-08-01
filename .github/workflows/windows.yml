@@ -33,7 +33,7 @@ jobs:
             export/release/windows/obj/
       - name: Installing/Updating libraries
         run: |
-          haxe -cp commandline -D analyzer-optimize --run Main setup -s --no-vscheck
+          haxe -cp commandline -D analyzer-optimize --run Main setup -si --no-vscheck
       - name: Building the game
         run: |
           haxelib run lime build windows -DCOMPILE_EXPERIMENTAL
@@ -100,7 +100,7 @@ jobs:
             export/debug/windows/obj/
       - name: Installing/Updating libraries
         run: |
-          haxe -cp commandline -D analyzer-optimize --run Main setup -s --no-vscheck
+          haxe -cp commandline -D analyzer-optimize --run Main setup -si --no-vscheck
       - name: Building the game
         run: |
           haxelib run lime build windows -debug
