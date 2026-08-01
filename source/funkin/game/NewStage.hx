@@ -12,14 +12,18 @@ import funkin.backend.system.interfaces.IBeatReceiver;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import flixel.math.FlxMatrix;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.util.FlxStringUtil; 
 import flixel.util.FlxStringUtil.LabelValuePair;
+import flixel.util.FlxDestroyUtil;
 
 import flixel.system.FlxAssets.FlxShader;
 
 import haxe.xml.Access;
 import hscript.IHScriptCustomBehaviour;
+
+import openfl.display.BlendMode;
 
 using StringTools;
 
@@ -36,6 +40,12 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	public var height(get, never):Float;
 	public var bounds(get, never):FlxRect;
 
+	/**
+	 * WARNING: The `origin` of the layer will default to its center. If you change this,
+	 * the visuals will likely be pretty out-of-sync if you do any rotation.
+	 */
+	public var origin(default, null):FlxPoint = FlxPoint.get(); // This will be used for rendering btw
+
 	public var onAddSprite:FlxTypedSignal<FlxObject -> Void> = new FlxTypedSignal();
 	public var onAddLayer:FlxTypedSignal<StageLayer -> Void> = new FlxTypedSignal();
 
@@ -46,6 +56,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	 */
 	public var useRenderTexture:Bool = false;
 	private var _renderTexture:RenderTexture;
+	private var _renderTextureDirty:Bool = true;
 
 	// TODO: use FlxAnimate's implementation on useRenderTexture so we can apply the shader onto all sprites as 1 sprite !!!
 	public var shader(default, set):FlxShader;
@@ -103,6 +114,20 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		return s;
 	}
 
+	public var blend(default, set):BlendMode = null;
+	private function set_blend(b:BlendMode):BlendMode {
+		if(useRenderTexture) 
+			return this.blend = b;
+		
+		for(member in this.members) {
+			if(member is FlxSprite)
+				cast(member, FlxSprite).blend = b;
+			else if(members is StageLayer)
+				cast(member, StageLayer).blend = b;
+		}
+		return this.blend = b;
+	}
+
 	public inline function getSprite(name:String):Null<Dynamic> {
 		return stageSprites.exists(name) ? stageSprites[name] : null;
 	}
@@ -132,7 +157,92 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	}
 
 	function checkRenderTexture():Bool {
-		return useRenderTexture && (/*alpha != 1 || */shader != null /*|| (blend != null && blend != NORMAL)*/);
+		return useRenderTexture && (alpha != 1 || shader != null || (blend != null && blend != NORMAL));
+	}
+
+	override function draw() {
+		if(!checkRenderTexture()) {
+			super.draw();
+			return;
+		}
+		
+		for(cam in this.cameras) {
+			if (!cam.visible || !cam.exists)
+				continue;
+
+			drawLayer(cam);
+
+			#if FLX_DEBUG
+			flixel.FlxBasic.visibleCount++;
+			#end
+		}
+	}
+
+	@:noCompletion
+	private var layerMatrix:FlxMatrix = new FlxMatrix();
+	@:noCompletion
+	private var _point:FlxPoint = FlxPoint.get();
+	// TODO:
+	private function prepareLayerMatrix(matrix:FlxMatrix, camera:FlxCamera) {
+		matrix.translate(-origin.x, -origin.y);
+
+		//getScreenPosition(_point, camera).subtractPoint(offset).add(origin.x, origin.y);
+		CoolUtil.pointToScreenPosition(FlxPoint.weak(x, y), camera, _point).add(origin.x, origin.y);
+		matrix.translate(_point.x, _point.y);
+
+		if(camera.pixelPerfectRender) {
+			matrix.tx = Math.floor(matrix.tx);
+			matrix.ty = Math.floor(matrix.ty);
+		}
+	}
+
+	private function drawLayer(cam:FlxCamera) {
+		layerMatrix.identity();
+		prepareLayerMatrix(layerMatrix, cam);
+
+		if(_renderTextureDirty) {
+			renderLayer();
+			//_renderTextureDirty = false;
+			cam.drawPixels(_renderTexture.graphic.imageFrame.frame, null, layerMatrix, null, null, flixel.FlxSprite.defaultAntialiasing, shader != null ? shader : null);
+		}
+	}
+
+	private function renderLayer() {
+		if (_renderTexture == null)
+			_renderTexture = new RenderTexture(Math.ceil(_bounds.width), Math.ceil(_bounds.height));
+		_renderTexture.init(Math.ceil(_bounds.width), Math.ceil(_bounds.height));
+		_renderTexture.drawToCamera((camera, matrix) -> {
+			matrix.translate(-_bounds.x, -_bounds.y);
+			drawMembers(camera, matrix);
+		});
+		_renderTexture.render();
+	}
+
+	@:access(animate.internal.RenderTexture)
+	@:access(flixel.FlxSprite)
+	private function drawMembers(cam:FlxCamera, matrix:FlxMatrix) {
+		for(m in members) {
+			if(m is StageLayer) {
+				var sl:StageLayer = cast m;
+				if(sl.useRenderTexture) {
+					sl.renderLayer(); // cache the rendered layer
+					cam.drawPixels(sl._renderTexture.graphic.imageFrame.frame, null, matrix, null, null, flixel.FlxSprite.defaultAntialiasing, shader != null ? shader : null);
+				}
+				else
+					sl.draw();
+			}
+			else if(m is StageCharPos)
+				continue;
+			else if(m is FlxSprite){ // TODO: maybe take into account the `onDraw` callback
+				var spr:FlxSprite = cast m;
+				spr.drawComplex(cam);
+			}
+			#if FLX_DEBUG
+			else if(m is FlxObject) {
+				cast(m, FlxObject).drawDebugOnCamera(cam);
+			}
+			#end
+		}
 	}
 
 	private var stageSprites:Map<String, FlxBasic> = [];
@@ -233,7 +343,8 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	// then whatever below
 	override function destroy() {
 		super.destroy();
-		_bounds.put();
+		_bounds = FlxDestroyUtil.put(_bounds);
+		origin = FlxDestroyUtil.put(origin);
 	}
 
 	private var _bounds:FlxRect = FlxRect.get();
@@ -286,6 +397,8 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 
 			_bounds.set(minX, minY, maxX - minX, maxY - minY);
 		}
+
+		origin = _bounds.getMidpoint(origin);
 	}
 
 	// From FlxSpriteGroup
