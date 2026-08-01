@@ -4,20 +4,20 @@ import flixel.FlxState;
 import funkin.backend.scripting.events.*;
 
 final class EventManager {
-	public static var eventCache:Map<String, CancellableEvent> = [];
-
 	#if cpp
-	public static var cppEventCache:haxe.ds.ObjectMap<Dynamic, CancellableEvent> = new haxe.ds.ObjectMap();
+	public static var eventCache:haxe.ds.ObjectMap<Dynamic, CancellableEvent> = new haxe.ds.ObjectMap();
 
 	public static inline function get<T:CancellableEvent>(cl:Class<T>):T {
-		var event:CancellableEvent = cppEventCache.get(cl);
+		var event:CancellableEvent = eventCache.get(cl);
 		if (event == null) {
 			event = Type.createInstance(cl, []);
-			cppEventCache.set(cl, event);
+			eventCache.set(cl, event);
 		}
 		return cast event;
 	}
 	#else
+	public static var eventCache:Map<String, CancellableEvent> = [];
+
 	public static inline function get<T:CancellableEvent>(cl:Class<T>):T {
 		var className = Type.getClassName(cl);
 		var event = eventCache.get(className);
@@ -31,7 +31,7 @@ final class EventManager {
 
 	public static function reset() {
 		#if cpp
-		cppEventCache = new haxe.ds.ObjectMap();
+		eventCache = new haxe.ds.ObjectMap();
 		#else
 		for (event in eventCache) {
 			event.destroy();
