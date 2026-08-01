@@ -12,12 +12,15 @@ class FunkinGame extends FlxGame {
 
 	override function create(_):Void {
 		super.create(_);
-		fullscreenListener = function(e:KeyboardEvent) {
+
+		if (stage == null) return;
+
+		// In the future, make it so any keybinds are able to toggle fullscreen instead of just F11
+		stage.addEventListener(KeyboardEvent.KEY_DOWN, function(e:KeyboardEvent) {
 			if (e.keyCode == 122) {
 				FlxG.fullscreen = !FlxG.fullscreen;
 			}
-		};
-		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, fullscreenListener);
+		});
 	}
 	#end
 	
@@ -30,8 +33,7 @@ class FunkinGame extends FlxGame {
 	}
 
 	public override function onEnterFrame(t) {
-		if (skipNextTickUpdate != (skipNextTickUpdate = false))
-			_total = ticks = getTicks();
+		if (skipNextTickUpdate != (skipNextTickUpdate = false)) _total = ticks = getTicks();
 		super.onEnterFrame(t);
 	}
 }
