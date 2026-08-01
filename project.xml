@@ -124,6 +124,7 @@
 	<haxelib name="flixel-animate"/>
 
 	<haxelib name="hscript-improved"/>
+	<haxelib name="hxWebSockets"/>
 
 	<haxelib name="format" unless="STRIPPED_COMPILE"/>
 	<haxelib name="markdown" unless="STRIPPED_COMPILE"/>
