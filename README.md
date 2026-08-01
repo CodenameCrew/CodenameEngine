@@ -89,7 +89,7 @@ The engine uses [HaxeFlixel](https://haxeflixel.com/) and it mainly features:
   - Steal code from Codename Engine for another different project that is not Codename Engine related (Codename Engine mods excluded) without properly crediting
   - Release the entirety of Codename Engine on platforms (mods that use Codename Engine as source are fine)
 
-  #### *If you need more info or feel like asking to do something which is not listed here, ask us directly on our [discord server](https://discord.com/servers/codename-engine-860561967383445535)!*
+  #### *If you need more info or feel like asking to do something which is not listed here, ask us directly on our [discord server](https://discord.gg/codename-crew)!*
 </details>
 
 <details>

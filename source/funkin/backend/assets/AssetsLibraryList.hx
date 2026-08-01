@@ -13,6 +13,8 @@ class AssetsLibraryList extends AssetLibrary {
 	function get_cleanLibraries():Array<AssetLibrary> {
 		return [for (l in libraries) getCleanLibrary(l)];
 	}
+
+	public var rootDirectory:String = "./assets";
 	
 	// is true if any library in `libraries` contains some kind of compressed library. 
 	public var hasCompressedLibrary(get, never):Bool;
@@ -30,8 +32,8 @@ class AssetsLibraryList extends AssetLibrary {
 	public var transLib:TranslatedAssetLibrary;
 	#end
 
-	private var cachePaths:Map<String, AssetLibrary> = [];
-	private var cacheNonExistentPaths:Map<String, Int> = [];
+	private var cacheLibraryTypePaths:Map<Null<String>, Map<String, AssetLibrary>> = [];
+	private var cacheTimeTypePaths:Map<Null<String>, Map<String, Float>> = [];
 
 	public function removeLibrary(lib:AssetLibrary) {
 		if (lib != null) {
@@ -53,32 +55,49 @@ class AssetsLibraryList extends AssetLibrary {
 		}
 		return lib;
 	}
+
 	public function existsSpecific(id:String, type:String, source:AssetSource = BOTH) {
 		if (!id.startsWith("assets/") && existsSpecific('assets/$id', type, source))
 			return true;
 
-		// There's a mod that heavily relies on addons and that can causes lags just to get a path.
-		final sec = Date.now().getSeconds();
-		if (cacheNonExistentPaths.exists(id) && sec - 10 < cacheNonExistentPaths.get(id)) {
-			return false;
-		}
-		else if (cachePaths.exists(id)) {
-			if (cachePaths.get(id).exists(id, type)) return true;
-			else cachePaths.remove(id);
+		// Prevent massive lags on repetitive usage
+		final sec = haxe.Timer.stamp();
+
+		var cacheLibraryPaths:Map<String, AssetLibrary> = cacheLibraryTypePaths.get(type);
+		var cacheTimePaths:Map<String, Float> = cacheTimeTypePaths.get(type);
+		if (cacheLibraryPaths == null) {
+			cacheLibraryTypePaths.set(type, cacheLibraryPaths = []);
+			cacheTimeTypePaths.set(type, cacheTimePaths = []);
 		}
 
+		if (cacheTimePaths.exists(id)) {
+			final cacheSafetime = cacheTimePaths.get(id) + 6;
+			if (cacheLibraryPaths.exists(id)) {
+				if (sec < cacheSafetime) return true;
+				else if (cacheLibraryPaths.get(id).exists(id, type)) {
+					cacheTimePaths.set(id, sec);
+					return true;
+				}
 
-		for(k=>l in libraries) {
+				cacheLibraryPaths.remove(id);
+			}
+			else if (sec < cacheSafetime) {
+				return false;
+			}
+
+			//cacheTimePaths.remove(id);
+		}
+
+		cacheTimePaths.set(id, sec);
+
+		for (k=>l in libraries) {
 			if (shouldSkipLib(l, source)) continue;
 			if (l.exists(id, type)) {
-				//trace("EXISTS", id, type, source);
-				cachePaths.set(id, l);
+				cacheLibraryPaths.set(id, l);
 				return true;
 			}
 		}
 
-		//trace("DOESNT EXISTS", id, type, source);
-		cacheNonExistentPaths.set(id, sec);
 		return false;
 	}
 	public override inline function exists(id:String, type:String):Bool
@@ -193,20 +212,35 @@ class AssetsLibraryList extends AssetLibrary {
 		else this.base = base;
 		__defaultLibraries.push(this.base);
 
-		#if (sys && TEST_BUILD)
-		Logs.infos("Used cne test / cne build. Switching into source assets.");
+		#if sys
 
+		#if TEST_BUILD
+		Logs.infos("Used cne test / cne build. Switching into source assets.");
+		switchToSourceAssets();
+		#elseif USE_ADAPTED_ASSETS
+		if (sys.FileSystem.exists('./${Main.pathBack}assets/') && !sys.FileSystem.exists('./assets/')) {
+			Logs.infos("Source assets detected. Switching into source assets.");
+			switchToSourceAssets();
+		}
+		#end
+
+		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', rootDirectory, true, SOURCE));
+
+		#end
+
+		for (d in __defaultLibraries) addLibrary(d);
+	}
+
+	#if sys
+	inline function switchToSourceAssets() {
 		#if MOD_SUPPORT
 		ModsFolder.modsPath = './${Main.pathBack}mods/';
 		ModsFolder.addonsPath = './${Main.pathBack}addons/';
 		#end
 
-		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', './${Main.pathBack}assets/', true, SOURCE));
-		#elseif USE_ADAPTED_ASSETS
-		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', './assets/', true, SOURCE));
-		#end
-		for (d in __defaultLibraries) addLibrary(d);
+		rootDirectory = './${Main.pathBack}assets/';
 	}
+	#end
 
 	public function unloadLibraries() {
 		for(l in libraries)
@@ -217,7 +251,9 @@ class AssetsLibraryList extends AssetLibrary {
 	public function reset() {
 		unloadLibraries();
 
-		cachePaths.clear();
+		cacheLibraryTypePaths.clear();
+		cacheTimeTypePaths.clear();
+
 		libraries = [];
 
 		// adds default libraries in again

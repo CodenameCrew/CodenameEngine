@@ -8,6 +8,8 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.display.BitmapData;
 import funkin.game.Character;
+import funkin.backend.utils.XMLUtil.AnimData;
+import funkin.editors.character.CharacterEditor;
 
 using funkin.backend.utils.BitmapUtil;
 
@@ -15,6 +17,7 @@ typedef CharacterExtraInfo = {
 	var icon:String;
 	var iconColor:Null<FlxColor>;
 	var holdTime:Float;
+	var defaultAimFPS:Float;
 	var customProperties:Map<String, Dynamic>;
 }
 
@@ -26,11 +29,14 @@ class CharacterInfoScreen extends UISubstateWindow {
 
 	public var useDurationCheckbox:UICheckbox;
 	public var durationStepper:UINumericStepper;
+	public var defaultAimFPS:UINumericStepper;
 
 	public var customPropertiesButtonList:UIButtonList<PropertyButton>;
 
 	public var saveButton:UIButton;
 	public var closeButton:UIButton;
+
+	var oldDefFPS:Float;
 
 	public var onSave:(info:CharacterExtraInfo) -> Void = null;
 
@@ -77,6 +83,11 @@ class CharacterInfoScreen extends UISubstateWindow {
 
 		durationStepper.selectable = useDurationCheckbox.checked;
 
+		defaultAimFPS = new UINumericStepper(iconColorPicker.x, durationStepper.y + durationStepper.height + 40, character.defaultAimFPS, 0.001, 2, 0, 9999999, 74);
+		add(defaultAimFPS);
+		addLabelOn(defaultAimFPS, translate("defaultFPS"));
+		oldDefFPS = character.defaultAimFPS;
+
 		customPropertiesButtonList = new UIButtonList<PropertyButton>(iconColorWheel.x+iconColorWheel.bWidth+22, iconColorWheel.y, 290, 200, '', FlxPoint.get(280, 35), null, 5);
 		customPropertiesButtonList.frames = Paths.getFrames('editors/ui/inputbox');
 		customPropertiesButtonList.cameraSpacing = 0;
@@ -107,10 +118,25 @@ class CharacterInfoScreen extends UISubstateWindow {
 	public function saveCharacterInfo() {
 		UIUtil.confirmUISelections(this);
 
+		if (defaultAimFPS.value != oldDefFPS){
+			var daIDForButton:Int = 0;
+			for (anim in character.getAnimOrder()){
+				var animName = character.animDatas.get(anim);
+				if (animName.fps == oldDefFPS){
+					var poop:CharacterAnimButton = CharacterEditor.instance.characterAnimsWindow.buttons.members[daIDForButton];
+					trace(poop);
+					poop.changeFPS(defaultAimFPS.value);
+				}
+				daIDForButton++;
+			}
+		}
+
+
 		if (onSave != null) onSave({
 			icon: iconColorPicker.iconTextBox.label.text,
 			iconColor: iconColorWheel.curColor,
 			holdTime: useDurationCheckbox.checked ? durationStepper.value : -1,
+			defaultAimFPS: defaultAimFPS.value,
 			customProperties: [
 				for (val in customPropertiesButtonList.buttons.members)
 					val.propertyText.label.text => val.valueText.label.text
