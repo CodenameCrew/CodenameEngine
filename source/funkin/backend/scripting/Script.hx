@@ -21,6 +21,20 @@ class Script extends FlxBasic implements IFlxDestroyable {
 	 * Gets the default variables for a script.
 	 */
 	public static function getDefaultVariables(?script:Script):Map<String, Dynamic> {
+		var vars = _defaultVariablesTemplate != null ? _defaultVariablesTemplate : (_defaultVariablesTemplate = buildDefaultVariables());
+		var copy = vars.copy();
+		copy.set("state", flixel.FlxG.state); // `state` changes on state switch, so it can't be cached
+		copy.set("window", lime.app.Application.current.window); // same for `window`: evaluated at script creation time like before
+		return copy;
+	}
+
+	/**
+	 * Cached template of the default variables.
+	 * Built once (including the `Type.resolveClass` lookups) and shallow-copied per script.
+	 */
+	private static var _defaultVariablesTemplate:Map<String, Dynamic> = null;
+
+	private static function buildDefaultVariables():Map<String, Dynamic> {
 		return [
 			// Haxe related stuff
 			"Std"				=> Std,
@@ -38,10 +52,8 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			"Assets"			=> openfl.utils.Assets,
 			"Application"		=> lime.app.Application,
 			"Main"				=> funkin.backend.system.Main,
-			"window"			=> lime.app.Application.current.window,
 
 			// Flixel related stuff
-			"state"				=> flixel.FlxG.state,
 			"FlxG"				=> flixel.FlxG,
 			"FlxSprite"			=> flixel.FlxSprite,
 			"FlxBasic"			=> flixel.FlxBasic,
@@ -184,6 +196,11 @@ class Script extends FlxBasic implements IFlxDestroyable {
 	 * Currently executing script.
 	 */
 	public static var curScript:Script = null;
+
+	/**
+	 * Shared empty argument array, used when calling scripts without parameters (avoids allocations).
+	 */
+	private static var _EMPTY_ARGS:Array<Dynamic> = [];
 
 	/**
 	 * Script name (with extension)

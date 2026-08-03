@@ -20,6 +20,22 @@ class HScript extends Script {
 		return parser;
 	}
 
+	/** Pool of idle parsers, reused across script instances to avoid repeated Parser construction. **/
+	private static var __parserPool:Array<Parser> = [];
+
+	private static function getParser():Parser {
+		var parser = __parserPool.pop();
+		if (parser == null)
+			return initParser();
+		parser.line = 1; // reusing a parser only requires resetting `line`; all other vars get reset on parse
+		return parser;
+	}
+
+	private static function returnParser(parser:Parser) {
+		if (parser != null)
+			__parserPool.push(parser);
+	}
+
 	public override function onCreate(path:String) {
 		super.onCreate(path);
 
@@ -29,7 +45,7 @@ class HScript extends Script {
 			if(Assets.exists(rawPath)) code = Assets.getText(rawPath);
 		} catch(e) Logs.error('Error while reading $path: ${Std.string(e)}');
 
-		parser = initParser();
+		parser = getParser();
 		//folderlessPath = Path.directory(path);
 		__importedPaths = [path => true];
 
@@ -165,6 +181,7 @@ class HScript extends Script {
 			}
 		}
 		var oldParent = interp.scriptObject;
+		returnParser(parser);
 		onCreate(path);
 
 		for(k=>e in defaultVars)
@@ -181,11 +198,10 @@ class HScript extends Script {
 
 	private override function onCall(funcName:String, parameters:Array<Dynamic>):Dynamic {
 		if (interp == null) return null;
-		if (!interp.variables.exists(funcName)) return null;
 
 		var func = interp.variables.get(funcName);
 		if (func != null && Reflect.isFunction(func))
-			return Reflect.callMethod(null, func, parameters);
+			return Reflect.callMethod(null, func, parameters == null ? Script._EMPTY_ARGS : parameters);
 
 		return null;
 	}
@@ -196,6 +212,8 @@ class HScript extends Script {
 
 	public override function set(val:String, value:Dynamic) {
 		interp.variables.set(val, value);
+		// A runtime-injected variable may shadow a previously-cached VNotFound/type-resolve result, so drop stale cache entries.
+		interp.invalidateCache();
 	}
 
 	public override function trace(v:Dynamic) {
@@ -208,5 +226,12 @@ class HScript extends Script {
 
 	public override function setPublicMap(map:Map<String, Dynamic>) {
 		this.interp.publicVariables = map;
+	}
+
+	override public function destroy() {
+		returnParser(parser);
+		parser = null;
+		interp = null;
+		super.destroy();
 	}
 }
