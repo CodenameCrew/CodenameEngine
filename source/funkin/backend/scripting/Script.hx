@@ -326,7 +326,7 @@ class Script extends FlxBasic implements IFlxDestroyable {
 		var oldScript = curScript;
 		curScript = this;
 
-		var result = onCall(func, parameters == null ? [] : parameters);
+		var result = onCall(func, parameters);
 
 		curScript = oldScript;
 		return result;

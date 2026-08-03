@@ -11,7 +11,7 @@ class HScript extends Script {
 	public var expr:Expr;
 	public var code:String = null;
 	//public var folderlessPath:String;
-	var __importedPaths:Array<String>;
+	var __importedPaths:Map<String, Bool>;
 
 	public static function initParser() {
 		var parser = new Parser();
@@ -31,7 +31,7 @@ class HScript extends Script {
 
 		parser = initParser();
 		//folderlessPath = Path.directory(path);
-		__importedPaths = [path];
+		__importedPaths = [path => true];
 
 		interp.errorHandler = _errorHandler;
 		interp.warnHandler = _warnHandler;
@@ -53,7 +53,7 @@ class HScript extends Script {
 
 	public override function loadFromString(code:String) {
 		try {
-			if (code != null && code.trim() != "")
+			if (code != null && code.length > 0)
 				expr = parser.parseString(code, fileName);
 		} catch(e:Error) {
 			_errorHandler(e);
@@ -74,13 +74,13 @@ class HScript extends Script {
 		var assetsPath = 'assets/$prefix${cl.join("/")}';
 		for(hxExt in ["hx", "hscript", "hsc", "hxs"]) {
 			var p = '$assetsPath.$hxExt';
-			if (__importedPaths.contains(p))
+			if (__importedPaths.exists(p))
 				return true; // no need to reimport again
 			if (Assets.exists(p)) {
 				var code = Assets.getText(p);
 				var expr:Expr = null;
 				try {
-					if (code != null && code.trim() != "") {
+					if (code != null && code.length > 0) {
 						parser.line = 1; // fun fact: this is all you need to reuse a parser without issues. all the other vars get reset on parse.
 						expr = parser.parseString(code, cl.join("/") + "." + hxExt);
 					}
@@ -92,7 +92,7 @@ class HScript extends Script {
 				if (expr != null) {
 					@:privateAccess
 					interp.exprReturn(expr);
-					__importedPaths.push(p);
+					__importedPaths.set(p, true);
 				}
 				return true;
 			}
@@ -158,15 +158,16 @@ class HScript extends Script {
 
 		interp.allowStaticVariables = interp.allowPublicVariables = false;
 		var savedVariables:Map<String, Dynamic> = [];
+		var defaultVars = Script.getDefaultVariables(this);
 		for(k=>e in interp.variables) {
-			if (!Reflect.isFunction(e)) {
+			if (!Reflect.isFunction(e) && !defaultVars.exists(k)) {
 				savedVariables[k] = e;
 			}
 		}
 		var oldParent = interp.scriptObject;
 		onCreate(path);
 
-		for(k=>e in Script.getDefaultVariables(this))
+		for(k=>e in defaultVars)
 			set(k, e);
 
 		load();
