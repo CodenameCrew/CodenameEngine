@@ -4,6 +4,7 @@ package funkin.backend.assets;
 import funkin.backend.assets.TranslatedAssetLibrary;
 #end
 import funkin.backend.assets.IModsAssetLibrary;
+import funkin.backend.assets.AssetSource;
 import lime.utils.AssetLibrary;
 import haxe.ds.Map;
 
@@ -32,9 +33,6 @@ class AssetsLibraryList extends AssetLibrary {
 	public var transLib:TranslatedAssetLibrary;
 	#end
 
-	private var cacheLibraryTypePaths:Map<Null<String>, Map<String, AssetLibrary>> = [];
-	private var cacheTimeTypePaths:Map<Null<String>, Map<String, Float>> = [];
-
 	public function removeLibrary(lib:AssetLibrary) {
 		if (lib != null) {
 			libraries.remove(lib);
@@ -56,44 +54,50 @@ class AssetsLibraryList extends AssetLibrary {
 		return lib;
 	}
 
+	var existsSpecificCacheLibrary:Map<AssetSource, Map<Null<String>, Map<String, AssetLibrary>>> = [];
+	var existsSpecificCacheTime:Map<AssetSource, Map<Null<String>, Map<String, Float>>> = [];
+
 	public function existsSpecific(id:String, type:String, source:AssetSource = BOTH) {
 		if (!id.startsWith("assets/") && existsSpecific('assets/$id', type, source))
 			return true;
 
-		// Prevent massive lags on repetitive usage
-		final sec = haxe.Timer.stamp();
+		// Prevent massive lags on repetitive usage, primarily with getting note sprite sheets in mania charts (usually 2k+ notes)
+		final time = haxe.Timer.stamp();
 
-		var cacheLibraryPaths:Map<String, AssetLibrary> = cacheLibraryTypePaths.get(type);
-		var cacheTimePaths:Map<String, Float> = cacheTimeTypePaths.get(type);
+		var cacheLibraryTypes = existsSpecificCacheLibrary.get(source), cacheTimeTypes = existsSpecificCacheTime.get(source);
+		if (cacheLibraryTypes == null) {
+			existsSpecificCacheLibrary.set(source, cacheLibraryTypes = []);
+			existsSpecificCacheTime.set(source, cacheTimeTypes = []);
+		}
+
+		var cacheLibraryPaths = cacheLibraryTypes.get(type), cacheTimePaths = cacheTimeTypes.get(type);
 		if (cacheLibraryPaths == null) {
-			cacheLibraryTypePaths.set(type, cacheLibraryPaths = []);
-			cacheTimeTypePaths.set(type, cacheTimePaths = []);
+			cacheLibraryTypes.set(type, cacheLibraryPaths = []);
+			cacheTimeTypes.set(type, cacheTimePaths = []);
 		}
 
 		if (cacheTimePaths.exists(id)) {
-			final cacheSafetime = cacheTimePaths.get(id) + 6;
-			if (cacheLibraryPaths.exists(id)) {
-				if (sec < cacheSafetime) return true;
-				else if (cacheLibraryPaths.get(id).exists(id, type)) {
-					cacheTimePaths.set(id, sec);
+			final cacheSafeTime = cacheTimePaths.get(id) + 6, library = cacheLibraryPaths.get(id);
+			if (library != null) {
+				if (time < cacheSafeTime) return true;
+				else if (!shouldSkipLib(library, source) && library.exists(id, type)) {
+					cacheTimePaths.set(id, time);
 					return true;
 				}
 
 				cacheLibraryPaths.remove(id);
 			}
-			else if (sec < cacheSafetime) {
+			else if (time < cacheSafeTime) {
 				return false;
 			}
-
-			//cacheTimePaths.remove(id);
 		}
 
-		cacheTimePaths.set(id, sec);
+		cacheTimePaths.set(id, time);
 
-		for (k=>l in libraries) {
-			if (shouldSkipLib(l, source)) continue;
-			if (l.exists(id, type)) {
-				cacheLibraryPaths.set(id, l);
+		for (library in libraries) {
+			if (shouldSkipLib(library, source)) continue;
+			if (library.exists(id, type)) {
+				cacheLibraryPaths.set(id, library);
 				return true;
 			}
 		}
@@ -251,10 +255,14 @@ class AssetsLibraryList extends AssetLibrary {
 	public function reset() {
 		unloadLibraries();
 
-		cacheLibraryTypePaths.clear();
-		cacheTimeTypePaths.clear();
+		for(source in [AssetSource.SOURCE, AssetSource.MODS, AssetSource.BOTH]) {
+			existsSpecificCacheLibrary[source]?.clear();
+			existsSpecificCacheTime[source]?.clear();
+		}
+		existsSpecificCacheLibrary.clear();
+		existsSpecificCacheTime.clear();
 
-		libraries = [];
+		libraries.resize(0);
 
 		// adds default libraries in again
 		for (d in __defaultLibraries) addLibrary(d);
