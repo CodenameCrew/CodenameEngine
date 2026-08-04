@@ -581,6 +581,8 @@ class PlayState extends MusicBeatState
 	@:noCompletion @:dox(hide) private var _startCountdownCalled:Bool = false;
 	@:noCompletion @:dox(hide) private var _endSongCalled:Bool = false;
 
+	@:noCompletion @:dox(hide) private static var _ONE_ARG:Array<Dynamic> = [null];
+
 	@:dox(hide)
 	var __vocalSyncTimer:Float = 1;
 
@@ -1395,11 +1397,12 @@ class PlayState extends MusicBeatState
 	@:dox(hide)
 	override public function update(elapsed:Float)
 	{
-		scripts.call("update", [elapsed]);
+		_ONE_ARG[0] = elapsed;
+		scripts.call("update", _ONE_ARG);
 
 		if (inCutscene) {
 			super.update(elapsed);
-			scripts.call("postUpdate", [elapsed]);
+			scripts.call("postUpdate", _ONE_ARG);
 			return;
 		}
 
@@ -1489,7 +1492,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scripts.call("postUpdate", [elapsed]);
+		scripts.call("postUpdate", _ONE_ARG);
 	}
 
 	override function draw() {
@@ -1655,6 +1658,9 @@ class PlayState extends MusicBeatState
 					eventsTween.set(name, FlxTween.tween(cam, {zoom: finalZoom}, (Conductor.stepCrochet / 1000) * event.params[3], {ease: CoolUtil.flxeaseFromString(event.params[4], event.params[5]), onUpdate: function(_) {
 						if (cam == camHUD) defaultHudZoom = cam.zoom;
 						else defaultCamZoom = cam.zoom;
+					}, onComplete: _ -> {
+						if (cam == camHUD) defaultHudZoom = finalZoom;
+						else defaultCamZoom = finalZoom;
 					}}));
 			case "Camera Modulo Change":
 				camZoomingInterval = event.params[0];
@@ -1701,7 +1707,7 @@ class PlayState extends MusicBeatState
 						if (char != null && char.hasAnim(event.params[1])) char.playAnim(event.params[1], event.params[2], event.params[3] == "NONE" ? null : event.params[3]);
 			case "Unknown": // nothing
 		}
-		
+
 		gameAndCharsEvent("onPostEvent", e);
 	}
 
@@ -1980,7 +1986,7 @@ class PlayState extends MusicBeatState
 		gameAndCharsEvent("onNoteHit", event);
 
 		note.noSustainClip = !event.clipSustain;
-		
+
 		if (!event.cancelled) {
 			if (!note.isSustainNote) {
 				if (event.countScore) songScore += event.score;

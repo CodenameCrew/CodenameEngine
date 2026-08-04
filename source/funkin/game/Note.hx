@@ -77,9 +77,7 @@ class Note extends FlxSprite
 
 	public var strumID(get, never):Int;
 	private function get_strumID() {
-		var id = noteData % strumLine.members.length;
-		if (id < 0) id = 0;
-		return id;
+		return if (noteData < 0) 0; else noteData % strumLine.members.length;
 	}
 
 	public var sustainLength:Float = 0;
@@ -231,7 +229,7 @@ class Note extends FlxSprite
 		return v;
 	}
 	inline function get_useAntialiasingFix() {
-		return gapFix>0;
+		return gapFix > 0;
 	}
 
 	/**
@@ -290,14 +288,15 @@ class Note extends FlxSprite
 
 	@:noCompletion @:dox(hide) override function isOnScreen(?camera:FlxCamera):Bool {
 		var downscrollCam = (Std.isOfType(camera, HudCamera) ? cast(camera, HudCamera).downscroll : false);
-
+		if (updateFlipY) {
+			flipY = (isSustainNote && flipSustain) && (downscrollCam != (lastScrollSpeed < 0));
+		}
 		if (downscrollCam == __lastDownscrollCam)
 			return super.isOnScreen(camera);
 		else
 			__lastX = x;
 
-		if (updateFlipY) flipY = (isSustainNote && flipSustain) && (downscrollCam != (__strum != null && __strum.getScrollSpeed(this) < 0));
-		if (downscrollCam && __strum != null) {
+		if (downscrollCam && __strum != null && __strum.updateNotesPosX && updateNotesPosX) {
 			x = -x + 2 * (__strum.x - origin.x + offset.x) + __strum.width;
 		}
 		final isOnScreen = super.isOnScreen(camera);
@@ -314,7 +313,7 @@ class Note extends FlxSprite
 	}
 
 	public function isOnScreenOriginal(?camera:FlxCamera):Bool {
-    return super.isOnScreen(camera);
+    	return super.isOnScreen(camera);
 	}
 
 	public var earlyPressWindow:Float = Flags.EARLY_HIT_WINDOW_RANGE;
@@ -326,7 +325,7 @@ class Note extends FlxSprite
 		if (lastScrollSpeed != scrollSpeed) {
 			lastScrollSpeed = scrollSpeed;
 			if (nextSustain != null) {
-				scale.y = (sustainLength * 0.45 * scrollSpeed) / frameHeight;
+				scale.y = (sustainLength * 0.45 * Math.abs(scrollSpeed)) / frameHeight;
 				updateHitbox();
 				scale.y += gapFix / frameHeight;
 			}
@@ -336,7 +335,7 @@ class Note extends FlxSprite
 	}
 
 	public function updateSustainClip() if (wasGoodHit && !noSustainClip) {
-		var t = CoolUtil.bound((Conductor.songPosition - strumTime) / height * 0.45 * lastScrollSpeed, 0, 1);
+		var t = CoolUtil.bound((Conductor.songPosition - strumTime) / height * 0.45 * Math.abs(lastScrollSpeed), 0, 1);
 		@:bypassAccessor {
 			if (clipRect == null) clipRect = FlxRect.get();
 			clipRect.set(0, frameHeight * t, frameWidth, frameHeight * (1 - t));
