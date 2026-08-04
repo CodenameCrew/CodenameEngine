@@ -176,7 +176,7 @@ final class MemoryUtil {
 		if (process.exitCode() == 0) return reg.matched(1);
 		#elseif linux
 		try {
-			var process = new HiddenProcess("sh", ["-c", "inxi -m --c 0 | grep -i 'type:' | awk -F'type:' '{print $2}' | awk '{print $1}' | head -n 1"]);
+			var process = new HiddenProcess("sh", ["-c", "inxi --mm --c 0 | grep -i 'type:' | awk -F'type:' '{print $2}' | awk '{print $1}' | head -n 1"]);
 			var output = StringTools.trim(process.stdout.readAll().toString());
 			process.close();
 
