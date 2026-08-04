@@ -55,6 +55,12 @@ class CharterNoteTypesList extends UISubstateWindow {
 				var file:String = Path.withoutDirectory(path);
 				list.pushOnce(file);
 			}
+		#if HARDCODED_SCRIPTS
+		for (path in funkin.backend.scripting.HardcodedScriptRegistry.getFolderScripts(pathString)) {
+			var file:String = Path.withoutDirectory(path);
+			list.pushOnce(file);
+		}
+		#end
 
 		return list;
 	}

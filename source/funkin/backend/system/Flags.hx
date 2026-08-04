@@ -285,6 +285,13 @@ class Flags {
 	public static var DEFAULT_GLSL_VERSION:String = "120";
 	@:also(funkin.backend.utils.HttpUtil.userAgent)
 	public static var USER_AGENT:String = 'request';
+
+	#if HARDCODED_SCRIPTS
+	public static var CONVERT_HSCRIPT_TO_SOURCE:Bool = true;
+	public static var PREFER_HARDCODED_SCRIPTS:Bool = false;
+	#end
+	public static var DISABLE_SCRIPT_ON_ERROR:Bool = false;
+
 	// -- End of Codename's Default Flags --
 
 	/**
