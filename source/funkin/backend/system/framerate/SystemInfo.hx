@@ -163,7 +163,7 @@ class SystemInfo extends FramerateCategory {
 		}
 
 		if (totalMem != "Unknown" && memType != "Unknown") {
-			StringMacro.addLine(buf, '\nTotal RAM: ${totalMem} ${memType}');
+			StringMacro.addLine(buf, '\nTotal MEM: ${totalMem} ${memType}');
 		}
 		__formattedSysText = buf.toString();
 	}
