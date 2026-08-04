@@ -177,6 +177,9 @@
 		<str id="editorSFX-name">Sons de Editor</str>
 		<str id="editorSFX-desc">Se marcado, tocará efeitos sonoros nos editores (ex: ao carregar em caixas...)</str>
 
+		<str id="charterSwapEventSides-name">Trocar Lados de Eventos</str>
+		<str id="charterSwapEventSides-desc">Se marcado, eventos globais estarão no lado esquerdo das pistas.</str>
+
 		<str id="editorCharterPrettyPrint-name">Mapas Legíveis</str>
 		<str id="editorCharterPrettyPrint-desc">Se marcado, os ficheiros guardados no editor de mapas serão formatados para serem fácilmente legíveis.</str>
 
