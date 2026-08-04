@@ -82,7 +82,7 @@ class StageEditor extends UIState {
 	public override function create() {
 		super.create();
 
-		WindowUtils.suffix = " (" + TU.translate("editor.stage.name") + ")";
+		WindowUtils.suffix = " (" + TU.translate("editor.stage.name", true) + ")";
 		SaveWarning.selectionClass = StageSelection;
 		SaveWarning.saveFunc = () -> {_file_save(null);};
 
