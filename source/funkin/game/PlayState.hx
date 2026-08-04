@@ -581,7 +581,7 @@ class PlayState extends MusicBeatState
 	@:noCompletion @:dox(hide) private var _startCountdownCalled:Bool = false;
 	@:noCompletion @:dox(hide) private var _endSongCalled:Bool = false;
 
-	@:noCompletion @:dox(hide) private static var _EMPTY_ARGS:Array<Dynamic> = [];
+	@:noCompletion @:dox(hide) private static var _ONE_ARG:Array<Dynamic> = [null];
 
 	@:dox(hide)
 	var __vocalSyncTimer:Float = 1;
@@ -1407,12 +1407,12 @@ class PlayState extends MusicBeatState
 	@:dox(hide)
 	override public function update(elapsed:Float)
 	{
-		_EMPTY_ARGS[0] = elapsed;
-		scripts.call("update", _EMPTY_ARGS);
+		_ONE_ARG[0] = elapsed;
+		scripts.call("update", _ONE_ARG);
 
 		if (inCutscene) {
 			super.update(elapsed);
-			scripts.call("postUpdate", _EMPTY_ARGS);
+			scripts.call("postUpdate", _ONE_ARG);
 			return;
 		}
 
@@ -1502,7 +1502,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scripts.call("postUpdate", _EMPTY_ARGS);
+		scripts.call("postUpdate", _ONE_ARG);
 	}
 
 	override function draw() {
