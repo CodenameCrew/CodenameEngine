@@ -92,6 +92,7 @@ class SplashGroup extends FlxTypedGroup<Splash> {
 	}
 
 	function pregenerateSplashes(splash:Splash) {
+		// TODO: Fix a crash somewhere here https://github.com/CodenameCrew/CodenameEngine/pull/963
 		for (i in 0...Flags.MAX_SPLASHES - 1) {
 			var spr = Splash.copyFrom(splash);
 			spr.animation.finishCallback = function(name:String) {
