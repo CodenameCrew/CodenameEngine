@@ -13,6 +13,7 @@ class DebugOptions extends TreeMenuScreen {
 		add(new Checkbox(getNameID("editorCharterPrettyPrint"), getDescID("editorCharterPrettyPrint"), "editorCharterPrettyPrint"));
 		add(new Checkbox(getNameID("editorCharacterPrettyPrint"), getDescID("editorCharacterPrettyPrint"), "editorCharacterPrettyPrint"));
 		add(new Checkbox(getNameID("editorStagePrettyPrint"), getDescID("editorStagePrettyPrint"), "editorStagePrettyPrint"));
+		add(new Checkbox(getNameID("charterSwapEventSides"), getDescID("charterSwapEventSides"), "charterSwapEventSides"));
 		add(new Checkbox(getNameID("intensiveBlur"), getDescID("intensiveBlur"), "intensiveBlur"));
 		add(new Checkbox(getNameID("charterAutoSaves"), getDescID("charterAutoSaves"), "charterAutoSaves"));
 		add(new NumOption(getNameID("charterAutoSaveTime"), getDescID("charterAutoSaveTime"), 60, 60*10, 1, "charterAutoSaveTime"));

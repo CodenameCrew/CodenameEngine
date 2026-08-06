@@ -4,16 +4,18 @@ package funkin.backend.assets;
 import funkin.backend.assets.TranslatedAssetLibrary;
 #end
 import funkin.backend.assets.IModsAssetLibrary;
+import funkin.backend.assets.AssetSource;
 import lime.utils.AssetLibrary;
 import haxe.ds.Map;
 
 class AssetsLibraryList extends AssetLibrary {
-
 	public var libraries:Array<AssetLibrary> = [];
 	public var cleanLibraries(get, never):Array<AssetLibrary>;
 	function get_cleanLibraries():Array<AssetLibrary> {
 		return [for (l in libraries) getCleanLibrary(l)];
 	}
+
+	public var rootDirectory:String = "./assets";
 	
 	// is true if any library in `libraries` contains some kind of compressed library. 
 	public var hasCompressedLibrary(get, never):Bool;
@@ -51,15 +53,55 @@ class AssetsLibraryList extends AssetLibrary {
 		}
 		return lib;
 	}
+
+	var existsSpecificCacheLibrary:Map<AssetSource, Map<Null<String>, Map<String, AssetLibrary>>> = [];
+	var existsSpecificCacheTime:Map<AssetSource, Map<Null<String>, Map<String, Float>>> = [];
+
 	public function existsSpecific(id:String, type:String, source:AssetSource = BOTH) {
 		if (!id.startsWith("assets/") && existsSpecific('assets/$id', type, source))
 			return true;
-		for(k=>l in libraries) {
-			if (shouldSkipLib(l, source)) continue;
-			if (l.exists(id, type)) {
+
+		// Prevent massive lags on repetitive usage, primarily with getting note sprite sheets in mania charts (usually 2k+ notes)
+		final time = haxe.Timer.stamp();
+
+		var cacheLibraryTypes = existsSpecificCacheLibrary.get(source), cacheTimeTypes = existsSpecificCacheTime.get(source);
+		if (cacheLibraryTypes == null) {
+			existsSpecificCacheLibrary.set(source, cacheLibraryTypes = []);
+			existsSpecificCacheTime.set(source, cacheTimeTypes = []);
+		}
+
+		var cacheLibraryPaths = cacheLibraryTypes.get(type), cacheTimePaths = cacheTimeTypes.get(type);
+		if (cacheLibraryPaths == null) {
+			cacheLibraryTypes.set(type, cacheLibraryPaths = []);
+			cacheTimeTypes.set(type, cacheTimePaths = []);
+		}
+
+		if (cacheTimePaths.exists(id)) {
+			final cacheSafeTime = cacheTimePaths.get(id) + 6, library = cacheLibraryPaths.get(id);
+			if (library != null) {
+				if (time < cacheSafeTime) return true;
+				else if (!shouldSkipLib(library, source) && library.exists(id, type)) {
+					cacheTimePaths.set(id, time);
+					return true;
+				}
+
+				cacheLibraryPaths.remove(id);
+			}
+			else if (time < cacheSafeTime) {
+				return false;
+			}
+		}
+
+		cacheTimePaths.set(id, time);
+
+		for (library in libraries) {
+			if (shouldSkipLib(library, source)) continue;
+			if (library.exists(id, type)) {
+				cacheLibraryPaths.set(id, library);
 				return true;
 			}
 		}
+
 		return false;
 	}
 	public override inline function exists(id:String, type:String):Bool
@@ -174,20 +216,35 @@ class AssetsLibraryList extends AssetLibrary {
 		else this.base = base;
 		__defaultLibraries.push(this.base);
 
-		#if (sys && TEST_BUILD)
-		Logs.infos("Used cne test / cne build. Switching into source assets.");
+		#if sys
 
+		#if TEST_BUILD
+		Logs.infos("Used cne test / cne build. Switching into source assets.");
+		switchToSourceAssets();
+		#elseif USE_ADAPTED_ASSETS
+		if (sys.FileSystem.exists('./${Main.pathBack}assets/') && !sys.FileSystem.exists('./assets/')) {
+			Logs.infos("Source assets detected. Switching into source assets.");
+			switchToSourceAssets();
+		}
+		#end
+
+		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', rootDirectory, true, null, SOURCE));
+
+		#end
+
+		for (d in __defaultLibraries) addLibrary(d);
+	}
+
+	#if sys
+	inline function switchToSourceAssets() {
 		#if MOD_SUPPORT
 		ModsFolder.modsPath = './${Main.pathBack}mods/';
 		ModsFolder.addonsPath = './${Main.pathBack}addons/';
 		#end
 
-		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', './${Main.pathBack}assets/', true, SOURCE));
-		#elseif USE_ADAPTED_ASSETS
-		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', './assets/', true, SOURCE));
-		#end
-		for (d in __defaultLibraries) addLibrary(d);
+		rootDirectory = './${Main.pathBack}assets/';
 	}
+	#end
 
 	public function unloadLibraries() {
 		for(l in libraries)
@@ -198,7 +255,14 @@ class AssetsLibraryList extends AssetLibrary {
 	public function reset() {
 		unloadLibraries();
 
-		libraries = [];
+		for(source in [AssetSource.SOURCE, AssetSource.MODS, AssetSource.BOTH]) {
+			existsSpecificCacheLibrary[source]?.clear();
+			existsSpecificCacheTime[source]?.clear();
+		}
+		existsSpecificCacheLibrary.clear();
+		existsSpecificCacheTime.clear();
+
+		libraries.resize(0);
 
 		// adds default libraries in again
 		for (d in __defaultLibraries) addLibrary(d);

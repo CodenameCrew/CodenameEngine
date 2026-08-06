@@ -34,11 +34,11 @@ final class NoteHitEvent extends CancellableEvent {
 	/**
 	 * Whenever the Rating sprites should be shown or not.
 	 */
-	public var displayRating:Bool;
+	public var displayRating:Null<Bool>;
 	/**
 	 * Whenever the Combo sprite should be shown or not (like old Week 7 patches).
 	 */
-	public var displayCombo:Bool;
+	public var displayCombo:Null<Bool>;
 	/**
 	 * Note that has been pressed
 	 */
@@ -66,11 +66,11 @@ final class NoteHitEvent extends CancellableEvent {
 	/**
 	 * Prefix of the rating sprite path. Defaults to "game/score/"
 	 */
-	public var ratingPrefix:String;
+	public var ratingPrefix:Null<String>;
 	/**
 	 * Suffix of the rating sprite path.
 	 */
-	public var ratingSuffix:String;
+	public var ratingSuffix:Null<String>;
 	/**
 	 * Direction of the press (0 = Left, 1 = Down, 2 = Up, 3 = Right)
 	 */
@@ -98,19 +98,19 @@ final class NoteHitEvent extends CancellableEvent {
 	/**
 	 * Scale of combo numbers.
 	 */
-	public var numScale:Float = 0.5;
+	public var numScale:Null<Float>;
 	/**
 	 * Whenever antialiasing should be enabled on combo number.
 	 */
-	public var numAntialiasing:Bool = true;
+	public var numAntialiasing:Null<Bool>;
 	/**
 	 * Scale of ratings.
 	 */
-	public var ratingScale:Float = 0.7;
+	public var ratingScale:Null<Float>;
 	/**
 	 * Whenever antialiasing should be enabled on ratings.
 	 */
-	public var ratingAntialiasing:Bool = true;
+	public var ratingAntialiasing:Null<Bool>;
 	/**
 	 * Whenever the animation should be forced to play (if it's null it will be forced based on the sprite's data xml, if it has one).
 	 */

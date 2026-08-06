@@ -13,7 +13,8 @@ class CharterEventAdd extends UISliceSprite {
 	public function new(global:Bool) {
 		super(0, 0, 100, 34, 'editors/charter/event-spr-add');
 
-		this.global = flipX = global;
+		this.global = global;
+		flipX = (global != Options.charterSwapEventSides);
 
 		sideText = new UIText(0, -40, 0, TU.translate("charter.eventType-" + (global ? "global" : "local")), 12);
 		sideText.alignment = "center"; sideText.alpha = 0.75;
@@ -49,7 +50,7 @@ class CharterEventAdd extends UISliceSprite {
 		super.update(elapsed);
 
 		if (FlxG.state.subState != null) return;
-		text.follow(this, global ? bWidth - text.width - (text.text == TU.translate("charter.addEvent") ? 15 : 20) : 20, (bHeight - text.height) / 2);
+		text.follow(this, (global != Options.charterSwapEventSides) ? bWidth - text.width - (text.text == TU.translate("charter.addEvent") ? 15 : 20) : 20, (bHeight - text.height) / 2);
 		sideText.follow(this, (bWidth/2) - (sideText.fieldWidth/2), -(sideText.height + 2));
 		alpha = sprAlpha * 0.75;
 		text.alpha = sprAlpha;
@@ -64,7 +65,8 @@ class CharterEventAdd extends UISliceSprite {
 		this.y = (step * 40) - (bHeight / 2);
 		text.text = TU.translate("charter.addEvent");
 		framesOffset = 0; bWidth = 37 + Math.ceil(text.width);
-		x = global ? Charter.instance.strumLines.members[Charter.instance.strumLines.members.length-1].x + (40*Charter.instance.strumLines.members[Charter.instance.strumLines.members.length-1].keyCount) : -(bWidth);
+		x = (global != Options.charterSwapEventSides) ? Charter.instance.strumLines.members[Charter.instance.strumLines.members.length-1].x + (40*Charter.instance.strumLines.members[Charter.instance.strumLines.members.length-1].keyCount) : -(bWidth);
+		sideText.text = TU.translate("charter.eventType-" + (global ? "global" : "local"));
 	}
 
 	public function updateEdit(event:CharterEvent) {
@@ -73,6 +75,7 @@ class CharterEventAdd extends UISliceSprite {
 		this.y = event.y;
 		text.text = TU.translate("charter.editEvent");
 		framesOffset = 9; bWidth = 27 + Math.ceil(text.width) + event.bWidth;
-		x = global ? Charter.instance.strumLines.members[Charter.instance.strumLines.members.length-1].x + (40*Charter.instance.strumLines.members[Charter.instance.strumLines.members.length-1].keyCount) : -(bWidth);
+		x = (event.global != Options.charterSwapEventSides) ? Charter.instance.strumLines.members[Charter.instance.strumLines.members.length-1].x + (40*Charter.instance.strumLines.members[Charter.instance.strumLines.members.length-1].keyCount) : -(bWidth);
+		sideText.text = TU.translate("charter.eventType-" + (event.global ? "global" : "local"));
 	}
 }

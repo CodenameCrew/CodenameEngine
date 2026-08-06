@@ -150,7 +150,7 @@ class CharacterAnimsWindow extends UIButtonList<CharacterAnimButton> {
 		var animData:AnimData = {
 			name: animName,
 			anim: __autoCompleteAnims[0],
-			fps: 24, loop: false,
+			fps: character.defaultAimFPS, loop: false,
 			x: 0, y: 0,
 			indices: [],
 			animType: NONE,
