@@ -1300,7 +1300,7 @@ class PlayState extends MusicBeatState
 		paused = true;
 
 		// 1 / 1000 chance for Gitaroo Man easter egg
-		if (allowGitaroo && FlxG.random.bool(Flags.GITAROO_CHANCE))
+		if (!chartingMode && allowGitaroo && FlxG.random.bool(Flags.GITAROO_CHANCE))
 		{
 			// gitaroo man easter egg
 			FlxG.switchState(new GitarooPause());
@@ -1652,6 +1652,9 @@ class PlayState extends MusicBeatState
 
 				if (event.params[0] == false) {
 					cam.zoom = finalZoom;
+					if (cam == camHUD) defaultHudZoom = finalZoom;
+					else defaultCamZoom = finalZoom;
+				} else if (event.params[4] == "CLASSIC") {
 					if (cam == camHUD) defaultHudZoom = finalZoom;
 					else defaultCamZoom = finalZoom;
 				} else

@@ -50,7 +50,7 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 
 		if (snappedToGrid && eventsBackdrop != null) {
 			bWidth = 37 + (icons.length * 22);
-			x = eventsBackdrop.x + (global ? 0 : eventsBackdrop.width - bWidth);
+			x = eventsBackdrop.x + ((global != Options.charterSwapEventSides) ? 0 : eventsBackdrop.width - bWidth);
 		}
 
 		for(k=>i in icons) {
@@ -68,7 +68,7 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 			selectedColorTransform(sprite.colorTransform);
 		}
 
-		flipX = displayGlobal;
+		flipX = (displayGlobal != Options.charterSwapEventSides);
 	}
 
 	@:noCompletion private inline function selectedColorTransform(transform:ColorTransform) {
@@ -309,7 +309,7 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 			case "Camera Zoom":
 				var shouldDoArrow:Bool = false;
 				if (event.params != null)
-					shouldDoArrow = event.params[0];
+					shouldDoArrow = event.params[0] && event.params[4] != "CLASSIC";
 
 				if(event.params != null && shouldDoArrow && !inMenu) {
 					var group = new EventIconGroup();
@@ -411,7 +411,7 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 		draggable = true;
 
 		bWidth = 37 + (icons.length * 22);
-		x = (snappedToGrid && eventsBackdrop != null && global ? eventsBackdrop.x - bWidth : (global ? 0 : -bWidth));
+		x = (snappedToGrid && eventsBackdrop != null && (global != Options.charterSwapEventSides) ? eventsBackdrop.x - bWidth : ((global != Options.charterSwapEventSides) ? 0 : -bWidth));
 	}
 }
 

@@ -228,7 +228,7 @@ class AssetsLibraryList extends AssetLibrary {
 		}
 		#end
 
-		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', rootDirectory, true, SOURCE));
+		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', rootDirectory, true, null, SOURCE));
 
 		#end
 

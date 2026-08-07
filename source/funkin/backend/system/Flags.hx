@@ -19,7 +19,7 @@ class Flags {
 
 	// -- Codename's Addon Config --
 	@:bypass public static var addonFlags:Map<String, Dynamic> = [];
-	public static var CURRENT_API_VERSION:Int = 2;
+	public static var CURRENT_API_VERSION:Int = 3;
 
 	// -- Codename's ZipFolderLibrary Config --
 	public static var ALLOWED_ZIP_EXTENSIONS:Array<String> = ["zip"];
@@ -146,6 +146,9 @@ class Flags {
 	#end
 
 	public static var SUSTAINS_AS_ONE_NOTE:Null<Bool> = null;
+
+	public static var USE_LEGACY_CENTER_CAM:Null<Bool> = null;
+	public static var USE_LEGACY_FLXANIMATE_STAGE_MATRIX:Null<Bool> = null;
 
 	@:also(funkin.game.Character.FALLBACK_DEAD_CHARACTER)
 	public static var DEFAULT_GAMEOVER_CHARACTER:String = "bf-dead";
@@ -335,6 +338,9 @@ class Flags {
 
 		flixel.sound.FlxSound.defaultTimeScaledPitch = cast DEFAULT_SOUND_TIME_SCALED_PITCH;
 		flixel.addons.effects.FlxTrail.defaultDelayBackwardCompatibility = cast USE_FLXTRAIL_FRAMES;
+
+		if (USE_LEGACY_CENTER_CAM == null) USE_LEGACY_CENTER_CAM = MOD_API_VERSION < 3;
+		if (USE_LEGACY_FLXANIMATE_STAGE_MATRIX == null) USE_LEGACY_FLXANIMATE_STAGE_MATRIX = MOD_API_VERSION < 3;
 	}
 
 	public static function loadFromDatas(datas:Array<String>):Map<String, String> {

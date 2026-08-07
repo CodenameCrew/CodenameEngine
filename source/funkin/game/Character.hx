@@ -394,6 +394,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		}
 		if (xml.x.exists("antialiasing")) antialiasing = (xml.x.get("antialiasing") == "true");
 		if (xml.x.exists("applyStageMatrix")) applyStageMatrix = (xml.x.get("applyStageMatrix") == "true");
+		if (xml.x.exists("postStageMatrixApply")) postStageMatrixApply = (xml.x.get("postStageMatrixApply") == "true");
 		if (xml.x.exists("sprite")) sprite = xml.x.get("sprite");
 		if (xml.x.exists("swfMode")) animateSettings.swfMode = (xml.x.get("swfMode") == "true");
 		if (xml.x.exists("cacheOnLoad")) animateSettings.cacheOnLoad = (xml.x.get("cacheOnLoad") == "true");
@@ -416,6 +417,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		loadSprite(Paths.image('characters/$sprite'));
 		
 		if (xml.x.exists("centercam")) centeredCamera = (xml.x.get("centercam") == "true");
+		else if (Flags.USE_LEGACY_CENTER_CAM) centeredCamera = true;
 		else centeredCamera = !isAnimate;
 		
 		for(node in xml.elements) {
@@ -458,7 +460,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		"x", "y", "sprite", "scale", "antialiasing",
 		"flipX", "camx", "camy", "centercam", "isPlayer", "icon",
 		"color", "gameOverChar", "holdTime", "applyStageMatrix",
-		"defFps"
+		"postStageMatrixApply", "defFps"
 	];
 	public static var characterAnimProperties:Array<String> = [
 		"name", "anim", "label", "x", "y", "fps", "loop", "indices"
@@ -473,7 +475,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 		if (cameraOffset.x != 0) xml.set("camx", Std.string(FlxMath.roundDecimal(cameraOffset.x, 2)));
 		if (cameraOffset.y != 0) xml.set("camy", Std.string(FlxMath.roundDecimal(cameraOffset.y, 2)));
-		if (centeredCamera != !isAnimate) xml.set("centercam", centeredCamera ? "true" : "false");
+		if (centeredCamera != !isAnimate || Flags.USE_LEGACY_CENTER_CAM) xml.set("centercam", centeredCamera ? "true" : "false");
 
 		if (holdTime != 4) xml.set("holdTime", Std.string(FlxMath.roundDecimal(holdTime, 4)));
 
@@ -490,7 +492,11 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		if (!antialiasing) xml.set("antialiasing", antialiasing == true ? "true" : "false");
 
 		if (isPlayer) xml.set("isPlayer", isPlayer == true ? "true" : "false");
-		if (isAnimate) xml.set("applyStageMatrix", applyStageMatrix ? "true" : "false");
+		if (isAnimate) {
+			xml.set("applyStageMatrix", applyStageMatrix ? "true" : "false");
+			if (postStageMatrixApply != false || Flags.USE_LEGACY_FLXANIMATE_STAGE_MATRIX)
+				xml.set("postStageMatrixApply", postStageMatrixApply ? "true" : "false");
+		}
 
 		var anims:Array<AnimData> = [];
 		if (animsOrder != null) {
