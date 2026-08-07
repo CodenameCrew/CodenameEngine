@@ -175,15 +175,16 @@ final class MemoryUtil {
 		reg.match(process.stdout.readAll().toString());
 		if (process.exitCode() == 0) return reg.matched(1);
 		#elseif linux
-		/*var process = new HiddenProcess("sudo", ["dmidecode", "--type", "17"]);
-		if (process.exitCode() != 0) return "Unknown";
-		var lines = process.stdout.readAll().toString().split("\n");
-		for (line in lines) {
-			if (line.startsWith("Type:")) {
-				return line.substring("Type:".length).trim();
+		try {
+			var process = new HiddenProcess("sh", ["-c", "inxi --mm --c 0 | grep -i 'type:' | awk -F'type:' '{print $2}' | awk '{print $1}' | head -n 1"]);
+			var output = StringTools.trim(process.stdout.readAll().toString());
+			process.close();
+
+			if (output != "" && output != "None" && output != "Unknown") {
+				return StringTools.replace(output, ",", "");
 			}
-		}*/
-		// TODO: sort of unsafe? also requires users to use `sudo`
+		} catch (e:Dynamic) {}
+		// TODO: sort of unsafe? also requires users to use `sudo` (or use inxi (YOU NEED INXI INSTALLED ON YOUR DISTRO FOR THIS OTHERWISE ENGINE WILL FREEZE ON INITIALISATION))
 		// when launching the engine through the CLI, REIMPLEMENT LATER. 
 		#end
 		return "Unknown";
