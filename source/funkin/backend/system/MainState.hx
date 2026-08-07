@@ -42,6 +42,7 @@ class MainState extends FlxState {
 		ControlsUtil.resetCustomControls();
 		FlxG.bitmap.reset();
 		FlxG.sound.destroy(true);
+		FlxG.sound.resetCache();
 
 		Paths.assetsTree.reset();
 

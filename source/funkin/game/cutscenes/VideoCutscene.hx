@@ -60,15 +60,12 @@ class VideoCutscene extends Cutscene {
 
 		add(video = new FlxVideoSprite());
 		video.antialiasing = true;
-		#if (hxvlc < version("2.0.0"))
-		video.autoPause = false;  // Imma handle it better inside this class, mainly because of the pause menu  - Nex
-		#end
 		video.bitmap.onEndReached.add(close);
 		video.bitmap.onFormatSetup.add(function() if (video.bitmap != null && video.bitmap.bitmapData != null) {
 			final width = video.bitmap.bitmapData.width;
 			final height = video.bitmap.bitmapData.height;
 			final scale:Float = Math.min(FlxG.width / width, FlxG.height / height);
-			video.setGraphicSize(Std.int(width * scale), Std.int(height * scale));
+			video.setGraphicSize(width * scale, height * scale);
 			video.updateHitbox();
 			video.screenCenter();
 		});
@@ -103,7 +100,7 @@ class VideoCutscene extends Cutscene {
 		FlxTween.tween(loadingBackdrop, {alpha: 1}, 0.5, {ease: FlxEase.sineInOut});
 
 		Main.execAsync(function() {
-			if (video.load(localPath)) new FlxTimer().start(0.001, function(_) {
+			if (video.load(localPath)) FlxTimer.wait(0.001, function() {
 				mutex.acquire(); onReady(); mutex.release();
 			});
 			else { mutex.acquire(); close(); mutex.release(); }
@@ -202,18 +199,6 @@ class VideoCutscene extends Cutscene {
 			curSubtitle++;
 		}
 	}
-
-	#if (hxvlc < version("2.0.0"))
-	@:dox(hide) override public function onFocus() {
-		if(FlxG.autoPause && !paused) video.resume();
-		super.onFocus();
-	}
-
-	@:dox(hide) override public function onFocusLost() {
-		if(FlxG.autoPause && !paused) video.pause();
-		super.onFocusLost();
-	}
-	#end
 
 	public override function pauseCutscene() {
 		video.pause();
