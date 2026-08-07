@@ -309,7 +309,7 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 			case "Camera Zoom":
 				var shouldDoArrow:Bool = false;
 				if (event.params != null)
-					shouldDoArrow = event.params[0];
+					shouldDoArrow = event.params[0] && event.params[4] != "CLASSIC";
 
 				if(event.params != null && shouldDoArrow && !inMenu) {
 					var group = new EventIconGroup();
