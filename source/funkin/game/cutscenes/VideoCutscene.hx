@@ -25,7 +25,7 @@ class VideoCutscene extends Cutscene {
 	var localPath:String;
 
 	#if VIDEO_CUTSCENES
-	var video:FlxVideoSprite;
+	final video:FlxVideoSprite = new FlxVideoSprite();
 	final mutex = new sys.thread.Mutex();
 
 	var cutsceneCamera:FlxCamera;
@@ -58,7 +58,7 @@ class VideoCutscene extends Cutscene {
 
 		parseSubtitles();
 
-		add(video = new FlxVideoSprite());
+		add(video);
 		video.antialiasing = true;
 		video.bitmap.onEndReached.add(close);
 		video.bitmap.onFormatSetup.add(function() if (video.bitmap != null && video.bitmap.bitmapData != null) {
