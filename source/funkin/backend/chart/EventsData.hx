@@ -10,7 +10,7 @@ import openfl.Assets;
 using StringTools;
 
 class EventsData {
-	public static var defaultEventsList:Array<String> = ["HScript Call", "Camera Movement", "Camera Position", "Add Camera Zoom", "Camera Bop", "Camera Zoom", "Camera Modulo Change", "Camera Flash", "BPM Change", "Continuous BPM Change", "Time Signature Change", "Scroll Speed Change", "Alt Animation Toggle", "Play Animation"];
+	public static var defaultEventsList:Array<String> = ["HScript Call", "Camera Movement", "Camera Position", "Add Camera Zoom", "Camera Bop", "Camera Zoom", "Camera Modulo Change", "Camera Flash", "BPM Change", "Continuous BPM Change", "Time Signature Change", "Scroll Speed Change", "Alt Animation Toggle", "Play Animation", "Change Stage", "Change Character"];
 	public static var defaultEventsParams:Map<String, Array<EventParamInfo>> = [
 		"HScript Call" => [
 			{name: "Function Name", type: TString, defValue: "myFunc"},
@@ -121,6 +121,23 @@ class EventsData {
 				defValue: "NONE"
 			}
 		],
+		"Change Stage" => [
+			{name: "Stage Name", type: TString, defValue: ""},
+			{name: "Cached?", type: TBool, defValue: true},
+			{name: "Destroy Previous Stage", type: TBool, defValue: false},
+			{name: "Force Reload?", type: TBool, defValue: false}
+		],
+		"Change Character" => [
+			{name: "Character from StrumLine", type: TStrumLine, defValue: 0},
+			{name: "Character StrumLine Index", type: TInt(0, 9999999, 1), defValue: 0},
+			{name: "Character Name", type: TString, defValue: "bf"},
+			{name: "Override isPlayer?", type: TBool, defValue: false},
+			{name: "isPlayer?", type: TBool, defValue: false},
+
+			{name: "Cache?", type: TBool, defValue: true},
+			{name: "Destroy Previous Character", type: TBool, defValue: false},
+			{name: "Auto Stage Position", type: TBool, defValue: true},
+		]
 	];
 
 	public static var eventsList:Array<String> = defaultEventsList.copy();

@@ -704,7 +704,7 @@ final class CoolUtil
 	 * @param xml XML to get the attribute from
 	 * @param name Name of the attribute
 	 */
-	public static inline function getAtt(xml:Access, name:String) {
+	public static inline function getAtt(xml:Access, name:String):Null<String> {
 		/*if (!xml.has.resolve(name)) return null;
 		return xml.att.resolve(name);*/
 		// Reason for change:

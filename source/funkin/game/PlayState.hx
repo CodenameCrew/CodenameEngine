@@ -22,8 +22,10 @@ import funkin.backend.scripting.ScriptPack;
 import funkin.backend.scripting.events.*;
 import funkin.backend.scripting.events.gameplay.*;
 import funkin.backend.scripting.events.note.*;
+import funkin.backend.scripting.events.stage.*;
 import funkin.backend.system.Conductor;
 import funkin.backend.system.RotatingSpriteGroup;
+import funkin.backend.utils.XMLUtil.XMLImportedScriptInfo;
 import funkin.editors.SaveWarning;
 import funkin.editors.charter.Charter;
 import funkin.editors.charter.CharterSelection;
@@ -35,6 +37,7 @@ import funkin.menus.*;
 import funkin.backend.week.WeekData;
 import funkin.savedata.FunkinSave;
 import haxe.io.Path;
+import haxe.xml.Access;
 
 using StringTools;
 
@@ -42,6 +45,7 @@ using StringTools;
 @:access(funkin.game.StrumLine)
 class PlayState extends MusicBeatState
 {
+	public static final __instanceFields = Type.getInstanceFields(PlayState);
 	/**
 	 * Current PlayState instance.
 	 */
@@ -122,7 +126,7 @@ class PlayState extends MusicBeatState
 	/**
 	 * Current Stage.
 	 */
-	public var stage:Stage;
+	public var stage(default, set):NewStage;
 	/**
 	 * Whenever the score will save when you beat the song.
 	 */
@@ -571,6 +575,44 @@ class PlayState extends MusicBeatState
 	 */
 	public var noteTypesArray:Array<String> = [null];
 
+	// Backwards compatability for removing sprites from the Stage...
+	@:dox(hide) override public function remove(basic:FlxBasic, splice:Bool = false):FlxBasic {
+		if (members == null) return null;
+		
+		final index = members.indexOf(basic);
+
+		if (index < 0) return stage.remove(basic, splice);
+		return super.remove(basic, splice);
+	}
+
+	private var CHARACTER_CACHE:Map<String, Array<Character>> = [];
+	private function cache_character(character:Character, index:Int = 0):Character {
+		if (CHARACTER_CACHE.exists(character.curCharacter)) {
+			var stack:Array<Character> = CHARACTER_CACHE.get(character.curCharacter);
+			trace('stack[index]: ${stack[index]}');
+			if (stack[index] != null) return stack[index];
+
+			stack.insert(index, character);
+			trace('Stacking Character ${character.curCharacter} at index $index');
+			return character;
+		}
+		
+		CHARACTER_CACHE.set(character.curCharacter, [character]);
+		trace('Caching ${character.curCharacter} at index $index');
+
+		return character;
+	}
+
+	private function get_character_cache(index:Int, name:String):Character {
+		if (!CHARACTER_CACHE.exists(name)) return cache_character(new Character(0, 0, name, false), index);
+
+		var stack:Array<Character> = CHARACTER_CACHE[name];
+		if (stack.length <= 0) return cache_character(new Character(0, 0, name, false), index);
+		
+		index = CoolUtil.boundInt(index, 0, stack.length - 1);
+		return stack[index];
+	}
+
 	/**
 	 * Hit window, in milliseconds. A Legacy CNE Hit window configuration,
 	 * Don't use this, it's for mods that still uses the old judgement timing, instead use ratingManager.
@@ -653,10 +695,10 @@ class PlayState extends MusicBeatState
 	}
 
 	private inline function get_curStage()
-		return stage == null ? "" : stage.stageName;
+		return stage == null ? "" : stage.name;
 
 	private inline function set_curStage(name:String) {
-		if (stage != null) stage.stageName = name;
+		if (stage != null) stage.name = name;
 		return name;
 	}
 
@@ -743,7 +785,7 @@ class PlayState extends MusicBeatState
 		cameraFocusOffset = FlxPoint.get();
 
 		if (SONG.stage == null || SONG.stage.trim() == "") SONG.stage = Flags.DEFAULT_STAGE;
-		add(stage = new Stage(SONG.stage));
+		add(stage = NewStage.cache(SONG.stage));
 
 		if (!chartingMode || Options.charterEnablePlaytestScripts) {
 			switch(SONG.meta.name) {
@@ -808,7 +850,7 @@ class PlayState extends MusicBeatState
 		for(i=>strumLine in SONG.strumLines) {
 			if (strumLine == null) continue;
 
-			var chars = [];
+			var chars:Array<Character> = [];
 			var charPosName:String = strumLine.position == null ? (switch(strumLine.type) {
 				case 0: "dad";
 				case 1: "boyfriend";
@@ -816,7 +858,7 @@ class PlayState extends MusicBeatState
 			}) : strumLine.position;
 			if (strumLine.characters != null) for(k=>charName in strumLine.characters) {
 				var char = new Character(0, 0, charName, stage.isCharFlipped(stage.characterPoses[charName] != null ? charName : charPosName, strumLine.type == 1));
-				stage.applyCharStuff(char, charPosName, k);
+				stage.applyCharPos(char, charPosName, k);
 				chars.push(char);
 			}
 
@@ -958,6 +1000,36 @@ class PlayState extends MusicBeatState
 
 		__updateNote_event = EventManager.get(NoteUpdateEvent);
 
+		for (event in events) {
+			switch(event.name) {
+				case "Change Character":
+					if (!event.params[5]) continue;
+					var strumline_index:Int = CoolUtil.boundInt(event.params[0], 0, strumLines.members.length - 1);
+					var char_idx:Int = event.params[1];
+					var name:String = event.params[2];
+					var override_isPlayer:Bool = event.params[3];
+					
+					var strumline:StrumLine = (strumLines.members[strumline_index] ?? cpuStrums);
+					var character:Character = strumline.characters[char_idx];
+					var isPlayer:Bool = (override_isPlayer) ? event.params[4] : (character?.isPlayer ?? false);
+					trace('character: ${character.curCharacter} ($name) | isPlayer: $isPlayer | override_isPlayer: $override_isPlayer | event.params[4]: ${event.params[4]}');
+
+					var path:String = Paths.xml('characters/$name');
+					if (Assets.exists(path)) {
+						try {
+							var node:Access = new Access(Xml.parse(Assets.getText(path)).firstElement());
+
+							var folder:String = (node.has.sprite) ? node.att.sprite : name;
+							var iconPath:String = (node.has.icon) ? node.att.icon : name;
+
+							graphicCache.cache(Paths.image('characters/$folder'));
+							graphicCache.cache(Paths.image('icons/$iconPath'));
+						}
+						catch (e) Logs.trace('Couldn\'t load character XML "$path": ${e.message}', ERROR);
+					}
+					cache_character(new Character(0, 0, name, isPlayer), char_idx);
+			}
+		}
 		gameAndCharsCall("postCreate", null, "gamePostCreate");
 	}
 
@@ -1124,6 +1196,7 @@ class PlayState extends MusicBeatState
 			remove(stage, true);
 		}
 
+		NewStage.clear_cache();
 		cameraFocusOffset.put();
 
 		scripts = FlxDestroyUtil.destroy(scripts);
@@ -1155,13 +1228,15 @@ class PlayState extends MusicBeatState
 		else events = [
 			for (e in songData.events) {
 				switch (e.name) {
-					case "Camera Movement": if (!foundCam && e.time < 10) {
-						foundCam = true;
-						executeEvent(e);
-					}
-					case "Time Signature Change": if (!foundSigs && (e.params[0] != 4 || e.params[1] != 4)) {
-						foundSigs = true;
-					}
+					case "Camera Movement":
+						if (!foundCam && e.time < 10) {
+							foundCam = true;
+							executeEvent(e);
+						}
+					case "Time Signature Change":
+						if (!foundSigs && (e.params[0] != 4 || e.params[1] != 4)) foundSigs = true;
+					case "Change Stage":
+						NewStage.cache(e.params[0]);
 				}
 				e;
 			}
@@ -1718,6 +1793,56 @@ class PlayState extends MusicBeatState
 				if (strumLines.members[event.params[0]] != null && strumLines.members[event.params[0]].characters != null)
 					for (char in strumLines.members[event.params[0]].characters)
 						if (char != null && char.hasAnim(event.params[1])) char.playAnim(event.params[1], event.params[2], event.params[3] == "NONE" ? null : event.params[3]);
+			
+			case "Change Stage":
+				var stage_name:String = event.params[0];
+				var use_cache:Bool = event.params[1];
+				var destroy_previous:Bool = event.params[2];
+				var force_reload:Bool = event.params[3];
+
+				var new_stage:NewStage = use_cache ? NewStage.cache(stage_name, force_reload) : new NewStage(stage_name);
+
+				if (destroy_previous) stage?.destroy();
+				stage = new_stage;
+
+			case "Change Character":
+				var strumline_index:Int = CoolUtil.boundInt(event.params[0], 0, strumLines.members.length - 1);
+				var char_index:Int = event.params[1];
+				var char_name:String = event.params[2];
+				
+				var override_isPlayer:Bool = event.params[3];
+				var isPlayer:Bool = event.params[4];
+
+				var cached:Bool = event.params[5];
+
+				var destroy_previous:Bool = event.params[6];
+				var auto_stage_position:Bool = event.params[7];
+
+				var strumline:StrumLine = (strumLines.members[strumline_index] ?? cpuStrums);
+				var character:Character = strumline.characters[char_index];
+				if (character != null) {
+					var new_character:Character = (cached) ? get_character_cache(char_index, char_name) : new Character(character.x, character.y, char_name, false);
+					
+					new_character.isPlayer = (override_isPlayer) ? isPlayer : character.isPlayer;
+					new_character.__switchAnims = (strumline.data.type == 1);
+					new_character.fixChar(new_character.__switchAnims, new_character.__autoInterval);
+					if (new_character.isPlayer) new_character.flipX = !new_character.flipX; // to re-flip 😭
+					new_character.__baseFlipped = new_character.flipX;
+					new_character.dance();
+
+					var icon:HealthIcon = (new_character.isPlayer) ? iconP1 : iconP2;
+					icon.setIcon(new_character.icon);
+
+					strumline.characters[char_index] = new_character;
+
+					stage.remove(character, true);
+					if (destroy_previous) character?.destroy();
+
+					if (auto_stage_position) reposition_characters();
+
+				}
+
+
 			case "Unknown": // nothing
 		}
 
@@ -2287,7 +2412,7 @@ class PlayState extends MusicBeatState
 	private inline function set_playerStrums(v:StrumLine):StrumLine
 		return strumLines.members[1] = v;
 	private inline function get_gfSpeed():Int
-		return (strumLines.members[2] != null && strumLines.members[2].characters[0] != null) ? strumLines.members[2].characters[0].beatInterval : 1;
+		return strumLines.members[2] != null ? strumLines?.members[2]?.characters[0]?.beatInterval : 1;
 	private inline function set_gfSpeed(v:Int):Int {
 		if (strumLines.members[2] != null && strumLines.members[2].characters[0] != null)
 			strumLines.members[2].characters[0].beatInterval = v;
@@ -2296,7 +2421,66 @@ class PlayState extends MusicBeatState
 
 	private inline static function get_campaignAccuracy()
 		return campaignAccuracyCount == 0 ? 0 : campaignAccuracyTotal / campaignAccuracyCount;
+
+	// For now, I'd like the stage to manage all of this itself, but also it's completely fine if we have code here like `gameAndCharsEvent` for PlayState.
+	private function set_stage(new_stage:NewStage):NewStage {
+		var isReplacing:Bool = (this.stage != null); // check if there is already a stage
+
+		new_stage.onStageScriptLoad = (script) -> scripts.add(script);
+		new_stage.onStartCamSet = (startCam, defaultZoom) -> {
+			camFollow.x = startCam.x;
+			camFollow.y = startCam.y;
+			defaultCamZoom = defaultZoom;
+		}
+		new_stage.onXMLLoaded = (stageEvent) -> {
+			return this.gameAndCharsEvent("onStageXMLParsed", stageEvent).elems;
+		}
+		new_stage.onRatingSet = (x, y) -> {
+			comboGroup.setPosition(x, y);
+			add(comboGroup);
+			return comboGroup;
+		}
+		new_stage.onPrepareInfo = (node) -> {
+			return XMLImportedScriptInfo.prepareInfos(node, this.scripts, (infos) -> {
+				new_stage.xmlImportedScripts.push(infos);
+			});
+		}
+		new_stage.onRemoveInfo = (script) -> scripts.remove(script);
+		new_stage.onNodeLoaded = (node, sprite) -> {
+			return this.gameAndCharsEvent("onStageNodeParsed", EventManager.get(StageNodeEvent).recycle(new_stage, node, sprite, node.name)).sprite;
+		}
+		new_stage.onPostStageCreation = (stageEvent) -> this.gameAndCharsEvent("onPostStageCreation", stageEvent);
+		new_stage.onStageDestroy = (_) -> this.gameAndCharsCall("onStageDestroy", [_]);
+
+		new_stage.active = new_stage.exists = new_stage.visible = true;
+		new_stage.loadStage();
+
+		if (!isReplacing) return this.stage = new_stage;
+
+		replace(this.stage, new_stage);
+		this.stage = new_stage;
+
+		reposition_characters();
+
+		return this.stage;
+	}
 	#end
+
+	private function reposition_characters() {
+		// reset the characters positions with the new stage
+		for (strumline in this.strumLines.members) {
+			if (strumline.characters.length == 0) continue;
+			for (i => char in strumline.characters) {
+				var posName:String = strumline.data.position ?? switch(strumline.data.type) {
+					case 0: "dad";
+					case 1: "boyfriend";
+					case 2: "girlfriend";
+				};
+				char.isPlayer = this.stage.isCharFlipped(this.stage.characterPoses[char.curCharacter] != null ? char.curCharacter : posName, !strumline.opponentSide);
+				this.stage.applyCharPos(char, posName, i);
+			}
+		}
+	}
 
 	/**
 	 * Load a week into PlayState.
