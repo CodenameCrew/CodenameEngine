@@ -638,6 +638,39 @@ class Charter extends UIState {
 			noteCount += strL.notes.length;
 		}
 
+		// checks for newly created songs
+		if (PlayState.SONG.strumLines.length == 0) {
+			var dadStrumLine:ChartStrumLine = {
+				characters: ["dad"],
+				type: 0, // Opponent
+				notes: [],
+				position: "dad",
+				visible: true,
+				strumPos: [0, 50],
+				strumLinePos: 0.25,
+				strumScale: 1,
+				strumSpacing: 1,
+				vocalsSuffix: "",
+				keyCount: 4
+			};
+			createStrumLine(0, dadStrumLine, false, false);
+			
+			var bfStrumLine:ChartStrumLine = {
+				characters: ["bf"],
+				type: 1, // Player
+				notes: [],
+				position: "bf",
+				visible: true,
+				strumPos: [0, 50],
+				strumLinePos: 0.75,
+				strumScale: 1,
+				strumSpacing: 1,
+				vocalsSuffix: "",
+				keyCount: 4
+			};
+			createStrumLine(1, bfStrumLine, false, false);
+		}
+
 		// create notes
 		notesGroup.autoSort = false;
 		notesGroup.preallocate(noteCount);
