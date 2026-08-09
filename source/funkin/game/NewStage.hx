@@ -250,7 +250,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	
 	//region Stage Layer Management
 	override public function add(basic:FlxBasic):FlxBasic {
-		if (!(basic is StageLayer)) return super.add(layer);
+		if (!(basic is StageLayer)) return super.add(basic);
 		
 		var layer:StageLayer = cast basic;
 		if (stageLayers.exists(layer.name)) {
@@ -683,17 +683,17 @@ class NewStage extends StageLayer {
 
 					var layerName:String = node.att.name;
 					var renderLayer:Bool = node.has.useRenderTexture ? node.att.useRenderTexture == "true" : false;
-					var layer:StageLayer = new StageLayer(layerName, renderLayer);
+					var new_layer:StageLayer = new StageLayer(layerName, renderLayer);
 					// recursive so it will allow nested layers
-					script?.call("onLoadLayer", [layer]);
-					loadLayer(layer, [for(n in node.elements) n]);
-					script?.call("onPostLoadLayer", [layer]);
-					this.add(layer);
+					script?.call("onLoadLayer", [new_layer]);
+					loadLayer(new_layer, [for(n in node.elements) n]);
+					script?.call("onPostLoadLayer", [new_layer]);
+					layer.add(new_layer);
 				case "sprite" | "spr" | "sparrow":
 					if (!node.has.name) continue;
 
 					var spr = XMLUtil.createSpriteFromXML(node, spritesParentFolder, LOOP);
-					addSprite(spr.name, spr);
+					layer.addSprite(spr.name, spr);
 				case "box" | "solid":
 					if (!node.has.name || !node.has.width || !node.has.height)
 						continue;
@@ -713,16 +713,16 @@ class NewStage extends StageLayer {
 					node.x.remove("width"); node.x.remove("height"); node.x.remove("color");
 					XMLUtil.loadSpriteFromXML(spr, node, "", NONE, false);
 
-					addSprite(spr.name, spr);
+					layer.addSprite(spr.name, spr);
 				case "boyfriend" | "bf" | "player":
-					setCharPos("boyfriend", node, getDefaultPos("boyfriend"));
+					setCharPos("boyfriend", node, getDefaultPos("boyfriend"), layer);
 				case "girlfriend" | "gf":
-					setCharPos("girlfriend", node, getDefaultPos("girlfriend"));
+					setCharPos("girlfriend", node, getDefaultPos("girlfriend"), layer);
 				case "dad" | "opponent":
-					setCharPos("dad", node, getDefaultPos("dad"));
+					setCharPos("dad", node, getDefaultPos("dad"), layer);
 				case "character" | "char":
 					if (!node.has.name) continue;
-					setCharPos(node.att.name, node);
+					setCharPos(node.att.name, node, null, layer);
 				case "ratings" | "combo":
 					if (onRatingSet == null) continue;
 					onRatingSet(Std.parseFloat(node.getAtt("x")), Std.parseFloat(node.getAtt("y")));
@@ -756,7 +756,7 @@ class NewStage extends StageLayer {
 	private function postLoadStage(?elems:Array<Access>) {
 		for(defaultChar in ["girlfriend", "dad", "boyfriend"]) {
 			if (!characterPosLookup.exists(defaultChar))
-				setCharPos(defaultChar, null, getDefaultPos(defaultChar));
+				setCharPos(defaultChar, null, getDefaultPos(defaultChar), this);
 		}
 
 		if (allowScripts) {
@@ -787,7 +787,7 @@ class NewStage extends StageLayer {
 		}
 	}
 
-	private function setCharPos(name:String, ?node:Access, ?defaultCharPos:StageCharPosInfo) {
+	private function setCharPos(name:String, ?node:Access, ?defaultCharPos:StageCharPosInfo, layer:StageLayer) {
 		var charPos = new StageCharPos();
 		charPos.visible = charPos.active = false;
 		charPos.name = name;
@@ -832,7 +832,9 @@ class NewStage extends StageLayer {
 			if (node.has.scrollx) charPos.scrollFactor.x = Std.parseFloat(node.att.scrollx).getDefaultFloat(1);
 			if (node.has.scrolly) charPos.scrollFactor.y = Std.parseFloat(node.att.scrolly).getDefaultFloat(1);
 		}
-		return add(characterPosLookup[name] = charPos);
+		// TODO: add field on `StageCharPos` for the referenced layer
+		charPos.extra.set('layer', layer); // temporary
+		return layer.add(characterPosLookup[name] = charPos);
 	}
 
 	/**
@@ -854,7 +856,9 @@ class NewStage extends StageLayer {
 		var charPos:Null<StageCharPos> = characterPosLookup.exists(charName) ? characterPosLookup.get(charName) : characterPosLookup.get(posName);
 		if(charPos != null) {
 			charPos.prepareCharacter(char, id);
-			this.insert(this.members.indexOf(charPos), char);
+			// allows setting characters in different layers
+			var layerRef:StageLayer = charPos.extra.get('layer') ?? this; // just in case :3
+			layerRef.insert(layerRef.members.indexOf(charPos), char);
 		}
 		else 
 			this.add(char);
