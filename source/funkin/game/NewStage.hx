@@ -250,10 +250,12 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	
 	//region Stage Layer Management
 	override public function add(basic:FlxBasic):FlxBasic {
-		if (!(basic is StageLayer)) return super.add(basic);
+		if (!(basic is StageLayer)) return super.add(layer);
 		
 		var layer:StageLayer = cast basic;
-		if (stageLayers.exists(layer.name)) return stageLayers.get(layer.name);
+		if (stageLayers.exists(layer.name)) {
+			return stageLayers.get(layer.name);
+		}
 
 		stageLayers.set(layer.name, layer);
 		return super.add(layer);
@@ -261,8 +263,11 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 
 	override public function insert(position:Int, basic:FlxBasic):FlxBasic {
 		if (!(basic is StageLayer)) return super.insert(position, basic);
+
 		var layer:StageLayer = cast basic;
-		if (stageLayers.exists(layer.name)) return stageLayers.get(layer.name);
+		if (stageLayers.exists(layer.name)) {
+			return stageLayers.get(layer.name);
+		}
 
 		stageLayers.set(layer.name, layer);
 		return super.insert(position, layer);
@@ -401,7 +406,7 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 		origin = _bounds.getMidpoint(origin);
 	}
 
-	// From FlxSpriteGroup
+	//region From FlxSpriteGroup
 
 	private function findMinX():Float {
 		if(this.length == 0) return 0;
@@ -486,6 +491,8 @@ class StageLayer extends FlxTypedGroup<FlxBasic> implements IBeatReceiver implem
 	private function get_height():Float 
 		return _bounds.height;
 	
+	//endregion
+
 	override public function toString():String {
 		return '(Stage Layer) $name: ${FlxStringUtil.getDebugString([
 			LabelValuePair.weak("x", x),
@@ -577,8 +584,11 @@ class NewStage extends StageLayer {
 	/**
 	 * Sets the sprites in the script, so you can access them by the name.
 	**/
-	public function setStagesSprites(script:Script)
+	public function setStagesSprites(script:Script) {
+		trace('stageLayers: $stageLayers');
 		for (key=>ref in stageSprites) script.set(key, ref);
+		for (key=>ref in stageLayers) script.set(key, ref);
+	}
 
 	public function new(stage:String, load:Bool = false) {
 		super();
@@ -678,7 +688,7 @@ class NewStage extends StageLayer {
 					script?.call("onLoadLayer", [layer]);
 					loadLayer(layer, [for(n in node.elements) n]);
 					script?.call("onPostLoadLayer", [layer]);
-					add(layer);
+					this.add(layer);
 				case "sprite" | "spr" | "sparrow":
 					if (!node.has.name) continue;
 
@@ -688,7 +698,7 @@ class NewStage extends StageLayer {
 					if (!node.has.name || !node.has.width || !node.has.height)
 						continue;
 
-					var isSolid = node.name == "solid";
+					var isSolid = (node.name == "solid");
 
 					var spr = new FunkinSprite();
 					var w:Int = Std.parseInt(node.att.width);
@@ -721,7 +731,6 @@ class NewStage extends StageLayer {
 					if (__isExtensionNode(node)) {
 						if (XMLImportedScriptInfo.shouldLoadBefore(node)) continue;
 						if (onPrepareInfo != null && onPrepareInfo(node) == null) continue;
-						null;
 					}
 					null;
 			}
@@ -851,6 +860,12 @@ class NewStage extends StageLayer {
 			this.add(char);
 	}
 
+	override function destroy() {
+		if (onStageDestroy != null) onStageDestroy(this);
+		script?.call("destroy");
+		destroySilently();
+	}
+
 	/**
 	 * Same of destroy, but doesn't call the various script events.
 	 * @param destroySprites Whether the stage sprites should be destroyed
@@ -866,12 +881,6 @@ class NewStage extends StageLayer {
 		
 		// Properly destroy the sprites here.
 		super.destroy();
-	}
-
-	override function destroy() {
-		if (onStageDestroy != null) onStageDestroy(this);
-		script?.call("destroy");
-		destroySilently();
 	}
 
 	override function update(elapsed:Float) {
