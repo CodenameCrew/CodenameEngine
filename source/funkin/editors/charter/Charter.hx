@@ -640,35 +640,24 @@ class Charter extends UIState {
 
 		// checks for newly created songs
 		if (PlayState.SONG.strumLines.length == 0) {
-			var dadStrumLine:ChartStrumLine = {
+			createStrumline(0, {
 				characters: ["dad"],
 				type: 0, // Opponent
 				notes: [],
 				position: "dad",
 				visible: true,
-				strumPos: [0, 50],
-				strumLinePos: 0.25,
-				strumScale: 1,
-				strumSpacing: 1,
-				vocalsSuffix: "",
 				keyCount: 4
-			};
-			createStrumline(0, dadStrumLine, false, false);
+			}, false, false);
 
-			var bfStrumLine:ChartStrumLine = {
+			createStrumline(1, {
 				characters: ["bf"],
 				type: 1, // Player
 				notes: [],
-				position: "bf",
+				position: "boyfriend",
 				visible: true,
-				strumPos: [0, 50],
 				strumLinePos: 0.75,
-				strumScale: 1,
-				strumSpacing: 1,
-				vocalsSuffix: "",
 				keyCount: 4
-			};
-			createStrumline(1, bfStrumLine, false, false);
+			}, false, false);
 		}
 
 		// create notes
