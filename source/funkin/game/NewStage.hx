@@ -585,7 +585,6 @@ class NewStage extends StageLayer {
 	 * Sets the sprites in the script, so you can access them by the name.
 	**/
 	public function setStagesSprites(script:Script) {
-		trace('stageLayers: $stageLayers');
 		for (key=>ref in stageSprites) script.set(key, ref);
 		for (key=>ref in stageLayers) script.set(key, ref);
 	}
@@ -686,9 +685,11 @@ class NewStage extends StageLayer {
 					var new_layer:StageLayer = new StageLayer(layerName, renderLayer);
 					// recursive so it will allow nested layers
 					script?.call("onLoadLayer", [new_layer]);
+
 					loadLayer(new_layer, [for(n in node.elements) n]);
-					script?.call("onPostLoadLayer", [new_layer]);
 					layer.add(new_layer);
+					
+					script?.call("onPostLoadLayer", [new_layer]);
 				case "sprite" | "spr" | "sparrow":
 					if (!node.has.name) continue;
 
@@ -909,7 +910,10 @@ class NewStage extends StageLayer {
 				for (e in node.elements) pushNode(e, elems);
 			else if (node.name == "low-memory" && (Options.lowMemoryMode || loadAll))
 				for (e in node.elements) pushNode(e, elems);
-			else if (node.name == "layer") checkMemoryMode(node, loadAll, elems); // recursive check in layers
+			else if (node.name == "layer") {
+				checkMemoryMode(node, loadAll, elems); // recursive check in layers
+				pushNode(node, elems);
+			}
 			else pushNode(node, elems);
 		}
 	}
