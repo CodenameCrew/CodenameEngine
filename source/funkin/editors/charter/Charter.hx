@@ -653,8 +653,8 @@ class Charter extends UIState {
 				vocalsSuffix: "",
 				keyCount: 4
 			};
-			createStrumLine(0, dadStrumLine, false, false);
-			
+			createStrumline(0, dadStrumLine, false, false);
+
 			var bfStrumLine:ChartStrumLine = {
 				characters: ["bf"],
 				type: 1, // Player
@@ -668,7 +668,7 @@ class Charter extends UIState {
 				vocalsSuffix: "",
 				keyCount: 4
 			};
-			createStrumLine(1, bfStrumLine, false, false);
+			createStrumline(1, bfStrumLine, false, false);
 		}
 
 		// create notes
