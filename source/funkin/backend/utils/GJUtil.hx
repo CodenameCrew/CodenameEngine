@@ -223,6 +223,8 @@ class GJUtil
 			ret = true;
 			openfl.Lib.application.onExit.add(onExitApp);
 			FlxG.signals.postUpdate.add(pingTimer);
+			FlxG.save.data.gameJoltArray = [userName, token];
+			FlxG.save.flush();
 		});
 		return ret;
 	}
