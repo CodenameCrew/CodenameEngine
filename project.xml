@@ -66,6 +66,9 @@
 	<!-- Comment this out to disable GitHub API integration !-->
 	<define name="GITHUB_API" unless="web || hl"/>
 
+	<!-- Comment this out to disable GameJolt API integration !-->
+	<define name="GAMEJOLT_API" if="GITHUB_API"/>
+
 	<!-- Comment this out to prevent unused classes from being compiled.
 		 Reduces compilation time at the cost of limited HScript flexibility. !-->
 	<define name="COMPILE_ALL_CLASSES" unless="STRIPPED_COMPILE" />
@@ -131,6 +134,7 @@
 	<haxelib name="flixel-addons" />
 
 	<haxelib name="hxWebSockets" />
+	<haxelib name="crypto" />
 
 	<haxelib name="hxvlc" if="VIDEO_CUTSCENES" />
 	<haxelib name="away3d" if="THREE_D_SUPPORT" />

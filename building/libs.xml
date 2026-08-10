@@ -17,6 +17,7 @@
 		<lib name="funkin-modchart" skipDeps="true" />
 		<lib name="hxvlc" version="1.9.3" skipDeps="true" />
 		<lib name="hxWebSockets" />
+		<git name="crypto" url="https://github.com/HaxeFoundation/crypto" ref="9959143" />
 
 		<!-- Documentation and other features -->
 		<git name="away3d" url="https://github.com/CodenameCrew/away3d" />

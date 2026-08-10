@@ -10,6 +10,7 @@ import funkin.backend.assets.ModsFolderLibrary;
 import funkin.backend.assets.ZipFolderLibrary;
 import funkin.backend.chart.EventsData;
 import funkin.backend.system.framerate.Framerate;
+import funkin.backend.utils.GJUtil;
 import funkin.editors.ModConfigWarning;
 import funkin.menus.TitleState;
 import haxe.io.Path;
@@ -161,6 +162,13 @@ class MainState extends FlxState {
 			if (!(lib is ZipFolderLibrary)) continue;
 			if (cast(lib, ZipFolderLibrary).PRELOAD_VIDEOS) cast(lib, ZipFolderLibrary).precacheVideos();
 		}
+
+		#if GAMEJOLT_API
+		if (FlxG.save.data.gameJoltArray != null) {
+			var gjDat:Array<String> = FlxG.save.data.gameJoltArray;
+			GJUtil.attemptLogin(gjDat[0], gjDat[1]);
+		}
+		#end
 
 		var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
 

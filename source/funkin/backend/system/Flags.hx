@@ -28,6 +28,7 @@ class Flags {
 	public static var MOD_NAME:String = "";
 	public static var MOD_DESCRIPTION:String = "";
 	public static var MOD_AUTHOR:String = "";
+	public static var MOD_VERSION:String = "";
 	@:lazy public static var MOD_API_VERSION:Null<Int> = null;
 	public static var MOD_DOWNLOAD_LINK:String  = "";
 	public static var MOD_DEPENDENCIES:Array<String> = [];
@@ -42,6 +43,11 @@ class Flags {
 	public static var MOD_DISCORD_LOGO_TEXT:String = "";
 
 	public static var MOD_REDIRECT_STATES:Map<String, String> = [];
+
+	@:also(funkin.backend.utils.GameJoltSecurity.gameId)
+	public static var MOD_GAMEJOLT_GAME_ID:String = '';
+	@:also(funkin.backend.utils.GameJoltSecurity.encryptedGameToken)
+	public static var MOD_GAMEJOLT_TOKEN:String = '';
 
 	// -- Codename's Default Flags --
 	@:lazy public static var SAVE_PATH:String = haxe.macro.Compiler.getDefine("SAVE_PATH");

@@ -29,7 +29,7 @@ class Config {
 	// Incase any of your files fail
 	// These are the module names
 	public static final DISALLOW_CUSTOM_CLASSES = [
-
+		"funkin.backend.utils.GameJoltSecurity", // don't want people getting those gamejolt keys!
 	];
 
 	public static final DISALLOW_ABSTRACT_AND_ENUM = [

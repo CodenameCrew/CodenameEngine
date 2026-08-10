@@ -15,3 +15,4 @@ addons/*
 dev-libs/
 *.sum
 .vs/
+source/funkin/backend/utils/GameJoltSecurity.hx
