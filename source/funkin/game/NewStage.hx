@@ -903,15 +903,32 @@ class NewStage extends StageLayer {
 		return node.name == "use-extension" || node.name == "extension" || node.name == "ext";
 	}
 
+	//region Memory Mode Filtering
 	@:dox(hide) private function checkMemoryMode(xml:Access, loadAll:Bool, elems:Array<Access>) {
 		for(node in xml.elements) {
 			if (node.name == "high-memory" && (!Options.lowMemoryMode || loadAll))
 				for (e in node.elements) pushNode(e, elems);
 			else if (node.name == "low-memory" && (Options.lowMemoryMode || loadAll))
 				for (e in node.elements) pushNode(e, elems);
-			else if (node.name == "layer") checkMemoryMode(node, loadAll, elems); // recursive check in layers
+			else if (node.name == "layer") {
+				var layerElems:Array<Access> = [];
+				checkMemoryMode(node, loadAll, layerElems); // recursive filter in layers
+				var layerNode:Access = nodeFromElements(node, layerElems);
+				pushNode(layerNode, elems);
+			}
 			else pushNode(node, elems);
 		}
+	}
+
+	@:dox(hide) private function nodeFromElements(parentNode:Access, elems:Array<Access>):Access {
+		var n:Xml = Xml.createElement(parentNode.name);
+		@:privateAccess {
+			for(a => v in parentNode.x.attributeMap) 
+				n.set(a, v);
+			for(e in elems)
+				n.addChild(e.x); // maybe use something different since adding a child changes their parent node internally - Jamextreme140
+		}
+		return new Access(n);
 	}
 
 	@:dox(hide) private function pushNode(node:Access, elems:Array<Access>) {
@@ -919,6 +936,7 @@ class NewStage extends StageLayer {
 		if (__isExtensionNode(node) && XMLImportedScriptInfo.shouldLoadBefore(node))
 			if (onPrepareInfo != null) onPrepareInfo(node);
 	}
+	//endregion
 
 	//region IHScriptCustomBehaviour implementation
 	override function hget(name:String):Dynamic {
