@@ -49,6 +49,7 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			#if sys "Sys"		=> Sys, #end
 
 			// OpenFL & Lime related stuff
+			"BlendMode"			=> CoolUtil.getMacroAbstractClass("openfl.display.BlendMode"),
 			"Assets"			=> openfl.utils.Assets,
 			"Application"		=> lime.app.Application,
 			"Main"				=> funkin.backend.system.Main,

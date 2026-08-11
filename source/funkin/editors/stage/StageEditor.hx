@@ -17,6 +17,7 @@ import haxe.xml.Access;
 import haxe.xml.Printer;
 import lime.ui.MouseCursor;
 import openfl.ui.Mouse;
+import openfl.display.BlendMode;
 
 using funkin.backend.utils.MatrixUtil;
 
@@ -668,6 +669,7 @@ class StageEditor extends UIState {
 				if(sprite.spriteAnimType != LOOP)
 					spriteXML.set("type", sprite.spriteAnimType.toString());
 				saveToXml(spriteXML, "color", sprite.color.toWebString(), "#FFFFFF");
+				@:privateAccess saveToXml(spriteXML, "blend", sprite.blend.toString(), null);
 				// TODO: save custom parameters
 				//saveToXml(spriteXML, "flipX", sprite.flipX, false);
 				if (node.hasNode.anim) for (animNode in node.nodes.anim)
