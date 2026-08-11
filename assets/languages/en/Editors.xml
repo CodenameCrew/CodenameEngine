@@ -634,6 +634,32 @@
 				<str id="beat">BEAT</str>
 				<str id="loop">LOOP</str>
 			</group>
+
+			<str id="blendMode">Blend Mode</str>
+			<group name="BlendModeDropdown" prefix="blendMode.">
+				<!--
+					most of these dont show up yet !!
+					but just future proofing so we don't
+					have to add them later
+				-->
+				<str id="none">NONE</str>
+				<str id="add">ADD</str>
+				<str id="alpha">ALPHA</str>
+				<str id="darken">DARKEN</str>
+				<str id="difference">DIFFERENCE</str>
+				<str id="erase">ERASE</str>
+				<str id="hardlight">HARDLIGHT</str>
+				<str id="invert">INVERT</str>
+				<str id="layer">LAYER</str>
+				<str id="lighten">LIGHTEN</str>
+				<str id="multiply">MULTIPLY</str>
+				<!--<str id="normal">NORMAL</str>-->
+				<str id="overlay">OVERLAY</str>
+				<str id="screen">SCREEN</str>
+				<str id="shader">SHADER</str>
+				<str id="subtract">SUBTRACT</str>
+			</group>
+
 			<str id="tipCustomProperties">Tip: To access custom properties,\nHold Shift when clicking edit</str>
 
 			<str id="defaultAnimPrefix">Name on Anim Data</str>

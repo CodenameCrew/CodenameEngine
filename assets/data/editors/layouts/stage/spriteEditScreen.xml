@@ -30,7 +30,17 @@
 
 		<textbox name="nameTextBox" label="${translate('nameID')}" value="button.getName()"   x="col(0)" y="curY" width="200" height="32" />
 		<textbox name="spriteTextBox" value="getEx('imageFile')" x="last.x + last.bWidth + XOFFSET" y="curY" width="200" height="32" />
-		<stepper name="alphaStepper" label="Alpha" value="sprite.alpha" x="spriteTextBox.x + spriteTextBox.bWidth + XOFFSET" y="curY" precision="2" step="0.01" width="100" />
+		<stepper name="alphaStepper" label="Alpha" value="sprite.alpha" x="last.x + last.bWidth + XOFFSET" y="curY" precision="2" step="0.01" width="100" />
+		<dropdown name="blendMode" label="${translate('blendMode')}" value="sprite.blend" x="last.x + last.bWidth + XOFFSET - 20" y="curY" width="150" height="32">
+			<!-- add all remaining blend modes once they are available pls -->
+			<!-- also why do i have to wrap them in 2 strings -->
+			<item label="${translate('blendMode.none')}" value="null" />
+			<item label="${translate('blendMode.add')}" value="'add'" />
+			<item label="${translate('blendMode.lighten')}" value="'lighten'" />
+			<item label="${translate('blendMode.multiply')}" value="'multiply'" />
+			<item label="${translate('blendMode.screen')}" value="'screen'" />
+			<item label="${translate('blendMode.subtract')}" value="'subtract'" />
+		</dropdown>
 		<label name="imageFile" text="${translate('imageFile', [stage.spritesParentFolder])}" x="spriteTextBox.x" y="spriteTextBox.y - 14" size="15" />
 	</section>
 
@@ -157,6 +167,7 @@
 
 			if(previewSprite == null) return;
 			previewSprite.color = 0xFFFFFFFF; // TODO: Color Wheel
+			previewSprite.blend = BlendMode.fromString(blendMode.value);
 			previewSprite.skew.x = skewXStepper.value;
 			previewSprite.skew.y = skewYStepper.value;
 			previewSprite.angle = angleStepper.value;
@@ -181,6 +192,7 @@
 			sprite.spriteAnimType = animTypeToString(animType.value);
 			sprite.angle = angleStepper.value;
 			sprite.alpha = alphaStepper.value;
+			sprite.blend = BlendMode.fromString(blendMode.value);
 
 			function saveXY(obj:Dynamic, name:String, x:UINumericStepper, y:UINumericStepper) {
 				button.xml.remove(name + "");
