@@ -46,6 +46,8 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	public var icon:String = null;
 	public var iconColor:Null<FlxColor> = null;
 	public var gameOverCharacter:String = Character.FALLBACK_DEAD_CHARACTER;
+	public var defaultAimFPS:Float = 24;
+
 
 	/*
 		Whether to use the center or the top-left of the character as the camera origin point.
@@ -378,6 +380,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		if (xml.x.exists("x")) globalOffset.x = Std.parseFloat(xml.x.get("x"));
 		if (xml.x.exists("y")) globalOffset.y = Std.parseFloat(xml.x.get("y"));
 		if (xml.x.exists("gameOverChar")) gameOverCharacter = xml.x.get("gameOverChar");
+		if (xml.x.exists("defFps")) defaultAimFPS = Std.parseFloat(xml.x.get("defFps"));
 		if (xml.x.exists("camx")) cameraOffset.x = Std.parseFloat(xml.x.get("camx"));
 		if (xml.x.exists("camy")) cameraOffset.y = Std.parseFloat(xml.x.get("camy"));
 		if (xml.x.exists("holdTime")) holdTime = Std.parseFloat(xml.x.get("holdTime")).getDefaultFloat(4);
@@ -391,6 +394,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		}
 		if (xml.x.exists("antialiasing")) antialiasing = (xml.x.get("antialiasing") == "true");
 		if (xml.x.exists("applyStageMatrix")) applyStageMatrix = (xml.x.get("applyStageMatrix") == "true");
+		if (xml.x.exists("postStageMatrixApply")) postStageMatrixApply = (xml.x.get("postStageMatrixApply") == "true");
 		if (xml.x.exists("sprite")) sprite = xml.x.get("sprite");
 		if (xml.x.exists("swfMode")) animateSettings.swfMode = (xml.x.get("swfMode") == "true");
 		if (xml.x.exists("cacheOnLoad")) animateSettings.cacheOnLoad = (xml.x.get("cacheOnLoad") == "true");
@@ -413,11 +417,18 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		loadSprite(Paths.image('characters/$sprite'));
 		
 		if (xml.x.exists("centercam")) centeredCamera = (xml.x.get("centercam") == "true");
+		else if (Flags.USE_LEGACY_CENTER_CAM) centeredCamera = true;
 		else centeredCamera = !isAnimate;
 		
 		for(node in xml.elements) {
 			switch(node.name) {
-				case "anim":
+				case "anim":	
+					if (defaultAimFPS != 24){
+						if (!node.x.exists("fps")) {
+							node.x.set('fps', Std.string(defaultAimFPS));
+						} 
+					}
+
 					XMLUtil.addXMLAnimation(this, node);
 				case "use-extension" | "extension" | "ext":
 					if (XMLImportedScriptInfo.shouldLoadBefore(node)) continue;
@@ -448,7 +459,8 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	public static var characterProperties:Array<String> = [
 		"x", "y", "sprite", "scale", "antialiasing",
 		"flipX", "camx", "camy", "centercam", "isPlayer", "icon",
-		"color", "gameOverChar", "holdTime", "applyStageMatrix"
+		"color", "gameOverChar", "holdTime", "applyStageMatrix",
+		"postStageMatrixApply", "defFps"
 	];
 	public static var characterAnimProperties:Array<String> = [
 		"name", "anim", "label", "x", "y", "fps", "loop", "indices"
@@ -463,6 +475,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 		if (cameraOffset.x != 0) xml.set("camx", Std.string(FlxMath.roundDecimal(cameraOffset.x, 2)));
 		if (cameraOffset.y != 0) xml.set("camy", Std.string(FlxMath.roundDecimal(cameraOffset.y, 2)));
+		if (centeredCamera != !isAnimate || Flags.USE_LEGACY_CENTER_CAM) xml.set("centercam", centeredCamera ? "true" : "false");
 
 		if (holdTime != 4) xml.set("holdTime", Std.string(FlxMath.roundDecimal(holdTime, 4)));
 
@@ -472,13 +485,18 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 		if (gameOverCharacter != Character.FALLBACK_DEAD_CHARACTER) xml.set("gameOverChar", gameOverCharacter);
 		if (iconColor != null) xml.set("color", iconColor.toWebString());
+		if (defaultAimFPS != 24) xml.set("defFps", Std.string(defaultAimFPS));
 
 		if (sprite != curCharacter) xml.set("sprite", sprite);
 		if (scale.x != 1) xml.set("scale", Std.string(FlxMath.roundDecimal(scale.x, 4)));
 		if (!antialiasing) xml.set("antialiasing", antialiasing == true ? "true" : "false");
 
 		if (isPlayer) xml.set("isPlayer", isPlayer == true ? "true" : "false");
-		if (isAnimate) xml.set("applyStageMatrix", applyStageMatrix ? "true" : "false");
+		if (isAnimate) {
+			xml.set("applyStageMatrix", applyStageMatrix ? "true" : "false");
+			if (postStageMatrixApply != false || Flags.USE_LEGACY_FLXANIMATE_STAGE_MATRIX)
+				xml.set("postStageMatrixApply", postStageMatrixApply ? "true" : "false");
+		}
 
 		var anims:Array<AnimData> = [];
 		if (animsOrder != null) {
@@ -494,7 +512,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 			animXml.set("name", anim.name);
 			animXml.set("anim", anim.anim);
 			if (anim.loop) animXml.set("loop", Std.string(anim.loop));
-			if (FlxMath.roundDecimal(anim.fps, 2) != 24) animXml.set("fps", Std.string(FlxMath.roundDecimal(anim.fps, 2)));
+			if (FlxMath.roundDecimal(anim.fps, 2) != defaultAimFPS) animXml.set("fps", Std.string(FlxMath.roundDecimal(anim.fps, 2)));
 
 			var offset:FlxPoint = getAnimOffset(anim.name);
 			if (FlxMath.roundDecimal(offset.x, 2) != 0) animXml.set("x", Std.string(FlxMath.roundDecimal(offset.x, 2)));

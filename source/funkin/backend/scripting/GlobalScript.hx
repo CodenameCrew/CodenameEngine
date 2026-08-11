@@ -69,7 +69,7 @@ class GlobalScript {
 			call("preStateCreate", [state]);
 		});
 		FlxG.signals.preStateSwitch.add(function() {
-			call("preStateSwitch", []);
+			call("preStateSwitch");
 
 			var stateName = Type.getClassName(Type.getClass(@:privateAccess FlxG.game._requestedState));
 			stateName = stateName.substring(stateName.lastIndexOf(".") + 1);

@@ -8,7 +8,7 @@ class MultiThreadedScript implements IFlxDestroyable implements IHScriptCustomBe
 	 */
 	public var script:Script;
 
-	private var __variables:Array<String>;
+	private var __variables:Map<String, Bool>;
 
 	/**
 	 * Return value of the last call.
@@ -40,14 +40,16 @@ class MultiThreadedScript implements IFlxDestroyable implements IHScriptCustomBe
 
 		script.load();
 
-		__variables = Type.getInstanceFields(Type.getClass(this));
+		__variables = new Map();
+		for (f in Type.getInstanceFields(Type.getClass(this)))
+			__variables.set(f, true);
 	}
 
 	public function hget(name:String):Dynamic
-		return __variables.contains(name) ? Reflect.getProperty(this, name) : script.get(name);
+		return __variables.exists(name) ? Reflect.getProperty(this, name) : script.get(name);
 
 	public function hset(name:String, val:Dynamic):Dynamic {
-		if (__variables.contains(name))
+		if (__variables.exists(name))
 			Reflect.setProperty(this, name, val);
 		else
 			script.set(name, val);
