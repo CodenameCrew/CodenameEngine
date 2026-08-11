@@ -638,7 +638,7 @@
 			<str id="blendMode">Blend Mode</str>
 			<group name="BlendModeDropdown" prefix="blendMode.">
 				<!--
-					most of these dont show up yet !!
+					90% of these dont show up yet !!
 					but just future proofing so we don't
 					have to add them later
 				-->
@@ -658,6 +658,14 @@
 				<str id="screen">SCREEN</str>
 				<str id="shader">SHADER</str>
 				<str id="subtract">SUBTRACT</str>
+				<str id="colordodge">COLORDODGE</str>
+				<str id="colorburn">COLORBURN</str>
+				<str id="softlight">SOFTLIGHT</str>
+				<str id="exclusion">EXCLUSION</str>
+				<str id="hue">HUE</str>
+				<str id="saturation">SATURATION</str>
+				<str id="color">COLOR</str>
+				<str id="luminosity">LUMINOSITY</str>
 			</group>
 
 			<str id="tipCustomProperties">Tip: To access custom properties,\nHold Shift when clicking edit</str>
