@@ -68,6 +68,12 @@
 		<str id="framerate-name">Framerate</str>
 		<str id="framerate-desc">Pretty self explanatory, isn't it?</str>
 
+		<str id="fpsCounter-name">FPS Counter</str>
+		<str id="fpsCounter-desc">If checked, displays the Framerate and Memory counter in the top left.</str>
+
+		<str id="fpsAdvanced-name">Advanced</str>
+		<str id="fpsAdvanced-desc">you can tell whoever added translations GENUINELY thinks they deserve to live</str>
+
 		<str id="flashingMenu-name">Flashing Menu</str>
 		<str id="flashingMenu-desc">If unchecked, will disable menu flashing when you select an option in the Main Menu, and other flashes will be slower.</str>
 
@@ -95,6 +101,23 @@
 
 			<str id="gpuOnlyBitmaps-name">VRAM-Only Sprites</str>
 			<str id="gpuOnlyBitmaps-desc">If checked, will only store the bitmaps in the GPU, freeing a LOT of memory (EXPERIMENTAL). Turning this off will consume a lot of memory, especially on bigger sprites. If you aren't sure, leave this on.</str>
+		</group>
+
+		<group name="AppearanceOptionsFramerate" prefix="Advanced.">
+			<str id="fpsCounterConductor-name">Show Conductor Info</str>
+			<str id="fpsCounterConductor-desc">If checked, will display information relating to the conductor on the debug FPS Counter menu.</str>
+
+			<str id="fpsCounterFlixel-name">Show Flixel Info</str>
+			<str id="fpsCounterFlixel-desc">If checked, will display information relating to Flixel on the debug FPS Counter menu.</str>
+		
+			<str id="fpsCounterSystem-name">Show Flixel Info</str>
+			<str id="fpsCounterSystem-desc">If checked, will display information relating to your system on the debug FPS Counter menu.</str>
+		
+			<str id="fpsCounterAssets-name">Show Assets Tree Info</str>
+			<str id="fpsCounterAssets-desc">If checked, will display information relating to the assets tree on the debug FPS Counter menu.</str>
+		
+			<str id="fpsCounterStats-name">Show Stats Info</str>
+			<str id="fpsCounterStats-desc">If checked, will Fuck idk</str>
 		</group>
 	</group>
 

@@ -26,6 +26,11 @@ class Options
 	public static var flashingMenu:Bool = true;
 	public static var camZoomOnBeat:Bool = true;
 	public static var fpsCounter:Bool = true;
+	public static var fpsCounterConductor:Bool = true;
+	public static var fpsCounterFlixel:Bool = true;
+	public static var fpsCounterSystem:Bool = true;
+	public static var fpsCounterAssets:Bool = true;
+	public static var fpsCounterStats:Bool = true;
 	public static var autoPause:Bool = true;
 	public static var antialiasing:Bool = true;
 	public static var volume:Float = 1;

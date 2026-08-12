@@ -36,7 +36,6 @@ class FramerateCategory extends Sprite {
 		this.title.multiline = this.title.wordWrap = false;
 		this.text.multiline = true;
 
-
 		this.text.y = this.title.y + this.title.height + 2;
 	}
 
