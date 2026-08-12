@@ -112,8 +112,8 @@ final class XMLUtil {
 
 	/**
 	 * Loads multiple sheets into 1 sprite,
-	 * for every `<spritesheet path="bf"/>` there is.
-	 * (Can also be spelled as `<sheet/>`)
+	 * for every `<spritesheet>characters/bf</spritesheet>` there is.
+	 * (Can also be spelled as `<sheet/>`, or `<spritesheet path="characters/bf" />`)
 	 * @param spr The sprite
 	 * @param node The XML node
 	 * @param parentFolder The parent folder
@@ -128,34 +128,22 @@ final class XMLUtil {
 		var seenSheets:Array<String> = [defaultPath];
 		for (n in node.elements) {
 			if (n.name != 'spritesheet' && n.name != 'sheet') continue;
-			var path = n.x.get('path');
-			if (path != null && seenSheets.indexOf(path) > -1)
+			var path = n.x.get('path') ?? n.x.firstChild()?.nodeValue?.trim();
+			if (path == null) {
+				Logs.warn('Spritesheet node is missing text content or the path attribute. Skipping...');
 				continue;
-
+			}
+			if (seenSheets.contains(path)) {
+				Logs.warn('Spritesheet "${Paths.image(path)}" was already added. Skipping...');
+				continue;
+			}
 			if (!Paths.framesExists(path, true)) {
-				Logs.warn('Could not find a BitmapData asset with ID ${Paths.image(path)}. Skipping...');
+				Logs.warn('Could not find a BitmapData asset with ID "${Paths.image(path)}". Skipping...');
 				continue;
 			}
 			seenSheets.push(path);
 		}
-		var awesomeKey = 'combo/' + seenSheets.join(',');
-		var graphic = FlxG.bitmap.add("flixel/images/logo/default.png", true, awesomeKey);
-		var sprFrames:FlxAtlasFrames = FlxAtlasFrames.findFrame(graphic) ?? new FlxAtlasFrames(graphic);
-		try {
-			for (x => path in seenSheets) {
-				var formattedPath = Paths.image(path, null, true);
-				var noExt = haxe.io.Path.withoutExtension(formattedPath);
-				@:privateAccess
-				var newFrames = cast Paths.loadFrames(noExt, true, awesomeKey + '_$path', false, false, null, spr.animateSettings);
-				if (newFrames.frames[0].name == null) {
-					Logs.warn('$path frames null??????? someone pls check out why this happens');
-				}
-				sprFrames = FlxAnimateFrames.combineAtlas(sprFrames, newFrames);
-			}
-		} catch(e:Dynamic) {
-			Logs.error('Multisheet load error: ' + e.toString());
-		}
-		return spr.frames = sprFrames;
+		return spr.frames = Paths.getMultiFrames(seenSheets, false, null, null, spr.animateSettings);
 	}
 	/**
 	 * Sets the properties of a sprite based on a XML node.
