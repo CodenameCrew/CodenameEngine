@@ -28,5 +28,25 @@ final class Linux {
 	{
 		return 0;
 	}
+
+	@:functionCode('
+		FILE *status = fopen("/proc/self/status", "r");
+		if (status == NULL) return 0.0;
+
+		char line[256];
+		while (fgets(line, sizeof(line), status)) {
+			long rss;
+			if (sscanf(line, "VmRSS: %ld kB", &rss) == 1) {
+				fclose(status);
+				return (double)(rss * 1024); // kB -> bytes
+			}
+		}
+		fclose(status);
+		return 0.0;
+	')
+	public static function getCurrentProcessMemory():Float
+	{
+		return 0;
+	}
 }
 #end

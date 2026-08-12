@@ -8,8 +8,8 @@ class MemoryCounter extends Sprite {
 	public var memoryText:TextField;
 	public var memoryPeakText:TextField;
 
-	public var memory:Float = 0;
-	public var memoryPeak:Float = 0;
+	public var gcMemory:Float = 0;
+	public var processMemory:Float = 0;
 
 	public function new() {
 		super();
@@ -28,6 +28,9 @@ class MemoryCounter extends Sprite {
 			addChild(label);
 		}
 		memoryPeakText.alpha = 0.5;
+		#if !(cpp && (windows || mac || linux))
+		memoryPeakText.visible = false;
+		#end
 	}
 
 	public function reload() {}
@@ -36,17 +39,31 @@ class MemoryCounter extends Sprite {
 		if (alpha <= 0.05) return;
 		super.__enterFrame(t);
 
-		final mem = MemoryUtil.currentMemUsage();
+		#if (cpp && (windows || mac || linux))
+		final gcMem = MemoryUtil.currentMemUsage();
+		final osMem = MemoryUtil.currentProcessMemUsage();
 
-		if (mem == memory) {
+		if (gcMem == gcMemory && osMem == processMemory) {
 			updateLabelPosition();
 			return;
 		}
 
-		memory = mem;
-		if (memoryPeak < memory) memoryPeak = memory;
-		memoryText.text = CoolUtil.getSizeString(memory);
-		memoryPeakText.text = ' / ${CoolUtil.getSizeString(memoryPeak)}';
+		gcMemory = gcMem;
+		processMemory = osMem;
+
+		memoryText.text = CoolUtil.getSizeString(gcMemory);
+		memoryPeakText.text = ' / ${CoolUtil.getSizeString(osMem)}';
+		#else
+		final mem = MemoryUtil.currentMemUsage();
+
+		if (mem == gcMemory) {
+			updateLabelPosition();
+			return;
+		}
+
+		gcMemory = mem;
+		memoryText.text = CoolUtil.getSizeString(mem);
+		#end
 
 		updateLabelPosition();
 	}
