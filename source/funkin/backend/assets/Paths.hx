@@ -269,7 +269,7 @@ class Paths
 				cur++;
 			}
 			return finalFrames;
-		} else if (Assets.exists('$noExt/Animation.json')) {
+		} else if (!SkipAtlasCheck && Assets.exists('$noExt/Animation.json')) {
 			return Paths.getAnimateAtlasAlt(noExt, animateSettings);
 		} else if (Assets.exists('$noExt.xml')) {
 			return Paths.getSparrowAtlasAlt(noExt, ext);
