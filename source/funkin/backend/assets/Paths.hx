@@ -238,6 +238,41 @@ class Paths
 		return false;
 	}
 
+	/*
+	 * Loads frames from multiple specified image paths. Supports all atlas types.
+	 * @param sheets An array of paths to the images
+	 * @param unique (Additional) Whenever the image should be unique in the cache
+	 * @param key (Additional) Key to the image in the cache
+	 * @param ext (Additional) Extension of the images.
+	 * @return FlxFramesCollection Frames
+	 */
+	public static function getMultiFrames(sheets:Array<String>, ?unique:Bool = false, ?key:String = null, ?ext:String = null, ?animateSettings:FlxAnimateSettings):FlxFramesCollection {
+		if (sheets.length == 1) return loadFrames(sheets[0], unique, key, false, false, ext, animateSettings);
+		if (key == null) key = 'combo/' + sheets.join(',');
+		var graphic = FlxG.bitmap.add("flixel/images/logo/default.png", unique, key);
+
+		// restarting song kills it if it does whats commented out
+		// but idk how to make it cache (i dont want memory exploding
+		var sprFrames:FlxAtlasFrames /*= FlxAtlasFrames.findFrame(graphic);
+		if (sprFrames != null) return tempFramesCache[key] = sprFrames;
+		sprFrames*/ = new FlxAtlasFrames(graphic);
+		try {
+			for (x => path in sheets) {
+				var noExt = haxe.io.Path.withoutExtension(Paths.image(path, null, true, ext));
+				@:privateAccess
+				var newFrames = cast Paths.loadFrames(noExt, true, key + '_$path', false, false, ext, animateSettings);
+				if (newFrames == null) {
+					Logs.warn('There is no Bitmap asset for "$noExt". Skipping...');
+					continue;
+				}
+				sprFrames = FlxAnimateFrames.combineAtlas(sprFrames, newFrames);
+			}
+		} catch(e:Dynamic) {
+			Logs.error('Multisheet load error: ' + e.toString());
+		}
+		return tempFramesCache[key] = sprFrames;
+	}
+	
 	/**
 	 * Loads frames from a specific image path. Supports Sparrow Atlases, Packer Atlases, and multiple spritesheets.
 	 * @param path Path to the image
@@ -260,7 +295,6 @@ class Paths
 			if (frames != null)
 				return frames;
 
-			trace("no frames yet for multiple atlases!!");
 			var cur = 1;
 			var finalFrames = new MultiFramesCollection(graphic);
 			while(Assets.exists('$noExt/$cur.${ext}')) {
@@ -269,7 +303,7 @@ class Paths
 				cur++;
 			}
 			return finalFrames;
-		} else if (Assets.exists('$noExt/Animation.json')) {
+		} else if (!SkipAtlasCheck && Assets.exists('$noExt/Animation.json')) {
 			return Paths.getAnimateAtlasAlt(noExt, animateSettings);
 		} else if (Assets.exists('$noExt.xml')) {
 			return Paths.getSparrowAtlasAlt(noExt, ext);
