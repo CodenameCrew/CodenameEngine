@@ -8,8 +8,8 @@ class MemoryCounter extends Sprite {
 	public var memoryText:TextField;
 	public var memoryPeakText:TextField;
 
-	public var gcMemory:Float = 0;
-	public var processMemory:Float = 0;
+	public var memory:Float = 0;
+	public var memoryPeak:Float = 0;
 
 	public function new() {
 		super();
@@ -43,25 +43,25 @@ class MemoryCounter extends Sprite {
 		final gcMem = MemoryUtil.currentMemUsage();
 		final osMem = MemoryUtil.currentProcessMemUsage();
 
-		if (gcMem == gcMemory && osMem == processMemory) {
+		if (gcMem == memory && osMem == memoryPeak) {
 			updateLabelPosition();
 			return;
 		}
 
-		gcMemory = gcMem;
-		processMemory = osMem;
+		memory = gcMem;
+		memoryPeak = osMem;
 
-		memoryText.text = CoolUtil.getSizeString(gcMemory);
+		memoryText.text = CoolUtil.getSizeString(gcMem);
 		memoryPeakText.text = ' / ${CoolUtil.getSizeString(osMem)}';
 		#else
 		final mem = MemoryUtil.currentMemUsage();
 
-		if (mem == gcMemory) {
+		if (mem == memory) {
 			updateLabelPosition();
 			return;
 		}
 
-		gcMemory = mem;
+		memory = mem;
 		memoryText.text = CoolUtil.getSizeString(mem);
 		#end
 
