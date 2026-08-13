@@ -44,10 +44,10 @@ class Flags {
 
 	public static var MOD_REDIRECT_STATES:Map<String, String> = [];
 
-	@:also(funkin.backend.utils.GameJoltSecurity.gameId)
+	@:also(funkin.backend.system.gamejolt.GameJoltSecurity.gameId)
 	public static var MOD_GAMEJOLT_GAME_ID:String = '';
-	@:also(funkin.backend.utils.GameJoltSecurity.encryptedGameToken)
-	public static var MOD_GAMEJOLT_TOKEN:String = '';
+	@:also(funkin.backend.system.gamejolt.GameJoltSecurity.encryptedGameToken)
+	public static var MOD_GAMEJOLT_ENCRYPTED_TOKEN:String = '';
 
 	// -- Codename's Default Flags --
 	@:lazy public static var SAVE_PATH:String = haxe.macro.Compiler.getDefine("SAVE_PATH");

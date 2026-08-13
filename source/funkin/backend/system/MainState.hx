@@ -13,6 +13,7 @@ import funkin.backend.system.framerate.Framerate;
 import funkin.backend.utils.GJUtil;
 import funkin.editors.ModConfigWarning;
 import funkin.menus.TitleState;
+import funkin.menus.gamejolt.GameJoltCompleteScreen;
 import haxe.io.Path;
 
 
@@ -164,13 +165,10 @@ class MainState extends FlxState {
 		}
 
 		#if GAMEJOLT_API
-		if (FlxG.save.data.gameJoltArray != null) {
-			var gjDat:Array<String> = FlxG.save.data.gameJoltArray;
-			GJUtil.attemptLogin(gjDat[0], gjDat[1]);
-		}
+		GJUtil.init();
 		#end
 
-		var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
+		var startState:Class<FlxState> = /**GameJoltData.freshStart ?**/ GameJoltCompleteScreen /**: (Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState)**/;
 
 		// In this case if the mod we just loaded a compressed modpack, we can't edit or modify files without decompressing it.
 		if (Options.devMode && Options.allowConfigWarning && !isZipMod) {

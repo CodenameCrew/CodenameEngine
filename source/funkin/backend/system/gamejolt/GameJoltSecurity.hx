@@ -1,9 +1,12 @@
-package funkin.backend.utils;
+package funkin.backend.system.gamejolt;
 
-import hscript.IHScriptCustomBehaviour;
+import hscript.IHScriptCustomAccessBehaviour;
 import funkin.backend.utils.GJUtil;
 import funkin.backend.utils.GJUtil.RequestType;
-import haxe.crypto.Md5;
+import haxe.crypto.*;
+import haxe.crypto.mode.Mode;
+import haxe.crypto.padding.Padding;
+import haxe.io.Bytes;
 import funkin.backend.utils.GJUtil.*;
 import haxe.Http;
 import haxe.Json;
@@ -16,31 +19,16 @@ import openfl.events.*;
  * If the raw game keys are made public, people can mess with leaderboards, data, achievements,
  * or whatever else is on the game page.
  * 
- * As such, Codename Engine requires players to encrypt keys, and the method of
- * encryption is non-disclosable for security reasons, so the original file
- * used in distributed CNE builds cannot be shared.
- * Instead, we provide this public-facing file for hardcoding purposes.
- * 
- * To use this file, make a copy and rename the copy's filename and class name to
- * `GameJoltSecurity.hx`. To modify the encryption method, go to the function
- * `set_encryptedGameToken` and modify the code in the first half of the null
- * check (`if (tok != null) {}`).
- * 
- * **WE HIGHLY ENCOURAGE YOU TO COME UP WITH AN ENCRYPTION METHOD FOR GAMEJOLT KEYS.**
- * HaxeFoundation's crypto package is installed with Codename, you can see the methods
- * you can use (as well as the documentation) [here](https://github.com/HaxeFoundation/crypto).
- * 
- * # ***DO NOT LET YOUR PLAYERS PUT THE RAW KEYS IN ANY SOFTCODED FILES!!! WE ARE NOT***
- * ***RESPONSIBLE IF YOU DON'T MAKE YOUR PLAYERS ENCRYPT THEIR KEYS AND THEIR STUFF***
- * ***GETS HACKED!!!!***
+ * As such, Codename Engine requires players to encrypt keys using the AES protocol, and
+ * the key to decrypt such keys is non-disclosable (hence why it's in a .env file).
  * 
  * Also for security purposes, this class is unattainable via HScript.
  * 
  * ~ SplatterDash
  */
-@:noCustomClass
-@:dox(hide)
-abstract class GameJoltSecurityPublic implements IHScriptCustomBehaviour
+
+@:noCustomClass @:build(funkin.backend.system.macros.SecretMacro.build())
+class GameJoltSecurity implements IHScriptCustomAccessBehaviour
 {
 	/**
 	 * Token for the user if they're logged in.
@@ -53,6 +41,17 @@ abstract class GameJoltSecurityPublic implements IHScriptCustomBehaviour
 	public static var gameId:String = '';
 
 	/**
+	 * Map of all trophies defined using specific names.
+	 * Specifically stored here so that it's harder to cheese song,
+	 * FC or other specific trophies.
+	 */
+	public static var definedTrophies(default, null):Map<String, Int> = [];
+
+	/**
+	 * 
+	 */
+	public static var definedLeaderboards(default, null):Map<String, Int> = [];
+	/**
 	 * The encrypted game token. Set using GAMEJOLT_ENCRYPTED_TOKEN in ini file.
 	 */
 	public static var encryptedGameToken(default, set):String;
@@ -60,37 +59,78 @@ abstract class GameJoltSecurityPublic implements IHScriptCustomBehaviour
 	/**
 	 * The unencrypted game token. It's insanely hard to get this variable.
 	 */
-	@:noPrivateAccess static var revealedGameToken:String;
+	@:noPrivateAccess private static var revealedGameToken:String;
 
 	/**
 	 * URL sent to GameJolt per request.
 	 */
-	@:noPrivateAccess static var url(get, never):String;
+	@:noPrivateAccess private static var url(get, never):String;
 
 	/**
 	 * The previous response created by the API client. Usually for just storage purposes.
 	 */
-	static var lastResponse:Response = {success: false, message: "No response yet."};
+	private static var lastResponse:Response = {success: false, message: "No response yet."};
 
 	/**
 	 * The current call being processed.
 	 */
-	static var curCall:Null<RequestType> = null;
+	private static var curCall:Null<RequestType> = null;
+
+	/**
+	 * The secret key to decrypt GameJolt keys using AES. This cannot be traced or located in any way.
+	 */
+	@:envField
+	private static final CODENAME_AES_KEY:Null<String>;
 
 	// hscript - thanks LJ :D
+
+	//region IHScriptCustomAccessBehaviour implementation
+	public var __allowSetGet:Bool = false;
+
 	public function hget(name:String):Dynamic
-	{
 		return null;
-	}
 
 	public function hset(name:String, val:Dynamic):Dynamic
-	{
 		return null;
-	}
+
+	public function __callGetter(name:String):Dynamic
+		return null;
+
+	public function __callSetter(name:String, val:Dynamic):Dynamic
+		return null;
+	//endregion
 
 	static function get_url():String
 	{
 		return sign('https://api.gamejolt.com/api/game/v1_2${parseType(curCall)}');
+	}
+
+	/**
+	 * This is a copy of GJUtil's "send" request, but kept here since Hscript can't get here.
+	 * Any calls here are guaranteed to be from hardcoding.
+	 * @param call 
+	 * @param async 
+	 * @param onError 
+	 * @param onComplete 
+	 * @param onProgress 
+	 */
+	public static function sendTrusted(call:RequestType, async:Bool = false, ?onError:String->Void, ?onComplete:Response->Void, ?onProgress:Array<Float>->Void)
+	{
+		@:privateAccess {
+			if (GJUtil.executing || !GJUtil.active)
+				return;
+			GJUtil.executing = true;
+		}
+
+		var resp:Response = handleRequest(async, call, onProgress);
+		@:privateAccess
+		GJUtil.executing = false;
+		if (resp.message != null && onError != null)
+			onError(resp.message);
+		else if (resp.message == null && onComplete != null) {
+			@:privateAccess
+			onComplete(GJUtil.formatImages(resp));
+		}
 	}
 
 	static function handleRequest(async:Bool = false, data:RequestType, ?onProgress:Array<Float>->Void):Response
@@ -108,7 +148,10 @@ abstract class GameJoltSecurityPublic implements IHScriptCustomBehaviour
 			loader.addEventListener(Event.COMPLETE, function(complete) {
 				lastResponse = Json.parse(cast(loader.data, String)).response;
 				if (lastResponse.message != null) {
-					trace('Response Error: ${lastResponse.message}');
+					Logs.traceColored([
+						Logs.getPrefix("GameJolt"),
+						Logs.logText('Response Error: ${lastResponse.message}')
+					], ERROR);
 				}
 				
 			});
@@ -126,7 +169,10 @@ abstract class GameJoltSecurityPublic implements IHScriptCustomBehaviour
 			loader.onData = function(data) {
 				lastResponse = Json.parse(data).response;
 				if (lastResponse.message != null)
-					trace('Response Error: ${lastResponse.message}');
+					Logs.traceColored([
+						Logs.getPrefix("GameJolt"),
+						Logs.logText('Response Error: ${lastResponse.message}')
+					], ERROR);
 			};
 			loader.onError = function(error) {
 				lastResponse = {success: false, message: 'Request Error: ${error}'};
@@ -320,9 +366,15 @@ abstract class GameJoltSecurityPublic implements IHScriptCustomBehaviour
 	 */
 	static function set_encryptedGameToken(tok:String)
 	{
-		if (tok != null) {
-			// Encryption method goes here.
-			revealedGameToken = tok;
+		if (tok != null && CODENAME_AES_KEY != null) {
+			var iv:String = tok.substr(0, 32);
+			var theK:String = tok.substr(32);
+
+			var aes:Aes = new Aes(Bytes.ofHex(CODENAME_AES_KEY), Bytes.ofHex(iv.toUpperCase()));
+
+			var dat:String = aes.decrypt(Mode.OFB, Bytes.ofHex(theK), Padding.NoPadding).toString();
+
+			revealedGameToken = dat;
 		} else {
 			revealedGameToken = null;
 		}

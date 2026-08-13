@@ -2,3 +2,4 @@ story mode
 freeplay
 options
 credits
+gamejolt

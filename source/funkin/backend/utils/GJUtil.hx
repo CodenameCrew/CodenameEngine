@@ -1,5 +1,8 @@
 package funkin.backend.utils;
 
+import funkin.backend.system.gamejolt.GameJoltData;
+import funkin.backend.system.gamejolt.GameJoltSecurity;
+
 /**
  * This is how GameJolt API responses are formatted like.
  */
@@ -94,7 +97,7 @@ typedef Trophy = {
  * The way the user data is fetched from the GameJolt API.
  * 
  * @param id The ID of the User.
- * @param type The cathegory the User is cataloged like in GameJolt.
+ * @param type The category the User is cataloged like in GameJolt.
  * @param username The username of the User. (Also available for guests).
  * @param avatar_url The link of the avatar of the User.
  * @param signed_up A short description about how long the User have been in GameJolt.
@@ -184,15 +187,15 @@ class GJUtil
 	public static var userName(default, set):String;
 
 	/**
+	 * The avatar of the logged in user.
+	 */
+	public static var userAvatarUrl(default, null):String;
+
+	/**
 	 * Whether or not the GameJolt utility is operational.
 	 * This cannot be set other than load operations.
 	 */
 	public static var active(default, null):Bool = false;
-
-	/**
-	 * Whether or not the utility is executing a call.
-	 */
-	static var executing:Bool = false;
 
 	/**
 	 * Helper function in case the session is lost in the middle of the game.
@@ -200,14 +203,41 @@ class GJUtil
 	public static var onLostSession:Null<Void->Void> = null;
 
 	/**
+	 * Helper function that runs when an achievement is unlocked.
+	 * Can be useful for notifications.
+	 */
+	public static var onTrophyUnlock:Null<Array<String>->Void> = null;
+
+	/**
+	 * Whether or not the utility is executing a call.
+	 */
+	static var executing:Bool = false;
+
+	#if GAMEJOLT_API
+	public static function init()
+	{
+		if (Flags.MOD_GAMEJOLT_GAME_ID == '')
+			return;
+
+		if (Flags.MOD_GAMEJOLT_ENCRYPTED_TOKEN == '') {
+			GameJoltData.loadAdminData();
+			if (Flags.MOD_GAMEJOLT_ENCRYPTED_TOKEN == '')
+				return;
+		} else if (FlxG.save.data.gameJoltArray != null) {
+			var gjDat:Array<String> = FlxG.save.data.gameJoltArray;
+			GJUtil.attemptLogin(gjDat[0], gjDat[1]);
+		}
+	}
+
+	/**
 	 * Helper function to simplify the login process.
 	 * @param name Username of user attempting to login.
 	 * @param token User token of user attempting to login.
 	 * @return Bool Whether the attempt was successfull or not.
 	 */
-	public static function attemptLogin(name:String, token:String):Bool
+	public static function attemptLogin(name:String, token:String, checkCreds:Bool = false, tempLogin:Bool = false):Bool
 	{
-		if(Flags.MOD_GAMEJOLT_GAME_ID != '' && Flags.MOD_GAMEJOLT_TOKEN != '')
+		if(Flags.MOD_GAMEJOLT_GAME_ID != '' && Flags.MOD_GAMEJOLT_ENCRYPTED_TOKEN != '')
 			active = true
 		else
 			return false;
@@ -215,27 +245,88 @@ class GJUtil
 		var ret:Bool = false;
 		userName = name;
 		GameJoltSecurity.user_token = token;
-		send(RequestType.SESSION_OPEN, false, function(err) {
+		var batchCalls:Array<RequestType> = [RequestType.SESSION_OPEN];
+		if (checkCreds) batchCalls.unshift(RequestType.USER_AUTH);
+		send(RequestType.BATCH(true, false, batchCalls), false, function(err) {
 			userName = null;
 			GameJoltSecurity.user_token = null;
 		}, function(resp) {
-			trace('GameJolt logged in as ${userName}');
 			ret = true;
-			openfl.Lib.application.onExit.add(onExitApp);
-			FlxG.signals.postUpdate.add(pingTimer);
-			FlxG.save.data.gameJoltArray = [userName, token];
-			FlxG.save.flush();
+			if (!tempLogin) {
+				Logs.traceColored([
+					Logs.getPrefix("GameJolt"),
+					Logs.logText("Successfully logged in user "),
+					Logs.logText(userName, GREEN),
+					Logs.logText('!')
+				], SUCCESS);
+				openfl.Lib.application.onExit.add(onExitApp);
+				FlxG.signals.postUpdate.add(pingTimer);
+				if (checkCreds) {
+					FlxG.save.data.gameJoltArray = [userName, token];
+					FlxG.save.flush();
+				}
+			}
 		});
 		return ret;
 	}
 
-	static function onExitApp(i:Int)
+	public static function logout(wipeSave:Bool = false, tempLogin:Bool = false)
 	{
-		logout();
+		if (!active)
+			return;
+		if (!tempLogin)
+			shutdownFunctions();
+		send(RequestType.SESSION_CLOSE, true, null, function(resp) {
+			if (!tempLogin)
+				Logs.traceColored([
+					Logs.getPrefix("GameJolt"),
+					Logs.logText("User "),
+					Logs.logText(userName, GREEN),
+					Logs.logText(' logged out successfully.')
+				], VERBOSE);
+			userName = null;
+			GameJoltSecurity.user_token = null;
+			if (wipeSave) {
+				FlxG.save.data.gameJoltArray = null;
+				FlxG.save.flush();
+			}
+		});
+	}
+
+	public static function makeCall(call:RequestType, async:Bool = false, ?onError:String->Void, ?onComplete:Response->Void, ?onProgress:Array<Float>->Void)
+	{
+		switch(call) {
+			case BATCH(parallel, breakOnError, requests):
+				return;
+
+			case DATA_GETKEYS(fromUser, pattern):
+				return;
+
+			case DATA_REMOVE(key, fromUser):
+				return;
+
+			case DATA_SET(key, data, toUser):
+				return;
+
+			case DATA_UPDATE(key, operation, toUser):
+				return;
+
+			case USER_AUTH:
+				return;
+
+			case SCORES_ADD(score, sort, extra_data, table_id):
+				return;
+			
+			case TROPHIES_ADD(trophy_id):
+				return;
+
+			case _:
+				send(call, async, onError, onComplete, onProgress);
+		}
 	}
 
 	static var pingTime:Int = 0;
-	public static function pingTimer()
+	static function pingTimer()
 	{
 		pingTime += 1;
 		if (pingTime < 10000) return;
@@ -243,37 +334,35 @@ class GJUtil
 		pingSession();
 	}
 
-	public static function pingSession()
+	static function pingSession()
 	{
 		send(RequestType.SESSION_PING(true), true, (str) -> {
-			trace('GameJolt session lost.');
 			if (onLostSession != null) onLostSession();
 			shutdownFunctions();
+			Logs.trace("Session lost; GJUtil shut down successfully.", WARNING, LIGHTGRAY, 'GameJolt');
 			active = false;
 		});
 	}
 
-	public static function logout()
+	static function onExitApp(i:Int)
 	{
-		if (!active)
-			return;
-		
-		shutdownFunctions();
-		send(RequestType.SESSION_CLOSE, false, null, function(resp) {
-			trace('GameJolt account ${userName} logged out successfully.');
-			userName = null;
-			GameJoltSecurity.user_token = null;
-		});
+		logout();
 	}
 
 	static function shutdownFunctions()
 	{
+		Logs.traceColored([
+			Logs.getPrefix("GameJolt"),
+			Logs.logText("Logging out user "),
+			Logs.logText(userName, GREEN),
+			Logs.logText('...')
+		], INFO);
 		FlxG.signals.postUpdate.remove(pingTimer);
 		openfl.Lib.application.onExit.remove(onExitApp);
 		onLostSession = null;
 	}
 
-	public static function send(call:RequestType, async:Bool = false, ?onError:String->Void, ?onComplete:Response->Void, ?onProgress:Array<Float>->Void)
+	@:noPrivateAccess static function send(call:RequestType, async:Bool = false, ?onError:String->Void, ?onComplete:Response->Void, ?onProgress:Array<Float>->Void)
 	{
 		if (executing || !active)
 			return;
@@ -318,4 +407,7 @@ class GJUtil
 		loggedIn = (name != null && name != '');
 		return userName = name;
 	}
+	#else
+
+	#end
 }
