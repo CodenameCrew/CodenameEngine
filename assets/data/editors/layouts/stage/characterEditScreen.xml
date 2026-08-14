@@ -8,9 +8,18 @@
 			return 20 + (150 + XOFFSET) * c;
 		}
 		previewSprite = null;
-		if(char.animateAtlas == null) {
+		if(!char.isAnimate) {
 			previewSprite = new FunkinSprite(0, 0);
 			previewSprite.frame = char.frame;
+
+			self.add(previewSprite);
+		} else {
+			previewSprite = new FunkinSprite(0, 0);
+			previewSprite.frames = char.frames;
+			previewSprite.applyStageMatrix = false;
+			// quite a bit of hacking to it buuuuuut
+			previewSprite.animation._curAnim = char.animation._curAnim;
+			previewSprite.animation.frameIndex = char.animation.frameIndex;
 
 			self.add(previewSprite);
 		}
@@ -53,8 +62,10 @@
 
 		<stepper name="zoomFactorStepper" label="${translate('zoomFactor')}" value="char.zoomFactor" x="col(1)" y="curY" precision="2" step="0.01" width="100" />
 
+		<set name="charTypeY" value="curY" />
 		<section if="!StringTools.startsWith(char.name, 'NO_DELETE_')">
-			<textbox name="charName" label="${translate('positionName')}" value="char.name" x="col(2)" y="curY" width="100"/>
+			<textbox name="charName" label="${translate('positionName')}" value="char.name" x="col(2)" y="curY" width="145"/>
+			<set name="charTypeY" value="self.winHeight - 200" />
 		</section>
 	</section>
 
@@ -78,12 +89,12 @@
 	</section>
 
 	<section>
-		<label name="curCharLabel" text="Character (XML)" x="col(2)" y="curY - 52" size="15" />
+		<label name="curCharLabel" text="Character (XML)" x="col(2)" y="charTypeY" size="15" />
 		 <exec>
 			import funkin.editors.ui.UIAutoCompleteTextBox;
 			import funkin.game.Character;
 
-			var curCharBox = new UIAutoCompleteTextBox(col(2), curY - 52, char.curCharacter, 148, 32);
+			var curCharBox = new UIAutoCompleteTextBox(col(2), charTypeY, char.curCharacter, 145, 32);
 			curCharBox.suggestItems = Character.getList(false);
 			self.add(curCharBox);
 		 </exec>
