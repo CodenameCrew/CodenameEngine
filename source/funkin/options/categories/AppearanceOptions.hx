@@ -1,13 +1,21 @@
 package funkin.options.categories;
 
 class AppearanceOptions extends TreeMenuScreen {
+	// use for changing the text
+	var framerateOption:NumOption;
+	var maxFrameRate:Int = 240;
 	public function new() {
 		super('optionsTree.appearance-name', 'optionsTree.appearance-desc', 'AppearanceOptions.');
 
-		add(new NumOption(getNameID('framerate'), getDescID('framerate'),
-			30, 240, 1,
+		add(framerateOption = new NumOption(getNameID('framerate'), getDescID('framerate'),
+			30, maxFrameRate + 1, 1,
 			'framerate', __changeFPS
 		));
+		// fixes framerate dropping to 30 (minimum) when framerate is 0 (unlimited)
+		if (framerateOption.currentValue == 0) {
+			framerateOption.currentValue = maxFrameRate + 1;
+			__changeFPS(framerateOption.currentValue);
+		}
 		add(new Checkbox(getNameID('flashingMenu'), getDescID('flashingMenu'), 'flashingMenu'));
 		add(new Checkbox(getNameID('colorHealthBar'), getDescID('colorHealthBar'), 'colorHealthBar'));
 		add(new Checkbox(getNameID('week6PixelPerfect'), getDescID('week6PixelPerfect'), 'week6PixelPerfect'));
@@ -19,6 +27,11 @@ class AppearanceOptions extends TreeMenuScreen {
 
 	private function __changeFPS(value:Float) {
 		var framerate = Math.floor(value);
+		@:privateAccess if (framerate > maxFrameRate) {
+			// the reflect call from NumOption is before the changedCallback so i have to set it manually again
+			Options.framerate = framerate = 0;
+			framerateOption.__number.text = TextOption.OPTION_VALUE_PREFIX + translate('framerate-unlimited');
+		}
 		if (FlxG.updateFramerate < framerate) FlxG.drawFramerate = FlxG.updateFramerate = framerate;
 		else FlxG.updateFramerate = FlxG.drawFramerate = framerate;
 	}
@@ -32,7 +45,7 @@ class AdvancedAppearanceOptions extends TreeMenuScreen {
 
 		add(new ArrayOption(getNameID('quality'), getDescID('quality'),
 			[0, 1, 2], [getID('quality-low'), getID('quality-high'), getID('quality-custom')],
-			'quality', __changeQuality, null
+			'quality', __changeQuality
 		));
 
 		for (option in (qualityOptions = [

@@ -704,4 +704,9 @@
 		<str id="createdTitle">Created mod config!</str>
 		<str id="createdDesc">Your mod config file has been created at {0}!</str>
 	</group>
+
+	<group name="ModAPIWarning" prefix="modApiWarning.">
+		<str id="warningTitle">Outdated API Version! (v{0} &lt; v{1})</str>
+		<str id="warningDesc">Your mod's config runs on an outdated API Version! This WILL cause compatiblilty and code issues!\n\nIt is recommended that you make changes to your mod and its config file to fit the new version.\n\nMeanwhile, the game will try its best to make your mod compatible, but you should still update your mod.\n\n(PS: If this is not your mod please disable Developer mode, and notify the mod developers if needed.)</str>
+	</group>
 </language>
