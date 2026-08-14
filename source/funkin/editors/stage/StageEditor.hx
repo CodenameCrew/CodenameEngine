@@ -1162,7 +1162,9 @@ class StageEditor extends UIState {
 		}
 
 		mouseMode = (FlxG.mouse.justReleased) ? NONE : mouseMode;
-
+		if (prevMode != mouseMode)
+			call("mouseModeChanged", [sprite]);
+		
 		if (prevMode == NONE && mouseMode == NONE) return;
 
 		if (prevMode != NONE && mouseMode == NONE) {
