@@ -23,32 +23,6 @@ class FlxView3D extends FlxSprite
 	private var _textureView:TextureView3D;
 	private var legacyRender:Bool = false;
 
-	// With new rendering, it seems to only work if 2 or more views are being rendered.
-	// This workaround creates a second instance if there is only one view.
-	// "There is nothing more permanent than a temporary solution"
-	// -idk who said this i just wanted to quote it
-	private static var workaroundInstance:FlxView3D;
-	private static var createdWorkaround:Bool = false;
-
-	private inline function createWorkaround()
-	{
-		if (!createdWorkaround && !legacyRender)
-		{
-			createdWorkaround = true;
-			workaroundInstance = new FlxView3D(0, 0, 1, 1);
-			FlxG.state.add(workaroundInstance);
-		}
-	}
-
-	private inline function destroyWorkaround()
-	{
-		if (workaroundInstance == this)
-		{
-			workaroundInstance = null;
-			createdWorkaround = false;
-		}
-	}
-
 	/**
 	 * The Away3D View
 	 */
@@ -90,8 +64,8 @@ class FlxView3D extends FlxSprite
 
 		view.visible = false;
 
-		this.width = width == -1 ? FlxG.width : width;
-		this.height = height == -1 ? FlxG.height : height;
+		this.width = width < 0 ? FlxG.width : width;
+		this.height = height < 0 ? FlxG.height : height;
 		if (legacyRender)
 		{
 			bmp = new BitmapData(Std.int(view.width), Std.int(view.height), true, 0x0);
@@ -100,8 +74,6 @@ class FlxView3D extends FlxSprite
 
 		view.backgroundAlpha = 0;
 		FlxG.stage.addChildAt(view, 0);
-
-		createWorkaround();
 	}
 
 	/**
@@ -133,8 +105,6 @@ class FlxView3D extends FlxSprite
 			view.dispose();
 			view = null;
 		}
-
-		destroyWorkaround();
 	}
 
 	@:noCompletion override function draw()
