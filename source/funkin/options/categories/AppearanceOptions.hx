@@ -3,17 +3,17 @@ package funkin.options.categories;
 class AppearanceOptions extends TreeMenuScreen {
 	// use for changing the text
 	var framerateOption:NumOption;
-	var maxFrameRate:Int = 240;
+
 	public function new() {
 		super('optionsTree.appearance-name', 'optionsTree.appearance-desc', 'AppearanceOptions.');
 
 		add(framerateOption = new NumOption(getNameID('framerate'), getDescID('framerate'),
-			30, maxFrameRate + 1, 1,
+			30, Options.maxFrameRate + 1, 1,
 			'framerate', __changeFPS
 		));
 		// fixes framerate dropping to 30 (minimum) when framerate is 0 (unlimited)
 		if (framerateOption.currentValue == 0) {
-			framerateOption.currentValue = maxFrameRate + 1;
+			framerateOption.currentValue = Options.maxFrameRate + 1;
 			__changeFPS(framerateOption.currentValue);
 		}
 		add(new Checkbox(getNameID('flashingMenu'), getDescID('flashingMenu'), 'flashingMenu'));
@@ -27,9 +27,8 @@ class AppearanceOptions extends TreeMenuScreen {
 
 	private function __changeFPS(value:Float) {
 		var framerate = Math.floor(value);
-		@:privateAccess if (framerate > maxFrameRate) {
-			// the reflect call from NumOption is before the changedCallback so i have to set it manually again
-			Options.framerate = framerate = 0;
+		@:privateAccess if (framerate > Options.maxFrameRate) {
+			framerate = 0;
 			framerateOption.__number.text = TextOption.OPTION_VALUE_PREFIX + translate('framerate-unlimited');
 		}
 		if (FlxG.updateFramerate < framerate) FlxG.drawFramerate = FlxG.updateFramerate = framerate;
