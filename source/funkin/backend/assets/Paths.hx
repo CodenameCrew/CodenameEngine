@@ -246,16 +246,12 @@ class Paths
 	 * @param ext (Additional) Extension of the images.
 	 * @return FlxFramesCollection Frames
 	 */
-	public static function getMultiFrames(sheets:Array<String>, ?unique:Bool = false, ?key:String = null, ?ext:String = null, ?animateSettings:FlxAnimateSettings):FlxFramesCollection {
+	public static function getMultiFrames(sheets:Array<String>, ?unique:Bool = true, ?key:String = null, ?ext:String = null, ?animateSettings:FlxAnimateSettings):FlxFramesCollection {
+		// TODO: cache properly
 		if (sheets.length == 1) return loadFrames(sheets[0], unique, key, false, false, ext, animateSettings);
 		if (key == null) key = 'combo/' + sheets.join(',');
 		var graphic = FlxG.bitmap.add("flixel/images/logo/default.png", unique, key);
-
-		// restarting song kills it if it does whats commented out
-		// but idk how to make it cache (i dont want memory exploding
-		var sprFrames:FlxAtlasFrames /*= FlxAtlasFrames.findFrame(graphic);
-		if (sprFrames != null) return tempFramesCache[key] = sprFrames;
-		sprFrames*/ = new FlxAtlasFrames(graphic);
+		var sprFrames:FlxAtlasFrames = new FlxAtlasFrames(graphic);
 		try {
 			for (x => path in sheets) {
 				var noExt = haxe.io.Path.withoutExtension(Paths.image(path, null, true, ext));
@@ -270,7 +266,7 @@ class Paths
 		} catch(e:Dynamic) {
 			Logs.error('Multisheet load error: ' + e.toString());
 		}
-		return tempFramesCache[key] = sprFrames;
+		return sprFrames;
 	}
 	
 	/**
