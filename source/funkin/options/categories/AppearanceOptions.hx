@@ -11,9 +11,7 @@ class AppearanceOptions extends TreeMenuScreen {
 			30, Options.maxFrameRate + 1, 1,
 			'framerate', __changeFPS
 		));
-		// fixes framerate dropping to 30 (minimum) when framerate is 0 (unlimited)
-		if (framerateOption.currentValue == 0) {
-			framerateOption.currentValue = Options.maxFrameRate + 1;
+		if (framerateOption.currentValue > Options.maxFrameRate) {
 			__changeFPS(framerateOption.currentValue);
 		}
 		add(new Checkbox(getNameID('flashingMenu'), getDescID('flashingMenu'), 'flashingMenu'));
