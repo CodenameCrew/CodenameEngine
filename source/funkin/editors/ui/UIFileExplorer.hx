@@ -71,6 +71,7 @@ class UIFileExplorer extends UISliceSprite {
 	}
 
 	public function loadFile(path:String) {
+		if (path == null) return;
 		file = cast sys.io.File.getBytes(filePath = path);
 		deleteButton.visible = deleteButton.selectable = deleteIcon.visible = !(uploadButton.visible = uploadButton.selectable = false);
 
