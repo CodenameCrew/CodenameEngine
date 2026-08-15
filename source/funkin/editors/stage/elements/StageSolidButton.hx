@@ -1,5 +1,7 @@
 package funkin.editors.stage.elements;
 
+import funkin.editors.stage.elements.StageSpriteButton;
+import funkin.editors.stage.StageEditor;
 import flixel.util.FlxColor;
 import haxe.xml.Access;
 
@@ -12,6 +14,10 @@ class StageSolidButton extends StageSpriteButton {
 	}
 
 	public override function onEdit() {
-		// TODO: implement
+		if(!FlxG.keys.pressed.SHIFT) {
+			FlxG.state.openSubState(new StageSpriteEditScreen(this, "layouts/stage/solidEditScreen"));
+		} else {
+			FlxG.state.openSubState(new StageXMLEditScreen(this.xml, updateInfo, "Solid"));
+		}
 	}
 }

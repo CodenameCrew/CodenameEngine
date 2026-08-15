@@ -1,0 +1,151 @@
+<window width="850" height="450" title="${translate('win-solid-title', [button.getName()])}">
+	<set name="MARGIN" value="20" />
+	<set name="XOFFSET" value="50" />
+	<set name="YOFFSET" value="40" />
+	<set name="TO" value="64" />
+	<set name="isSolid" value="button.xml.nodeName == 'solid'" />
+
+	<exec>
+		function col(c:Int) {
+			return MARGIN + (200 + XOFFSET) * c;
+		}
+	</exec>
+
+	<title name="title" x="20" y="30 + 16" text="${translate('solid-title')}" />
+
+	<section> <!-- ROW 1 -->
+		<set name="curY" value="title.y + TO" />
+
+		<textbox name="nameTextBox" label="${translate('nameID')}" value="button.getName()"   x="col(0)" y="curY" width="200" height="32" />
+
+		<stepper name="xStepper" label="X" value="sprite.x" x="last.x + last.bWidth + XOFFSET" y="curY" step="1" width="100" />
+		<stepper name="yStepper" label="Y" value="sprite.y" x="last.x + last.bWidth + XOFFSET - 20" y="curY" step="1" width="100" />
+
+		<colorwheel name="colorWheel" label="${translate('color')}" x="col(2)" y="curY" color="button.xml.get('color')"/>
+	</section>
+
+	<section> <!-- ROW 2 -->
+		<set name="curY" value="nameTextBox.y + nameTextBox.bHeight + YOFFSET" />
+
+		<stepper name="sizeXStepper" label="${translate('width')}" value="isSolid ? sprite.scale.x : sprite.frameWidth" x="col(0)" y="curY" precision="2" step="0.01" width="100" />
+		<stepper name="sizeYStepper" label="${translate('height')}" value="isSolid ? sprite.scale.y : sprite.frameHeight" x="last.x + last.bWidth + XOFFSET - 20" y="curY" precision="2" step="0.01" width="100" />
+
+		<stepper name="scrollXStepper" label="${translate('scroll', ['X'])}" value="sprite.scrollFactor.x" x="col(1)" y="curY" precision="2" step="0.01" width="100" />
+		<stepper name="scrollYStepper" label="${translate('scroll', ['Y'])}" value="sprite.scrollFactor.y" x="last.x + last.bWidth + XOFFSET - 20" y="curY" precision="2" step="0.01" width="100" />
+	</section>
+
+	<section> <!-- ROW 3 -->
+		<set name="curY" value="sizeXStepper.y + sizeXStepper.bHeight + YOFFSET" />
+
+		<stepper name="skewXStepper" label="${translate('skew', ['X'])}" value="sprite.skew.x" x="col(0)" y="curY" precision="2" step="0.01" width="100" />
+		<stepper name="skewYStepper" label="${translate('skew', ['Y'])}" value="sprite.skew.y" x="last.x + last.bWidth + XOFFSET - 20" y="curY" precision="2" step="0.01" width="100" />
+
+		<stepper name="angleStepper" label="${translate('angle')}" value="sprite.angle" x="col(1)" y="curY" precision="2" step="0.01" width="100" />
+		<stepper name="zoomFactorStepper" label="${translate('zoomFactor')}" value="sprite.zoomFactor" x="last.x + last.bWidth + XOFFSET - 20" y="curY" precision="2" step="0.01" width="100" />
+	</section>
+
+	<section> <!-- ROW 4 -->
+		<set name="curY" value="skewXStepper.y + skewXStepper.bHeight + YOFFSET" />
+
+		<stepper name="alphaStepper" label="Alpha" value="sprite.alpha" x="col(0)" y="curY" precision="2" step="0.01" width="100" />
+		<dropdown name="blendMode" label="${translate('blendMode')}" value="sprite.blend" x="last.x + last.bWidth + XOFFSET - 20" y="curY" width="150" height="32">
+			<item label="${translate('blendMode.none')}" value="null" />
+			<item label="${translate('blendMode.add')}" value="'add'" />
+			<item label="${translate('blendMode.alpha')}" value="'alpha'" />
+			<item label="${translate('blendMode.color')}" value="'color'" />
+			<item label="${translate('blendMode.colordodge')}" value="'colordodge'" />
+			<item label="${translate('blendMode.colorburn')}" value="'colorburn'" />
+			<item label="${translate('blendMode.darken')}" value="'darken'" />
+			<item label="${translate('blendMode.difference')}" value="'difference'" />
+			<item label="${translate('blendMode.exclusion')}" value="'exclusion'" />
+			<item label="${translate('blendMode.erase')}" value="'erase'" />
+			<item label="${translate('blendMode.hardlight')}" value="'hardlight'" />
+			<item label="${translate('blendMode.hue')}" value="'hue'" />
+			<item label="${translate('blendMode.invert')}" value="'invert'" />
+			<item label="${translate('blendMode.layer')}" value="'layer'" />
+			<item label="${translate('blendMode.lighten')}" value="'lighten'" />
+			<item label="${translate('blendMode.luminosity')}" value="'luminosity'" />
+			<item label="${translate('blendMode.multiply')}" value="'multiply'" />
+			<item label="${translate('blendMode.overlay')}" value="'overlay'" />
+			<item label="${translate('blendMode.screen')}" value="'screen'" />
+			<item label="${translate('blendMode.shader')}" value="'shader'" />
+			<item label="${translate('blendMode.softlight')}" value="'softlight'" />
+			<item label="${translate('blendMode.subtract')}" value="'subtract'" />
+			<item label="${translate('blendMode.saturation')}" value="'saturation'" />
+		</dropdown>
+
+		<radio for="memoryCheck" name="highMemoryRadio" text="${translate('highMemory')}" value="getEx('highMemory')" x="col(1)" y="curY" />
+		<radio for="memoryCheck" name="lowMemoryRadio" text="${translate('lowMemory')}" value="getEx('lowMemory')" x="col(2)" y="curY" />
+	</section>
+
+	<exec>
+		var prevID = nameTextBox.label.text;
+		var ratio = sprite.width / sprite.height;
+		
+		function onUpdate() {
+			if (nameTextBox.label.text != prevID)
+				self.winTitle = self.titleSpr.text = translate('win-sprite-title', [nameTextBox.label.text]);
+			prevID = nameTextBox.label.text;
+
+			/*if(previewSprite == null) return;
+			previewSprite.color = 0xFFFFFFFF; // TODO: Color Wheel
+			previewSprite.blend = BlendMode.fromString(blendMode.value);
+			previewSprite.skew.x = skewXStepper.value;
+			previewSprite.skew.y = skewYStepper.value;
+			previewSprite.angle = angleStepper.value;
+			previewSprite.alpha = alphaStepper.value;
+			previewSprite.antialiasing = antialiasingCheckbox.checked;
+			previewSprite.setGraphicSize(85 * scaleXStepper.value * ratio, 85 * scaleYStepper.value);
+			previewSprite.updateHitbox();*/
+		}
+		
+		function onSave() {
+			sprite.name = nameTextBox.label.text;
+
+			setEx("highMemory", highMemoryRadio.checked);
+			setEx("lowMemory", lowMemoryRadio.checked);
+
+			(isSolid ? sprite.makeSolid : sprite.makeGraphic)(sizeXStepper.value, sizeYStepper.value, colorWheel.curColor);
+			sprite.x = xStepper.value;
+			sprite.y = yStepper.value;
+			sprite.zoomFactor = zoomFactorStepper.value;
+			sprite.angle = angleStepper.value;
+			sprite.alpha = alphaStepper.value;
+			sprite.blend = BlendMode.fromString(blendMode.value);
+
+			function saveXY(obj:Dynamic, name:String, x:UINumericStepper, y:UINumericStepper) {
+				button.xml.remove(name + "");
+				button.xml.remove(name + "x");
+				button.xml.remove(name + "y");
+
+				obj.x = x.value;
+				obj.y = y.value;
+
+				if(x.value == y.value)
+					button.xml.set(name, x.value);
+				else {
+					button.xml.set(name + "x", x.value);
+					button.xml.set(name + "y", y.value);
+				}
+			}
+
+			button.xml.set("name", nameTextBox.label.text);
+			button.xml.set("x", xStepper.value);
+			button.xml.set("y", yStepper.value);
+			button.xml.set("zoom", zoomFactorStepper.value);
+			button.xml.set("angle", angleStepper.value);
+			button.xml.set("alpha", alphaStepper.value);
+
+			saveXY(sprite.scrollFactor, "scroll", scrollXStepper, scrollYStepper);
+			saveXY(sprite.skew, "skew", skewXStepper, skewYStepper);
+			for (att in ["width", "height", "color"])
+				button.xml.remove(att);
+			XMLUtil.loadSpriteFromXML(sprite, button.xml, "", 0, false);
+			button.xml.set("width", sizeXStepper.value);
+			button.xml.set("height", sizeYStepper.value);
+			button.xml.set("color", colorWheel.curColorString);
+			button.updateInfo();
+			setEx('node', button.xml);
+		}
+	</exec>
+</window>
