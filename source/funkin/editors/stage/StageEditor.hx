@@ -377,12 +377,10 @@ class StageEditor extends UIState {
 		char.name = charName;
 		char.debugMode = true;
 		char.useRenderTexture = true;
-		// Play first anim, and make it the last frame
+		// Play first anim, and make it the last frame by reversing and stopping.
 		var animToPlay = char.getAnimOrder()[0];
-		char.playAnim(animToPlay, true, NONE);
-		var lastIndx = char.animation.curAnim.numFrames - 1;
-		char.playAnim(animToPlay, true, NONE, false, lastIndx);
-		char.stopAnimation();
+		char.playAnim(animToPlay, true, NONE, true, 0);
+		char.stopAnim();
 
 		// Add it to the stage
 		char.visible = true;
@@ -551,6 +549,31 @@ class StageEditor extends UIState {
 		stageSpritesWindow.add(button);
 
 		var substate = new StageSpriteEditScreen(button);
+		substate.newSprite = true;
+		openSubState(substate);
+	}
+
+	function _solid_new(_) {
+		var node:Access = new Access(Xml.createElement("solid"));
+		stage.stageXML.x.addChild(node.x);
+		node.att.name = "solid_" + stageSpritesWindow.buttons.members.length;
+
+		var sprite:FunkinSprite = new FunkinSprite();
+		insert(members.indexOf(stage), sprite);
+		sprite.extra.set(exID("node"), node);
+		sprite.extra.set(exID("type"), node.name);
+		sprite.extra.set(exID("imageFile"), '');
+		sprite.extra.set(exID("parentNode"), stage.stageXML.x);
+		sprite.extra.set(exID("highMemory"), false);
+		sprite.extra.set(exID("lowMemory"), false);
+		sprite.antialiasing = true;
+		xmlMap.set(sprite, node);
+
+		var button:StageSpriteButton = new StageSolidButton(0, 0, sprite, node);
+		sprite.extra.set(exID("button"), button);
+		stageSpritesWindow.add(button);
+
+		var substate = new StageSpriteEditScreen(button, "layouts/stage/solidEditScreen");
 		substate.newSprite = true;
 		openSubState(substate);
 	}

@@ -602,10 +602,12 @@
 		<group name="StageElementEditScreen" prefix="stageElementEditScreen.">
 			<str id="win-character-title">Editing Character "{0}"</str>
 			<str id="win-sprite-title">Editing Sprite "{0}"</str>
+			<str id="win-solid-title">Editing Box "{0}"</str>
 			<str id="win-title">Editing XML &lt;{0} /&gt;</str>
 
 			<str id="character-title">Character Data</str>
 			<str id="sprite-title">Sprite Data</str>
+			<str id="solid-title">Box Data</str>
 			<str id="title">XML Data</str>
 
 			<str id="elementName">Element Name</str>
@@ -613,6 +615,8 @@
 			<str id="imageFile">Image File\n(in "{0}")</str>
 			<str id="scroll">Scroll {0}</str>
 			<str id="scale">Scale {0}</str>
+			<str id="width">Width</str>
+			<str id="height">Height</str>
 			<str id="camera">Camera {0}</str>
 			<str id="spacing">Spacing (X, Y)</str>
 			<str id="skew">Skew {0}</str>
@@ -627,6 +631,7 @@
 			<str id="attributes">Attributes</str>
 			<str id="transformPreview">Transform Preview:</str>
 			<str id="animations">Animations</str>
+			<str id="color">Color</str>
 
 			<str id="animType">Animation Type</str>
 			<group name="AnimTypeDropdown" prefix="animType.">

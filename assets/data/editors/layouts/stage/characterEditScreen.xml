@@ -121,9 +121,6 @@
 			setEx("highMemory", highMemoryRadio.checked);
 			setEx("lowMemory", lowMemoryRadio.checked);
 
-			if (!StringTools.startsWith(char.name, 'NO_DELETE_'))
-				char.name = charName.field.text;
-
 			char.x = xStepper.value;
 			char.y = yStepper.value;
 			char.scrollFactor.set(scrollXStepper.value, scrollYStepper.value);
@@ -146,6 +143,7 @@
 			char.zoomFactor = zoomFactorStepper.value;
 			char.angle = angleStepper.value;
 
+			var posName = StringTools.startsWith(char.name, 'NO_DELETE_') ? char.name : charName.label.text;
 			var newCharName = curCharBox.label.text;
 			if (newCharName != char.curCharacter) {
 				char.curCharacter = newCharName;
@@ -153,11 +151,10 @@
 				char.applyXML(char.xml);
 
 				var anim = char.getAnimOrder()[0];
-				char.playAnim(anim, true);
-				var lastIndx = char.animation.curAnim.numFrames - 1;
-				char.playAnim(anim, true, null, false, lastIndx);
-				char.stopAnimation();
+				char.playAnim(anim, true, 0, true, 0);
+				char.stopAnim();
 			}
+			char.name = posName;
 
 		}
 	</exec>
