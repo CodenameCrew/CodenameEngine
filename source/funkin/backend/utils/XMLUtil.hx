@@ -1,6 +1,7 @@
 package funkin.backend.utils;
 
 import flixel.util.FlxColor;
+import openfl.display.BlendMode;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.backend.FunkinSprite.XMLAnimType;
 import funkin.backend.FunkinSprite;
@@ -204,6 +205,10 @@ final class XMLUtil {
 
 		if(node.has.color)
 			spr.color = FlxColor.fromString(node.getAtt("color")).getDefault(0xFFFFFFFF);
+
+		// no need to getDefault here ? since null blend acts like normal blend
+		@:privateAccess if(node.has.blend)
+			spr.blend = BlendMode.fromString(node.getAtt("blend"));
 
 		if(node.has.angle)
 			spr.angle = Std.parseFloat(node.getAtt("angle")).getDefault(spr.angle);
