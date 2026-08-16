@@ -9,6 +9,12 @@
 	<haxedef name="SAVE_OPTIONS_PATH" value="CodenameEngine"/>
 	<haxedef name="SAVE_OPTIONS_NAME" value="options"/>
 
+	<!--
+		May be used by the libraries of the engine to check
+		for CNE-specific things. DO NOT comment this out
+	-->
+	<haxedef name="cne"/>
+
 	<!-- Comment this out to disable commit number on FPS -->
 	<define name="SHOW_BUILD_ON_FPS"/>
 
