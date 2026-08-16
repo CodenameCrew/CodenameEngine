@@ -245,7 +245,7 @@ class AlphabetEditor extends UIState {
 		infoWindow = new GlyphInfoWindow();
 		uiGroup.add(infoWindow);
 
-		componentList = new UIButtonList<ComponentButton>(0, 720 - 170 - 30, 230, 170, "Components:", FlxPoint.get(230, 50), FlxPoint.get(0, 0), 0);
+		componentList = new UIButtonList<ComponentButton>(15, 720 - 170 - 15, 230, 170, "Components:", FlxPoint.get(230, 50), FlxPoint.get(0, 0), 0);
 		componentList.dragCallback = (button, oldID, newID) -> {
 			queueReorder = true; // not do it for every button reordered
 		}
@@ -532,6 +532,7 @@ class ComponentButton extends UIButton {
 		super(0, 0, component.anim, function() {
 			AlphabetEditor.instance.curSelectedComponent = component;
 			AlphabetEditor.instance.findOutline();
+			AlphabetEditor.instance.infoWindow.button = this;
 			AlphabetEditor.instance.infoWindow.updateInfo();
 		}, 230, 50);
 		this.component = component;
@@ -560,6 +561,7 @@ class ComponentButton extends UIButton {
 
 			data.components.remove(component);
 			AlphabetEditor.instance.curSelectedComponent = (AlphabetEditor.instance.curSelectedComponent == component) ? null : AlphabetEditor.instance.curSelectedComponent;
+			AlphabetEditor.instance.infoWindow.button = (AlphabetEditor.instance.infoWindow.button == this) ? null : AlphabetEditor.instance.infoWindow.button;
 			AlphabetEditor.instance.findOutline();
 			AlphabetEditor.instance.infoWindow.updateInfo();
 
