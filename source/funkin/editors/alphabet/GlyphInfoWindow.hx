@@ -1,5 +1,6 @@
 package funkin.editors.alphabet;
 
+import funkin.editors.alphabet.AlphabetEditor.ComponentButton;
 import flixel.math.FlxAngle;
 
 class GlyphInfoWindow extends UIWindow {
@@ -29,13 +30,14 @@ class GlyphInfoWindow extends UIWindow {
 	public var outlineItems:Array<FlxSprite>;
 	public var initialY:Array<Float> = [];
 
+	public var button:ComponentButton;
 	var compon(get, never):AlphabetComponent;
 	var data(get, never):AlphabetLetterData;
 
 	public function new() {
 		var width = 360;
 		var height = 255;
-		var margin = 30;
+		var margin = 15;
 		var itemMargin = 15; // there was already a buncha variables so i thought why not follow
 		var labelOffset = 24;
 		super(FlxG.width - width - margin, FlxG.height - height - margin, width, height, "Glyph Info");
@@ -48,6 +50,9 @@ class GlyphInfoWindow extends UIWindow {
 
 		prefixBox = new UITextBox(x + itemMargin, y + itemMargin + labelOffset * 2, "", 330);
 		prefixBox.onChange = function(val) {
+			if (button != null)
+				button.field.text = val;
+
 			var index = data.components.indexOf(compon);
 			compon.anim = val;
 			var anim = AlphabetEditor.instance.bigLetter.text + Std.string(index);
@@ -135,7 +140,7 @@ class GlyphInfoWindow extends UIWindow {
 				compon.outIndex = AlphabetEditor.instance.outlineIdx;
 				
 				var newOutline:AlphabetComponent = {
-					refIndex: data.components.indexOf(compon),
+					refIndex: data.components.indexOf(compon) - data.startIndex,
 					anim: outlineBox.label.text,
 
 					x: outlineXBox.value,
@@ -159,8 +164,14 @@ class GlyphInfoWindow extends UIWindow {
 				++AlphabetEditor.instance.outlineIdx;
 				++data.startIndex;
 			} else {
+				var toRemove = compon.outIndex;
 				compon.outIndex = null;
-				data.components.splice(AlphabetEditor.instance.outlineIdx - 1, 1);
+				for (i in data.startIndex...data.components.length) {
+					final component = data.components[i];
+					if (component.outIndex != null && component.outIndex >= toRemove)
+						--component.outIndex;
+				}
+				data.components.splice(toRemove, 1);
 				--AlphabetEditor.instance.outlineIdx;
 				--data.startIndex;
 			}
