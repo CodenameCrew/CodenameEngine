@@ -39,7 +39,7 @@ class UIImageExplorer extends UIFileExplorer {
 		return TU.translate("uiImageExplorer." + id, args);
 
 	public function new(x:Float, y:Float, image:String, ?w:Int, ?h:Int, ?onFile:(String, Bytes)->Void, ?directory:String = "images") {
-		super(x, y, w, h, "png, jpg", function (filePath, file) {
+		super(x, y, w, h, "png;jpg", function (filePath, file) {
 			if (filePath != null && file != null) uploadImage(filePath, file);
 			if (onFile != null) onFile(filePath, file);
 		});
