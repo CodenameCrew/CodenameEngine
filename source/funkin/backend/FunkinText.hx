@@ -68,15 +68,15 @@ class FunkinText extends FlxText
     private inline function __prepareZoomFactor(rect:FlxRect, camera:FlxCamera):FlxRect {
 		if (Flags.USE_LEGACY_ZOOM_FACTOR)
 			return rect.set(
-				camera.width * 0.5,
-				camera.height * 0.5,
+				camera.width * 0.5 + camera.scroll.x * scrollFactor.x,
+				camera.height * 0.5 + camera.scroll.y * scrollFactor.y,
 				(camera.scaleX > 0 ? Math.max : Math.min)(0, FlxMath.lerp(1 / camera.scaleX, 1, zoomFactor)),
 				(camera.scaleY > 0 ? Math.max : Math.min)(0, FlxMath.lerp(1 / camera.scaleY, 1, zoomFactor))
 			);
 		else
 			return rect.set(
-				camera.width * 0.5 + camera.scroll.x * scrollFactor.x,
-				camera.height * 0.5 + camera.scroll.y * scrollFactor.y,
+				camera.width * 0.5,
+				camera.height * 0.5,
 				(camera.scaleX > 0 ? Math.max : Math.min)(0, FlxMath.lerp(1 / camera.scaleX, 1, zoomFactor)),
 				(camera.scaleY > 0 ? Math.max : Math.min)(0, FlxMath.lerp(1 / camera.scaleY, 1, zoomFactor))
 			);
