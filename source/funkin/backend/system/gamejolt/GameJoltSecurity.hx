@@ -11,6 +11,14 @@ import funkin.backend.utils.GJUtil.*;
 import haxe.Http;
 import haxe.Json;
 import openfl.events.*;
+#if ALLOW_MULTITHREADING
+import funkin.backend.utils.ThreadUtil;
+#end
+#if (target.threaded)
+import sys.thread.Thread;
+#end
+
+
 
 /**
  * # A BIG MOTHERFUCKING WARNING
@@ -41,16 +49,9 @@ class GameJoltSecurity implements IHScriptCustomAccessBehaviour
 	public static var gameId:String = '';
 
 	/**
-	 * Map of all trophies defined using specific names.
-	 * Specifically stored here so that it's harder to cheese song,
-	 * FC or other specific trophies.
+	 * ID number for the currently logged in user.
 	 */
-	public static var definedTrophies(default, null):Map<String, Int> = [];
-
-	/**
-	 * 
-	 */
-	public static var definedLeaderboards(default, null):Map<String, Int> = [];
+	public static var userId:Null<Int> = null;
 	/**
 	 * The encrypted game token. Set using GAMEJOLT_ENCRYPTED_TOKEN in ini file.
 	 */
@@ -67,9 +68,9 @@ class GameJoltSecurity implements IHScriptCustomAccessBehaviour
 	@:noPrivateAccess private static var url(get, never):String;
 
 	/**
-	 * The previous response created by the API client. Usually for just storage purposes.
+	 * The previous GJResponse created by the API client. Usually for just storage purposes.
 	 */
-	private static var lastResponse:Response = {success: false, message: "No response yet."};
+	private static var lastResponse:GJResponse = {success: false, message: "No response yet."};
 
 	/**
 	 * The current call being processed.
@@ -81,6 +82,10 @@ class GameJoltSecurity implements IHScriptCustomAccessBehaviour
 	 */
 	@:envField
 	private static final CODENAME_AES_KEY:Null<String>;
+
+	#if target.threaded
+	static final mutex = new sys.thread.Mutex();
+	#end
 
 	// hscript - thanks LJ :D
 
@@ -100,11 +105,7 @@ class GameJoltSecurity implements IHScriptCustomAccessBehaviour
 		return null;
 	//endregion
 
-	static function get_url():String
-	{
-		return sign('https://api.gamejolt.com/api/game/v1_2${parseType(curCall)}');
-	}
-
+	#if GAMEJOLT_API
 	/**
 	 * This is a copy of GJUtil's "send" request, but kept here since Hscript can't get here.
 	 * Any calls here are guaranteed to be from hardcoding.
@@ -114,7 +115,7 @@ class GameJoltSecurity implements IHScriptCustomAccessBehaviour
 	 * @param onComplete 
 	 * @param onProgress 
 	 */
-	public static function sendTrusted(call:RequestType, async:Bool = false, ?onError:String->Void, ?onComplete:Response->Void, ?onProgress:Array<Float>->Void)
+	public static function sendTrusted(call:RequestType, async:Bool = false, ?onError:String->Void, ?onComplete:GJResponse->Void, ?onProgress:Array<Float>->Void)
 	{
 		@:privateAccess {
 			if (GJUtil.executing || !GJUtil.active)
@@ -122,65 +123,81 @@ class GameJoltSecurity implements IHScriptCustomAccessBehaviour
 			GJUtil.executing = true;
 		}
 
-		var resp:Response = handleRequest(async, call, onProgress);
-		@:privateAccess
-		GJUtil.executing = false;
-		if (resp.message != null && onError != null)
-			onError(resp.message);
-		else if (resp.message == null && onComplete != null) {
+		handleRequest(async, call, function(errstr) {
 			@:privateAccess
-			onComplete(GJUtil.formatImages(resp));
-		}
+			GJUtil.executing = false;
+			if (onError != null) onError(errstr);
+		}, function(resp) {
+			@:privateAccess {
+				GJUtil.executing = false;
+				if (onComplete != null) onComplete(GJUtil.formatImages(resp));
+			}
+		}, onProgress);
 	}
 
-	static function handleRequest(async:Bool = false, data:RequestType, ?onProgress:Array<Float>->Void):Response
+	static function handleRequest(async:Bool = false, data:RequestType, ?onError:String->Void, ?onComplete:GJResponse->Void, ?onProgress:Array<Float>->Void)
 	{
 		if (encryptedGameToken == null || gameId == null) {
 			lastResponse = {success: false, message: 'Missing game token and/or game ID.'};
 			curCall = null;
-			return lastResponse;
+			if (onError != null) onError(lastResponse.message);
 		}
 
 		curCall = data;
 		
 		if (async) {
-			var loader = new openfl.net.URLLoader();
-			loader.addEventListener(Event.COMPLETE, function(complete) {
-				lastResponse = Json.parse(cast(loader.data, String)).response;
+			#if ALLOW_MULTITHREADING ThreadUtil.execAsync#elseif (target.threaded) Thread.create#end (() -> {
+				var loader = new openfl.net.URLLoader();
+				loader.addEventListener(Event.COMPLETE, function(complete) {
+					lastResponse = Json.parse(cast(loader.data, String)).response;
+					if (lastResponse.message != null) {
+						Logs.traceColored([
+							Logs.getPrefix("GameJolt"),
+							Logs.logText('Response Error: ${lastResponse.message}')
+						], ERROR);
+						curCall = null;
+						if (onError != null) onError(lastResponse.message);
+					} else {
+						curCall = null;
+						if (onComplete != null) onComplete(lastResponse);
+					}
+				});
+				loader.addEventListener(ProgressEvent.PROGRESS, progress -> { if (onProgress != null) onProgress([progress.bytesLoaded, progress.bytesTotal]);});
+				loader.addEventListener(IOErrorEvent.IO_ERROR, function(ioError) {
+					lastResponse = {success: false, message: 'IO Error: ${ioError.text}'};
+					curCall = null;
+					if (onError != null) onError(lastResponse.message);
+				});
+				loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, (securityError) -> {
+					lastResponse = {success: false, message: 'Security Error: ${securityError.text}'};
+					curCall = null;
+					if (onError != null) onError(lastResponse.message);
+				});
+				loader.load(new openfl.net.URLRequest(url));
+			});
+		} else {
+			var loader:Http = new Http(url);
+			loader.onData = function(data) {
+				lastResponse = cast Json.parse(data).response;
 				if (lastResponse.message != null) {
 					Logs.traceColored([
 						Logs.getPrefix("GameJolt"),
 						Logs.logText('Response Error: ${lastResponse.message}')
 					], ERROR);
+					curCall = null;
+					if (onError != null) onError(lastResponse.message);
+				} else {
+					curCall = null;
+					if (onComplete != null) onComplete(lastResponse);
 				}
-				
-			});
-			loader.addEventListener(ProgressEvent.PROGRESS, progress -> { if (onProgress != null) onProgress([progress.bytesLoaded, progress.bytesTotal]);});
-			loader.addEventListener(IOErrorEvent.IO_ERROR, function(ioError) {
-				lastResponse = {success: false, message: 'IO Error: ${ioError.text}'};
-			});
-			loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, (securityError) -> {
-				lastResponse = {success: false, message: 'Security Error: ${securityError.text}'};
-			});
-			loader.load(new openfl.net.URLRequest(url));
-			return {success: false, message: "No response yet."};
-		} else {
-			var loader:Http = new Http(url);
-			loader.onData = function(data) {
-				lastResponse = Json.parse(data).response;
-				if (lastResponse.message != null)
-					Logs.traceColored([
-						Logs.getPrefix("GameJolt"),
-						Logs.logText('Response Error: ${lastResponse.message}')
-					], ERROR);
 			};
 			loader.onError = function(error) {
 				lastResponse = {success: false, message: 'Request Error: ${error}'};
+				curCall = null;
+				if (onError != null) onError(lastResponse.message);
 			};
 			loader.request(false);
 		}
-		curCall = null;
-		return lastResponse;
 	}
 
 	static function parseType(request:RequestType, signed:Bool = false):String {
@@ -361,6 +378,16 @@ class GameJoltSecurity implements IHScriptCustomAccessBehaviour
 	}
 
 	/**
+	 * Signs a piece of URL with Md5.
+	 * @param daUrl The old URL piece.
+	 * @return The new URL piece.
+	 */
+	static function sign(daUrl:String):String {
+		var urlToEncode:String = daUrl + revealedGameToken;
+		return '$daUrl&signature=${Md5.encode(urlToEncode)}';
+	}
+
+	/**
 	 * Setter function for encrypted game token. Also sets revealed game token.
 	 * @param tok 
 	 */
@@ -381,13 +408,25 @@ class GameJoltSecurity implements IHScriptCustomAccessBehaviour
 		return encryptedGameToken = tok;
 	}
 
-	/**
-	 * Signs a piece of URL with Md5.
-	 * @param daUrl The old URL piece.
-	 * @return The new URL piece.
-	 */
-	static function sign(daUrl:String):String {
-		var urlToEncode:String = daUrl + revealedGameToken;
-		return '$daUrl&signature=${Md5.encode(urlToEncode)}';
+	static function get_url():String
+	{
+		return sign('https://api.gamejolt.com/api/game/v1_2${parseType(curCall)}');
 	}
+	#else
+	public static function sendTrusted(call:RequestType, async:Bool = false, ?onError:String->Void, ?onComplete:GJResponse->Void, ?onProgress:Array<Float>->Void)
+	{
+		Logs.trace('GameJolt API not set in Project.xml!', ERROR, LIGHTGRAY, 'GameJolt');
+		if (onError != null) onError('GameJolt API not set in Project.xml!');
+	}
+
+	static function set_encryptedGameToken(tok:String)
+	{
+		return encryptedGameToken = tok;
+	}
+
+	static function get_url():String
+	{
+		return null;
+	}
+	#end
 }

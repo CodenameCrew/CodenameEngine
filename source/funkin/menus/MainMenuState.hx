@@ -63,30 +63,34 @@ class MainMenuState extends MusicBeatState
 
 		for (i=>option in optionShit)
 		{
-			if (option == 'gamejolt')
+			if (option == 'gamejolt') {
+				#if GAMEJOLT_API
+				var menuItem:FlxSprite = new FlxSprite(FlxG.width - 138, FlxG.height - 138).loadGraphic(Paths.image('menus/gamejolt-icon'));
+				menuItem.setGraphicSize(128);
+				menuItem.updateHitbox();
+				menuItem.animation.add('idle', [0], 1, false);
+				menuItem.animation.add('selected', [0], 1, false);
+				menuItem.animation.play('idle');
+				menuItem.ID = i;
+				menuItems.add(menuItem);
+				menuItem.scrollFactor.set();
+				menuItem.antialiasing = true;
+				#else
 				continue;
-			var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
-			menuItem.frames = Paths.getFrames('menus/mainmenu/${option}');
-			menuItem.animation.addByPrefix('idle', option + " basic", 24);
-			menuItem.animation.addByPrefix('selected', option + " white", 24);
-			menuItem.animation.play('idle');
-			menuItem.ID = i;
-			menuItem.screenCenter(X);
-			menuItems.add(menuItem);
-			menuItem.scrollFactor.set();
-			menuItem.antialiasing = true;
+				#end
+			} else {
+				var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
+				menuItem.frames = Paths.getFrames('menus/mainmenu/${option}');
+				menuItem.animation.addByPrefix('idle', option + " basic", 24);
+				menuItem.animation.addByPrefix('selected', option + " white", 24);
+				menuItem.animation.play('idle');
+				menuItem.ID = i;
+				menuItem.screenCenter(X);
+				menuItems.add(menuItem);
+				menuItem.scrollFactor.set();
+				menuItem.antialiasing = true;
+			}
 		}
-
-		var menuItem:FlxSprite = new FlxSprite(FlxG.width - 138, FlxG.height - 138).loadGraphic(Paths.image('menus/gamejolt-icon'));
-		menuItem.setGraphicSize(128);
-		menuItem.updateHitbox();
-		menuItem.animation.add('idle', [0], 1, false);
-		menuItem.animation.add('selected', [0], 1, false);
-		menuItem.animation.play('idle');
-		menuItem.ID = menuItems.length;
-		menuItems.add(menuItem);
-		menuItem.scrollFactor.set();
-		menuItem.antialiasing = true;
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 

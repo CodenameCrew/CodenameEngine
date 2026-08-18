@@ -1,16 +1,14 @@
 package funkin.menus.gamejolt;
 
-import funkin.editors.ui.UIState;
-import funkin.editors.ui.UIButton;
-import funkin.editors.ui.UIText;
+import funkin.editors.ui.*;
 import openfl.desktop.Clipboard;
 import flixel.addons.display.FlxBackdrop;
 import funkin.backend.system.gamejolt.GameJoltData;
 import funkin.menus.TitleState;
-import funkin.backend.system.Controls;
 
 class GameJoltCompleteScreen extends UIState
 {
+	var bg:FlxBackdrop;
 	var mainText:UIText;
 	var copyText:UIText;
 	var copyButton:UIButton;
@@ -19,8 +17,14 @@ class GameJoltCompleteScreen extends UIState
 	override public function create()
 	{
 		super.create();
+	
+		add(bg = new FlxBackdrop());
+		bg.loadGraphic(Paths.image('editors/bgs/default'));
+		bg.antialiasing = true;
+		bg.rotation = -5;
+		bg.velocity.set(85, 0).degrees = bg.rotation;
 
-		add(mainText = new UIText(0, 50, FlxG.width,
+		add(mainText = new UIText(0, 80, FlxG.width,
 			'Hey there funkhead!
 			Your GameJolt data was recognized and registered to your game\'s data store successfully.
 			From here on, only ${GameJoltData.ownerUsername} will be able to change the global data. As for the XML - for security purposes, we took out the login info and game token. Feel free to discard the XML entirely, or keep it as a souvenir - your globals load from your game\'s data store now!
@@ -30,11 +34,11 @@ class GameJoltCompleteScreen extends UIState
 		mainText.alignment = CENTER;
 		mainText.antialiasing = true;
 
-		add(copyText = new UIText(0, mainText.height + 60, FlxG.width, 'GAMEJOLT_ENCRYPTED_TOKEN=\'${Flags.MOD_GAMEJOLT_ENCRYPTED_TOKEN}\'', 16));
+		add(copyText = new UIText(0, mainText.height + 120, FlxG.width, 'GAMEJOLT_ENCRYPTED_TOKEN=\'${Flags.MOD_GAMEJOLT_ENCRYPTED_TOKEN}\'', 16));
 		copyText.alignment = CENTER;
 		copyText.antialiasing = true;
 
-		add(copyButton = new UIButton(0, copyText.y + copyText.height + 10, "Copy", () -> {
+		add(copyButton = new UIButton(0, copyText.y + copyText.height + 20, "Copy", () -> {
 			Clipboard.generalClipboard.setData(TEXT_FORMAT, copyText.text);
 		}));
 		copyButton.color = 0xFF3F3FFF;

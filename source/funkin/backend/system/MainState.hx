@@ -10,6 +10,7 @@ import funkin.backend.assets.ModsFolderLibrary;
 import funkin.backend.assets.ZipFolderLibrary;
 import funkin.backend.chart.EventsData;
 import funkin.backend.system.framerate.Framerate;
+import funkin.backend.system.gamejolt.GameJoltData;
 import funkin.backend.utils.GJUtil;
 import funkin.editors.ModConfigWarning;
 import funkin.menus.TitleState;
@@ -168,7 +169,7 @@ class MainState extends FlxState {
 		GJUtil.init();
 		#end
 
-		var startState:Class<FlxState> = /**GameJoltData.freshStart ?**/ GameJoltCompleteScreen /**: (Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState)**/;
+		var startState:Class<FlxState> = GameJoltData.freshStart ? GameJoltCompleteScreen : (Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState);
 
 		// In this case if the mod we just loaded a compressed modpack, we can't edit or modify files without decompressing it.
 		if (Options.devMode && Options.allowConfigWarning && !isZipMod) {

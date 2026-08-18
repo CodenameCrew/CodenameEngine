@@ -1,12 +1,23 @@
 package funkin.backend.utils;
 
+import haxe.Timer;
+import flixel.graphics.FlxGraphic;
+import openfl.display.BitmapData;
 import funkin.backend.system.gamejolt.GameJoltData;
 import funkin.backend.system.gamejolt.GameJoltSecurity;
 
+#if ALLOW_MULTITHREADING
+import funkin.backend.utils.ThreadUtil;
+#end
+#if (target.threaded)
+import sys.thread.Thread;
+import sys.thread.Mutex;
+#end
+
 /**
- * This is how GameJolt API responses are formatted like.
+ * This is how GameJolt API responses are formatted.
  */
-typedef Response = {
+typedef GJResponse = {
 	// General
 	success:Bool,
 	?message:String,
@@ -33,7 +44,7 @@ typedef Response = {
 	?minute:Int,
 	?second:Int,
 	// Batch Reception
-	?responses:Array<Response>
+	?responses:Array<GJResponse>
 }
 
 /**
@@ -192,6 +203,11 @@ class GJUtil
 	public static var userAvatarUrl(default, null):String;
 
 	/**
+	 * The profile markdown description of the logged in user.
+	 */
+	public static var userDescription(default, null):String;
+
+	/**
 	 * Whether or not the GameJolt utility is operational.
 	 * This cannot be set other than load operations.
 	 */
@@ -213,6 +229,15 @@ class GJUtil
 	 */
 	static var executing:Bool = false;
 
+	/**
+	 * The timer for calling the session ping. Runs every 10 seconds.
+	 */
+	static var daTimer:Null<Timer> = null;
+
+	#if (target.threaded)
+	static final mutex = new Mutex();
+	#end
+
 	#if GAMEJOLT_API
 	public static function init()
 	{
@@ -223,7 +248,9 @@ class GJUtil
 			GameJoltData.loadAdminData();
 			if (Flags.MOD_GAMEJOLT_ENCRYPTED_TOKEN == '')
 				return;
-		} else if (FlxG.save.data.gameJoltArray != null) {
+		}
+
+		if (FlxG.save.data.gameJoltArray != null) {
 			var gjDat:Array<String> = FlxG.save.data.gameJoltArray;
 			GJUtil.attemptLogin(gjDat[0], gjDat[1]);
 		}
@@ -235,39 +262,54 @@ class GJUtil
 	 * @param token User token of user attempting to login.
 	 * @return Bool Whether the attempt was successfull or not.
 	 */
-	public static function attemptLogin(name:String, token:String, checkCreds:Bool = false, tempLogin:Bool = false):Bool
+	public static function attemptLogin(name:String, token:String, ?callback:Bool->Void, checkCreds:Bool = false, tempLogin:Bool = false)
 	{
-		if(Flags.MOD_GAMEJOLT_GAME_ID != '' && Flags.MOD_GAMEJOLT_ENCRYPTED_TOKEN != '')
-			active = true
-		else
-			return false;
-
-		var ret:Bool = false;
-		userName = name;
-		GameJoltSecurity.user_token = token;
-		var batchCalls:Array<RequestType> = [RequestType.SESSION_OPEN];
-		if (checkCreds) batchCalls.unshift(RequestType.USER_AUTH);
-		send(RequestType.BATCH(true, false, batchCalls), false, function(err) {
-			userName = null;
-			GameJoltSecurity.user_token = null;
-		}, function(resp) {
-			ret = true;
+		if(Flags.MOD_GAMEJOLT_GAME_ID != '' && Flags.MOD_GAMEJOLT_ENCRYPTED_TOKEN != '') {
+			active = true;
+			
+			userName = name;
+			GameJoltSecurity.user_token = token;
+			var batchCalls:Array<RequestType> = [SESSION_OPEN];
+			if (checkCreds)
+				batchCalls.unshift(USER_AUTH);
 			if (!tempLogin) {
-				Logs.traceColored([
-					Logs.getPrefix("GameJolt"),
-					Logs.logText("Successfully logged in user "),
-					Logs.logText(userName, GREEN),
-					Logs.logText('!')
-				], SUCCESS);
-				openfl.Lib.application.onExit.add(onExitApp);
-				FlxG.signals.postUpdate.add(pingTimer);
-				if (checkCreds) {
-					FlxG.save.data.gameJoltArray = [userName, token];
-					FlxG.save.flush();
-				}
+				batchCalls.push(USER_FETCH(name));
+				batchCalls.push(TROPHIES_FETCH(true));
 			}
-		});
-		return ret;
+			send(RequestType.BATCH(true, false, batchCalls), true, function(err) {
+				userName = null;
+				if (callback != null) callback(false);
+			}, function(resp) {
+				GameJoltSecurity.userId = resp.responses[checkCreds ? 2 : 1].users[0].id;
+				if (!tempLogin) {
+					userAvatarUrl = resp.responses[checkCreds ? 2 : 1].users[0].avatar_url;
+					userDescription = resp.responses[checkCreds ? 2 : 1].users[0].developer_description;
+					GameJoltData.loadGlobalData((bl) -> {
+						if (bl) {
+							Logs.traceColored([
+								Logs.getPrefix("GameJolt"),
+								Logs.logText("Successfully logged in user "),
+								Logs.logText(userName, GREEN),
+								Logs.logText('!')
+							], SUCCESS);
+							openfl.Lib.application.onExit.add(onExitApp);
+							daTimer = new Timer(10000);
+							daTimer.run = pingSession;
+							if (checkCreds) {
+								FlxG.save.data.gameJoltArray = [userName, token];
+								FlxG.save.flush();
+							}
+						} else {
+							Logs.trace('Unable to obtain global data. Logging out of GameJolt.', ERROR, LIGHTGRAY, 'GameJolt');
+							logout(false, true); // so that it doesn't remove functions that don't exist
+						}
+					});
+				}
+				if (userName != null && callback != null) callback(true);
+			});
+		}
+		else
+			if (callback != null) callback(false);
 	}
 
 	public static function logout(wipeSave:Bool = false, tempLogin:Bool = false)
@@ -285,7 +327,6 @@ class GJUtil
 					Logs.logText(' logged out successfully.')
 				], VERBOSE);
 			userName = null;
-			GameJoltSecurity.user_token = null;
 			if (wipeSave) {
 				FlxG.save.data.gameJoltArray = null;
 				FlxG.save.flush();
@@ -293,7 +334,16 @@ class GJUtil
 		});
 	}
 
-	public static function makeCall(call:RequestType, async:Bool = false, ?onError:String->Void, ?onComplete:Response->Void, ?onProgress:Array<Float>->Void)
+	/**
+	 * Make a GameJolt API call that is safe to make via softcoding.
+	 * @param call The RequestType call to make. Currently only supports:
+	 * `FRIENDS`, `TIME`, `USER_FETCH`, `SCORES_GETRANK`, and `TROPHIES_FETCH`.
+	 * @param async Whether or not the call should be asyncronous.
+	 * @param onError Callback function if an error occurs. Gives error string.
+	 * @param onComplete Callback function on successful completion of the call. Gives response data.
+	 * @param onProgress Callback function for progress on async calls. Gives a progress float array.
+	 */
+	public static function makeCall(call:RequestType, async:Bool = false, ?onError:String->Void, ?onComplete:GJResponse->Void, ?onProgress:Array<Float>->Void)
 	{
 		switch(call) {
 			case BATCH(parallel, breakOnError, requests):
@@ -314,10 +364,25 @@ class GJUtil
 			case USER_AUTH:
 				return;
 
+			case SESSION_OPEN:
+				return;
+			
+			case SESSION_PING(active):
+				return;
+
+			case SESSION_CHECK:
+				return;
+
+			case SESSION_CLOSE:
+				return;
+
 			case SCORES_ADD(score, sort, extra_data, table_id):
 				return;
 			
 			case TROPHIES_ADD(trophy_id):
+				return;
+
+			case TROPHIES_REMOVE(trophy_id):
 				return;
 
 			case _:
@@ -325,21 +390,90 @@ class GJUtil
 		}
 	}
 
-	static var pingTime:Int = 0;
-	static function pingTimer()
+	public static function unlockCustomTrophy(custom:String, ?callback:Null<Trophy>->Void)
 	{
-		pingTime += 1;
-		if (pingTime < 10000) return;
-		pingTime -= 10000;
-		pingSession();
+		if (!GameJoltData.customTrophies.exists(custom))
+			if (callback != null) callback(null)
+		else {
+			var daTrophy:GJTrophyData = GameJoltData.customTrophies.get(custom);
+
+			if (GameJoltData.earnedTrophies.exists(custom))
+				if (callback != null) callback(null)
+			else {
+				var meetsReqs:Bool = true;
+				if (daTrophy.require != null) {
+					var reqsMet:Array<Int> = [];
+					for (earned in GameJoltData.earnedTrophies)
+						if (daTrophy.require.contains(earned.id)) reqsMet.push(earned.id);
+
+					if (reqsMet.length != daTrophy.require.length)
+						meetsReqs = false;
+				}
+
+				if (!meetsReqs)
+					if(callback != null) callback(null)
+				else {
+					send(TROPHIES_ADD(daTrophy.id), true, function(err) {
+						Logs.trace('Trophy unlock error: ${err}', ERROR, LIGHTGRAY, 'GameJolt');
+						if (callback != null) callback(null);
+					}, function(resp) {
+						GameJoltData.earnedTrophies.set(custom, daTrophy);
+						if (callback != null) callback(resp.trophies[0]);
+					});
+				}
+			}
+		}
+	}
+
+	public static function getAvatarImage(image:FlxSprite, ?addlCallback:Void->Void)
+	{
+		#if ALLOW_MULTITHREADING ThreadUtil.execAsync#elseif (target.threaded) Thread.create#end(function() {
+			var key:String = 'GAMEJOLT-USER:${userName}';
+			var bmap:Dynamic = FlxG.bitmap.get(key);
+
+			if(bmap == null) {
+				Logs.trace('Downloading avatar: ${userName}', INFO, LIGHTGRAY, 'GameJolt');
+				var unfLink:Bool = StringTools.endsWith(userAvatarUrl, '.png');
+
+				var bytes = null;
+				if(unfLink) {
+					try bytes = HttpUtil.requestBytes(userAvatarUrl)
+					catch(e) Logs.error('Failed to download GameJolt pfp for ${userName}: ${CoolUtil.removeIP(e.message)} - (Retrying using the api..)', RED, 'GameJolt');
+
+					if(bytes != null) {
+						bmap = BitmapData.fromBytes(bytes);
+					}
+				}
+
+				var leGraphic:FlxGraphic = null;
+				if(bmap != null) try {
+					#if (target.threaded)
+					mutex.acquire();
+					#end
+					leGraphic = FlxG.bitmap.add(bmap, false, key);
+					leGraphic.persist = true;
+					bmap = null;
+					image.loadGraphic(leGraphic);
+					if (addlCallback != null) addlCallback();
+					#if (target.threaded)
+					mutex.release();
+					#end
+				} catch(e) {
+					Logs.error('Failed to update the pfp for ${userName}: ${e.message}', RED, 'GameJolt');
+				}
+			} else {
+				image.loadGraphic(bmap);
+				if (addlCallback != null) addlCallback();
+			}
+		});
 	}
 
 	static function pingSession()
 	{
-		send(RequestType.SESSION_PING(true), true, (str) -> {
+		send(SESSION_PING(true), true, (str) -> {
 			if (onLostSession != null) onLostSession();
 			shutdownFunctions();
-			Logs.trace("Session lost; GJUtil shut down successfully.", WARNING, LIGHTGRAY, 'GameJolt');
+			Logs.trace('Session lost ($str); GJUtil shut down successfully.', WARNING, LIGHTGRAY, 'GameJolt');
 			active = false;
 		});
 	}
@@ -357,31 +491,36 @@ class GJUtil
 			Logs.logText(userName, GREEN),
 			Logs.logText('...')
 		], INFO);
-		FlxG.signals.postUpdate.remove(pingTimer);
+		daTimer.stop();
+		daTimer = null;
 		openfl.Lib.application.onExit.remove(onExitApp);
 		onLostSession = null;
 	}
 
-	@:noPrivateAccess static function send(call:RequestType, async:Bool = false, ?onError:String->Void, ?onComplete:Response->Void, ?onProgress:Array<Float>->Void)
+	@:noPrivateAccess static function send(call:RequestType, async:Bool = false, ?onError:String->Void, ?onComplete:GJResponse->Void, ?onProgress:Array<Float>->Void)
 	{
 		if (executing || !active)
 			return;
 		executing = true;
 
 		@:privateAccess
-		var resp:Response = GameJoltSecurity.handleRequest(async, call, onProgress);
-		executing = false;
-		if (resp.message != null && onError != null)
-			onError(resp.message);
-		else if (resp.message == null && onComplete != null)
-			onComplete(formatImages(resp));
+		GameJoltSecurity.handleRequest(async, call, function(errmsg) {
+			executing = false;
+			if (onError != null) onError(errmsg);
+		}, function(resp) {
+			executing = false;
+			if (onComplete != null) onComplete(formatImages(resp));
+		}, onProgress);
 	}
 
-	static function formatImages(res:Response):Response {
-		if (res.users != null)
-			for (u in res.users) u.avatar_url = '${u.avatar_url.substring(0, 32)}1000${u.avatar_url.substr(34)}'.replace(".jpg", ".png")
-				.replace(".webp", ".png");
-		if (res.trophies != null) for (t in res.trophies) {
+	static function formatImages(res:GJResponse):GJResponse {
+		if (res.users != null) {
+			for (u in res.users) {
+				u.avatar_url = '${u.avatar_url.substring(0, 32)}1000${u.avatar_url.substr(34)}'.replace(".jpg", ".png").replace(".webp", ".png");
+			}
+		}
+		if (res.trophies != null && res.trophies[0] != null) {
+			for (t in res.trophies) {
 				var newUrl:String = "";
 				if (t.image_url.startsWith('https://m.'))
 					newUrl = '${t.image_url.substring(0, 37)}1000${t.image_url.substr(40)}'.replace(".jpg", ".png").replace(".webp", ".png");
@@ -398,6 +537,7 @@ class GJUtil
 				}
 				t.image_url = newUrl;
 			};
+		}
 		if (res.responses != null) for (res2 in res.responses) res2 = formatImages(res2);
 		return res;
 	}
@@ -405,9 +545,51 @@ class GJUtil
 	static function set_userName(name:String):String
 	{
 		loggedIn = (name != null && name != '');
+		if (name == null) {
+			userAvatarUrl = null;
+			userDescription = null;
+			GameJoltSecurity.userId = null;
+			GameJoltSecurity.user_token = null;
+
+		}
 		return userName = name;
 	}
 	#else
+	public static function init()
+	{
+		Logs.trace('GameJolt API not set in Project.xml!', ERROR, LIGHTGRAY, 'GameJolt');
+	}
 
+	public static function attemptLogin(name:String, token:String, ?callback:Bool->Void, checkCreds:Bool = false, tempLogin:Bool = false)
+	{
+		Logs.trace('GameJolt API not set in Project.xml!', ERROR, LIGHTGRAY, 'GameJolt');
+		if (callback != null) callback(false);
+	}
+
+	public static function logout(wipeSave:Bool = false, tempLogin:Bool = false)
+	{
+		Logs.trace('GameJolt API not set in Project.xml!', ERROR, LIGHTGRAY, 'GameJolt');
+	}
+
+	public static function makeCall(call:RequestType, async:Bool = false, ?onError:String->Void, ?onComplete:GJResponse->Void, ?onProgress:Array<Float>->Void)
+	{
+		Logs.trace('GameJolt API not set in Project.xml!', ERROR, LIGHTGRAY, 'GameJolt');
+	}
+
+	public static function unlockCustomTrophy(custom:String, ?callback:Null<Trophy>->Void)
+	{
+		Logs.trace('GameJolt API not set in Project.xml!', ERROR, LIGHTGRAY, 'GameJolt');
+		if (callback != null) callback(null);
+	}
+
+	public static function getAvatarImage(image:FlxSprite, ?addlCallback:Void->Void)
+	{
+		Logs.trace('GameJolt API not set in Project.xml!', ERROR, LIGHTGRAY, 'GameJolt');
+	}
+
+	static function set_userName(name:String):String
+	{
+		return userName = name;
+	}
 	#end
 }
