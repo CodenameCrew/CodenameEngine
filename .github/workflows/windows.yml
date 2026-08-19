@@ -32,6 +32,7 @@ jobs:
       #       export/release/windows/obj/
       - name: Installing/Updating libraries
         run: |
+          haxelib --global update haxelib
           haxe -cp commandline -D analyzer-optimize --run Main setup -si --no-vscheck
       - name: Building the game
         run: |
