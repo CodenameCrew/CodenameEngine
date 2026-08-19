@@ -35,6 +35,7 @@ jobs:
           brew trust aws/tap
           arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
           arch -x86_64 /usr/local/bin/brew install zlib
+          haxelib --global update haxelib
           haxe -cp commandline -D analyzer-optimize --run Main setup -si
       - name: Building the game
         run: |
