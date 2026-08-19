@@ -106,9 +106,9 @@ class FunkinText extends FlxText
 		prepareDrawMatrix(matrix, camera);
 
 		if (layer != null)
-			layer.drawPixels(this, camera, frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
+			layer.drawPixels(this, camera, frame, framePixels, matrix, colorTransform, blend, antialiasing, shaderEnabled ? shader : null);
 		else
-			camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
+			camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shaderEnabled ? shader : null);
 	}
 
     function prepareDrawMatrix(matrix:FlxMatrix, camera:FlxCamera):Void {
