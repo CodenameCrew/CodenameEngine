@@ -78,6 +78,7 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 
 	public var animateSettings:FlxAnimateSettings = {};
 
+	// originally used for zoom factor, now unused
 	var _rect2:FlxRect;
 
 	public function new(?X:Float = 0, ?Y:Float = 0, ?SimpleGraphic:FlxGraphicAsset)
@@ -190,7 +191,6 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 
 	// ANIMATE ATLAS DRAWING
 	#if REGION
-
 	public override function destroy()
 	{
 		if (animOffsets != null) {
@@ -207,40 +207,6 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 		_rect2 = FlxDestroyUtil.put(_rect2);
 	}
 	#end
-
-	// ZOOM FACTOR
-	private inline function __shouldDoZoomFactor()
-		return zoomFactorEnabled && zoomFactor != 1;
-
-	private inline function __prepareZoomFactor(?rect:FlxRect, camera:FlxCamera):FlxRect {
-		return (rect ?? FlxRect.get()).set(
-			camera.width * 0.5,
-			camera.height * 0.5,
-			(camera.scaleX > 0 ? Math.max : Math.min)(0, (1.0 - zoomFactor) / camera.scaleX + zoomFactor),
-			(camera.scaleY > 0 ? Math.max : Math.min)(0, (1.0 - zoomFactor) / camera.scaleY + zoomFactor)
-		);
-	}
-
-	override public function isOnScreen(?camera:FlxCamera):Bool
-	{
-		if (forceIsOnScreen)
-			return true;
-
-		if (camera == null)
-			camera = FlxG.camera;
-
-		var bounds = getScreenBounds(_rect, camera);
-		if (bounds.width == 0 && bounds.height == 0)
-			return false;
-		return camera.containsRect(bounds);
-	}
-
-	private inline function __shouldDoAngleFactor()
-		return angleFactorEnabled && angleFactor != 1;
-
-    private inline function __prepareAngleFactor(camera:FlxCamera):Float {
-		return FlxMath.lerp(-camera.angle, 0, angleFactor);
-	}
 
 	// OFFSETTING
 	#if REGION
@@ -371,22 +337,23 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
     override function prepareDrawMatrix(matrix:FlxMatrix, camera:FlxCamera):Void {
 		super.prepareDrawMatrix(matrix, camera);
 
-		if (__shouldDoZoomFactor() || __shouldDoAngleFactor()) {
-			__prepareZoomFactor(_rect2, camera);
+		final ox = camera.width * 0.5, oy = camera.height * 0.5;
+		final sx = (camera.scaleX > 0.0 ? Math.max : Math.min)(0.0, (1.0 - zoomFactor) / camera.scaleX + zoomFactor);
+		final sy = (camera.scaleY > 0.0 ? Math.max : Math.min)(0.0, (1.0 - zoomFactor) / camera.scaleY + zoomFactor);
 
-			if (__shouldDoZoomFactor()) {
-				matrix.setTo(
-					matrix.a * _rect2.width, matrix.b * _rect2.height,
-					matrix.c * _rect2.width, matrix.d * _rect2.height,
-					(matrix.tx - _rect2.x) * _rect2.width + _rect2.x,
-					(matrix.ty - _rect2.y) * _rect2.height + _rect2.y
-				);
-			}
-			if (__shouldDoAngleFactor()) {
-				matrix.translate(-_rect2.x, -_rect2.y);
-				matrix.rotate(FlxAngle.asRadians(__prepareAngleFactor(camera)));
-				matrix.translate(_rect2.x, _rect2.y);
-			}
+		if (zoomFactorEnabled && zoomFactor != 1) {
+			matrix.setTo(
+				matrix.a * sx, matrix.b * sy,
+				matrix.c * sx, matrix.d * sy,
+				(matrix.tx - ox) * sx + ox,
+				(matrix.ty - oy) * sy + oy
+			);
+		}
+
+		if (angleFactorEnabled && angleFactor != 1) {
+			matrix.translate(-ox, -oy);
+			matrix.rotate(-camera.angle * FlxAngle.TO_RAD * (1.0 - angleFactor));
+			matrix.translate(ox, oy);
 		}
 	}
 
