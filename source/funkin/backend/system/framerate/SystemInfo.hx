@@ -108,7 +108,7 @@ class SystemInfo extends FramerateCategory {
 				gpuName = Std.string(flixel.FlxG.stage.context3D.gl.getParameter(flixel.FlxG.stage.context3D.gl.RENDERER)).split("/")[0].trim();
 				#if !flash
 				var size = FlxG.bitmap.maxTextureSize;
-				gpuMaxSize = size+"x"+size;
+				gpuMaxSize = size+"x"+size; //if (gpuMaxSize != "Unknown") StringMacro.addLine(buf, '\nMax Bitmap Size: ',gpuMaxSize);
 				#end
 
 				if(openfl.display3D.Context3D.__glMemoryTotalAvailable != -1) {
@@ -124,7 +124,9 @@ class SystemInfo extends FramerateCategory {
 		}
 
 		#if cpp
-		totalMem = Std.string(MemoryUtil.getTotalMem() / 1024) + " GB";
+		var rawMem:Float = MemoryUtil.getTotalMem();
+		var rawGBMem:Float = flixel.math.FlxMath.roundDecimal(rawMem / 1024, 2);
+		totalMem = Std.string(rawGBMem) + " GB";
 		#else
 		Logs.error('Unable to grab RAM Amount');
 		#end
@@ -140,7 +142,7 @@ class SystemInfo extends FramerateCategory {
 	static function formatSysInfo() {
 		var buf = new StringBuf();
 		if (osInfo != "Unknown") {
-			StringMacro.addLine(buf, 'System: ${osInfo}');
+			StringMacro.addLine(buf, 'System: ${osInfo} ');
 		}
 		if (cpuName != "Unknown") {
 			StringMacro.addLine(buf, '\nCPU: ${cpuName} ${openfl.system.Capabilities.cpuArchitecture} ${openfl.system.Capabilities.supports64BitProcesses ? "64-Bit" : "32-Bit"}');
@@ -159,7 +161,7 @@ class SystemInfo extends FramerateCategory {
 				StringMacro.addLine(buf, 'VRAM: ${vRAM}');
 			}
 		}
-		//if (gpuMaxSize != "Unknown") StringMacro.addLine(buf, '\nMax Bitmap Size: ',gpuMaxSize);
+
 		if (totalMem != "Unknown" && memType != "Unknown") {
 			StringMacro.addLine(buf, '\nTotal MEM: ${totalMem} ${memType}');
 		}
