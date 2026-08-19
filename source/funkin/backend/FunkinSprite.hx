@@ -213,20 +213,12 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 		return zoomFactorEnabled && zoomFactor != 1;
 
 	private inline function __prepareZoomFactor(?rect:FlxRect, camera:FlxCamera):FlxRect {
-		if (Flags.USE_LEGACY_ZOOM_FACTOR)
-			return (rect ?? FlxRect.get()).set(
-				camera.width * 0.5,
-				camera.height * 0.5,
-				(camera.scaleX > 0 ? Math.max : Math.min)(0, FlxMath.lerp(1 / camera.scaleX, 1, zoomFactor)),
-				(camera.scaleY > 0 ? Math.max : Math.min)(0, FlxMath.lerp(1 / camera.scaleY, 1, zoomFactor))
-			);
-		else
-			return (rect ?? FlxRect.get()).set(
-				camera.width * 0.5 + camera.scroll.x * scrollFactor.x,
-				camera.height * 0.5 + camera.scroll.y * scrollFactor.y,
-				(camera.scaleX > 0 ? Math.max : Math.min)(0, FlxMath.lerp(1 / camera.scaleX, 1, zoomFactor)),
-				(camera.scaleY > 0 ? Math.max : Math.min)(0, FlxMath.lerp(1 / camera.scaleY, 1, zoomFactor))
-			);
+		return (rect ?? FlxRect.get()).set(
+			camera.width * 0.5,
+			camera.height * 0.5,
+			(camera.scaleX > 0 ? Math.max : Math.min)(0, (1.0 - zoomFactor) / camera.scaleX + zoomFactor),
+			(camera.scaleY > 0 ? Math.max : Math.min)(0, (1.0 - zoomFactor) / camera.scaleY + zoomFactor)
+		);
 	}
 
 	override public function isOnScreen(?camera:FlxCamera):Bool

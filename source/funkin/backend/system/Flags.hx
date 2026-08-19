@@ -164,8 +164,6 @@ class Flags {
 	public static var DEFAULT_CAM_ZOOM_LERP:Float = 0.05;
 	public static var DEFAULT_HUD_ZOOM_LERP:Float = 0.05;
 
-	public static var USE_LEGACY_ZOOM_FACTOR:Null<Bool> = null;
-	
 	// Font configuration
 	public static var DEFAULT_FONT:String = "vcr.ttf";
 	public static var DEFAULT_FONT_SIZE:Int = 16;
@@ -318,7 +316,6 @@ class Flags {
 		if (MOD_API_VERSION == null) MOD_API_VERSION = CURRENT_API_VERSION;
 		if (WINDOW_TITLE_USE_MOD_NAME == null) WINDOW_TITLE_USE_MOD_NAME = !overridenFlags.exists('TITLE') && overridenFlags.exists('MOD_NAME');
 		if (USE_LEGACY_TIMING == null) USE_LEGACY_TIMING = MOD_API_VERSION < 2;
-		if (USE_LEGACY_ZOOM_FACTOR == null) USE_LEGACY_ZOOM_FACTOR = MOD_API_VERSION < 2;
 		if (SUSTAINS_AS_ONE_NOTE == null) SUSTAINS_AS_ONE_NOTE = MOD_API_VERSION >= 2;
 		if (USE_LEGACY_CENTER_CAM == null) USE_LEGACY_CENTER_CAM = MOD_API_VERSION < 3;
 		if (USE_LEGACY_FLXANIMATE_STAGE_MATRIX == null) USE_LEGACY_FLXANIMATE_STAGE_MATRIX = MOD_API_VERSION < 3;
