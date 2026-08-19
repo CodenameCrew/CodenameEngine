@@ -18,7 +18,7 @@ class NumOption extends TextOption {
 	var __number:Alphabet;
 
 	function set_currentValue(v:Float):Float {
-		if (__number != null) __number.text = ': $v';
+		if (__number != null && v != currentValue) __number.text = TextOption.OPTION_VALUE_PREFIX + Std.string(v);
 		return currentValue = v;
 	}
 
@@ -37,8 +37,7 @@ class NumOption extends TextOption {
 		this.parent = parent = parent != null ? parent : Options;
 
 		if (Reflect.field(parent, optionName) != null) currentValue = Reflect.field(parent, optionName);
-	
-		__number = new Alphabet(0, 20, ': $currentValue', 'bold');
+		__number = new Alphabet(0, 20, TextOption.OPTION_VALUE_PREFIX + Std.string(currentValue), 'bold');
 		super(text, desc);
 		add(__number);
 	}
