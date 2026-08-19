@@ -128,6 +128,7 @@ jobs:
           sudo apt-get install libvlc-dev libvlccore-dev
       - name: Installing/Updating libraries
         run: |
+          haxelib --global update haxelib
           haxe -cp commandline -D analyzer-optimize --run Main setup -si
       - name: Building the game
         run: |
