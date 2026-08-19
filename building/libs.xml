@@ -6,7 +6,7 @@
 		<!-- Hxcpp & OpenFL & Lime (Required for Flixel) -->
 		<git name="hxcpp" url="https://github.com/CodenameCrew/cne-hxcpp"/>
 		<git name="openfl" url="https://github.com/CodenameCrew/cne-openfl" ref="cne" skipDeps="true"/>
-		<git name="lime" url="https://github.com/CodenameCrew/cne-lime" ref="cne" skipDeps="true"/>
+		<git name="lime" url="https://github.com/CodenameCrew/cne-lime" ref="imgui" skipDeps="true"/> <!-- temporarily set to imgui branch, switch this back later -->
 
 		<!-- Flixel -->
 		<git name="flixel" url="https://github.com/CodenameCrew/cne-flixel" ref="cne" skipDeps="true"/>

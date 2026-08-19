@@ -225,6 +225,7 @@
 	<haxedef name="openfl_pool_events"/>
 	<haxedef name="openfl-enable-handle-error"/>
 	<haxedef name="openfl_no_custom_render_event"/>
+	<haxedef name="IMGUI_ENABLED" if="lime-imgui" />
 
 	<haxedef name="HXCPP_M32" if="32bit"/>
 	<haxedef name="HXCPP_DEBUG_LINK" if="debug"/>
