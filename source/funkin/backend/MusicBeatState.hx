@@ -1,5 +1,6 @@
 package funkin.backend;
 
+import flixel.FlxG;
 import flixel.FlxState;
 import flixel.FlxSubState;
 import funkin.backend.scripting.DummyScript;
@@ -12,7 +13,9 @@ import funkin.backend.system.GraphicCacheSprite;
 import funkin.backend.system.framerate.Framerate;
 import funkin.backend.system.interfaces.IBeatReceiver;
 import funkin.backend.system.interfaces.IBeatCancellableReceiver;
+import funkin.backend.system.modules.FunkinCache;
 import funkin.options.PlayerSettings;
+import openfl.utils.Assets;
 
 /**
  * Base class for all the states.
@@ -163,6 +166,16 @@ class MusicBeatState extends FlxState implements IBeatCancellableReceiver
 
 		if (/*subState == null && */(ALLOW_DEV_RELOAD && controls.DEV_RELOAD)) {
 			Logs.trace("Reloading Current State...", INFO, YELLOW);
+			FlxG.signals.preStateCreate.addOnce((_) -> {
+				@:privateAccess
+				for (key in [for (k in FlxG.bitmap._cache.keys()) k]) {
+					var graphic = FlxG.bitmap._cache.get(key);
+					if (graphic != null && graphic.assetsKey != null)
+						FlxG.bitmap.removeByKey(key);
+				}
+				if ((Assets.cache is FunkinCache))
+					(cast Assets.cache : FunkinCache).clearAll();
+			});
 			FlxG.resetState();
 		}
 

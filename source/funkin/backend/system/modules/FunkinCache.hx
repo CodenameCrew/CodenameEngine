@@ -44,6 +44,24 @@ class FunkinCache extends AssetCache {
 		});
 	}
 
+	/**
+		Completely clears both cache layers (including lime's own asset cache),
+	**/
+	public function clearAll() {
+		for (k in [for (k in bitmapData.keys()) k])
+			removeBitmapData(k);
+		for (k in [for (k in bitmapData2.keys()) k])
+			removeBitmapData(k);
+		for (k in [for (k in font.keys()) k])
+			removeFont(k);
+		for (k in [for (k in font2.keys()) k])
+			removeFont(k);
+		for (k in [for (k in sound.keys()) k])
+			removeSound(k);
+		for (k in [for (k in sound2.keys()) k])
+			removeSound(k);
+	}
+
 	public function moveToSecondLayer() {
 		bitmapData2 = bitmapData;
 		font2 = font;
