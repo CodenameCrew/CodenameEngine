@@ -18,11 +18,11 @@ class FunkinParentDisabler extends FlxBasic {
 	var __cameras:Array<FlxCamera>;
 	var __timers:Array<FlxTimer>;
 	var __sounds:Array<FlxSound>;
-    var __excludeList:Array<Dynamic>;
+    var __excludeList:Array<ParentDisableable>;
 	var __replaceUponDestroy:Bool;
 	var __restoreUponDestroy:Bool;
 
-	public function new(excludeList:Array<Dynamic> = [], replaceUponDestroy:Bool = false, restoreUponDestroy:Bool = true) {
+	public function new(excludeList:Array<ParentDisableable> = [], replaceUponDestroy:Bool = false, restoreUponDestroy:Bool = true) {
 		super();
 		__replaceUponDestroy = replaceUponDestroy;
 		__restoreUponDestroy = restoreUponDestroy;
@@ -75,4 +75,11 @@ class FunkinParentDisabler extends FlxBasic {
 			for (s in __sounds) s.play();
 		}
 	}
+}
+
+abstract ParentDisableable(Any) {
+	@:from static inline function tween(t:FlxTween):Disableable return cast t;
+	@:from static inline function timer(t:FlxTimer):Disableable return cast t;
+	@:from static inline function camera(c:FlxCamera):Disableable return cast c;
+	@:from static inline function sound(s:FlxSound):Disableable return cast s;
 }
