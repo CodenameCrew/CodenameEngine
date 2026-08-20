@@ -18,28 +18,31 @@ class FunkinParentDisabler extends FlxBasic {
 	var __cameras:Array<FlxCamera>;
 	var __timers:Array<FlxTimer>;
 	var __sounds:Array<FlxSound>;
+    var __excludeList:Array<Dynamic>;
 	var __replaceUponDestroy:Bool;
 	var __restoreUponDestroy:Bool;
-	public function new(replaceUponDestroy:Bool = false, restoreUponDestroy:Bool = true) {
+
+	public function new(excludeList:Array<Dynamic> = [], replaceUponDestroy:Bool = false, restoreUponDestroy:Bool = true) {
 		super();
 		__replaceUponDestroy = replaceUponDestroy;
 		__restoreUponDestroy = restoreUponDestroy;
+		__excludeList = excludeList;
 		@:privateAccess {
 			// tweens
-			__tweens = FlxTween.globalManager._tweens.copy();
-			FlxTween.globalManager._tweens = [];
+			__tweens = FlxTween.globalManager._tweens.copy().filter(t -> !excludeList.contains(t));
+			FlxTween.globalManager._tweens = excludeList.filter(t -> t is FlxTween);
 
 			// timers
-			__timers = FlxTimer.globalManager._timers.copy();
-			FlxTimer.globalManager._timers = [];
+			__timers = FlxTimer.globalManager._timers.copy().filter(t -> !excludeList.contains(t));
+			FlxTimer.globalManager._timers = excludeList.filter(t -> t is FlxTimer);
 
 			// cameras
-			__cameras = [for(c in FlxG.cameras.list) if (!c.paused) c];
-			for(c in __cameras) c.paused = true;
+			__cameras = [for (c in FlxG.cameras.list) if (!excludeList.contains(c) && !c.paused) c];
+			for (c in __cameras) c.paused = true;
 
 			// sounds
-			__sounds = [for(s in FlxG.sound.list) if (s.playing && !s.persist) s];
-			for(s in __sounds) s.pause();
+			__sounds = [for (s in FlxG.sound.list) if (!excludeList.contains(s) && s.playing && !s.persist) s];
+			for (s in __sounds) s.pause();
 		}
 	}
 
@@ -50,25 +53,26 @@ class FunkinParentDisabler extends FlxBasic {
 		__cameras = [];
 		__timers = [];
 		__sounds = [];
+		__excludeList = [];
 	}
 
 	public override function destroy() {
 		super.destroy();
 		@:privateAccess {
 			if (!__restoreUponDestroy) {
-				for(t in __tweens) { t.cancel(); t.destroy(); };
-				for(t in __timers) { t.cancel(); t.destroy(); };
+				for (t in __tweens) { t.cancel(); t.destroy(); };
+				for (t in __timers) { t.cancel(); t.destroy(); };
 				return;
 			}
 			if (__replaceUponDestroy) {
 				FlxTween.globalManager._tweens = __tweens;
 				FlxTimer.globalManager._timers = __timers;
 			} else {
-				for(t in __tweens) FlxTween.globalManager._tweens.push(t);
-				for(t in __timers) FlxTimer.globalManager._timers.push(t);
+				for (t in __tweens) FlxTween.globalManager._tweens.push(t);
+				for (t in __timers) FlxTimer.globalManager._timers.push(t);
 			}
-			for(c in __cameras) c.paused = false;
-			for(s in __sounds) s.play();
+			for (c in __cameras) c.paused = false;
+			for (s in __sounds) s.play();
 		}
 	}
 }
