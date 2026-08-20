@@ -28,14 +28,57 @@ class MemoryCounter extends Sprite {
 			addChild(label);
 		}
 		memoryPeakText.alpha = 0.5;
+		#if !(cpp && (windows || mac || linux))
+		memoryPeakText.visible = false;
+		#end
 	}
 
 	public function reload() {}
+
+	private var usingLegacy:Bool = false;
 
 	public override function __enterFrame(t:Int) {
 		if (alpha <= 0.05) return;
 		super.__enterFrame(t);
 
+		#if (cpp && (windows || mac || linux))
+		var legacy = funkin.options.Options.legacyMemoryCounter;
+
+		if (legacy) {
+			if (legacy != usingLegacy) {
+				usingLegacy = legacy;
+				memoryPeak = 0;
+			}
+
+			final mem = MemoryUtil.currentMemUsage();
+			if (memoryPeak < mem) memoryPeak = mem;
+			if (mem == memory) {
+				updateLabelPosition();
+				return;
+			}
+
+			memory = mem;
+			memoryPeakText.visible = true;
+			memoryText.text = CoolUtil.getSizeString(memory);
+			memoryPeakText.text = ' / ${CoolUtil.getSizeString(memoryPeak)}';
+		} else {
+			if (legacy != usingLegacy) usingLegacy = legacy;
+
+			final gcMem = MemoryUtil.currentMemUsage();
+			final osMem = MemoryUtil.currentProcessMemUsage();
+
+			if (gcMem == memory && osMem == memoryPeak) {
+				updateLabelPosition();
+				return;
+			}
+
+			memory = gcMem;
+			memoryPeak = osMem;
+			memoryPeakText.visible = true;
+			memoryText.text = CoolUtil.getSizeString(gcMem);
+			memoryPeakText.text = ' / ${CoolUtil.getSizeString(osMem)}';
+		}
+		#else
 		final mem = MemoryUtil.currentMemUsage();
 
 		if (mem == memory) {
@@ -44,9 +87,8 @@ class MemoryCounter extends Sprite {
 		}
 
 		memory = mem;
-		if (memoryPeak < memory) memoryPeak = memory;
-		memoryText.text = CoolUtil.getSizeString(memory);
-		memoryPeakText.text = ' / ${CoolUtil.getSizeString(memoryPeak)}';
+		memoryText.text = CoolUtil.getSizeString(mem);
+		#end
 
 		updateLabelPosition();
 	}

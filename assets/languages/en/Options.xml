@@ -206,6 +206,9 @@
 
 		<str id="songOffsetAffectEditors-name">Offset in Charter</str>
 		<str id="songOffsetAffectEditors-desc">If checked, this will enable the Song Offset option in the Chart Editor too.</str>
+
+		<str id="legacyMemoryCounter-name">Legacy Memory Counter</str>
+		<str id="legacyMemoryCounter-desc">If checked, the memory counter will show the Haxe GC memory usage and its peak (the original behavior) instead of the working set memory seen in Task Manager.</str>
 	</group>
 
 </language>

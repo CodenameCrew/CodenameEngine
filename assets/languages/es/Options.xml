@@ -180,6 +180,9 @@
 		<str id="charterAutoSaveWarningTime-desc">Esto controla por cuánto tiempo te advertirá el editor antes de autoguardar (en segundos..., 0 para desactivar)</str>
 
 		<str id="charterAutoSavesSeparateFolder-name">Carpeta de Autoguardados</str>
-		<str id="charterAutoSavesSeparateFolder-desc">Si está activado, el autoguardado se guardará en otra carpeta con su fecha en vez de sobreescribir el archivo actual. (song/autosaves/)</str>	</group>
+		<str id="charterAutoSavesSeparateFolder-desc">Si está activado, el autoguardado se guardará en otra carpeta con su fecha en vez de sobreescribir el archivo actual. (song/autosaves/)</str>
+
+		<str id="legacyMemoryCounter-name">Contador de Memoria Clásico</str>
+		<str id="legacyMemoryCounter-desc">Si está activado, el contador de memoria mostrará el uso de memoria del GC de Haxe y su máximo (el comportamiento original) en vez de la memoria de trabajo vista en el Administrador de Tareas.</str>	</group>
 
 </language>
