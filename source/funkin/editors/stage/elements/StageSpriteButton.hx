@@ -32,6 +32,64 @@ class StageSpriteButton extends StageElementButton {
 		return sprite;
 	}
 
+	override public function getDefaults():Map<String, Dynamic> {
+		return [
+			"scale" => 1,
+			"scroll" => 1,
+			"zoomfactor" => 1,
+			"updateHitbox" => false,
+			"antialiasing" => true,
+			"alpha" => 1,
+			"angle" => 0,
+			"skew" => 0,
+			"type" => "loop",
+			"beatOffset" => 0,
+			"beatInterval" => 2,
+			"interval" => 2,
+			"flipX" => false,
+			"flipY" => false
+		];
+	}
+
+	override public function getPointAttributes():Array<String> {
+		return ["scale", "scroll", "skew"];
+	}
+
+	override public function getAttributeOrder():Array<String> {
+		return [
+			"name",
+			"sprite",
+			"x",
+			"y",
+			"scale",
+			"scalex",
+			"scaley",
+			"updateHitbox",
+			"scroll",
+			"scrollx",
+			"scrolly",
+			"zoomfactor",
+			"antialiasing",
+			"alpha",
+			"blend",
+			"angle",
+			"skewx",
+			"skewy",
+			"color",
+			"flipX",
+			"flipY",
+			"width",
+			"height",
+			"graphicSize",
+			"graphicSizex",
+			"graphicSizey",
+			"beatInterval",
+			"interval",
+			"beatOffset",
+			"playOnCountdown"
+		];
+	}
+
 	public override function onSelect() {
 		StageEditor.instance.selectSprite(sprite);
 	}
