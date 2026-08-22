@@ -684,6 +684,36 @@ class StageEditor extends UIState {
 		return Options.editorStagePrettyPrint ? xmlThingYea : xmlThingYea.replace("\n", "");
 	}
 
+	function storeSpriteTransform(sprite:FunkinSprite) {
+		sprite.setPosition(CoolUtil.quantize(sprite.x, 100), CoolUtil.quantize(sprite.y, 100));
+		sprite.scale.set(CoolUtil.quantize(sprite.scale.x, 100), CoolUtil.quantize(sprite.scale.y, 100));
+		sprite.skew.set(CoolUtil.quantize(sprite.skew.x, 100), CoolUtil.quantize(sprite.skew.y, 100));
+		sprite.angle = CoolUtil.quantize(sprite.angle, 100);
+
+		var button:StageElementButton = cast(sprite.extra.get(exID("button")), StageElementButton);
+		button.xml.att.x = Std.string(sprite.x);
+		button.xml.att.y = Std.string(sprite.y);
+		button.xml.att.skewx = Std.string(sprite.skew.x);
+		button.xml.att.skewy = Std.string(sprite.skew.y);
+		button.xml.att.angle = Std.string(sprite.angle);
+
+		for (attrib in ["graphicSize", "graphicSizex", "graphicSizey"])
+			button.xml.x.remove(attrib);
+		if (MathUtil.equal(sprite.scale.x, sprite.scale.y)) {
+			button.xml.att.scale = Std.string(sprite.scale.x);
+		} else {
+			button.xml.att.scalex = Std.string(sprite.scale.x);
+			button.xml.att.scaley = Std.string(sprite.scale.y);
+		}
+
+		if (button.xml.has.width)
+			button.xml.att.width = Std.string(sprite.width);
+		if (button.xml.has.height)
+			button.xml.att.height = Std.string(sprite.height);
+
+		button.updateInfo();
+	}
+
 	function _edit_undo(_) {
 		UIState.playEditorSound(Flags.DEFAULT_EDITOR_UNDO_SOUND);
 		var undo = undos.undo();
@@ -706,7 +736,7 @@ class StageEditor extends UIState {
 				sprite.scale.set(oldInfo.scaleX, oldInfo.scaleY);
 				sprite.skew.set(oldInfo.skewX, oldInfo.skewY);
 				sprite.angle = oldInfo.angle;
-				cast(sprite.extra.get(exID("button")), StageElementButton).updateInfo();
+				storeSpriteTransform(sprite);
 		}
 	}
 
@@ -732,7 +762,7 @@ class StageEditor extends UIState {
 				sprite.scale.set(newInfo.scaleX, newInfo.scaleY);
 				sprite.skew.set(newInfo.skewX, newInfo.skewY);
 				sprite.angle = newInfo.angle;
-				cast(sprite.extra.get(exID("button")), StageElementButton).updateInfo();
+				storeSpriteTransform(sprite);
 		}
 	}
 
@@ -1117,6 +1147,7 @@ class StageEditor extends UIState {
 		if (prevMode == NONE && mouseMode == NONE) return;
 
 		if (prevMode != NONE && mouseMode == NONE) {
+			storeSpriteTransform(sprite);
 			undos.addToUndo(CTransform(sprite, {
 				x: storedPos.x,
 				y: storedPos.y,
