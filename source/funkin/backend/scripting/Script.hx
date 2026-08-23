@@ -4,7 +4,6 @@ import flixel.util.FlxDestroyUtil.IFlxDestroyable;
 import flixel.util.FlxStringUtil;
 import haxe.io.Path;
 import lime.app.Application;
-import haxe.macro.Expr;
 
 @:allow(funkin.backend.scripting.ScriptPack)
 /**
@@ -39,165 +38,115 @@ class Script extends FlxBasic implements IFlxDestroyable
 
 	private static function buildDefaultVariables():Map<String, Dynamic>
 	{
-		return generateDefaultVariables();
-	}
-
-	private static macro function generateDefaultVariables():Expr
-	{
-		return macro [
-			$a{getHaxeDefaultsVariables()},
-			$a{getOpenFLDefaultsVariables()},
-			$a{getFlixelDefaultsVariables()},
-			$a{getFoxliteDefaultsVariables()},
-			$a{getCNEDefaultsVariables()},
-		];
-	}
-
-	// Haxe related stuff
-	private static function getHaxeDefaultsVariables():Array<Expr>
-	{
 		return [
-			macro "Std" => Std,
-			macro "Math" => Math,
-			macro "Reflect" => Reflect,
-			macro "StringTools" => StringTools,
-			macro "Json" => haxe.Json,
-			macro "Xml" => Xml,
-			macro "Type" => Type,
-			macro "Date" => Date,
-			macro "Lambda" => Lambda,
-			#if sys macro "Sys" => Sys, #end
-		];
-	}
+			// Haxe related stuff
+			"Std" => Std,
+			"Math" => Math,
+			"Reflect" => Reflect,
+			"StringTools" => StringTools,
+			"Json" => haxe.Json,
+			"Xml" => Xml,
+			"Type" => Type,
+			"Date" => Date,
+			"Lambda" => Lambda,
+			#if sys "Sys" => Sys, #end
 
-	// OpenFL related stuff
-	private static function getOpenFLDefaultsVariables():Array<Expr>
-	{
-		return [
-			macro "BlendMode" => CoolUtil.getMacroAbstractClass("openfl.display.BlendMode"),
-			macro "Assets" => openfl.utils.Assets,
-			macro "Application" => lime.app.Application,
-			macro "Main" => funkin.backend.system.Main,
-		];
-	}
+			// OpenFL & Lime related stuff
+			"BlendMode" => CoolUtil.getMacroAbstractClass("openfl.display.BlendMode"),
+			"Assets" => openfl.utils.Assets,
+			"Application" => lime.app.Application,
+			"Main" => funkin.backend.system.Main,
 
-	// Flixel related stuff
-	private static function getFlixelDefaultsVariables():Array<Expr>
-	{
-		return [
-			macro "FlxG" => flixel.FlxG,
-			macro "FlxSprite" => flixel.FlxSprite,
-			macro "FlxBasic" => flixel.FlxBasic,
-			macro "FlxCamera" => flixel.FlxCamera,
-			macro "FlxEase" => flixel.tweens.FlxEase,
-			macro "FlxTween" => flixel.tweens.FlxTween,
-			macro "FlxSound" => flixel.sound.FlxSound,
-			macro "FlxAssets" => flixel.system.FlxAssets,
-			macro "FlxMath" => flixel.math.FlxMath,
-			macro "FlxGroup" => flixel.group.FlxGroup,
-			macro "FlxTypedGroup" => flixel.group.FlxGroup.FlxTypedGroup,
-			macro "FlxSpriteGroup" => flixel.group.FlxSpriteGroup,
-			macro "FlxTypeText" => flixel.addons.text.FlxTypeText,
-			macro "FlxText" => flixel.text.FlxText,
-			macro "FlxTimer" => flixel.util.FlxTimer,
-			macro "FlxPoint" => CoolUtil.getMacroAbstractClass("flixel.math.FlxPoint"),
-			macro "FlxAxes" => CoolUtil.getMacroAbstractClass("flixel.util.FlxAxes"),
-			macro "FlxColor" => CoolUtil.getMacroAbstractClass("flixel.util.FlxColor"),
-		];
-	}
+			// Flixel related stuff
+			"FlxG" => flixel.FlxG,
+			"FlxSprite" => flixel.FlxSprite,
+			"FlxBasic" => flixel.FlxBasic,
+			"FlxCamera" => flixel.FlxCamera,
+			"FlxEase" => flixel.tweens.FlxEase,
+			"FlxTween" => flixel.tweens.FlxTween,
+			"FlxSound" => flixel.sound.FlxSound,
+			"FlxAssets" => flixel.system.FlxAssets,
+			"FlxMath" => flixel.math.FlxMath,
+			"FlxGroup" => flixel.group.FlxGroup,
+			"FlxTypedGroup" => flixel.group.FlxGroup.FlxTypedGroup,
+			"FlxSpriteGroup" => flixel.group.FlxSpriteGroup,
+			"FlxTypeText" => flixel.addons.text.FlxTypeText,
+			"FlxText" => flixel.text.FlxText,
+			"FlxTimer" => flixel.util.FlxTimer,
+			"FlxPoint" => CoolUtil.getMacroAbstractClass("flixel.math.FlxPoint"),
+			"FlxAxes" => CoolUtil.getMacroAbstractClass("flixel.util.FlxAxes"),
+			"FlxColor" => CoolUtil.getMacroAbstractClass("flixel.util.FlxColor"),
 
-	// Foxlite related stuff
-	private static function getFoxliteDefaultsVariables():Array<Expr>
-	{
-		return [
-			macro "FoxScene" => foxlite.FoxScene,
-			macro "FoxCamera" => foxlite.FoxCamera,
-			macro "FoxFPSCamera" => foxlite.extras.FoxFPSCamera,
-			macro "FoxRenderer" => foxlite.renderer.FoxRenderer,
-			macro "FoxLoaderUtil" => foxlite.loaders.FoxLoaderUtil,
-			macro "FoxModel" => foxlite.FoxModel,
-			macro "FoxQuadMesh" => foxlite.mesh.FoxQuadMesh,
-			macro "FoxCubeMesh" => foxlite.mesh.FoxCubeMesh,
-			macro "FoxMaterial" => foxlite.material.FoxMaterial,
-			macro "FoxShader" => foxlite.FoxShader,
-			macro "FoxTexture" => foxlite.texture.FoxTexture,
-			macro "FoxCache" => foxlite.FoxCache,
-			macro "FoxRenderMetrics" => foxlite.flixel.FoxRenderMetrics,
-			macro "FoxFunkinSprite" => foxlite.funkin.FoxFunkinSprite,
-			macro "FoxFlxSprite" => foxlite.flixel.FoxFlxSprite,
-			macro "FoxPanoramaSky" => foxlite.sky.FoxPanoramaSky,
-			macro "FoxStencilAction" => foxlite.stencil.FoxStencilAction,
-			macro "FoxOBJLoader" => foxlite.loaders.FoxOBJLoader,
-			macro "FoxMTLLoader" => foxlite.loaders.FoxMTLLoader,
-			macro "FoxDirectionalLight" => foxlite.lights.FoxDirectionalLight,
-			macro "FoxLayer" => CoolUtil.getMacroAbstractClass("foxlite.FoxLayer"),
-			macro "FoxEaseType" => CoolUtil.getMacroAbstractClass("foxlite.animation.FoxEaseType"),
-			macro "FoxInstanceUpdateMode" => CoolUtil.getMacroAbstractClass("foxlite.instancing.FoxInstanceUpdateMode"),
-			macro "FoxAreaLightShape" => CoolUtil.getMacroAbstractClass("foxlite.lights.FoxAreaLightShape"),
-			macro "FoxLightType" => CoolUtil.getMacroAbstractClass("foxlite.lights.FoxLightType"),
-			macro "FoxBlendMode" => CoolUtil.getMacroAbstractClass("foxlite.material.FoxBlendMode"),
-			macro "FoxDepthCompareMode" => CoolUtil.getMacroAbstractClass("foxlite.material.FoxDepthCompareMode"),
-			macro "FoxStencilCompareMode" => CoolUtil.getMacroAbstractClass("foxlite.stencil.FoxStencilCompareMode"),
-			macro "FoxTriangleFace" => CoolUtil.getMacroAbstractClass("foxlite.material.FoxTriangleFace"),
-			macro "FoxMeshBufferType" => CoolUtil.getMacroAbstractClass("foxlite.mesh.FoxMeshBufferType"),
-			macro "FoxQuadFace" => CoolUtil.getMacroAbstractClass("foxlite.mesh.FoxQuadFace"),
-			macro "FoxStencilActionType" => CoolUtil.getMacroAbstractClass("foxlite.stencil.FoxStencilActionType"),
-			macro "FoxCubemapSide" => CoolUtil.getMacroAbstractClass("foxlite.texture.FoxCubemapSide"),
-			macro "FoxMipFilter" => CoolUtil.getMacroAbstractClass("foxlite.texture.FoxMipFilter"),
-			macro "FoxTextureFilter" => CoolUtil.getMacroAbstractClass("foxlite.texture.FoxTextureFilter"),
-			macro "FoxWrapMode" => CoolUtil.getMacroAbstractClass("foxlite.texture.FoxWrapMode"),
-		];
-	}
+			#if (THREE_D_SUPPORT && foxlite)
+			// Foxlite stuff
+			"FoxScene" => foxlite.FoxScene, "FoxCamera" => foxlite.FoxCamera, "FoxFPSCamera" => foxlite.extras.FoxFPSCamera, "FoxRenderer" =>
+			foxlite.renderer.FoxRenderer, "FoxLoaderUtil" => foxlite.loaders.FoxLoaderUtil, "FoxModel" => foxlite.FoxModel, "FoxQuadMesh" =>
+			foxlite.mesh.FoxQuadMesh, "FoxCubeMesh" => foxlite.mesh.FoxCubeMesh, "FoxMaterial" => foxlite.material.FoxMaterial, "FoxShader" =>
+			foxlite.FoxShader, "FoxTexture" => foxlite.texture.FoxTexture, "FoxCache" => foxlite.FoxCache, "FoxRenderMetrics" =>
+			foxlite.flixel.FoxRenderMetrics, "FoxFunkinSprite" => foxlite.funkin.FoxFunkinSprite, "FoxFlxSprite" => foxlite.flixel.FoxFlxSprite,
+			"FoxPanoramaSky" => foxlite.sky.FoxPanoramaSky, "FoxStencilAction" => foxlite.stencil.FoxStencilAction, "FoxOBJLoader" =>
+			foxlite.loaders.FoxOBJLoader, "FoxMTLLoader" => foxlite.loaders.FoxMTLLoader, "FoxDirectionalLight" => foxlite.lights.FoxDirectionalLight,
+			"FoxLayer" => CoolUtil.getMacroAbstractClass("foxlite.FoxLayer"), "FoxEaseType" => CoolUtil.getMacroAbstractClass("foxlite.animation.FoxEaseType"),
+			"FoxInstanceUpdateMode" => CoolUtil.getMacroAbstractClass("foxlite.instancing.FoxInstanceUpdateMode"), "FoxAreaLightShape" =>
+			CoolUtil.getMacroAbstractClass("foxlite.lights.FoxAreaLightShape"), "FoxLightType" =>
+			CoolUtil.getMacroAbstractClass("foxlite.lights.FoxLightType"), "FoxBlendMode" => CoolUtil.getMacroAbstractClass("foxlite.material.FoxBlendMode"),
+			"FoxDepthCompareMode" => CoolUtil.getMacroAbstractClass("foxlite.material.FoxDepthCompareMode"), "FoxStencilCompareMode" =>
+			CoolUtil.getMacroAbstractClass("foxlite.stencil.FoxStencilCompareMode"), "FoxTriangleFace" =>
+			CoolUtil.getMacroAbstractClass("foxlite.material.FoxTriangleFace"), "FoxMeshBufferType" =>
+			CoolUtil.getMacroAbstractClass("foxlite.mesh.FoxMeshBufferType"), "FoxQuadFace" => CoolUtil.getMacroAbstractClass("foxlite.mesh.FoxQuadFace"),
+			"FoxStencilActionType" => CoolUtil.getMacroAbstractClass("foxlite.stencil.FoxStencilActionType"), "FoxCubemapSide" =>
+			CoolUtil.getMacroAbstractClass("foxlite.texture.FoxCubemapSide"), "FoxMipFilter" => CoolUtil.getMacroAbstractClass("foxlite.texture.FoxMipFilter"),
+			"FoxTextureFilter" => CoolUtil.getMacroAbstractClass("foxlite.texture.FoxTextureFilter"), "FoxWrapMode" =>
+			CoolUtil.getMacroAbstractClass("foxlite.texture.FoxWrapMode"),
+			#end
 
-	private static function getCNEDefaultsVariables():Array<Expr>
-	{
-		return [
-			macro "engine" => {
+			// Engine related stuff
+			"engine" => {
 				commit: Flags.COMMIT_NUMBER,
 				hash: Flags.COMMIT_HASH,
 				build: 2675, // 2675 being the last build num before it was removed
 				name: "Codename Engine"
 			},
-			macro "ModState" => funkin.backend.scripting.ModState,
-			macro "ModSubState" => funkin.backend.scripting.ModSubState,
-			macro "PlayState" => funkin.game.PlayState,
-			macro "GameOverSubstate" => funkin.game.GameOverSubstate,
-			macro "HealthIcon" => funkin.game.HealthIcon,
-			macro "HudCamera" => funkin.game.HudCamera,
-			macro "Note" => funkin.game.Note,
-			macro "Strum" => funkin.game.Strum,
-			macro "StrumLine" => funkin.game.StrumLine,
-			macro "Character" => funkin.game.Character,
-			macro "Boyfriend" => funkin.game.Character, // for compatibility
-			macro "PauseSubState" => funkin.menus.PauseSubState,
-			macro "PauseSubstate" => funkin.menus.PauseSubState, // miss-spelling
-			macro "FreeplayState" => funkin.menus.FreeplayState,
-			macro "MainMenuState" => funkin.menus.MainMenuState,
-			macro "StoryMenuState" => funkin.menus.StoryMenuState,
-			macro "TitleState" => funkin.menus.TitleState,
-			macro "Options" => funkin.options.Options,
-			macro "Paths" => funkin.backend.assets.Paths,
-			macro "Conductor" => funkin.backend.system.Conductor,
-			macro "FunkinShader" => funkin.backend.shaders.FunkinShader,
-			macro "CustomShader" => funkin.backend.shaders.CustomShader, // deprecated
-			macro "FunkinText" => funkin.backend.FunkinText,
-			macro "FlxAnimate" => animate.FlxAnimate,
-			macro "FunkinSprite" => funkin.backend.FunkinSprite,
-			macro "Alphabet" => funkin.menus.ui.Alphabet,
-			macro "Flags" => funkin.backend.system.Flags,
+			"ModState" => funkin.backend.scripting.ModState,
+			"ModSubState" => funkin.backend.scripting.ModSubState,
+			"PlayState" => funkin.game.PlayState,
+			"GameOverSubstate" => funkin.game.GameOverSubstate,
+			"HealthIcon" => funkin.game.HealthIcon,
+			"HudCamera" => funkin.game.HudCamera,
+			"Note" => funkin.game.Note,
+			"Strum" => funkin.game.Strum,
+			"StrumLine" => funkin.game.StrumLine,
+			"Character" => funkin.game.Character,
+			"Boyfriend" => funkin.game.Character, // for compatibility
+			"PauseSubstate" => funkin.menus.PauseSubState,
+			"FreeplayState" => funkin.menus.FreeplayState,
+			"MainMenuState" => funkin.menus.MainMenuState,
+			"PauseSubState" => funkin.menus.PauseSubState,
+			"StoryMenuState" => funkin.menus.StoryMenuState,
+			"TitleState" => funkin.menus.TitleState,
+			"Options" => funkin.options.Options,
+			"Paths" => funkin.backend.assets.Paths,
+			"Conductor" => funkin.backend.system.Conductor,
+			"FunkinShader" => funkin.backend.shaders.FunkinShader,
+			"CustomShader" => funkin.backend.shaders.CustomShader, // deprecated
+			"FunkinText" => funkin.backend.FunkinText,
+			"FlxAnimate" => animate.FlxAnimate,
+			"FunkinSprite" => funkin.backend.FunkinSprite,
+			"Alphabet" => funkin.menus.ui.Alphabet,
+			"Flags" => funkin.backend.system.Flags,
 
-			macro "CoolUtil" => funkin.backend.utils.CoolUtil,
-			macro "IniUtil" => funkin.backend.utils.IniUtil,
-			macro "XMLUtil" => funkin.backend.utils.XMLUtil,
-			#if sys macro "ZipUtil" => funkin.backend.utils.ZipUtil, #end
-			macro "MarkdownUtil" => funkin.backend.utils.MarkdownUtil,
-			macro "EngineUtil" => funkin.backend.utils.EngineUtil,
-			macro "ThreadUtil" => funkin.backend.utils.ThreadUtil,
-			macro "MemoryUtil" => funkin.backend.utils.MemoryUtil,
-			macro "BitmapUtil" => funkin.backend.utils.BitmapUtil,
+			"CoolUtil" => funkin.backend.utils.CoolUtil,
+			"IniUtil" => funkin.backend.utils.IniUtil,
+			"XMLUtil" => funkin.backend.utils.XMLUtil,
+			#if sys "ZipUtil" => funkin.backend.utils.ZipUtil, #end
+			"MarkdownUtil" => funkin.backend.utils.MarkdownUtil,
+			"EngineUtil" => funkin.backend.utils.EngineUtil,
+			"ThreadUtil" => funkin.backend.utils.ThreadUtil,
+			"MemoryUtil" => funkin.backend.utils.MemoryUtil,
+			"BitmapUtil" => funkin.backend.utils.BitmapUtil,
 
 			#if TRANSLATIONS_SUPPORT
-			macro "TranslationUtil" => funkin.backend.utils.TranslationUtil, macro "translate" => funkin.backend.utils.TranslationUtil.get,
+			"TranslationUtil" => funkin.backend.utils.TranslationUtil, "translate" => funkin.backend.utils.TranslationUtil.get,
 			#end
 		];
 	}
