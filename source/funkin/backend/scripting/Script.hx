@@ -4,6 +4,7 @@ import flixel.util.FlxDestroyUtil.IFlxDestroyable;
 import flixel.util.FlxStringUtil;
 import haxe.io.Path;
 import lime.app.Application;
+import haxe.macro.Expr;
 
 @:allow(funkin.backend.scripting.ScriptPack)
 /**
