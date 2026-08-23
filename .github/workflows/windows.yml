@@ -15,7 +15,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Pulling the new commit
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Setting up Haxe
@@ -23,7 +23,7 @@ jobs:
         with:
           haxe-version: ${{ env.HAXE_VERSION }}
       # - name: Restore existing build cache for faster compilation
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v6
       #   with:
       #     # not caching the bin folder to prevent asset duplication and stuff like that
       #     key: cache-build-windows
@@ -53,7 +53,7 @@ jobs:
           name: Codename Engine
           path: export/release/windows/bin
       # - name: Clearing already existing cache
-      #   uses: actions/github-script@v6
+      #   uses: actions/github-script@v9
       #   with:
       #     script: |
       #       const caches = await github.rest.actions.getActionsCacheList({
@@ -72,7 +72,7 @@ jobs:
       #         }
       #       }
       # - name: Uploading new cache
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v6
       #   with:
       #     # caching again since for some reason it doesnt work with the first post cache shit
       #     key: cache-build-windows
@@ -88,13 +88,13 @@ jobs:
     needs: build # since its low priority, it'll run after, so actions will concentrate first on normal builds
     steps:
       - name: Pulling the new commit
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
           haxe-version: ${{ env.HAXE_VERSION }}
       # - name: Restore existing build cache for faster compilation
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v6
       #   with:
       #     # not caching the bin folder to prevent asset duplication and stuff like that
       #     key: cache-build-windows-debug
@@ -118,7 +118,7 @@ jobs:
           name: Codename Engine Debug
           path: export/debug/windows/bin
       # - name: Clearing already existing cache
-      #   uses: actions/github-script@v6
+      #   uses: actions/github-script@v9
       #   with:
       #     script: |
       #       const caches = await github.rest.actions.getActionsCacheList({
@@ -137,7 +137,7 @@ jobs:
       #         }
       #       }
       # - name: Uploading new cache
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v6
       #   with:
       #     # caching again since for some reason it doesnt work with the first post cache shit
       #     key: cache-build-windows-debug

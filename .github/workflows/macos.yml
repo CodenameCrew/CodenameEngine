@@ -15,7 +15,7 @@ jobs:
     runs-on: macos-26
     steps:
       - name: Pulling the new commit
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Setting up Haxe
@@ -23,17 +23,17 @@ jobs:
         with:
           haxe-version: ${{ env.HAXE_VERSION }}
       # - name: Restore existing build cache for faster compilation
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v6
       #   with:
       #     # not caching the bin folder to prevent asset duplication and stuff like that
-      #     key: cache-build-mac
+      #     key: cache-build-mac-intel
       #     path: |
       #       .haxelib/
       #       export/release/macos/obj/
       - name: Installing/Updating libraries
         run: |
-          brew trust aws/tap
           arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+          arch -x86_64 /usr/local/bin/brew trust aws/tap
           arch -x86_64 /usr/local/bin/brew install zlib
           haxe -cp commandline -D analyzer-optimize --run Main setup -si
       - name: Building the game
@@ -41,7 +41,7 @@ jobs:
           haxelib run lime setup -alias -y -nocffi
           haxelib run lime rebuild hxcpp
           haxelib run lime rebuild tools
-          haxelib run lime rebuild mac -64 -nocolor -release
+          arch -x86_64 haxelib run lime rebuild mac -nocolor -release
           arch -x86_64 haxelib run lime build mac -DCOMPILE_EXPERIMENTAL
       - name: Tar files
         run: tar -zcvf CodenameEngine.tar.gz -C export/release/macos/bin .
@@ -51,7 +51,7 @@ jobs:
           name: Codename Engine-x64
           path: CodenameEngine.tar.gz
       # - name: Clearing already existing cache
-      #   uses: actions/github-script@v6
+      #   uses: actions/github-script@v9
       #   with:
       #     script: |
       #       const caches = await github.rest.actions.getActionsCacheList({
@@ -59,7 +59,7 @@ jobs:
       #         repo: context.repo.repo,
       #       })
       #       for (const cache of caches.data.actions_caches) {
-      #         if (cache.key == "cache-build-mac") {
+      #         if (cache.key == "cache-build-mac-intel") {
       #           console.log('Clearing ' + cache.key + '...')
       #           await github.rest.actions.deleteActionsCacheById({
       #             owner: context.repo.owner,
@@ -70,10 +70,10 @@ jobs:
       #         }
       #       }
       # - name: Uploading new cache
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v6
       #   with:
       #     # caching again since for some reason it doesnt work with the first post cache shit
-      #     key: cache-build-mac
+      #     key: cache-build-mac-intel
       #     path: |
       #       .haxelib/
       #       export/release/macos/obj/
@@ -84,7 +84,7 @@ jobs:
     runs-on: macos-26
     steps:
       - name: Pulling the new commit
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Setting up Haxe
@@ -92,10 +92,10 @@ jobs:
         with:
           haxe-version: ${{ env.HAXE_VERSION }}
       # - name: Restore existing build cache for faster compilation
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v6
       #   with:
       #     # not caching the bin folder to prevent asset duplication and stuff like that
-      #     key: cache-build-mac
+      #     key: cache-build-mac-arm
       #     path: |
       #       .haxelib/
       #       export/release/macos/obj/
@@ -119,7 +119,7 @@ jobs:
           name: Codename Engine-ARM64
           path: CodenameEngine.tar.gz
       # - name: Clearing already existing cache
-      #   uses: actions/github-script@v6
+      #   uses: actions/github-script@v9
       #   with:
       #     script: |
       #       const caches = await github.rest.actions.getActionsCacheList({
@@ -127,7 +127,7 @@ jobs:
       #         repo: context.repo.repo,
       #       })
       #       for (const cache of caches.data.actions_caches) {
-      #         if (cache.key == "cache-build-mac") {
+      #         if (cache.key == "cache-build-mac-arm") {
       #           console.log('Clearing ' + cache.key + '...')
       #           await github.rest.actions.deleteActionsCacheById({
       #             owner: context.repo.owner,
@@ -138,10 +138,10 @@ jobs:
       #         }
       #       }
       # - name: Uploading new cache
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v6
       #   with:
       #     # caching again since for some reason it doesnt work with the first post cache shit
-      #     key: cache-build-mac
+      #     key: cache-build-mac-arm
       #     path: |
       #       .haxelib/
       #       export/release/macos/obj/
@@ -200,23 +200,23 @@ jobs:
     needs: universal_build # since its low priority, it'll run after, so actions will concentrate first on normal builds
     steps:
       - name: Pulling the new commit
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
           haxe-version: ${{ env.HAXE_VERSION }}
       # - name: Restore existing build cache for faster compilation
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v6
       #   with:
       #     # not caching the bin folder to prevent asset duplication and stuff like that
-      #     key: cache-build-mac-debug
+      #     key: cache-build-mac-intel-debug
       #     path: |
       #       .haxelib/
       #       export/debug/macos/obj/
       - name: Installing/Updating libraries
         run: |
-          brew trust aws/tap
           arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+          arch -x86_64 /usr/local/bin/brew trust aws/tap
           arch -x86_64 /usr/local/bin/brew install zlib
           haxe -cp commandline -D analyzer-optimize --run Main setup -si
       - name: Building the game
@@ -224,7 +224,7 @@ jobs:
           haxelib run lime setup -alias -y -nocffi
           haxelib run lime rebuild hxcpp
           haxelib run lime rebuild tools
-          haxelib run lime rebuild mac -64 -nocolor -release
+          arch -x86_64 haxelib run lime rebuild mac -nocolor -release
           arch -x86_64 haxelib run lime build mac -debug -DCOMPILE_EXPERIMENTAL
       - name: Tar files
         run: tar -zcvf CodenameEngine.tar.gz -C export/debug/macos/bin .
@@ -234,7 +234,7 @@ jobs:
           name: Codename Engine-x64 Debug
           path: CodenameEngine.tar.gz
       # - name: Clearing already existing cache
-      #   uses: actions/github-script@v6
+      #   uses: actions/github-script@v9
       #   with:
       #     script: |
       #       const caches = await github.rest.actions.getActionsCacheList({
@@ -242,7 +242,7 @@ jobs:
       #         repo: context.repo.repo,
       #       })
       #       for (const cache of caches.data.actions_caches) {
-      #         if (cache.key == "cache-build-mac-debug") {
+      #         if (cache.key == "cache-build-mac-intel-debug") {
       #           console.log('Clearing ' + cache.key + '...')
       #           await github.rest.actions.deleteActionsCacheById({
       #             owner: context.repo.owner,
@@ -253,10 +253,10 @@ jobs:
       #         }
       #       }
       # - name: Uploading new cache
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v6
       #   with:
       #     # caching again since for some reason it doesnt work with the first post cache shit
-      #     key: cache-build-mac-debug
+      #     key: cache-build-mac-intel-debug
       #     path: |
       #       .haxelib/
       #       export/debug/macos/obj/
@@ -268,16 +268,16 @@ jobs:
     needs: universal_build # since its low priority, it'll run after, so actions will concentrate first on normal builds
     steps:
       - name: Pulling the new commit
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
           haxe-version: ${{ env.HAXE_VERSION }}
       # - name: Restore existing build cache for faster compilation
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v6
       #   with:
       #     # not caching the bin folder to prevent asset duplication and stuff like that
-      #     key: cache-build-mac-debug
+      #     key: cache-build-mac-arm-debug
       #     path: |
       #       .haxelib/
       #       export/debug/macos/obj/
@@ -301,7 +301,7 @@ jobs:
           name: Codename Engine-ARM64 Debug
           path: CodenameEngine.tar.gz
       # - name: Clearing already existing cache
-      #   uses: actions/github-script@v6
+      #   uses: actions/github-script@v9
       #   with:
       #     script: |
       #       const caches = await github.rest.actions.getActionsCacheList({
@@ -309,7 +309,7 @@ jobs:
       #         repo: context.repo.repo,
       #       })
       #       for (const cache of caches.data.actions_caches) {
-      #         if (cache.key == "cache-build-mac-debug") {
+      #         if (cache.key == "cache-build-mac-arm-debug") {
       #           console.log('Clearing ' + cache.key + '...')
       #           await github.rest.actions.deleteActionsCacheById({
       #             owner: context.repo.owner,
@@ -320,10 +320,10 @@ jobs:
       #         }
       #       }
       # - name: Uploading new cache
-      #   uses: actions/cache@v4.2.3
+      #   uses: actions/cache@v6
       #   with:
       #     # caching again since for some reason it doesnt work with the first post cache shit
-      #     key: cache-build-mac-debug
+      #     key: cache-build-mac-arm-debug
       #     path: |
       #       .haxelib/
       #       export/debug/macos/obj/
