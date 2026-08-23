@@ -222,7 +222,6 @@ class StageEditor extends UIState {
 
 		axisGizmo = new AxisGizmo();
 		axisGizmo.cameras = [gizmosCamera];
-		add(axisGizmo);
 
 		uiCamera = new FlxCamera();
 		uiCamera.bgColor = 0;
@@ -272,6 +271,7 @@ class StageEditor extends UIState {
 
 		add(topMenuSpr);
 		add(uiGroup);
+		add(axisGizmo);
 
 		if(Framerate.isLoaded) {
 			Framerate.fpsCounter.alpha = 0.4;
