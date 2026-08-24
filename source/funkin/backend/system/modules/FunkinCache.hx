@@ -54,10 +54,9 @@ class FunkinCache extends AssetCache {
 	**/
 	public static function clearAllCaches() {
 		@:privateAccess
-		for (key in [for (k in FlxG.bitmap._cache.keys()) k]) {
-			var graphic = FlxG.bitmap._cache.get(key);
+		for (graphic in [for (g in FlxG.bitmap._cache) g]) {
 			if (graphic != null && graphic.assetsKey != null)
-				FlxG.bitmap.removeByKey(key);
+				FlxG.bitmap.removeByKey(graphic.key);
 		}
 		if (instance != null)
 			instance.clearAll();
