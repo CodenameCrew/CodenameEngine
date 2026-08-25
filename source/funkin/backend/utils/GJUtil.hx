@@ -1,5 +1,6 @@
 package funkin.backend.utils;
 
+import lime.graphics.Image;
 import haxe.Timer;
 import flixel.graphics.FlxGraphic;
 import openfl.display.BitmapData;
@@ -175,13 +176,29 @@ enum RequestType {
 }
 
 /**
- * GameJolt utility to help with GameJolt functionality. Use this class to determine if your player is logged into GameJolt.
- * Will not do anything if there is no provided GameJolt token.
+ * GameJolt utility to help with GameJolt functionality. Use this class to determine if your player is logged into GameJolt,
+ * unlock custom trophies, or do anything that is safe to accomplish with softcoding. Will not do anything if there is no
+ * provided GameJolt token or game ID.
  * 
  * # IMPORTANT
- * If you wish to use this utility, please run your GameJolt game's security code through the Codename Engine
- * encryption tool on Codename's website.
- * Place the output of that into your modpack.ini under the flag `MOD_GAMEJOLT_TOKEN`.
+ * If you wish to setup GameJolt API integrations, please follow these steps:
+ * 1. Place your game's game ID (NOT your game's security key) into your `modpack.ini`
+ * for the flag `GAMEJOLT_GAME_ID`.
+ * 2. Create a file in `data/config` named `gamejolt.xml`.
+ * 3. Create nodes for the following:
+ * ```xml
+ * <owner username="your-username-here" token="your-user-token-here" />
+ * <gamekey>your-game-security-key-here</gamekey>
+ * ```
+ * 4. Create nodes for trophies and leaderboards.
+ * 5. Create nodes for data - any specific items in save files you want to be saved in a user's data store.
+ * 6. Run the mod in Codename Engine (preferred: run the EXE file from a Command Prompt).
+ * If successful, you will see a screen with more information; if unsuccessful, you'll see
+ * an error in the console.
+ * 7. If successful, press the "Copy" button and place the copied output into your modpack.ini,
+ * preferrably right under the `GAMEJOLT_GAME_ID` flag.
+ * 8. Discard the overwritten `gamejolt.xml` file or keep it for any updates you want to make to
+ * the global data store.
  * 
  * ## DO NOT PLACE YOUR SECURITY KEY RIGHT INTO THE MODPACK.INI!!!! THAT IS A SECURITY ISSUE!!!!
  */
@@ -222,7 +239,7 @@ class GJUtil
 	 * Helper function that runs when an achievement is unlocked.
 	 * Can be useful for notifications.
 	 */
-	public static var onTrophyUnlock:Null<Array<String>->Void> = null;
+	public static var onTrophyUnlock:Null<Trophy->Void> = null;
 
 	/**
 	 * Whether or not the utility is executing a call.
@@ -239,6 +256,10 @@ class GJUtil
 	#end
 
 	#if GAMEJOLT_API
+	/**
+	 * Initializes the GJUtil class and attempts to log in.
+	 * If needed, also attempts to initialize global data.
+	 */
 	public static function init()
 	{
 		if (Flags.MOD_GAMEJOLT_GAME_ID == '')
@@ -248,9 +269,7 @@ class GJUtil
 			GameJoltData.loadAdminData();
 			if (Flags.MOD_GAMEJOLT_ENCRYPTED_TOKEN == '')
 				return;
-		}
-
-		if (FlxG.save.data.gameJoltArray != null) {
+		} else if (FlxG.save.data.gameJoltArray != null) {
 			var gjDat:Array<String> = FlxG.save.data.gameJoltArray;
 			GJUtil.attemptLogin(gjDat[0], gjDat[1]);
 		}
@@ -260,7 +279,13 @@ class GJUtil
 	 * Helper function to simplify the login process.
 	 * @param name Username of user attempting to login.
 	 * @param token User token of user attempting to login.
-	 * @return Bool Whether the attempt was successfull or not.
+	 * @param callback Function to run when attempt is complete. Return bool
+	 * determines if attempt was successful or unsuccessful.
+	 * @param checkCreds Whether or not to check and make sure the user actually
+	 * exists. Helpful for new login attempts (instead of confirmed attempts, like
+	 * those coming from the save file).
+	 * @param tempLogin Whether or not the login is temporary (i.e. first-time global
+	 * data upload) or permanent.
 	 */
 	public static function attemptLogin(name:String, token:String, ?callback:Bool->Void, checkCreds:Bool = false, tempLogin:Bool = false)
 	{
@@ -269,14 +294,14 @@ class GJUtil
 			
 			userName = name;
 			GameJoltSecurity.user_token = token;
-			var batchCalls:Array<RequestType> = [SESSION_OPEN];
+			var batchCalls:Array<RequestType> = [SESSION_OPEN, USER_FETCH(name)];
 			if (checkCreds)
 				batchCalls.unshift(USER_AUTH);
 			if (!tempLogin) {
-				batchCalls.push(USER_FETCH(name));
-				batchCalls.push(TROPHIES_FETCH(true));
+				batchCalls.push(TROPHIES_FETCH());
 			}
-			send(RequestType.BATCH(true, false, batchCalls), true, function(err) {
+
+			send(RequestType.BATCH(true, false, batchCalls), !tempLogin, function(err) {
 				userName = null;
 				if (callback != null) callback(false);
 			}, function(resp) {
@@ -286,6 +311,17 @@ class GJUtil
 					userDescription = resp.responses[checkCreds ? 2 : 1].users[0].developer_description;
 					GameJoltData.loadGlobalData((bl) -> {
 						if (bl) {
+							for (trop in resp.responses[checkCreds ? 3 : 2].trophies) {
+								for (key => value in GameJoltData.definedTrophies) {
+									if (value.id == trop.id && trop.achieved != "false")
+										GameJoltData.earnedTrophies.set(key, value);
+								}
+								for (key => value in GameJoltData.customTrophies) {
+									if (value.id == trop.id && trop.achieved != "false")
+										GameJoltData.earnedTrophies.set(key, value);
+								}
+							}
+
 							Logs.traceColored([
 								Logs.getPrefix("GameJolt"),
 								Logs.logText("Successfully logged in user "),
@@ -299,26 +335,38 @@ class GJUtil
 								FlxG.save.data.gameJoltArray = [userName, token];
 								FlxG.save.flush();
 							}
+							GameJoltSecurity.unlockDefinedTrophy('open-first');
+							if (Date.now().getDay() == 5 && Date.now().getHours() >= 18)
+								GameJoltSecurity.unlockDefinedTrophy('friday-night');
+							if (callback != null) callback(true);
 						} else {
 							Logs.trace('Unable to obtain global data. Logging out of GameJolt.', ERROR, LIGHTGRAY, 'GameJolt');
 							logout(false, true); // so that it doesn't remove functions that don't exist
+							if (callback != null) callback(false);
 						}
 					});
-				}
-				if (userName != null && callback != null) callback(true);
+				} else if (callback != null)
+					callback(true);
 			});
 		}
 		else
 			if (callback != null) callback(false);
 	}
 
+	/**
+	 * Logs out a user from GameJolt.
+	 * @param wipeSave Whether or not to wipe the user credentials from
+	 * the save file.
+	 * @param tempLogin Whether or not the login was temporary (i.e. first-time global
+	 * data upload) or permanent.
+	 */
 	public static function logout(wipeSave:Bool = false, tempLogin:Bool = false)
 	{
 		if (!active)
 			return;
 		if (!tempLogin)
 			shutdownFunctions();
-		send(RequestType.SESSION_CLOSE, true, null, function(resp) {
+		send(RequestType.SESSION_CLOSE, !tempLogin, null, function(resp) {
 			if (!tempLogin)
 				Logs.traceColored([
 					Logs.getPrefix("GameJolt"),
@@ -390,6 +438,13 @@ class GJUtil
 		}
 	}
 
+	/**
+	 * Unlocks a trophy from the `customTrophies` map - in other words,
+	 * any trophy that isn't specifically defined in hardcode.
+	 * @param custom Key/def of trophy in `customTrophies` map.
+	 * @param callback Function running on completion of unlock attempt. Returns
+	 * trophy data if successful, `null` if unsuccessful.
+	 */
 	public static function unlockCustomTrophy(custom:String, ?callback:Null<Trophy>->Void)
 	{
 		if (!GameJoltData.customTrophies.exists(custom))
@@ -418,6 +473,8 @@ class GJUtil
 						if (callback != null) callback(null);
 					}, function(resp) {
 						GameJoltData.earnedTrophies.set(custom, daTrophy);
+						Logs.trace('Trophy unlock: ${resp.responses[0].trophies[0].title}!');
+						if (onTrophyUnlock != null) onTrophyUnlock(resp.responses[0].trophies[0]);
 						if (callback != null) callback(resp.trophies[0]);
 					});
 				}
@@ -425,20 +482,26 @@ class GJUtil
 		}
 	}
 
-	public static function getAvatarImage(image:FlxSprite, ?addlCallback:Void->Void)
+	/**
+	 * Fetches image of user avatar (using same method as fetching GitHub profile images).
+	 * @param image Sprite to apply the bitmap to.
+	 * @param link Link to get image from. Defaults to logged in user's link if null.
+	 * @param addlCallback Callback function to run on successful completion of attempt.
+	 */
+	public static function getAvatarImage(image:FlxSprite, ?link:String, ?addlCallback:Void->Void)
 	{
 		#if ALLOW_MULTITHREADING ThreadUtil.execAsync#elseif (target.threaded) Thread.create#end(function() {
-			var key:String = 'GAMEJOLT-USER:${userName}';
+			var key:String = 'GAMEJOLT-LINK:${link != null ? link : userName}';
 			var bmap:Dynamic = FlxG.bitmap.get(key);
 
 			if(bmap == null) {
-				Logs.trace('Downloading avatar: ${userName}', INFO, LIGHTGRAY, 'GameJolt');
-				var unfLink:Bool = StringTools.endsWith(userAvatarUrl, '.png');
+				Logs.trace('Downloading avatar: ${link != null ? link : userName}', INFO, LIGHTGRAY, 'GameJolt');
+				var unfLink:Bool = StringTools.endsWith(link != null ? link : userAvatarUrl, '.png');
 
 				var bytes = null;
 				if(unfLink) {
-					try bytes = HttpUtil.requestBytes(userAvatarUrl)
-					catch(e) Logs.error('Failed to download GameJolt pfp for ${userName}: ${CoolUtil.removeIP(e.message)} - (Retrying using the api..)', RED, 'GameJolt');
+					try bytes = HttpUtil.requestBytes(link != null ? link : userAvatarUrl)
+					catch(e) Logs.error('Failed to download GameJolt pfp for ${link != null ? link : userName}: ${e.message} - (Retrying using the api..)', RED, 'GameJolt');
 
 					if(bytes != null) {
 						bmap = BitmapData.fromBytes(bytes);
@@ -468,6 +531,98 @@ class GJUtil
 		});
 	}
 
+	/**
+	 * Fetches image of a trophy (using same method as fetching GitHub profile images).
+	 * If null, it will set the graphic to one of the default graphics stored in the
+	 * Assets file.
+	 * 
+	 * You can also create your own default trophy images by just making "bronze",
+	 * "silver", "gold", and "platnum" trophy images, then placing those in 
+	 * "images/menus/gamejolt".
+	 * @param image Sprite to apply the bitmap to.
+	 * @param link Link to get image from. Defaults to logged in user's link if null.
+	 * @param addlCallback Callback function to run on successful completion of attempt.
+	 */
+	public static function getTrophyImage(image:FlxSprite, trophy:Trophy, ?addlCallback:Void->Void)
+	{
+		#if ALLOW_MULTITHREADING ThreadUtil.execAsync#elseif (target.threaded) Thread.create#end(function() {
+			var key:String = 'GAMEJOLT-TROP:${trophy.image_url}';
+			var bmap:Dynamic = FlxG.bitmap.get(key);
+
+			if(bmap == null) {
+				Logs.trace('Downloading trophy image for trophy: ${trophy.title}', INFO, LIGHTGRAY, 'GameJolt');
+				var unfLink:Bool = StringTools.endsWith(trophy.image_url, '.png');
+
+				if(unfLink) {
+					Image.loadFromFile(trophy.image_url).onComplete((img:Image) -> {
+						try {
+							#if (target.threaded)
+							mutex.acquire();
+							#end
+							var leGraphic:FlxGraphic = FlxG.bitmap.add(BitmapData.fromImage(img), false, key);
+							leGraphic.persist = true;
+							image.loadGraphic(leGraphic);
+							if (addlCallback != null) addlCallback();
+							#if (target.threaded)
+							mutex.release();
+							#end
+						} catch(e) {
+							Logs.error('Failed to update the image for ${trophy.title}: ${e.message}', RED, 'GameJolt');
+						}
+					}).onError((e) -> {
+						Logs.error('Failed to download trophy image for ${trophy.title}: ${e.message} - (Obtaining default image from files instead...)', RED, 'GameJolt');
+						try {
+							#if (target.threaded)
+							mutex.acquire();
+							#end
+							var secret:Bool = false;
+							for (t in GameJoltData.definedTrophies) {
+								if (t.id == trophy.id && t.hidden != null && !t.hidden)
+									secret = true;
+							}
+
+							for (t in GameJoltData.customTrophies) {
+								if (t.id == trophy.id && t.hidden != null && !t.hidden)
+									secret = true;
+							}
+							var leGraphic:FlxGraphic = FlxG.bitmap.add(BitmapData.fromFile(Paths.image('menus/gamejolt/' + trophy.difficulty.toLowerCase() + (secret ? "-secret" : ""))), false, key);
+							leGraphic.persist = true;
+							image.loadGraphic(leGraphic);
+							if (addlCallback != null) addlCallback();
+							#if (target.threaded)
+							mutex.release();
+							#end
+						} catch(e) {
+							Logs.error('Failed to update the image for ${trophy.title}: ${e.message}', RED, 'GameJolt');
+						}
+					});
+				} else {
+					Logs.error('Image for ${trophy.title} is not a .png image; obtaining default image from files instead...', RED, 'GameJolt');
+					try {
+						#if (target.threaded)
+						mutex.acquire();
+						#end
+						var leGraphic:FlxGraphic = FlxG.bitmap.add(BitmapData.fromFile(Paths.image('menus/gamejolt/' + trophy.difficulty.toLowerCase())), false, key);
+						leGraphic.persist = true;
+						image.loadGraphic(leGraphic);
+						if (addlCallback != null) addlCallback();
+						#if (target.threaded)
+						mutex.release();
+						#end
+					} catch(e) {
+						Logs.error('Failed to update the image for ${trophy.title}: ${e.message}', RED, 'GameJolt');
+					}
+				}
+			} else {
+				image.loadGraphic(bmap);
+				if (addlCallback != null) addlCallback();
+			}
+		});
+	}
+
+	/**
+	 * Function to ping session on regular basis.
+	 */
 	static function pingSession()
 	{
 		send(SESSION_PING(true), true, (str) -> {
@@ -478,11 +633,18 @@ class GJUtil
 		});
 	}
 
+	/**
+	 * Function to log out of GameJolt on application exit.
+	 * @param i idk man.
+	 */
 	static function onExitApp(i:Int)
 	{
 		logout();
 	}
 
+	/**
+	 * Functions to run when safely logging out user from GameJolt.
+	 */
 	static function shutdownFunctions()
 	{
 		Logs.traceColored([
@@ -495,8 +657,17 @@ class GJUtil
 		daTimer = null;
 		openfl.Lib.application.onExit.remove(onExitApp);
 		onLostSession = null;
+		GameJoltData.reset();
 	}
 
+	/**
+	 * Main send function for calls and requests using GameJolt API.
+	 * @param call Type of request to send.
+	 * @param async Whether or not the request is asynchronous.
+	 * @param onError Function to run on error. Returns error message as string.
+	 * @param onComplete Function to run on success. Returns response data as typedef `Response`.
+	 * @param onProgress Function to run on async progress. Returns array of floats.
+	 */
 	@:noPrivateAccess static function send(call:RequestType, async:Bool = false, ?onError:String->Void, ?onComplete:GJResponse->Void, ?onProgress:Array<Float>->Void)
 	{
 		if (executing || !active)
@@ -513,6 +684,11 @@ class GJUtil
 		}, onProgress);
 	}
 
+	/**
+	 * Formats any images received to proper file types
+	 * @param res Response to format.
+	 * @return GJResponse Response with formatted images.
+	 */
 	static function formatImages(res:GJResponse):GJResponse {
 		if (res.users != null) {
 			for (u in res.users) {
@@ -525,15 +701,7 @@ class GJUtil
 				if (t.image_url.startsWith('https://m.'))
 					newUrl = '${t.image_url.substring(0, 37)}1000${t.image_url.substr(40)}'.replace(".jpg", ".png").replace(".webp", ".png");
 				else {
-					newUrl = "https://s.gjcdn.net/assets/";
-					newUrl += switch (t.image_url.substring(24).replace(".jpg", "").replace(".webp", "")) {
-						case "trophy-bronze-1": "9c2c91d0";
-						case "trophy-silver-1": "b46e352e";
-						case "trophy-gold-1": "363ce2dc";
-						case "trophy-platinum-1": "92e5330d";
-						default: "";
-					};
-					newUrl += ".png";
+					newUrl = 'https://s.gjcdn.net/assets/${t.image_url.substr(24)}';
 				}
 				t.image_url = newUrl;
 			};

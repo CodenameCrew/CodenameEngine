@@ -169,7 +169,7 @@ class MainState extends FlxState {
 		GJUtil.init();
 		#end
 
-		var startState:Class<FlxState> = GameJoltData.freshStart ? GameJoltCompleteScreen : (Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState);
+		var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
 
 		// In this case if the mod we just loaded a compressed modpack, we can't edit or modify files without decompressing it.
 		if (Options.devMode && Options.allowConfigWarning && !isZipMod) {
@@ -184,6 +184,6 @@ class MainState extends FlxState {
 			}
 		}
 
-		FlxG.switchState(cast Type.createInstance(startState, []));
+		if (!GameJoltData.freshStart) FlxG.switchState(cast Type.createInstance(startState, []));
 	}
 }

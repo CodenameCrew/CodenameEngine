@@ -3,6 +3,7 @@ package funkin.backend.system.gamejolt;
 import hscript.IHScriptCustomAccessBehaviour;
 import funkin.backend.utils.GJUtil;
 import funkin.backend.utils.GJUtil.RequestType;
+import funkin.backend.system.gamejolt.GameJoltData;
 import haxe.crypto.*;
 import haxe.crypto.mode.Mode;
 import haxe.crypto.padding.Padding;
@@ -109,11 +110,11 @@ class GameJoltSecurity implements IHScriptCustomAccessBehaviour
 	/**
 	 * This is a copy of GJUtil's "send" request, but kept here since Hscript can't get here.
 	 * Any calls here are guaranteed to be from hardcoding.
-	 * @param call 
-	 * @param async 
-	 * @param onError 
-	 * @param onComplete 
-	 * @param onProgress 
+	 * @param call The RequestType call to make. Can make any type of call.
+	 * @param async Whether or not the call should be asyncronous.
+	 * @param onError Callback function if an error occurs. Gives error string.
+	 * @param onComplete Callback function on successful completion of the call. Gives response data.
+	 * @param onProgress Callback function for progress on async calls. Gives a progress float array.
 	 */
 	public static function sendTrusted(call:RequestType, async:Bool = false, ?onError:String->Void, ?onComplete:GJResponse->Void, ?onProgress:Array<Float>->Void)
 	{
@@ -135,6 +136,67 @@ class GameJoltSecurity implements IHScriptCustomAccessBehaviour
 		}, onProgress);
 	}
 
+	/**
+	 * Unlocks a trophy from the `definedTrophies` map - in other words,
+	 * any trophy that is specifically defined in hardcode.
+	 * @param def Key/def of trophy in `definedTrophies` map.
+	 * @param callback Function running on completion of unlock attempt. Returns
+	 * trophy data if successful, `null` if unsuccessful.
+	 */
+	public static function unlockDefinedTrophy(def:String, ?callback:Null<Trophy>->Void)
+	{
+		if (GameJoltData.definedTrophies == null || !GameJoltData.definedTrophies.exists(def)) {
+			Logs.error('No defined trophy exists with the key "$def".', RED, 'GameJolt');
+			if (callback != null) callback(null);
+		} else {
+			var daTrophy:GJTrophyData = GameJoltData.definedTrophies.get(def);
+
+			if (GameJoltData.earnedTrophies.exists(def)) {
+				Logs.error('User already earned trophy with key "$def"!', RED, 'GameJolt');
+				if (callback != null) callback(null);
+			} else {
+				var meetsReqs:Bool = true;
+				if (daTrophy.require != null) {
+					var reqsMet:Array<Int> = [];
+					for (earned in GameJoltData.earnedTrophies) {
+						if (daTrophy.require.contains(earned.id)) reqsMet.push(earned.id);
+					}
+
+					if (reqsMet.length != daTrophy.require.length)
+						meetsReqs = false;
+				}
+
+				if (!meetsReqs) {
+					Logs.error('User does not meet requirements for trophy with the key "$def".', RED, 'GameJolt');
+					if(callback != null) callback(null);
+				} else {
+					sendTrusted(BATCH(false, true, [TROPHIES_FETCH(false, daTrophy.id), TROPHIES_ADD(daTrophy.id)]), true, function(err) {
+						Logs.trace('Trophy unlock error: ${err}', ERROR, LIGHTGRAY, 'GameJolt');
+						if (callback != null) callback(null);
+					}, function(resp) {
+						GameJoltData.earnedTrophies.set(def, daTrophy);
+						if(resp.responses[0].trophies[0] == null) {
+							Logs.trace('Trophy with key $def already unlocked!', WARNING, LIGHTGRAY, 'GameJolt');
+							if (callback != null) callback(null);
+						} else {
+							Logs.trace('Trophy unlock: ${resp.responses[0].trophies[0].title}!', SUCCESS, LIGHTGRAY, 'GameJolt');
+							if (GJUtil.onTrophyUnlock != null) GJUtil.onTrophyUnlock(resp.responses[0].trophies[0]);
+							if (callback != null) callback(resp.responses[0].trophies[0]);
+						}
+					});
+				}
+			}
+		}
+	}
+
+	/**
+	 * Handled the main request without giving out any compromisable data.
+	 * @param async Whether or not the call should be asyncronous.
+	 * @param data The RequestType call to make. Can make any type of call.
+	 * @param onError Callback function if an error occurs. Gives error string.
+	 * @param onComplete Callback function on successful completion of the call. Gives response data.
+	 * @param onProgress Callback function for progress on async calls. Gives a progress float array.
+	 */
 	static function handleRequest(async:Bool = false, data:RequestType, ?onError:String->Void, ?onComplete:GJResponse->Void, ?onProgress:Array<Float>->Void)
 	{
 		if (encryptedGameToken == null || gameId == null) {
@@ -200,6 +262,12 @@ class GameJoltSecurity implements IHScriptCustomAccessBehaviour
 		}
 	}
 
+	/**
+	 * Parses data from a request to be sent via OpenFL or HTTP request.
+	 * @param request RequestType to be formatted.
+	 * @param signed Whether or not the request should be "signed" using the game token.
+	 * @return String Request link.
+	 */
 	static function parseType(request:RequestType, signed:Bool = false):String {
 		var command:String = "";
 		var action:String = "";
@@ -389,7 +457,7 @@ class GameJoltSecurity implements IHScriptCustomAccessBehaviour
 
 	/**
 	 * Setter function for encrypted game token. Also sets revealed game token.
-	 * @param tok 
+	 * @param tok New string to set for `encryptedGameToken`.
 	 */
 	static function set_encryptedGameToken(tok:String)
 	{
@@ -413,10 +481,17 @@ class GameJoltSecurity implements IHScriptCustomAccessBehaviour
 		return sign('https://api.gamejolt.com/api/game/v1_2${parseType(curCall)}');
 	}
 	#else
+	//region No API Integrations
 	public static function sendTrusted(call:RequestType, async:Bool = false, ?onError:String->Void, ?onComplete:GJResponse->Void, ?onProgress:Array<Float>->Void)
 	{
 		Logs.trace('GameJolt API not set in Project.xml!', ERROR, LIGHTGRAY, 'GameJolt');
 		if (onError != null) onError('GameJolt API not set in Project.xml!');
+	}
+
+	public static function unlockDefinedTrophy(def:String, ?callback:Null<Trophy>->Void)
+	{
+		Logs.trace('GameJolt API not set in Project.xml!', ERROR, LIGHTGRAY, 'GameJolt');
+		if (callback != null) callback(null);
 	}
 
 	static function set_encryptedGameToken(tok:String)
@@ -428,5 +503,6 @@ class GameJoltSecurity implements IHScriptCustomAccessBehaviour
 	{
 		return null;
 	}
+	//endregion
 	#end
 }

@@ -3,7 +3,8 @@ package funkin.menus.gamejolt;
 import funkin.editors.ui.*;
 import openfl.desktop.Clipboard;
 import flixel.addons.display.FlxBackdrop;
-import funkin.backend.system.gamejolt.GameJoltData;
+import funkin.backend.system.gamejolt.*;
+import funkin.backend.utils.GJUtil;
 import funkin.menus.TitleState;
 
 class GameJoltCompleteScreen extends UIState
@@ -55,6 +56,10 @@ class GameJoltCompleteScreen extends UIState
 		super.update(elapsed);
 		if (controls.ACCEPT) {
 			CoolUtil.playMenuSFX(CONFIRM);
+			if (FlxG.save.data.gameJoltArray != null) {
+				var gjDat:Array<String> = FlxG.save.data.gameJoltArray;
+				GJUtil.attemptLogin(gjDat[0], gjDat[1]);
+			}
 			FlxG.switchState(new TitleState());
 		}
 	}
