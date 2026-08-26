@@ -73,6 +73,8 @@ class Options
 
 	public static var freeplayLastDifficulty:String = "normal";
 	public static var freeplayLastVariation:String = null;
+	public static var csLastSelected:String = null;
+
 	public static var mainDevs:Array<Int> = []; // IDs
 	public static var lastUpdated:Null<Float>;
 

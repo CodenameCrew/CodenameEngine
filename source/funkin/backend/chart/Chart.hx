@@ -131,6 +131,9 @@ class Chart
 		data.setFieldDefault("difficulties", []);
 		data.setFieldDefault("variants", []);
 		data.setFieldDefault("metas", []);
+		data.setFieldDefault("selectMode", 0);
+		data.setFieldDefault("allowedSelectCharacters", ["bf"]);
+		data.setFieldDefault("nativePlayer", "bf");
 
 		return data;
 	}

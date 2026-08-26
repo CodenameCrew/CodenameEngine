@@ -1,5 +1,6 @@
 package funkin.menus;
 
+import funkin.menus.charSelect.CharacterSelectMenu;
 import funkin.menus.ui.MenuBackground;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
@@ -288,7 +289,15 @@ class FreeplayState extends MusicBeatState
 		Options.freeplayLastVariation = curSong.variant;
 
 		PlayState.loadSong(event.song, event.difficulty, event.variant, event.opponentMode, event.coopMode);
-		FlxG.switchState(new PlayState());
+
+		if (PlayState.SONG.meta.selectMode == 3)
+		{
+			FlxG.switchState(new PlayState());
+		}
+		else
+		{
+			FlxG.switchState(new CharacterSelectMenu(event.song, event.difficulty, event.variant));
+		}
 	}
 
 	public function convertChart()

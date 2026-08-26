@@ -1,8 +1,5 @@
 package funkin.game;
 
-import sys.FileSystem;
-import flixel.util.FlxSpriteUtil;
-import openfl.display.Graphics;
 import flixel.util.typeLimit.OneOfTwo;
 import flixel.graphics.frames.FlxFrame;
 import flixel.math.FlxPoint;
@@ -28,6 +25,7 @@ import haxe.xml.Access;
 import openfl.geom.ColorTransform;
 import animate.FlxAnimateFrames;
 import flixel.system.FlxAssets.FlxShader;
+import funkin.backend.utils.CoolUtil;
 
 using StringTools;
 
@@ -127,6 +125,11 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		if (isPlayer)
 			flipX = !flipX;
 		__baseFlipped = flipX;
+
+		if (curCharacter.toLowerCase() == "none")
+		{
+			visible = CoolUtil.selectingCharacter;
+		}
 	}
 
 	public function swapLeftRightAnimations()

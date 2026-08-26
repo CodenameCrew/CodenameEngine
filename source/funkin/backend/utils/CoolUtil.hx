@@ -44,6 +44,8 @@ using StringTools;
 @:allow(funkin.game.PlayState)
 final class CoolUtil
 {
+	public static var selectingCharacter:Bool = false;
+
 	/**
 	 * Gets the last exception stack. Useful for debugging.
 	 */
