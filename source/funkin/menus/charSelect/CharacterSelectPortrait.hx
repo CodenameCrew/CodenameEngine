@@ -26,6 +26,9 @@ class CharacterSelectPortrait extends FunkinSprite
 		this.slotNumber = slotNumber;
 		this.pageSlots = pageSlots;
 
+		zoomFactor = 0;
+		scrollFactor.set();
+
 		frames = Paths.getSparrowAtlas("menus/charSelect/portraits/" + portName);
 
 		animation.addByPrefix('unselected', unselectedAnim, 24, false);

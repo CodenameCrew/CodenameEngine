@@ -26,7 +26,7 @@ class CharacterSelectMenu extends MusicBeatState
 
 	public var portraits:Array<CharacterSelectPortrait> = [];
 
-	public var bg:FlxSprite;
+	public var bg:FunkinSprite;
 	public var bgName:String = "bg";
 
 	var selectedOption:Bool = false;
@@ -52,6 +52,8 @@ class CharacterSelectMenu extends MusicBeatState
 			FlxG.sound.music.stop();
 		}
 
+		FlxG.camera.zoom = 0.75;
+
 		// add character musics later
 		CoolUtil.playMusic(Paths.music("charSelect/default"));
 
@@ -67,16 +69,6 @@ class CharacterSelectMenu extends MusicBeatState
 		{
 			characters.push(loadSelectCharacterData(char));
 		}
-
-		// Testing
-		characters.push(loadSelectCharacterData("bf-3d"));
-		characters.push(loadSelectCharacterData("none"));
-		characters.push(loadSelectCharacterData("dave"));
-		characters.push(loadSelectCharacterData("tristan-gold"));
-		characters.push(loadSelectCharacterData("bambi"));
-		characters.push(loadSelectCharacterData("tristan"));
-		characters.push(loadSelectCharacterData("playrobot"));
-		characters.push(loadSelectCharacterData("none"));
 
 		var pageCenter = new FlxPoint(640 + 300, 370);
 		if (characterSelectMode == 1)
@@ -141,13 +133,13 @@ class CharacterSelectMenu extends MusicBeatState
 
 				if (FlxG.sound.music != null)
 				{
-					FlxG.sound.music.fadeOut(0.5, 0, function t(tw)
+					FlxG.sound.music.fadeOut(0.2, 0, function t(tw)
 					{
 						FlxG.sound.music.stop();
 					});
 				}
 
-				var tim = new FlxTimer().start(0.6, function f(tim)
+				var tim = new FlxTimer().start(0.25, function f(tim)
 				{
 					FlxG.switchState(new FreeplayState());
 				});
@@ -163,10 +155,7 @@ class CharacterSelectMenu extends MusicBeatState
 
 		if (FlxG.sound.music != null)
 		{
-			FlxG.sound.music.fadeOut(0.9, 0, function t(tw)
-			{
-				FlxG.sound.music.stop();
-			});
+			FlxG.sound.music.stop();
 		}
 
 		CoolUtil.playMenuSFX(CONFIRM, 1);
@@ -235,8 +224,11 @@ class CharacterSelectMenu extends MusicBeatState
 
 	public function createBg(bgName:String)
 	{
-		bg = new FlxSprite().loadGraphic(Paths.image("menus/charSelect/" + bgName));
+		bg = new FunkinSprite(0, 0);
+		bg.loadGraphic(Paths.image("menus/charSelect/" + bgName));
 		bg.setGraphicSize(FlxG.width, FlxG.height);
+		bg.zoomFactor = 0;
+		bg.scrollFactor.set();
 		bg.updateHitbox();
 		bg.antialiasing = Options.antialiasing;
 		bg.screenCenter();
