@@ -115,6 +115,24 @@ class Options
 	public static var playAnimOnOffset:Bool = false;
 
 	/**
+	 * CONSOLE
+	 */
+	public static var consoleTimeFilter:Bool = true;
+	public static var consoleTypeFilter:Bool = true;
+	public static var consoleInfoFilter:Bool = true;
+	public static var consoleWarningFilter:Bool = true;
+	public static var consoleErrorFilter:Bool = true;
+	public static var consoleTraceFilter:Bool = true;
+	public static var consoleVerboseFilter:Bool = true;
+	public static var consoleCommandsFilter:Bool = true;
+	public static var consoleClassFilter:Bool = true;
+	public static var consoleFunctionFilter:Bool = true;
+	public static var consoleBasicTypesFilter:Bool = true;
+	public static var consoleObjectsFilter:Bool = true;
+	public static var consoleScriptsFilter:Bool = true;
+	public static var consoleCountDuplicatedOutput:Bool = true;
+
+	/**
 	 * PLAYER 1 CONTROLS
 	 */
 	public static var P1_NOTE_LEFT:Array<FlxKey> = [A];

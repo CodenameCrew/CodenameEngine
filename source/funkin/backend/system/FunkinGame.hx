@@ -3,9 +3,11 @@ package funkin.backend.system;
 import flixel.FlxGame;
 import flixel.FlxG;
 import openfl.events.KeyboardEvent;
+import openfl.events.Event;
 
 class FunkinGame extends FlxGame {
 	var skipNextTickUpdate:Bool = false;
+	var manualPause:Bool = false; //fake autopause
 
 	#if desktop
 	var fullscreenListener:KeyboardEvent->Void;
@@ -34,6 +36,39 @@ class FunkinGame extends FlxGame {
 
 	override function __enterFrame(deltaTime:Float) {
 		if (skipNextTickUpdate != (skipNextTickUpdate = false)) ticks = getTicks();
+		if (manualPause) {
+			var prevAutoPause = FlxG.autoPause;
+			FlxG.autoPause = true;
+			super.__enterFrame(deltaTime);
+			FlxG.autoPause = prevAutoPause;
+			draw();
+			return;
+		}
 		super.__enterFrame(deltaTime);
+	}
+
+
+	override public function onFocus(_):Void {
+		if (manualPause) return;
+		super.onFocus(_);
+	}
+
+	override public function onFocusLost(event:Event):Void {
+		if (manualPause) return;
+		super.onFocusLost(event);
+	}
+
+	public function toggleManualPause() {
+		var prevAutoPause = FlxG.autoPause;
+		FlxG.autoPause = true;
+
+		if (!manualPause) {
+			onFocusLost(null);
+			manualPause = true;
+		} else {
+			manualPause = false;
+			onFocus(null);
+		}
+		FlxG.autoPause = prevAutoPause;
 	}
 }
