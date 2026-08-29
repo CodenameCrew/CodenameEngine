@@ -142,7 +142,6 @@ class Main extends Sprite
 
 		Conductor.init();
 		EventManager.init();
-		funkin.backend.shaders.FunkinShader.init();
 		FlxG.signals.focusGained.add(onFocus);
 		FlxG.signals.preStateSwitch.add(onStateSwitch);
 		FlxG.signals.postStateSwitch.add(onStateSwitchPost);
