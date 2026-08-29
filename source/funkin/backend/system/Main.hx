@@ -201,8 +201,10 @@ class Main extends Sprite
 	}
 
 	public static function onUpdate() {
+		#if !IMGUI_ENABLED
 		if (PlayerSettings.solo.controls.DEV_CONSOLE)
 			NativeAPI.allocConsole();
+		#end
 
 		if (PlayerSettings.solo.controls.FPS_COUNTER)
 			Framerate.debugMode = (Framerate.debugMode + 1) % 3;

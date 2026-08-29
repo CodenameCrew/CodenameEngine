@@ -14,6 +14,8 @@ import openfl.Lib;
 import funkin.backend.system.Logs;
 import funkin.backend.utils.NativeAPI.ConsoleColor;
 
+using funkin.backend.utils.ImGuiUtil;
+
 typedef ConsoleSearchData = {
 	var name:String;
 	var desc:String;
@@ -206,7 +208,11 @@ class ConsoleUI {
 			if (active) toggleUI();
 			return;
 		}
-		if (ImGui.isKeyPressed(ImGuiKey.GraveAccent, false)) toggleUI();
+		var toggled:Bool = false;
+		for (key in Options.SOLO_DEV_CONSOLE) {
+			if (ImGui.isKeyPressed(key.toImGuiKey(), false)) toggled = true;
+		}
+		if (toggled) toggleUI();
 		if (!active) return;
 
 		//consoleInspector.displayUI();
