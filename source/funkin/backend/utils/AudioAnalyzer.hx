@@ -392,7 +392,7 @@ final class AudioAnalyzer {
 			default: data.sampleRate / 1000;
 		}
 		for (i in 0...data.channels) _mins[i] = _maxs[i] = -0x7FFFFFFF;
-		if (startPos > endPos) _read(Math.floor(startPos * conversion), Math.floor(endPos * conversion), _analyzeRead);
+		if (startPos < endPos) _read(Math.floor(startPos * conversion), Math.floor(endPos * conversion), _analyzeRead);
 
 		var min = -0x7FFFFFFF, max = -0x7FFFFFFF, v = 1 / byteSize, f:Float;
 		for (i in 0...data.channels) {
@@ -485,7 +485,7 @@ final class AudioAnalyzer {
 			case SECOND: data.sampleRate;
 			default: data.sampleRate / 1000;
 		}
-		if (startPos > endPos) _read(Math.floor(startPos * conversion), Math.floor(endPos * conversion), callback);
+		if (startPos < endPos) _read(Math.floor(startPos * conversion), Math.floor(endPos * conversion), callback);
 	}
 
 	function _read(startSample:Int, endSample:Int, callback:ReadCallback) {
