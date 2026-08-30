@@ -1304,7 +1304,7 @@ class PlayState extends MusicBeatState
 	 * Pauses the game.
 	 */
 	public function pauseGame() {
-		var e = gameAndCharsEvent("onGamePause", new CancellableEvent());
+		var e = gameAndCharsEvent("onGamePause", new PauseGameEvent([], allowGitaroo));
 		if (e.cancelled) return;
 
 		persistentUpdate = false;
@@ -1312,13 +1312,13 @@ class PlayState extends MusicBeatState
 		paused = true;
 
 		// 1 / 1000 chance for Gitaroo Man easter egg
-		if (!chartingMode && allowGitaroo && FlxG.random.bool(Flags.GITAROO_CHANCE))
+		if (!chartingMode && e.allowGitaroo && FlxG.random.bool(Flags.GITAROO_CHANCE))
 		{
 			// gitaroo man easter egg
 			FlxG.switchState(new GitarooPause());
 		}
 		else {
-			openSubState(new PauseSubState());
+			openSubState(new PauseSubState(e.excludeList));
 		}
 
 		updateDiscordPresence();

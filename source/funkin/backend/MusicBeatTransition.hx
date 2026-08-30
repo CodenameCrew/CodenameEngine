@@ -31,7 +31,7 @@ class MusicBeatTransition extends MusicBeatSubstate {
 
 	public override function create() {
 		if (newState != null)
-			add(new FunkinParentDisabler(true, false));
+			add(new FunkinParentDisabler([], true, false));
 
 		transitionCamera = new FlxCamera();
 		transitionCamera.bgColor = 0;
