@@ -146,6 +146,8 @@ class Flags {
 	public static var USE_LEGACY_CENTER_CAM:Null<Bool> = null;
 	public static var USE_LEGACY_FLXANIMATE_STAGE_MATRIX:Null<Bool> = null;
 
+	public static var CHANGE_WINDOW_TITLE_PLAYSTATE:Bool = true;
+
 	@:also(funkin.game.Character.FALLBACK_DEAD_CHARACTER)
 	public static var DEFAULT_GAMEOVER_CHARACTER:String = "bf-dead";
 
