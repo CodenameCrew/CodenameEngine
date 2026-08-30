@@ -626,7 +626,7 @@ class Charter extends UIState {
 		// force full load the audio datas for waveform, maybe in the future dont do this and
 		// make it so it continously loads the only necessary waveform data in preview?
 
-		if (FlxG.sound.music.data?.buffer?.data == null) {
+		if (FlxG.sound.music.data?.buffer != null && FlxG.sound.music.data.buffer.data == null) {
 			FlxG.sound.music.data.buffer.load();
 			FlxG.sound.music.data.buffer.decoder?.dispose();
 			FlxG.sound.music.data.buffer.decoder = null;
@@ -635,7 +635,7 @@ class Charter extends UIState {
 		if (Assets.exists(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix))) {
 			vocals = FlxG.sound.load(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix));
 
-			if (vocals.data?.buffer?.data == null) {
+			if (vocals.data?.buffer != null && vocals.data.buffer.data == null) {
 				vocals.data.buffer.load();
 				vocals.data.buffer.decoder?.dispose();
 				vocals.data.buffer.decoder = null;

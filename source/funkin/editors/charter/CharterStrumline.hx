@@ -154,7 +154,7 @@ class CharterStrumline extends UISprite {
 		}
 		vocals.group = FlxG.sound.defaultMusicGroup;
 
-		if (vocals.data?.buffer?.data == null) {
+		if (vocals.data?.buffer != null && vocals.data.buffer.data == null) {
 			vocals.data.buffer.load();
 			vocals.data.buffer.decoder?.dispose();
 			vocals.data.buffer.decoder = null;
