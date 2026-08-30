@@ -139,21 +139,24 @@ class NotesDrawGroup extends FlxFastTypedGroup<CharterNote> {
 			if (note != null && note.exists && note.visible) {
 				if (note.snappedToGrid) note.x = (note.strumLine != null ? note.strumLine.x : 0) + (note.id % (note.strumLine != null ? note.strumLine.keyCount : 4)) * 40;
 				note.drawMembers();
+		/*
 			}
 		}
 
 		i = 0; note = null;
 		while (i < length) {
 			note = members[i++];
-			if (note != null && note.exists && note.visible)
+			if (note != null && note.exists && note.visible) {*/
 				note.drawSuper();
+		/*	}
 		}
 
 		i = 0; note = null;
 		while (i < length) {
 			note = members[i++];
-			if (note != null && note.exists && note.visible)
+			if (note != null && note.exists && note.visible) {*/
 				note.drawNoteTypeText();
+			}
 		}
 
 		FlxCamera._defaultCameras = oldDefaultCameras;
