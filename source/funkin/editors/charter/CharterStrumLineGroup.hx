@@ -46,29 +46,39 @@ class CharterStrumLineGroup extends FlxTypedGroup<CharterStrumline> {
 			refreshStrumlineIDs();
 		}
 
-		for (i=>strum in members)
-			if (strum != null && !strum.dragging) strum.x = CoolUtil.fpsLerp(strum.x, 40*strum.startingID, 0.225);
+		var minX:Float = (members.length > 0) ? (FlxG.width + cameras[0].scroll.x) : 0;
+		var maxX:Float = 0;
+		for (i=>strum in members) {
+			if (strum != null && !strum.dragging) strum.x = CoolUtil.fpsLerp(strum.x, 40 * strum.startingID, 0.225);
+			minX = Math.min(minX, strum.x);
+			maxX = Math.max(maxX, strum.x + (40 * strum.keyCount));
+		}
 
-		if (Charter.instance.leftEventsBackdrop != null && members[0] != null) {
-			Charter.instance.leftEventsBackdrop.x = members[0].button.x - Charter.instance.leftEventsBackdrop.width;
-			Charter.instance.leftEventsBackdrop.alpha = members[0].strumLine.visible ? 0.9 : 0.4;
+		final firstStrumline = members[0];
+		final lastStrumline = members[members.length - 1];
+		final c = Charter.instance;
+		if (c.leftEventsBackdrop != null) {
+			c.leftEventsBackdrop.x = minX - c.leftEventsBackdrop.width;
+			c.leftEventsBackdrop.alpha = ((firstStrumline == null) || ((firstStrumline != null) && (firstStrumline.strumLine.visible))) ? 0.9 : 0.4;
 
-			if (Charter.instance.leftEventRowText != null)
-				Charter.instance.leftEventRowText.x = members[0].button.x - Charter.instance.leftEventRowText.width - 42;
+			if (c.leftEventRowText != null)
+				c.leftEventRowText.x = -c.leftEventRowText.width - 42;
 		}
 		
-		if (Charter.instance.rightEventsBackdrop != null && members[CoolUtil.maxInt(0, members.length-1)] != null) {
-			Charter.instance.rightEventsBackdrop.x = members[members.length-1].x + (40*members[members.length-1].keyCount);
-			Charter.instance.rightEventsBackdrop.alpha = members[CoolUtil.maxInt(0, members.length-1)].strumLine.visible ? 0.9 : 0.4;
+		if (c.strumlineLockButton != null)
+			c.strumlineLockButton.x = minX - 160;
 
-			if (Charter.instance.rightEventRowText != null)
-				Charter.instance.rightEventRowText.x = Charter.instance.rightEventsBackdrop.x + 42;
+		if (c.strumlineAddButton != null)
+			c.strumlineAddButton.x = maxX;
+
+		if (c.rightEventsBackdrop != null) {
+			c.rightEventsBackdrop.x = maxX;
+			c.rightEventsBackdrop.alpha = ((lastStrumline == null) || ((lastStrumline != null) && (lastStrumline.strumLine.visible))) ? 0.9 : 0.4;
+			c.rightEventsBackdrop.flipY = totalKeyCount % 2 == 0;
+
+			if (c.rightEventRowText != null)
+				c.rightEventRowText.x = c.rightEventsBackdrop.x + 42;
 		}
-		
-		if (Charter.instance.strumlineLockButton != null && members[0] != null)
-			Charter.instance.strumlineLockButton.x = members[0].x - (160);
-		if (Charter.instance.strumlineAddButton != null && members[CoolUtil.maxInt(0, members.length-1)] != null)
-			Charter.instance.strumlineAddButton.x = members[members.length-1].x + (40*members[members.length-1].keyCount);
 
 		if ((FlxG.mouse.justReleased || !draggable) && isDragging)
 			finishDrag();
