@@ -10,8 +10,11 @@ import funkin.backend.assets.ModsFolderLibrary;
 import funkin.backend.assets.ZipFolderLibrary;
 import funkin.backend.chart.EventsData;
 import funkin.backend.system.framerate.Framerate;
+import funkin.backend.system.gamejolt.GameJoltData;
+import funkin.backend.utils.GJUtil;
 import funkin.editors.ModConfigWarning;
 import funkin.menus.TitleState;
+import funkin.menus.gamejolt.GameJoltCompleteScreen;
 import haxe.io.Path;
 
 
@@ -162,6 +165,10 @@ class MainState extends FlxState {
 			if (cast(lib, ZipFolderLibrary).PRELOAD_VIDEOS) cast(lib, ZipFolderLibrary).precacheVideos();
 		}
 
+		#if GAMEJOLT_API
+		GJUtil.init();
+		#end
+
 		var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
 
 		// In this case if the mod we just loaded a compressed modpack, we can't edit or modify files without decompressing it.
@@ -177,6 +184,6 @@ class MainState extends FlxState {
 			}
 		}
 
-		FlxG.switchState(cast Type.createInstance(startState, []));
+		if (!GameJoltData.freshStart) FlxG.switchState(cast Type.createInstance(startState, []));
 	}
 }

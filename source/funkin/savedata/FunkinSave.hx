@@ -1,7 +1,10 @@
 package funkin.savedata;
 
+import funkin.backend.chart.ChartData.ChartMetaData;
+import funkin.menus.FreeplayState.FreeplaySonglist;
+import funkin.backend.system.gamejolt.GameJoltData.GJTrophyData;
 import flixel.util.FlxSave;
-import lime.app.Application;
+import funkin.backend.system.gamejolt.*;
 import openfl.Lib;
 import haxe.Serializer;
 import haxe.Unserializer;
@@ -144,6 +147,137 @@ class FunkinSave {
 		var oldHigh = safeGetHighscore(entry);
 		if (force || oldHigh.date == null || oldHigh.score < highscore.score) {
 			highscores.set(entry, highscore);
+
+			// GameJolt is only logged in if GAMEJOLT_API is on, otherwise it's always false.
+			if (GJUtil.loggedIn) {
+				switch(entry) {
+					case HSongEntry(songName, difficulty, variation, changes):
+						if (changes.length == 0) {
+							if (GameJoltData.leaderboards.exists('song-$songName--D:$difficulty (V:${variation != null ? variation : 'Default'})'))
+								GameJoltSecurity.sendTrusted(SCORES_ADD('${highscore.score}', highscore.score, 'accuracy=${highscore.accuracy};date=${highscore.date}', GameJoltData.leaderboards.get('song-$songName--D:$difficulty (V:${variation != null ? variation : 'Default'})')), true, function(err) {
+									Logs.error('Could not post score to leaderboard: $err', RED, 'GameJolt');
+								}, function(resp) {
+									Logs.trace('Successfully posted score to leaderboard associated with song $songName.', SUCCESS, LIGHTGRAY, 'GameJolt');
+								})
+							else if (GameJoltData.leaderboards.exists('song-$songName (V:${variation != null ? variation : 'Default'})'))
+								GameJoltSecurity.sendTrusted(SCORES_ADD('${highscore.score}', highscore.score, 'accuracy=${highscore.accuracy};date=${highscore.date}', GameJoltData.leaderboards.get('song-$songName (V:${variation != null ? variation : 'Default'})')), true, function(err) {
+									Logs.error('Could not post score to leaderboard: $err', RED, 'GameJolt');
+								}, function(resp) {
+									Logs.trace('Successfully posted score to leaderboard associated with song $songName.', SUCCESS, LIGHTGRAY, 'GameJolt');
+								});
+
+							// song trophy and exception check
+							if (GameJoltData.definedTrophies.exists('song-$songName')) {
+								var tropData:GJTrophyData = GameJoltData.definedTrophies.get('song-$songName');
+								var hasException:Bool = false;
+								if (tropData.except != null) {
+									for (itms in tropData.except) {
+										var indic:String = itms.substr(0, 3);
+										var dat:Array<String> = itms.substr(3).split(',');
+										for (d in dat) d.trim();
+										switch (indic) {
+											case "=D:": //difficulty exception
+												if (dat.contains(difficulty)) hasException = true;
+
+											case "=V:": //variation exception
+												if (dat.contains(variation)) hasException = true;
+
+											case _:
+												// nothing lol
+										}
+									}
+								}
+								if (!hasException) GameJoltSecurity.unlockDefinedTrophy('song-$songName');
+							}
+
+							// first fc check
+							if (highscore.misses == 0 && GameJoltData.definedTrophies.exists('fc-first')) {
+								if (!GameJoltData.definedTrophies.get('fc-first').except.contains(songName))
+									GameJoltSecurity.unlockDefinedTrophy('fc-first');
+							}
+							
+							// complete all & fc all achievement check
+							if (GameJoltData.definedTrophies.exists('complete-all') || GameJoltData.definedTrophies.exists('fc-all')) {
+								var songList:Array<ChartMetaData> = FreeplaySonglist.get().songs;
+								var completedSongs:Array<String> = [];
+								var fcData:Array<SongScore> = [];
+								for (s in highscores.keys()) {
+									if (highscores.get(s).score == 0)
+										continue
+									else switch (s) {
+										case HSongEntry(songName, difficulty, variation, changes):
+											completedSongs.push(songName);
+											fcData.push(highscores.get(s));
+										default:
+											// oop
+									}
+								}
+								
+								if (GameJoltData.definedTrophies.exists('complete-all'))
+								{
+									var daTrophy:GJTrophyData = GameJoltData.definedTrophies.get('complete-all');
+									var songAmount:Int = completedSongs.length;
+									for (sng in completedSongs) {
+										if (daTrophy.except.contains(sng))
+											songAmount--;
+									}
+									if (songAmount == (completedSongs.length - daTrophy.except.length))
+										GameJoltSecurity.unlockDefinedTrophy('complete-all');
+								}
+
+								if (GameJoltData.definedTrophies.exists('fc-all'))
+								{
+									var daTrophy:GJTrophyData = GameJoltData.definedTrophies.get('fc-all');
+									var songAmount:Int = 0;
+									for (sng in completedSongs) {
+										if (daTrophy.except.contains(sng))
+											continue;
+
+										if (fcData[completedSongs.indexOf(sng)].misses == 0)
+											songAmount++;
+									}
+									if (songAmount == (completedSongs.length - daTrophy.except.length))
+										GameJoltSecurity.unlockDefinedTrophy('fc-all');
+								}
+							}
+
+						}
+					case HWeekEntry(weekName, difficulty):
+						if (GameJoltData.leaderboards.exists('week-$weekName--D:$difficulty'))
+							GameJoltSecurity.sendTrusted(SCORES_ADD('${highscore.score}', highscore.score, 'accuracy=${highscore.accuracy};date=${highscore.date}', GameJoltData.leaderboards.get('week-$weekName--D:$difficulty')), true, function(err) {
+								Logs.error('Could not post score to leaderboard: $err', RED, 'GameJolt');
+							}, function(resp) {
+								Logs.trace('Successfully posted score to leaderboard associated with week $weekName.', SUCCESS, LIGHTGRAY, 'GameJolt');
+							})
+						else if (GameJoltData.leaderboards.exists('week-$weekName'))
+							GameJoltSecurity.sendTrusted(SCORES_ADD('${highscore.score}', highscore.score, 'accuracy=${highscore.accuracy};date=${highscore.date}', GameJoltData.leaderboards.get('week-$weekName')), true, function(err) {
+								Logs.error('Could not post score to leaderboard: $err', RED, 'GameJolt');
+							}, function(resp) {
+								Logs.trace('Successfully posted score to leaderboard associated with week $weekName.', SUCCESS, LIGHTGRAY, 'GameJolt');
+							});
+
+						// week trophy and exception check
+						if (GameJoltData.definedTrophies.exists('week-$weekName')) {
+							var tropData:GJTrophyData = GameJoltData.definedTrophies.get('week-$weekName');
+							var hasException:Bool = false;
+							if (tropData.except != null) {
+								for (itms in tropData.except) {
+									var indic:String = itms.substr(0, 3);
+									var dat:Array<String> = itms.substr(3).split(',');
+									for (d in dat) d.trim();
+									switch (indic) {
+										case "=D:": //difficulty exception
+											if (dat.contains(difficulty)) hasException = true;
+
+										case _:
+											// nothing lol
+									}
+								}
+							}
+							if (!hasException) GameJoltSecurity.unlockDefinedTrophy('week-$weekName');
+						}
+				}
+			}
 			return true;
 		}
 		return false;

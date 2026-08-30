@@ -24,6 +24,7 @@ import funkin.backend.scripting.events.gameplay.*;
 import funkin.backend.scripting.events.note.*;
 import funkin.backend.system.Conductor;
 import funkin.backend.system.RotatingSpriteGroup;
+import funkin.backend.system.gamejolt.*;
 import funkin.editors.SaveWarning;
 import funkin.editors.charter.Charter;
 import funkin.editors.charter.CharterSelection;
@@ -1765,6 +1766,8 @@ class PlayState extends MusicBeatState
 		for (strumLine in strumLines.members) strumLine.vocals.stop();
 
 		deathCounter++;
+
+		GameJoltSecurity.unlockDefinedTrophy('death-first');
 
 		openSubState(new GameOverSubstate(event.x, event.y, event.deathCharID, event.isPlayer, event.gameOverSong, event.lossSFX, event.retrySFX));
 
