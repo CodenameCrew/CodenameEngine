@@ -27,6 +27,7 @@ import funkin.backend.utils.NativeAPI.MessageBoxIcon;
 #include <wingdi.h>
 #include <shellapi.h>
 #include <uxtheme.h>
+#include <psapi.h>
 ')
 @:dox(hide)
 final class Windows {
@@ -167,6 +168,18 @@ final class Windows {
 		return (allocatedRAM / 1024);
 	")
 	public static function getTotalRam():Float
+	{
+		return 0;
+	}
+
+	@:functionCode("
+		PROCESS_MEMORY_COUNTERS_EX pmc;
+		if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc))) {
+			return (double)pmc.WorkingSetSize;
+		}
+		return 0.0;
+	")
+	public static function getCurrentProcessMemory():Float
 	{
 		return 0;
 	}

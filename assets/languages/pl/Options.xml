@@ -175,6 +175,9 @@
 
 		<str id="charterAutoSavesSeparateFolder-name">Folder Autozapisów</str>
 		<str id="charterAutoSavesSeparateFolder-desc">Jeśli włączone, Edytor będzie zapisywać pliki w osobnym folderze, zamiast nadpisywania aktualnego pliku. (song/autosaves/)</str>
+
+		<str id="legacyMemoryCounter-name">Klasyczny Licznik Pamięci</str>
+		<str id="legacyMemoryCounter-desc">Jeśli włączone, licznik pamięci pokaże użycie pamięci GC Haxe i jego szczyt (oryginalne zachowanie) zamiast pamięci roboczej widocznej w Menedżerze Zadań.</str>
 	</group>
 
 </language>
