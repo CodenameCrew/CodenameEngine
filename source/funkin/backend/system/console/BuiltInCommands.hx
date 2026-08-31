@@ -152,7 +152,7 @@ class BuiltInCommands {
 			return;
 		}
 		var name:String = args[0];
-		var list = Character.getList(false, true);
+		var list = Character.getList(false, false, null, true);
 		if (!list.contains(name)) {
 			Logs.error('Character $name was not found.');
 			return;

@@ -73,8 +73,8 @@ class CharterStrumlineScreen extends UISubstateWindow {
 		var title:UIText;
 		add(title = new UIText(windowSpr.x + 20, windowSpr.y + 30 + 16, 0, TU.translate("charterStrumlineScreen.title" + (creatingStrumLine ? "-creating" : "-editing")), 28));
 
-		var charFileList = Character.getList(true);
-		if (charFileList.length == 0) charFileList = Character.getList(false);
+		var charFileList = Character.getList(true, false, null, true);
+		if (charFileList.length == 0) charFileList = Character.getList(false, false, null, true);
 
 		charactersList = new UIButtonList<CharacterButton>(15, title.y + title.height + 36, 250, 269, null, FlxPoint.get(250, 54), null, 0);
 		charactersList.addButton.callback = () -> charactersList.add(new CharacterButton(0, 0, TU.translate("charterStrumLine.newChar"), charFileList, charactersList));

@@ -95,7 +95,7 @@
 			import funkin.game.Character;
 
 			var curCharBox = new UIAutoCompleteTextBox(col(2), charTypeY, char.curCharacter, 145, 32);
-			curCharBox.suggestItems = Character.getList(false);
+			curCharBox.suggestItems = Character.getList(false, false, null, true);
 			self.add(curCharBox);
 		 </exec>
 	</section>
