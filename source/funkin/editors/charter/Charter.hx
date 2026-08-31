@@ -664,6 +664,7 @@ class Charter extends UIState {
 			for (note in strL.notes) {
 				var n = new CharterNote();
 				var t = Conductor.getStepForTime(note.time);
+				CharterNote.callScriptOnNote('onCharterNoteCreation', n);
 				n.updatePos(t, note.id, Conductor.getStepForTime(note.time + note.sLen) - t, note.type, strumLines.members[i]);
 				notesGroup.members[notesCreated++] = n;
 			}
@@ -1026,6 +1027,7 @@ class Charter extends UIState {
 						if (mouseOnGrid && mousePos.y > 0 && mousePos.y < (__endStep)*40) {
 							var note = new CharterNote();
 							var targetStrumline = strumLines.getStrumlineFromID(id);
+							CharterNote.callScriptOnNote('onCharterNoteCreation', note);
 							note.updatePos(
 								CoolUtil.bound(FlxG.keys.pressed.SHIFT ? ((mousePos.y-20) / 40) : quantStep(mousePos.y/40), 0, __endStep-1),
 								(id-targetStrumline.startingID) % targetStrumline.keyCount, 0, noteType, targetStrumline
@@ -1057,6 +1059,7 @@ class Charter extends UIState {
 										if (s is CharterNote) {
 											var n:CharterNote = cast s;
 											var newNote = new CharterNote();
+											CharterNote.callScriptOnNote('onCharterNoteCreation', newNote);
 											newNote.updatePos(n.step, n.id, n.susLength, n.type, n.strumLine);
 											notesGroup.add(newNote);
 											newSelection.push(newNote);
@@ -1285,6 +1288,7 @@ class Charter extends UIState {
 			var toBeCreated:Selection = [];
 			for(note in strL.notes) {
 				var n = new CharterNote();
+				CharterNote.callScriptOnNote('onCharterNoteCreation', n);
 				var t = Conductor.getStepForTime(note.time);
 				n.updatePos(t, note.id, Conductor.getStepForTime(note.time + note.sLen) - t, note.type, cStr);
 				notesGroup.add(n);
@@ -1719,6 +1723,7 @@ class Charter extends UIState {
 			switch(c) {
 				case CNote(step, id, strumLineID, susLength, type):
 					var note = new CharterNote();
+					CharterNote.callScriptOnNote('onCharterNoteCreation', note);
 					note.updatePos(minStep + step, id, susLength, type, strumLines.members[CoolUtil.boundInt(strumLineID, 0, strumLines.length-1)]);
 					notesGroup.add(note);
 					sObjects.push(note);
@@ -1750,7 +1755,7 @@ class Charter extends UIState {
 		if (selection == null || selection.length == 0) return;
 		selection.loop((n:CharterNote) -> {
 			noteDeleteAnims.deleteNotes.push({note: n, time: noteDeleteAnims.deleteTime});
-			@:privateAccess CharterNote.callScriptOnNote('onCharterNoteDelete', n);
+			CharterNote.callScriptOnNote('onCharterNoteDelete', n);
 		});
 		selection = deleteSelection(selection, true);
 	}
@@ -1765,7 +1770,7 @@ class Charter extends UIState {
 			if (oldNote != null && oldNote.step == note.step && oldNote.strumLineID == note.strumLineID && oldNote.id == note.id) {
 				noteDeleteAnims.deleteNotes.push({note: oldNote, time: noteDeleteAnims.deleteTime});
 				toDelete.push(oldNote);
-				@:privateAccess CharterNote.callScriptOnNote('onCharterNoteDelete', oldNote);
+				CharterNote.callScriptOnNote('onCharterNoteDelete', oldNote);
 			}
 			oldNote = note;
 		}
