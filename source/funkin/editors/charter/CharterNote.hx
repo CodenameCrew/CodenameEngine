@@ -34,7 +34,7 @@ class CharterNote extends UISprite implements ICharterSelectable {
 	static var noteTypeTexts:Array<UIText> = [];
 	static var __stupidScriptParamArray:Array<CharterNote> = [];
 
-	static function callScriptOnNote(event:String, note:CharterNote) {
+	public static function callScriptOnNote(event:String, note:CharterNote) {
 		if (Charter.instance != null) {
 			__stupidScriptParamArray[0] = note;
 			Charter.instance.stateScripts.call(event, __stupidScriptParamArray);
@@ -60,7 +60,10 @@ class CharterNote extends UISprite implements ICharterSelectable {
 		cursor = sustainSpr.cursor = CLICK;
 		moves = false;
 
-		callScriptOnNote('onCharterNoteCreation', this);
+		// this would also call it on the hoverer and deleter and . i dont think i want that
+		// for unsuspecting users so it will be comented out but can still be edited after
+		// in a charter state script
+		// callScriptOnNote('onCharterNoteCreation', this);
 	}
 
 	public override function updateButtonHandler() {
@@ -165,6 +168,7 @@ class CharterNote extends UISprite implements ICharterSelectable {
 	}
 
 	var __passed:Bool = false;
+	var __selected:Bool = false;
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
 
@@ -184,6 +188,7 @@ class CharterNote extends UISprite implements ICharterSelectable {
 		if (__passed != (__passed = step < Conductor.curStepFloat + (Options.songOffsetAffectEditors ? (Conductor.songOffset / Conductor.stepCrochet) : 0))) {
 			if (__passed && FlxG.sound.music.playing) {
 				Charter.instance.playHitsound(strumLineID);
+				callScriptOnNote('onCharterNoteHit', this);
 			}
 		}
 
@@ -193,9 +198,12 @@ class CharterNote extends UISprite implements ICharterSelectable {
 			typeAlpha = !isVisible ? (__passed ? 0.4 : 0.6) : (__passed ? 0.8 : 1);
 		}
 
-		colorTransform.redMultiplier = colorTransform.greenMultiplier = colorTransform.blueMultiplier = selected ? 0.75 : 1;
-		colorTransform.redOffset = colorTransform.greenOffset = selected ? 96 : 0;
-		colorTransform.blueOffset = selected ? 168 : 0;
+		if (__selected != (__selected = selected)) {
+			colorTransform.redMultiplier = colorTransform.greenMultiplier = colorTransform.blueMultiplier = selected ? 0.75 : 1;
+			colorTransform.redOffset = colorTransform.greenOffset = selected ? 96 : 0;
+			colorTransform.blueOffset = selected ? 168 : 0;
+			callScriptOnNote('onCharterNoteSelect', this);
+		}
 
 		__doAnim = true;
 	}
