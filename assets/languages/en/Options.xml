@@ -210,6 +210,9 @@
 
 		<str id="legacyMemoryCounter-name">Legacy Memory Counter</str>
 		<str id="legacyMemoryCounter-desc">If checked, the memory counter will show the Haxe GC memory usage and its peak (the original behavior) instead of the working set memory seen in Task Manager.</str>
+
+		<str id="imguiMultiViewport-name">ImGui Multi Viewport</str>
+		<str id="imguiMultiViewport-desc">If checked, ImGui windows can be dragged out of the main viewport, disabled by default on Linux due to common bugs and issues.</str>
 	</group>
 
 </language>

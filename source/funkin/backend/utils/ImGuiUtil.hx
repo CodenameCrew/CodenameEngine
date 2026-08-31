@@ -1,10 +1,12 @@
 package funkin.backend.utils;
 
 import flixel.input.keyboard.FlxKey;
+#if IMGUI_ENABLED
 import lime.tools.imgui.ImGuiTypes.ImGuiKey;
+#end
 
 class ImGuiUtil {
-
+	#if IMGUI_ENABLED
 	public static function toImGuiKey(key:FlxKey) {
 		switch(key) {
 			case FlxKey.ANY: return ImGuiKey.None;
@@ -112,4 +114,5 @@ class ImGuiUtil {
 		}
 		return ImGuiKey.None;
 	}
+	#end
 }

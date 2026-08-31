@@ -4,6 +4,11 @@ import flixel.input.keyboard.FlxKey;
 import flixel.util.FlxSave;
 import openfl.Lib;
 
+#if IMGUI_ENABLED
+import lime.tools.imgui.ImGuiFlags;
+import lime.tools.imgui.ImGuiIO;
+#end
+
 /**
  * The save data of the engine.
  * Mod save data is stored in `FlxG.save.data`.
@@ -132,6 +137,13 @@ class Options
 	public static var consoleObjectsFilter:Bool = true;
 	public static var consoleScriptsFilter:Bool = true;
 	public static var consoleCountDuplicatedOutput:Bool = true;
+
+	#if IMGUI_ENABLED
+	/**
+	 * IMGUI
+	 */
+	public static var imguiMultiViewport:Bool = #if linux false #else true #end;
+	#end
 
 	/**
 	 * PLAYER 1 CONTROLS
@@ -268,6 +280,14 @@ class Options
 
 		if (FlxG.updateFramerate < framerate) FlxG.drawFramerate = FlxG.updateFramerate = _framerate;
 		else FlxG.updateFramerate = FlxG.drawFramerate = _framerate;
+
+		#if IMGUI_ENABLED
+		if (imguiMultiViewport) {
+			ImGuiIO.configFlags |= ImGuiConfigFlags.ViewportsEnable;
+		} else {
+			ImGuiIO.configFlags = ImGuiIO.configFlags & ~ImGuiConfigFlags.ViewportsEnable;
+		}
+		#end
 	}
 
 	public static function applyQuality() {
