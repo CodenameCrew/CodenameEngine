@@ -44,6 +44,7 @@ class ConsoleUI {
 	public static var instance(default, null):ConsoleUI;
 
 	private var active:Bool = false;
+	private var inspectorActive:Bool = false;
 	#if IMGUI_ENABLED
 	private var style:ImGuiStyle;
 	#end
@@ -189,15 +190,21 @@ class ConsoleUI {
 		active = !active;
 
 		if (active) {
-			FlxG.autoPause = false;
-			FlxG.game.focusLostFramerate = 60;
 			loadSettings();
 			forceFocusTextInput = true;
 			if (consoleHscript == null) consoleHscript = new ConsoleHscript();
-			if (consoleInspector == null) consoleInspector = new ConsoleInspector(consoleHscript);
 		} else {
-			FlxG.autoPause = Options.autoPause;
 			ImGui.setKeyboardFocusHere(0);
+		}
+		#end
+	}
+
+	public function toggleInspector() {
+		#if IMGUI_ENABLED
+		inspectorActive = !inspectorActive;
+		if (inspectorActive) {
+			if (consoleHscript == null) consoleHscript = new ConsoleHscript();
+			if (consoleInspector == null) consoleInspector = new ConsoleInspector(consoleHscript);
 		}
 		#end
 	}
@@ -206,16 +213,24 @@ class ConsoleUI {
 		#if IMGUI_ENABLED
 		if (!Options.devMode) {
 			if (active) toggleUI();
+			if (inspectorActive) toggleInspector();
 			return;
 		}
+		
 		var toggled:Bool = false;
 		for (key in Options.SOLO_DEV_CONSOLE) {
 			if (ImGui.isKeyPressed(key.toImGuiKey(), false)) toggled = true;
 		}
 		if (toggled) toggleUI();
-		if (!active) return;
 
-		//consoleInspector.displayUI();
+		var toggledInspector:Bool = false;
+		for (key in [flixel.input.keyboard.FlxKey.F4]) {
+			if (ImGui.isKeyPressed(key.toImGuiKey(), false)) toggledInspector = true;
+		}
+		if (toggledInspector) toggleInspector();
+		if (inspectorActive) consoleInspector.displayUI();
+
+		if (!active) return;
 
 		if (settingsOpen.value) {
 			ImGui.setNextWindowPos(Lib.application.window.x + Lib.application.window.width - 240, Lib.application.window.y, ImGuiCond.FirstUseEver);

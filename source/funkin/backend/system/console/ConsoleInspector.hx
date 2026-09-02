@@ -2,6 +2,7 @@ package funkin.backend.system.console;
 
 //WIP
 
+import lime.tools.imgui.ImGuiFlags;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxPoint;
 import flixel.group.FlxSpriteGroup;
@@ -434,8 +435,13 @@ class ConsoleInspector {
 	}
 	
 	inline function transformFlxPointToWindowSpace(point:FlxPoint) {
-		point.x = (Lib.application.window.x + FlxG.scaleMode.offset.x) + (point.x * FlxG.scaleMode.scale.x);
-		point.y = (Lib.application.window.y + FlxG.scaleMode.offset.y) + (point.y * FlxG.scaleMode.scale.y);
+		if ((ImGuiIO.configFlags & ImGuiConfigFlags.ViewportsEnable) != 0) {
+			point.x = (Lib.application.window.x + FlxG.scaleMode.offset.x) + (point.x * FlxG.scaleMode.scale.x);
+			point.y = (Lib.application.window.y + FlxG.scaleMode.offset.y) + (point.y * FlxG.scaleMode.scale.y);
+		} else {
+			point.x = (FlxG.scaleMode.offset.x) + (point.x * FlxG.scaleMode.scale.x);
+			point.y = (FlxG.scaleMode.offset.y) + (point.y * FlxG.scaleMode.scale.y);
+		}
 	}
 	inline function transformFlxPointOntoCamera(point:FlxPoint, camera:FlxCamera) {
 		point.subtract(camera.viewMarginLeft, camera.viewMarginTop);

@@ -200,10 +200,30 @@ class Main extends Sprite
 		scaleMode.resetSize();
 	}
 
+	#if IMGUI_ENABLED
+	private static var imGuiActiveLastFrame:Bool = true;
+	#end
 	public static function onUpdate() {
 		#if !IMGUI_ENABLED
 		if (PlayerSettings.solo.controls.DEV_CONSOLE)
 			NativeAPI.allocConsole();
+		#else
+		if ((ImGuiIO.configFlags & ImGuiConfigFlags.ViewportsEnable) != 0)
+		{
+			if (ImGuiIO.navActive || ImGuiIO.wantCaptureMouse) {
+				if (!imGuiActiveLastFrame) {
+					imGuiActiveLastFrame = true;
+					FlxG.autoPause = false;
+					FlxG.game.focusLostFramerate = FlxG.drawFramerate;
+				}
+			} else {
+				if (imGuiActiveLastFrame) {
+					imGuiActiveLastFrame = false;
+					FlxG.autoPause = Options.autoPause;
+					FlxG.game.focusLostFramerate = 10;
+				}
+			}
+		}
 		#end
 
 		if (PlayerSettings.solo.controls.FPS_COUNTER)
