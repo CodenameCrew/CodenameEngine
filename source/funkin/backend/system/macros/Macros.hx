@@ -20,8 +20,6 @@ class Macros {
 			"flixel.addons.util",
 			// OTHER LIBRARIES & STUFF
 			#if THREE_D_SUPPORT
-			"away3d", "flx3d", // deprecated
-			#if foxlite
 			"foxlite",
 			"foxlite.animation", "foxlite.color", "foxlite.culling",
 			"foxlite.extra", "foxlite.flixel", "foxlite.funkin",
@@ -30,7 +28,6 @@ class Macros {
 			"foxlite.mesh", "foxlite.polyfill", "foxlite.post",
 			"foxlite.renderer", "foxlite.skin", "foxlite.sky",
 			"foxlite.stencil", "foxlite.system", "foxlite.texture",
-			#end
 			#end
 			#if VIDEO_CUTSCENES "hxvlc.flixel", "hxvlc.openfl", #end
 			#if NAPE_ENABLED "nape", "flixel.addons.nape", #end
