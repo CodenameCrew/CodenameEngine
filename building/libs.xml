@@ -15,7 +15,6 @@
 		<!-- CNE Core Libraries -->
 		<git name="flixel-animate" url="https://github.com/CodenameCrew/cne-flixel-animate" skipDeps="true"/>
 		<git name="hscript-improved" url="https://github.com/CodenameCrew/hscript-improved" ref="codename-dev"/>
-		<git name="away3d" url="https://github.com/CodenameCrew/away3d" skipDeps="true"/>
 		<lib name="hxWebSockets"/>
 
 		<!-- Other Libraries -->
