@@ -22,6 +22,7 @@
 		<git name="hxdiscord_rpc" url="https://github.com/CodenameCrew/cne-hxdiscord_rpc" skipDeps="true"/>
 		<git name="hxvlc" url="https://github.com/CodenameCrew/cne-hxvlc" skipDeps="true"/>
 		<git name="funkin-modchart" url="https://github.com/CodenameCrew/FunkinModchart" skipDeps="true"/>
+		<git name="foxlite" url="https://github.com/dwdvIl/foxlite" skipDeps="true"/>
 		<lib name="hxcpp-debug-server"/>
 		<lib name="format"/>
 		<lib name="markdown"/>
