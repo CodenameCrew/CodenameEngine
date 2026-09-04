@@ -1509,9 +1509,9 @@ class PlayState extends MusicBeatState
 		scripts.event("postDraw", e);
 	}
 
-	public function doZoomBop()
+	public function doBopZoom()
 	{
-		var event:BopZoomEvent = EventManager.get(BopZoomEvent).recycle(useCamZoomMult, maxCamZoomMult, camZoomingStrength, camGameZoomMult, camHUDZoomMult);
+		var event:BopZoomEvent = EventManager.get(BopZoomEvent).recycle(useCamZoomMult, maxCamZoomMult, camZoomingStrength);
 		gameAndCharsEvent("OnBopZoom", event);
 
 		if (event.cancelled)
@@ -1525,8 +1525,8 @@ class PlayState extends MusicBeatState
 				camZoomingMult += event.zoomStrength;
 		}
 		else if (FlxG.camera.zoom < maxCamZoom) {
-			FlxG.camera.zoom += event.camGameZoomMultiplier * event.zoomStrength;
-			camHUD.zoom += event.camHUDZoomMultiplier * event.zoomStrength;
+			FlxG.camera.zoom += camGameZoomMult * event.zoomStrength;
+			camHUD.zoom += camHUDZoomMult * event.zoomStrength;
 		}
 
 		gameAndCharsEvent("onPostBopZoom", event);

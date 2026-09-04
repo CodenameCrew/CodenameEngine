@@ -15,14 +15,4 @@ final class BopZoomEvent extends CancellableEvent {
 		The zoom's strength multiplier.
 	**/
 	public var zoomStrength:Float;
-
-	/**
-		The zoom's strength multiplier on the game camera.
-	**/
-	public var camGameZoomMultiplier:Float;
-
-	/**
-		The zoom's strength multiplier on the HUD camera.
-	**/
-	public var camHUDZoomMultiplier:Float;
 }
