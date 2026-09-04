@@ -74,7 +74,7 @@
 	<!-- Comment this out to use the default OpenFL assets system for the assets/ folder. !-->
 	<define name="USE_ADAPTED_ASSETS" unless="web"/>
 
-	<!-- Comment this out to disable support for Away3D Flixel Integration (reduces compile times) !-->
+	<!-- Comment this out to disable support for 3D rendering (reduces compile times) !-->
 	<define name="THREE_D_SUPPORT" unless="STRIPPED_COMPILE"/>
 
 	<!-- Comment this out to disable support for Nape integration (flixel.addons.nape) (reduces compile times) !-->
@@ -137,6 +137,7 @@
 
 	<haxelib name="hxvlc" if="VIDEO_CUTSCENES"/>
 	<haxelib name="hxdiscord_rpc" if="DISCORD_RPC"/>
+	<!--<haxelib name="away3d" if="THREE_D_SUPPORT"/>-->
 	<haxelib name="foxlite" if="THREE_D_SUPPORT"/>
 	<haxelib name="nape-haxe4" if="NAPE_ENABLED"/>
 
