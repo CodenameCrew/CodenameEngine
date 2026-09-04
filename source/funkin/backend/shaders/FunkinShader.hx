@@ -148,9 +148,40 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 	}
 
 	#if REGION /* Deprecated */
-	public var shaderPrefix:String = "";
-	public var fragmentPrefix:String = "";
-	public var vertexPrefix:String = "";
+	public var shaderPrefix(get, set):String;
+	public var fragmentPrefix(get, set):String;
+	public var vertexPrefix(get, set):String;
+
+	private var _shaderPrefix:String = "";
+	private var _fragmentPrefix:String = "";
+	private var _vertexPrefix:String = "";
+
+	function get_shaderPrefix():String return _shaderPrefix;
+	function set_shaderPrefix(v:String):String {
+		if (_shaderPrefix != v) {
+			__cacheProgramId = null;
+			__glSourceDirty = true;
+		}
+		return _shaderPrefix = v;
+	}
+
+	function get_fragmentPrefix():String return _fragmentPrefix;
+	function set_fragmentPrefix(v:String):String {
+		if (_fragmentPrefix != v) {
+			__cacheProgramId = null;
+			__glSourceDirty = true;
+		}
+		return _fragmentPrefix = v;
+	}
+
+	function get_vertexPrefix():String return _vertexPrefix;
+	function set_vertexPrefix(v:String):String {
+		if (_vertexPrefix != v) {
+			__cacheProgramId = null;
+			__glSourceDirty = true;
+		}
+		return _vertexPrefix = v;
+	}
 	#end
 
 	#if REGION /* Backward Compatibility */
