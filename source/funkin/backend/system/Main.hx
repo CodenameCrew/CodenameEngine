@@ -6,6 +6,8 @@ import flixel.addons.transition.TransitionData;
 import flixel.graphics.FlxGraphic;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import funkin.backend.system.FakeCamera;
+import funkin.backend.system.FakeCamera.FakeCallCamera;
 import flixel.system.ui.FlxSoundTray;
 import funkin.backend.assets.AssetSource;
 import funkin.backend.assets.AssetsLibraryList;
@@ -83,6 +85,10 @@ class Main extends Sprite
 		#end
 		CrashHandler.init();
 		ConsoleUI.init();
+
+		// i hate you hxcpp
+		FakeCamera.instance = new FakeCamera();
+		FakeCallCamera.instance = new FakeCallCamera();
 
 		addChild(game = new FunkinGame(gameWidth, gameHeight, MainState, Options.framerate, Options.framerate, skipSplash, startFullscreen));
 

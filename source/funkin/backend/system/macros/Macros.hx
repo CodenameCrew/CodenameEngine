@@ -20,7 +20,13 @@ class Macros {
 			"flixel.addons.util",
 			// OTHER LIBRARIES & STUFF
 			#if THREE_D_SUPPORT
-			"away3d", "flx3d", // deprecated
+			/*
+				supposed to be deprecated but
+				were keeping them in the source for now
+				commenting them out here will make them
+				not show up during compiling....
+			*/
+			// "away3d", "flx3d",
 			#if foxlite
 			"foxlite",
 			"foxlite.animation", "foxlite.color", "foxlite.culling",

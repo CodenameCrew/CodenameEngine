@@ -18,7 +18,7 @@ import openfl.filters.BitmapFilter;
 import openfl.filters.ShaderFilter;
 
 class FakeCamera extends FlxCamera {
-	public static final instance = new FakeCamera();
+	public static var instance:FakeCamera;
 
 	public function new() {
 		super();
@@ -43,7 +43,7 @@ class FakeCamera extends FlxCamera {
 }
 
 class FakeCallCamera extends FakeCamera {
-	public static final instance = new FakeCallCamera();
+	public static var instance:FakeCallCamera;
 	public var ignoreDraws:Bool = false;
 
 	public dynamic function onDraw(?frame:FlxFrame, ?pixels:BitmapData, matrix:FlxMatrix, ?transform:ColorTransform, ?blend:BlendMode, ?smoothing:Bool = false, ?shader:FlxShader, ?wrapMode:Context3DWrapMode, ?depthCompareMode:Context3DCompareMode) {
