@@ -13,6 +13,7 @@ class AssetTreeInfo extends FramerateCategory {
 
 	public function new() {
 		super("Asset Libraries Tree Info");
+		visible = Options.fpsCounterAssets;
 	}
 
 	public override function __enterFrame(t:Int) {

@@ -198,7 +198,7 @@ class Main extends Sprite
 		if (PlayerSettings.solo.controls.DEV_CONSOLE)
 			NativeAPI.allocConsole();
 
-		if (PlayerSettings.solo.controls.FPS_COUNTER)
+		if (PlayerSettings.solo.controls.FPS_COUNTER && Options.fpsCounter)
 			Framerate.debugMode = (Framerate.debugMode + 1) % 3;
 	}
 
