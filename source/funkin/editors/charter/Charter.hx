@@ -638,6 +638,28 @@ class Charter extends UIState {
 			noteCount += strL.notes.length;
 		}
 
+		// checks for newly created songs
+		if (PlayState.SONG.strumLines.length == 0) {
+			createStrumline(0, {
+				characters: ["dad"],
+				type: 0, // Opponent
+				notes: [],
+				position: "dad",
+				visible: true,
+				keyCount: 4
+			}, false, false);
+
+			createStrumline(1, {
+				characters: ["bf"],
+				type: 1, // Player
+				notes: [],
+				position: "boyfriend",
+				visible: true,
+				strumLinePos: 0.75,
+				keyCount: 4
+			}, false, false);
+		}
+
 		// create notes
 		notesGroup.autoSort = false;
 		notesGroup.preallocate(noteCount);
