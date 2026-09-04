@@ -1512,7 +1512,7 @@ class PlayState extends MusicBeatState
 	public function doBopZoom()
 	{
 		var event:BopZoomEvent = EventManager.get(BopZoomEvent).recycle(useCamZoomMult, maxCamZoomMult, camZoomingStrength);
-		gameAndCharsEvent("OnBopZoom", event);
+		gameAndCharsEvent("onBopZoom", event);
 
 		if (event.cancelled)
 		{
