@@ -132,12 +132,17 @@
 			button.xml.set("name", nameTextBox.label.text);
 			button.xml.set("x", xStepper.value);
 			button.xml.set("y", yStepper.value);
-			button.xml.set("zoom", zoomFactorStepper.value);
+			button.xml.set("zoomfactor", zoomFactorStepper.value);
 			button.xml.set("angle", angleStepper.value);
 			button.xml.set("alpha", alphaStepper.value);
+			button.xml.remove("blend");
+			if (sprite.blend != null)
+				button.xml.set("blend", blendMode.value);
 
 			saveXY(sprite.scrollFactor, "scroll", scrollXStepper, scrollYStepper);
 			saveXY(sprite.skew, "skew", skewXStepper, skewYStepper);
+			if (isSolid)
+				button.xml.remove("updateHitbox");
 			for (att in ["width", "height", "color"])
 				button.xml.remove(att);
 			XMLUtil.loadSpriteFromXML(sprite, button.xml, "", 0, false);

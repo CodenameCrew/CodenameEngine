@@ -46,7 +46,7 @@ class FramerateCounter extends Sprite {
 		lastUpdateTime = 0;
 	}
 
-	public override function __enterFrame(t:Int) {
+	public override function __enterFrame(t:Float) {
 		if (alpha <= 0.001) return;
 
 		super.__enterFrame(t);

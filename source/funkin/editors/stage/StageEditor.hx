@@ -222,7 +222,6 @@ class StageEditor extends UIState {
 
 		axisGizmo = new AxisGizmo();
 		axisGizmo.cameras = [gizmosCamera];
-		add(axisGizmo);
 
 		uiCamera = new FlxCamera();
 		uiCamera.bgColor = 0;
@@ -272,6 +271,7 @@ class StageEditor extends UIState {
 
 		add(topMenuSpr);
 		add(uiGroup);
+		add(axisGizmo);
 
 		if(Framerate.isLoaded) {
 			Framerate.fpsCounter.alpha = 0.4;
@@ -647,6 +647,7 @@ class StageEditor extends UIState {
 		saveToXml(xml, "folder", stage.spritesParentFolder);
 		saveToXml(xml, "startCamPosX", stage.startCam.x, 0);
 		saveToXml(xml, "startCamPosY", stage.startCam.y, 0);
+		xml.attributeOrder = ["name", "folder", "zoom", "startCamPosX", "startCamPosY"];
 
 		for(prop in stage.extra.keys())
 			if(!Stage.DEFAULT_ATTRIBUTES.contains(prop) && !prop.startsWith("stageEditor."))
@@ -655,94 +656,19 @@ class StageEditor extends UIState {
 		var group:Xml = null;
 		var curGroup:String = null;
 
-		for(sprite in getSprites()) {
-			var button:StageElementButton = sprite.extra.get(exID("button"));
-			var newNode:Xml = null;
+		for(button in stageSpritesWindow.buttons.members) {
+			button.cleanupXML();
 			var sprite:FunkinSprite = button.getSprite();
-			if(button is StageSolidButton) {
-				var button:StageSolidButton = cast button;
-				var node:Access = cast sprite.extra.get(exID("node"));
-				Logs.trace("SOLID / BOX isnt implemented yet!");
-			} else if(button is StageSpriteButton) {
-				var button:StageSpriteButton = cast button;
-				var node:Access = cast sprite.extra.get(exID("node"));
-				var spriteXML = Xml.createElement("sprite");
-				saveToXml(spriteXML, "name", sprite.name);
-				saveToXml(spriteXML, "x", sprite.x, 0);
-				saveToXml(spriteXML, "y", sprite.y, 0);
-				saveToXml(spriteXML, "sprite", sprite.extra.get(exID("imageFile")));
-				savePointToXml(spriteXML, "scale", sprite.scale, 1);
-				savePointToXml(spriteXML, "scroll", sprite.scrollFactor, 1);
-				saveToXml(spriteXML, "skewx", sprite.skew.x, 0);
-				saveToXml(spriteXML, "skewy", sprite.skew.y, 0);
-				saveToXml(spriteXML, "alpha", sprite.alpha, 1);
-				saveToXml(spriteXML, "angle", sprite.angle, 0);
-				//saveToXml(spriteXML, "graphicSize", sprite.width, sprite.width);
-				//saveToXml(spriteXML, "graphicSizex", sprite.height, sprite.height);
-				//saveToXml(spriteXML, "graphicSizey", sprite.height, sprite.height);
-				saveToXml(spriteXML, "zoomfactor", sprite.zoomFactor, 1);
-				saveToXml(spriteXML, "updateHitbox", getBoolOfNode(node, "updateHitbox"), false);
-				saveToXml(spriteXML, "antialiasing", sprite.antialiasing, true);
-				//saveToXml(spriteXML, "width", sprite.width);
-				//saveToXml(spriteXML, "height", sprite.height);
-				saveToXml(spriteXML, "playOnCountdown", getBoolOfNode(node, "playOnCountdown"), false);
-				saveToXml(spriteXML, "interval", node.getAtt("beatInterval"), 2);
-				saveToXml(spriteXML, "interval", node.getAtt("interval"), 2);
-				saveToXml(spriteXML, "beatOffset", node.getAtt("beatOffset"), 0);
-				if(sprite.spriteAnimType != LOOP)
-					spriteXML.set("type", sprite.spriteAnimType.toString());
-				saveToXml(spriteXML, "color", sprite.color.toWebString(), "#FFFFFF");
-				@:privateAccess saveToXml(spriteXML, "blend", sprite.blend.toString(), null);
-				// TODO: save custom parameters
-				//saveToXml(spriteXML, "flipX", sprite.flipX, false);
-				if (node.hasNode.anim) for (animNode in node.nodes.anim)
-					spriteXML.addChild(animNode.x);
-				newNode = spriteXML;
-			} else if(button is StageCharacterButton) {
-				var button:StageCharacterButton = cast button;
-				var char:Character = button.char;
-				var node:Access = cast char.extra.get(exID("node"));
-				var defaultPos = Stage.getDefaultPos(char.name.replace("NO_DELETE_", ""));
-				var charXML:Xml = Xml.createElement(node.name);
-				if(!char.name.startsWith("NO_DELETE_"))
-					saveToXml(charXML, "name", char.name);
-				saveToXml(charXML, "x", char.x, defaultPos.x);
-				saveToXml(charXML, "y", char.y, defaultPos.y);
-				saveToXml(charXML, "camxoffset", char.extra.get(exID("camX")), 0);
-				saveToXml(charXML, "camyoffset", char.extra.get(exID("camY")), 0);
-				saveToXml(charXML, "skewx", char.skew.x, 0);
-				saveToXml(charXML, "skewy", char.skew.y, 0);
-				saveToXml(charXML, "spacingx", char.extra.get(exID("spacingX")), 20);
-				saveToXml(charXML, "spacingy", char.extra.get(exID("spacingY")), 0);
-				saveToXml(charXML, "alpha", char.alpha / 0.75, 1);
-				saveToXml(charXML, "angle", char.angle, 0);
-				saveToXml(charXML, "zoomfactor", char.zoomFactor, 1);
-				saveToXml(charXML, "flipX", char.isPlayer, defaultPos.flip);
-				savePointToXml(charXML, "scroll", char.scrollFactor, defaultPos.scroll);
-				savePointToXml(charXML, "scale", char.scale.scaleNew(button.charScale), 1);
-				// TODO: save custom parameters
-				newNode = charXML;
-			} else if(button is StageUnknownButton) {
-				var button:StageUnknownButton = cast button;
-				newNode = button.xml.x;
-			}
-			else {
-				Logs.trace("Unknown Stage Type : " + Type.getClassName(Type.getClass(button)));
-				Logs.trace("> Sprite : " + Type.getClassName(Type.getClass(sprite)));
-			}
+			var newNode:Xml = button.xml.x;
 
 			if(newNode != null && sprite != null) {
-				var isLowMemory = sprite.extra.get(exID("lowMemory")) == true;
-				var isHighMemory = sprite.extra.get(exID("highMemory")) == true;
-				/* // Only if this compiled :sob:
-				var groupName:String = null;
-				if ((groupName = isLowMemory ? "low-memory" : isHighMemory ? "high-memory" : null) != null) {
-					var a = group != null && groupName != curGroup && ((group = cast xml.addChild(group)) != null);
-					(group = (group == null ? Xml.createElement(curGroup = groupName) : group)).addChild(newNode);
-				}else xml.addChild(newNode);
-				*/
+				var groupName = (sprite == null ? null : 
+					(
+						(sprite.extra.get(exID("lowMemory")) == true) ? "low-memory" :
+						(sprite.extra.get(exID("highMemory")) == true) ? "high-memory" : null
+					)
+				);
 
-				var groupName = isLowMemory ? "low-memory" : isHighMemory ? "high-memory" : null;
 				if(group != null && groupName != curGroup) {
 					xml.addChild(group);
 					group = null;
@@ -756,6 +682,36 @@ class StageEditor extends UIState {
 
 		var xmlThingYea:String = "<!DOCTYPE codename-engine-stage>\n" + Printer.print(xml, Options.editorStagePrettyPrint);
 		return Options.editorStagePrettyPrint ? xmlThingYea : xmlThingYea.replace("\n", "");
+	}
+
+	function storeSpriteTransform(sprite:FunkinSprite) {
+		sprite.setPosition(CoolUtil.quantize(sprite.x, 100), CoolUtil.quantize(sprite.y, 100));
+		sprite.scale.set(CoolUtil.quantize(sprite.scale.x, 100), CoolUtil.quantize(sprite.scale.y, 100));
+		sprite.skew.set(CoolUtil.quantize(sprite.skew.x, 100), CoolUtil.quantize(sprite.skew.y, 100));
+		sprite.angle = CoolUtil.quantize(sprite.angle, 100);
+
+		var button:StageElementButton = cast(sprite.extra.get(exID("button")), StageElementButton);
+		button.xml.att.x = Std.string(sprite.x);
+		button.xml.att.y = Std.string(sprite.y);
+		button.xml.att.skewx = Std.string(sprite.skew.x);
+		button.xml.att.skewy = Std.string(sprite.skew.y);
+		button.xml.att.angle = Std.string(sprite.angle);
+
+		for (attrib in ["graphicSize", "graphicSizex", "graphicSizey"])
+			button.xml.x.remove(attrib);
+		if (MathUtil.equal(sprite.scale.x, sprite.scale.y)) {
+			button.xml.att.scale = Std.string(sprite.scale.x);
+		} else {
+			button.xml.att.scalex = Std.string(sprite.scale.x);
+			button.xml.att.scaley = Std.string(sprite.scale.y);
+		}
+
+		if (button.xml.has.width)
+			button.xml.att.width = Std.string(sprite.width);
+		if (button.xml.has.height)
+			button.xml.att.height = Std.string(sprite.height);
+
+		button.updateInfo();
 	}
 
 	function _edit_undo(_) {
@@ -780,7 +736,7 @@ class StageEditor extends UIState {
 				sprite.scale.set(oldInfo.scaleX, oldInfo.scaleY);
 				sprite.skew.set(oldInfo.skewX, oldInfo.skewY);
 				sprite.angle = oldInfo.angle;
-				cast(sprite.extra.get(exID("button")), StageElementButton).updateInfo();
+				storeSpriteTransform(sprite);
 		}
 	}
 
@@ -806,7 +762,7 @@ class StageEditor extends UIState {
 				sprite.scale.set(newInfo.scaleX, newInfo.scaleY);
 				sprite.skew.set(newInfo.skewX, newInfo.skewY);
 				sprite.angle = newInfo.angle;
-				cast(sprite.extra.get(exID("button")), StageElementButton).updateInfo();
+				storeSpriteTransform(sprite);
 		}
 	}
 
@@ -1191,6 +1147,7 @@ class StageEditor extends UIState {
 		if (prevMode == NONE && mouseMode == NONE) return;
 
 		if (prevMode != NONE && mouseMode == NONE) {
+			storeSpriteTransform(sprite);
 			undos.addToUndo(CTransform(sprite, {
 				x: storedPos.x,
 				y: storedPos.y,

@@ -7,6 +7,9 @@ class Config {
 		"flixel",
 
 		"funkin",
+		#if foxlite 
+		"foxlite", 
+		#end
 		#if MODCHARTING_FEATURES
 		"modchart.engine",
 		"modchart.backend.standalone",
@@ -23,6 +26,9 @@ class Config {
 		"haxe.xml",
 		"haxe.CallStack",
 		"funkin",
+		#if foxlite 
+		"foxlite" 
+		#end
 		#end
 	];
 

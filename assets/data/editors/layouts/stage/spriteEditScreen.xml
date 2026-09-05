@@ -32,14 +32,29 @@
 		<textbox name="spriteTextBox" value="getEx('imageFile')" x="last.x + last.bWidth + XOFFSET" y="curY" width="200" height="32" />
 		<stepper name="alphaStepper" label="Alpha" value="sprite.alpha" x="last.x + last.bWidth + XOFFSET" y="curY" precision="2" step="0.01" width="100" />
 		<dropdown name="blendMode" label="${translate('blendMode')}" value="sprite.blend" x="last.x + last.bWidth + XOFFSET - 20" y="curY" width="150" height="32">
-			<!-- add all remaining blend modes once they are available pls -->
-			<!-- also why do i have to wrap them in 2 strings -->
 			<item label="${translate('blendMode.none')}" value="null" />
 			<item label="${translate('blendMode.add')}" value="'add'" />
+			<item label="${translate('blendMode.alpha')}" value="'alpha'" />
+			<item label="${translate('blendMode.color')}" value="'color'" />
+			<item label="${translate('blendMode.colordodge')}" value="'colordodge'" />
+			<item label="${translate('blendMode.colorburn')}" value="'colorburn'" />
+			<item label="${translate('blendMode.darken')}" value="'darken'" />
+			<item label="${translate('blendMode.difference')}" value="'difference'" />
+			<item label="${translate('blendMode.exclusion')}" value="'exclusion'" />
+			<item label="${translate('blendMode.erase')}" value="'erase'" />
+			<item label="${translate('blendMode.hardlight')}" value="'hardlight'" />
+			<item label="${translate('blendMode.hue')}" value="'hue'" />
+			<item label="${translate('blendMode.invert')}" value="'invert'" />
+			<item label="${translate('blendMode.layer')}" value="'layer'" />
 			<item label="${translate('blendMode.lighten')}" value="'lighten'" />
+			<item label="${translate('blendMode.luminosity')}" value="'luminosity'" />
 			<item label="${translate('blendMode.multiply')}" value="'multiply'" />
+			<item label="${translate('blendMode.overlay')}" value="'overlay'" />
 			<item label="${translate('blendMode.screen')}" value="'screen'" />
+			<item label="${translate('blendMode.shader')}" value="'shader'" />
+			<item label="${translate('blendMode.softlight')}" value="'softlight'" />
 			<item label="${translate('blendMode.subtract')}" value="'subtract'" />
+			<item label="${translate('blendMode.saturation')}" value="'saturation'" />
 		</dropdown>
 		<label name="imageFile" text="${translate('imageFile', [stage.spritesParentFolder])}" x="spriteTextBox.x" y="spriteTextBox.y - 14" size="15" />
 	</section>
@@ -214,18 +229,18 @@
 				button.xml.set(name, value);
 			}
 
-			// TODO: remove old attributes to prevent possible errors
-			// button.xml.remove();
-
 			button.xml.set("name", nameTextBox.label.text);
 			button.xml.set("sprite", spriteTextBox.label.text);
 			button.xml.set("x", xStepper.value);
 			button.xml.set("y", yStepper.value);
-			button.xml.set("zoom", zoomFactorStepper.value);
+			button.xml.set("zoomfactor", zoomFactorStepper.value);
 			button.xml.set("type", animTypeToString(animType.value));
 			button.xml.set("antialiasing", antialiasingCheckbox.checked);
 			button.xml.set("angle", angleStepper.value);
 			button.xml.set("alpha", alphaStepper.value);
+			button.xml.remove("blend");
+			if (sprite.blend != null)
+				button.xml.set("blend", blendMode.value);
 
 			getEx('anims').clear();
 			var allowedAnims:Array&lt;String&gt; = [for (b in animations.buttons.members) b.animData.name];

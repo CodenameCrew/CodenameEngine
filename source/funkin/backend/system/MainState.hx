@@ -42,6 +42,7 @@ class MainState extends FlxState {
 		ControlsUtil.resetCustomControls();
 		FlxG.bitmap.reset();
 		FlxG.sound.destroy(true);
+		FlxG.sound.resetCache();
 
 		Paths.assetsTree.reset();
 
@@ -163,16 +164,16 @@ class MainState extends FlxState {
 		}
 
 		var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
-
+		var outdatedAPI:Bool = (Flags.MOD_API_VERSION ?? Flags.CURRENT_API_VERSION) < Flags.CURRENT_API_VERSION;
 		// In this case if the mod we just loaded a compressed modpack, we can't edit or modify files without decompressing it.
 		if (Options.devMode && Options.allowConfigWarning && !isZipMod) {
 			var lib:ModsFolderLibrary;
 			for (e in Paths.assetsTree.libraries) if ((lib = cast AssetsLibraryList.getCleanLibrary(e)) is ModsFolderLibrary
 				&& lib.modName == ModsFolder.currentModFolder)
 			{
-				if (lib.exists(Paths.ini("config/modpack"), lime.utils.AssetType.TEXT)) break;
+				if (!outdatedAPI && lib.exists(Paths.ini("config/modpack"), lime.utils.AssetType.TEXT)) break;
 
-				FlxG.switchState(new ModConfigWarning(lib, startState));
+				FlxG.switchState(new ModConfigWarning(lib, startState, outdatedAPI));
 				return;
 			}
 		}

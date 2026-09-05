@@ -639,4 +639,17 @@
 		<str id="saveAndExitToMenu">Guardar y Volver al Menú</str>
 		<str id="cancel">Cancelar</str>
 	</group>
+	
+	<group name="ModConfigWarning" prefix="modConfigWarning.">
+		<str id="warningTitle">¡Falta la configuración del mod!</str>
+		<str id="warningDesc">¡Tu mod actualmente no tiene un archivo de configuración!\n\n¿Quisieras generar uno automáticamente?\n\n(PD: Si este no es tu mod por favor deshabilita el Modo Desarrollador para que no aparezca esta ventana.)</str>
+
+		<str id="createdTitle">¡Configuración creada!</str>
+		<str id="createdDesc">¡Tu archivo de configuración se creó en {0}!</str>
+	</group>
+
+	<group name="ModAPIWarning" prefix="modApiWarning.">
+		<str id="warningTitle">¡Versión de API desactualizada! (v{0} &lt; v{1})</str>
+		<str id="warningDesc">¡La configuración de tu mod usa una versión API antigua! ¡Esto CAUSARÁ problemas con código y compatibilidad!\n\nSe recomienda que cambies el código y configuración de tu mod para encajar con la versión nueva.\n\nMientras tanto, se hará lo mejor posible para compatibilizar el código actual, pero aún se recomienda actualizarlo.\n\n(PD: Si este no es tu mod por favor deshabilita el Modo Desarrollador, y notifique a los desarrolladores del mod si es necesario.)</str>
+	</group>
 </language>

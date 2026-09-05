@@ -372,7 +372,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 		xml = scripts.event("onCharacterXMLParsed", EventManager.get(CharacterXMLEvent).recycle(this, xml)).xml;
 
-		sprite = curCharacter;
+		name = sprite = curCharacter;
 		spriteAnimType = BEAT;
 		this.xml = xml; // Modders wassup :D
 
@@ -414,7 +414,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		var hasInterval:Bool = xml.x.exists("interval");
 		if (hasInterval) beatInterval = Std.parseInt(xml.x.get("interval"));
 
-		loadSprite(Paths.image('characters/$sprite'));
+		XMLUtil.appendSpriteSheetsFromXML(this, xml, 'characters/');
 		
 		if (xml.x.exists("centercam")) centeredCamera = (xml.x.get("centercam") == "true");
 		else if (Flags.USE_LEGACY_CENTER_CAM) centeredCamera = true;

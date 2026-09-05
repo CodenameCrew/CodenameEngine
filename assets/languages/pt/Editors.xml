@@ -695,4 +695,9 @@
 		<str id="createdTitle">Config. de mod criada!</str>
 		<str id="createdDesc">As configurações do seu mod foram criadas em {0}!</str>
 	</group>
+
+	<group name="ModAPIWarning" prefix="modApiWarning.">
+		<str id="warningTitle">Versão de API desatualizada! (v{0} &lt; v{1})</str>
+		<str id="warningDesc">A configuração do seu mod está a usar uma versão do API velha! Isto IRÁ causar problemas de compatibilidade e código!\n\nÉ recomendado que faça mudanças ao seu mod e o seu ficheiro de configuração para ajustar à versão mais recente.\n\nPor enquanto, o jogo irá tentar o seu melhor para fazer o seu mod compatível, mas deverá na mesma atualizá-lo.\n\n(PS: Se este mod não for seu, por favor desative o modo de desenvolvedor, e notifique os desenvolvedores deste mod se necessário.)</str>
+	</group>
 </language>

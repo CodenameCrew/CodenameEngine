@@ -39,13 +39,23 @@ class Options
 	public static var betaUpdates:Bool = false;
 	public static var splashesEnabled:Bool = true;
 	public static var legacyMemoryCounter:Bool = false;
-	@:dox(hide) @:doNotSave public static var hitWindow:Float = 250; // DEPRECATED
+
+	 // DEPRECATED
+	@:dox(hide) @:doNotSave public static var hitWindow:Float = 250;
+
+	/*
+	* The maximum LIMITED framerate the game can run at.
+	* CANNOT be changed through scripts.
+	* @since 1.1.0-rc2
+	*/
+	@:doNotSave public static inline final maxFrameRate:Int = 240;
+
 	public static var songOffset:Float = 0;
 	public static var framerate:Int = 120;
 	public static var gpuOnlyBitmaps:Bool = #if (mac || web) false #else true #end; // causes issues on mac and web
 	public static var language = "en"; // default to english, Flags.DEFAULT_LANGUAGE should not modify this
-	public static var streamedMusic:Bool = false;
-	public static var streamedVocals:Bool = false;
+	public static var streamedMusic:Bool = true;
+	public static var streamedVocals:Bool = true;
 	public static var quality:Int = 1;
 	public static var allowConfigWarning:Bool = true;
 	#if MODCHARTING_FEATURES
@@ -231,10 +241,15 @@ class Options
 		applyKeybinds();
 		applyQuality();
 
+		flixel.sound.FlxSoundData.allowStreaming = streamedMusic;
 		FlxG.sound.defaultMusicGroup.volume = volumeMusic;
 		FlxG.autoPause = autoPause;
-		if (FlxG.updateFramerate < framerate) FlxG.drawFramerate = FlxG.updateFramerate = framerate;
-		else FlxG.updateFramerate = FlxG.drawFramerate = framerate;
+
+		var _framerate = framerate;
+		if (_framerate > maxFrameRate) _framerate = 0;
+
+		if (FlxG.updateFramerate < framerate) FlxG.drawFramerate = FlxG.updateFramerate = _framerate;
+		else FlxG.updateFramerate = FlxG.drawFramerate = _framerate;
 	}
 
 	public static function applyQuality() {
