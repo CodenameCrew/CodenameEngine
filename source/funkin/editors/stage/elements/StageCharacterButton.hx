@@ -43,8 +43,8 @@ class StageCharacterButton extends StageElementButton {
 
 	override public function getDefaults():Map<String, Dynamic> {
 		return [
-			"flip" => false,
-			"flipX" => false,
+			"flip" => char.name == "NO_DELETE_boyfriend",
+			"flipX" => char.name == "NO_DELETE_boyfriend",
 			"camxoffset" => 0,
 			"camyoffset" => 0,
 			"spacingx" => 0,
@@ -54,12 +54,13 @@ class StageCharacterButton extends StageElementButton {
 			"zoomfactor" => 1,
 			"alpha" => 1,
 			"angle" => 0,
-			"skew" => 0
+			"skewx" => 0,
+			"skewy" => 0
 		];
 	}
 
 	override public function getPointAttributes():Array<String> {
-		return ["scale", "scroll", "skew"];
+		return ["scale", "scroll"];
 	}
 
 	override public function getAttributeOrder():Array<String> {

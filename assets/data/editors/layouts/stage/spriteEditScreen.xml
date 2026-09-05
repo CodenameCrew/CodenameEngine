@@ -229,9 +229,6 @@
 				button.xml.set(name, value);
 			}
 
-			// TODO: remove old attributes to prevent possible errors
-			// button.xml.remove();
-
 			button.xml.set("name", nameTextBox.label.text);
 			button.xml.set("sprite", spriteTextBox.label.text);
 			button.xml.set("x", xStepper.value);
