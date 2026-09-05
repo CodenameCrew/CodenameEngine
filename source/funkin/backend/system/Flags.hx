@@ -229,6 +229,14 @@ class Flags {
 	public static var DISABLE_LANGUAGES:Bool = false;
 	public static var DISABLE_AUTOUPDATER:Bool = false;
 
+	/**
+	 * DEBUG ONLY — REMEMBER TO REMOVE THIS BEFORE SHIPPING YOUR MOD!
+	 * When enabled, every asset cache (textures, sounds, fonts, shaders)
+	 * is cleared on every state switch/reload, forcing a re-fetch from disk as if the game just started.
+	 * This flag exists purely for debugging stale asset issues and must be deleted from release builds.
+	 */
+	public static var CLEAR_ASSET_CACHE_ON_STATE_SWITCH:Bool = false;
+
 	@:also(funkin.backend.MusicBeatTransition.script)
 	public static var DEFAULT_TRANSITION_SCRIPT:String = "";
 	@:also(funkin.menus.PauseSubState.script)

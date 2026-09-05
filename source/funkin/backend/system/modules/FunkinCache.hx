@@ -42,6 +42,34 @@ class FunkinCache extends AssetCache {
 		FlxG.signals.postStateSwitch.add(function() {
 			instance.clearSecondLayer();
 		});
+
+		FlxG.signals.preStateCreate.add(function(_) {
+			if (Flags.CLEAR_ASSET_CACHE_ON_STATE_SWITCH)
+				clearAllCaches();
+		});
+	}
+
+	/**
+		Clears every asset cache (textures, sounds, fonts, shader programs) so everything is re-fetched from disk, as if the game just started.
+	**/
+	public static function clearAllCaches() {
+		@:privateAccess
+		for (graphic in [for (g in FlxG.bitmap._cache) g]) {
+			if (graphic != null && graphic.assetsKey != null)
+				FlxG.bitmap.removeByKey(graphic.key);
+		}
+		if (instance != null)
+			instance.clearAll();
+		clearShaderProgramCache();
+	}
+
+	/**
+		Clears openfl's compiled shader program cache, so edited shaders get recompiled on next use.
+	**/
+	public static function clearShaderProgramCache() {
+		@:privateAccess
+		if (FlxG.stage != null && FlxG.stage.context3D != null && FlxG.stage.context3D.__programs != null)
+			FlxG.stage.context3D.__programs.clear();
 	}
 
 	public function moveToSecondLayer() {
@@ -51,6 +79,24 @@ class FunkinCache extends AssetCache {
 		bitmapData = [];
 		font = [];
 		sound = [];
+	}
+
+	/**
+		Completely clears both cache layers (including lime's own asset cache),
+	**/
+	public function clearAll() {
+		for (k in [for (k in bitmapData.keys()) k])
+			removeBitmapData(k);
+		for (k in [for (k in bitmapData2.keys()) k])
+			removeBitmapData(k);
+		for (k in [for (k in font.keys()) k])
+			removeFont(k);
+		for (k in [for (k in font2.keys()) k])
+			removeFont(k);
+		for (k in [for (k in sound.keys()) k])
+			removeSound(k);
+		for (k in [for (k in sound2.keys()) k])
+			removeSound(k);
 	}
 
 	public function clearSecondLayer() {
