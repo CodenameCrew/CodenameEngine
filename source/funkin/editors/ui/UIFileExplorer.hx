@@ -19,11 +19,11 @@ class UIFileExplorer extends UISliceSprite {
 
 	public var uiElement:FlxSprite;
 	
-	public var fileType:String = "txt";
+	public var fileType:Array<String> = ["txt"];
 
-	public function new(x:Float, y:Float, ?w:Int, ?h:Int, fileType:String = "txt", ?onFile:(String, Bytes)->Void) {
+	public function new(x:Float, y:Float, ?w:Int, ?h:Int, fileType:Array<String>, ?onFile:(String, Bytes)->Void) {
 		super(x, y, (w != null ? w : 320), (h != null ? h : 58), 'editors/ui/inputbox');
-		this.fileType = fileType;
+		if (fileType != null) this.fileType = fileType;
 
 		if (onFile != null) this.onFile = onFile;
 
@@ -31,11 +31,11 @@ class UIFileExplorer extends UISliceSprite {
 			#if lime_funkin
 			FileDialog.openFile(FlxG.stage.window, "Open File", (fileNames:Array<String>, activeFilter:FileDialogFilter) -> {
 				loadFile(fileNames[0]);
-			}, this.fileType != null ? [new FileDialogFilter("Specified File Extension", this.fileType)] : null);
+			}, this.fileType != null ? [new FileDialogFilter("Specified File Extension", this.fileType.join(";"))] : null);
 			#else
 			var fileDialog = new FileDialog();
 			fileDialog.onSelect.add(loadFile);
-			fileDialog.browse(OPEN, this.fileType);
+			fileDialog.browse(OPEN, this.fileType[0]); // i dunno bro
 			#end
 		}, bWidth - 16, bHeight - 16);
 		members.push(uploadButton);

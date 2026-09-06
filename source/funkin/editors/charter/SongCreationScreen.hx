@@ -230,13 +230,13 @@ class SongCreationScreen extends UISubstateWindow {
 			translate("songFileName"),
 			[new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFAD1212), "$")]);
 
-		importChartFile = new UIFileExplorer(importIdTextBox.x, importIdTextBox.y + importIdTextBox.height + 56, null, null, "fnfc", function (_, _) importIdTextBox.label.text = new haxe.io.Path(importChartFile.filePath).file);
+		importChartFile = new UIFileExplorer(importIdTextBox.x, importIdTextBox.y + importIdTextBox.height + 56, null, null, ["fnfc"], function (_, _) importIdTextBox.label.text = new haxe.io.Path(importChartFile.filePath).file);
 		importDataGroup.add(importChartFile);
 		addLabelOn(importChartFile, "").applyMarkup(
 			translate("songDataFile"),
 			[new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFAD1212), "$")]);
 
-		importMetaFile = new UIFileExplorer(importChartFile.x + 320 + 26, importChartFile.y, null, null, "json");
+		importMetaFile = new UIFileExplorer(importChartFile.x + 320 + 26, importChartFile.y, null, null, ["json"]);
 		importDataGroup.add(importMetaFile);
 		addLabelOn(importMetaFile, "").applyMarkup(
 			translate("songMetaFile"),
@@ -300,7 +300,7 @@ class SongCreationScreen extends UISubstateWindow {
 				saveButton.selectable = #if TEST_BUILD true #else project ? true : (importInstExplorer.file != null) #end;
 			} else if (curPage == 2) {
 				importIdTextBox.selectable = !project;
-				importChartFile.fileType = project ? "fnfc" : "json";
+				importChartFile.fileType = project ? ["fnfc"] : ["json"];
 				importMetaFile.selectable = name == translate("vslice");
 				saveButton.selectable = importChartFile.file != null && (!importMetaFile.selectable || importMetaFile.file != null) && (!importIdTextBox.selectable || importIdTextBox.label.text.trim().length > 0);
 			} else
@@ -452,7 +452,7 @@ class SongCreationScreen extends UISubstateWindow {
 		var vslicechart:NewSwagSong = Json.parse(files.get('${songId}-chart.json'));
 		var playData = vslicemeta.playData;
 
-		var meta:ChartMetaData = formatMeta({name: songId, needsVoices: files.get('Voices.${Flags.SOUND_EXT}') != null});
+		var meta:ChartMetaData = formatMeta({name: songId, needsVoices: files.get('Voices.${Flags.SOUND_EXT[0]}') != null});
 		var diffCharts:Array<ChartDataWithInfo> = [], events:Array<ChartEvent> = null;
 		VSliceParser.parse(vslicemeta, vslicechart, meta, diffCharts, songId);
 
@@ -461,10 +461,10 @@ class SongCreationScreen extends UISubstateWindow {
 
 		if (onSave != null) onSave({
 			meta: meta,
-			instBytes: files.get('Inst.${Flags.SOUND_EXT}'),
-			voicesBytes: files.get('Voices.${Flags.SOUND_EXT}'), //it may exist
-			playerVocals: files.get('Voices-${playData.characters.playerVocals != null ? playData.characters.playerVocals[0] : playData.characters.player}.${Flags.SOUND_EXT}'),
-			oppVocals: files.get('Voices-${playData.characters.opponentVocals != null ? playData.characters.opponentVocals[0] : playData.characters.opponent}.${Flags.SOUND_EXT}'),
+			instBytes: files.get('Inst.${Flags.SOUND_EXT[0]}'),
+			voicesBytes: files.get('Voices.${Flags.SOUND_EXT[0]}'), //it may exist
+			playerVocals: files.get('Voices-${playData.characters.playerVocals != null ? playData.characters.playerVocals[0] : playData.characters.player}.${Flags.SOUND_EXT[0]}'),
+			oppVocals: files.get('Voices-${playData.characters.opponentVocals != null ? playData.characters.opponentVocals[0] : playData.characters.opponent}.${Flags.SOUND_EXT[0]}'),
 		}, (songFolder:String) -> {
 			#if sys
 			for (diff in diffCharts) CoolUtil.safeSaveFile('$songFolder/${getChartSavePath(meta, diff.diffName)}', Json.stringify(diff.chart, Flags.JSON_PRETTY_PRINT));
