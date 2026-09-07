@@ -434,10 +434,11 @@ class FreeplayState extends MusicBeatState
 
 class FreeplaySonglist {
 	public var songs:Array<ChartMetaData> = [];
+	public static final EXCLUDE_SUBFOLDERS:Array<String> = ['charts', 'scripts', 'song'];
 
 	public function new() {}
 
-	public function getSongsFromSource(source:funkin.backend.assets.AssetSource, useTxt:Bool = true) {
+	public function getSongsFromSource(source:funkin.backend.assets.AssetSource, useTxt:Bool = true, ?startDir:String = 'songs/', ?flatten:Bool = true) {
 		var songsFound:Array<String> = null;
 		if (useTxt) {
 			var oldPath = Paths.txt('freeplaySonglist');
@@ -448,27 +449,49 @@ class FreeplaySonglist {
 				songsFound = CoolUtil.coolTextFile(oldPath);
 			}
 		}
-		if (songsFound == null) songsFound = Paths.getFolderDirectories("songs", false, source);
+		// todo: make this better
+		if (songsFound == null) {
+			songsFound = [];
+			var songDirs = Paths.getFolderDirectories(startDir, false, source);
+			if (!flatten) {
+				for (i in songDirs) {
+					var subs = Paths.getFolderDirectories('$startDir$i', false, source).filter(a -> !EXCLUDE_SUBFOLDERS.contains(a));
+					songsFound.push((subs.length > 0) ? '$i/' : i);
+				}
+			} else {
+				function poop(a:Array<Dynamic>, startDir:String) {
+					for (i in a) {
+						var subs = Paths.getFolderDirectories('$startDir$i', false, source).filter(a -> !EXCLUDE_SUBFOLDERS.contains(a));
+						if (subs.length > 0) poop(subs, '$startDir$i/');
+						else songsFound.push(startDir.substr('songs/'.length) + i);
+					}
+				}
+				poop(songDirs, startDir);
+			}
+			// put folders at the top
+			songsFound = songsFound.filter(a -> a.endsWith('/'))
+				.concat(songsFound.filter(a -> !a.endsWith('/')));
+		}
 		if (songsFound.length > 0) {
-			for (s in songsFound) songs.push(Chart.loadChartMeta(s, source == MODS));
+			for (s in songsFound) songs.push(Chart.loadChartMeta(startDir.substr('songs/'.length) + s, source == MODS));
 			return false;
 		}
 		return true;
 	}
 
-	public static function get(useTxt:Bool = true) {
+	public static function get(useTxt:Bool = true, ?startDir:String = 'songs/', ?flatten:Bool = true) {
 		var songList = new FreeplaySonglist();
 
 		switch(Flags.SONGS_LIST_MOD_MODE) {
 			case 'prepend':
-				songList.getSongsFromSource(MODS, useTxt);
-				songList.getSongsFromSource(SOURCE, useTxt);
+				songList.getSongsFromSource(MODS, useTxt, startDir, flatten);
+				songList.getSongsFromSource(SOURCE, useTxt, startDir, flatten);
 			case 'append':
-				songList.getSongsFromSource(SOURCE, useTxt);
-				songList.getSongsFromSource(MODS, useTxt);
+				songList.getSongsFromSource(SOURCE, useTxt, startDir, flatten);
+				songList.getSongsFromSource(MODS, useTxt, startDir, flatten);
 			default /*case 'override'*/:
-				if (songList.getSongsFromSource(MODS, useTxt))
-					songList.getSongsFromSource(SOURCE, useTxt);
+				if (songList.getSongsFromSource(MODS, useTxt, startDir, flatten))
+					songList.getSongsFromSource(SOURCE, useTxt, startDir, flatten);
 		}
 
 		return songList;

@@ -5,6 +5,7 @@ import haxe.xml.Access;
 import funkin.game.Character;
 import funkin.editors.EditorTreeMenu;
 import funkin.options.type.NewOption;
+import funkin.options.type.FolderOption;
 import funkin.options.type.TextOption;
 import funkin.options.type.OptionType;
 
@@ -24,12 +25,43 @@ class AlphabetSelectionScreen extends EditorTreeMenuScreen {
 			]));
 		});
 
-		var modsList:Array<String> = [];
-		for (file in Paths.getFolderContent('data/alphabet/', true, BOTH)) // mods ? MODS : BOTH
-			if (Path.extension(file) == "xml") modsList.push(CoolUtil.getFilename(file));
+		var modsList:Array<String> = getAlphabetList();
 
-		for (typeface in modsList)
-			add(new AlphabetIconOption(typeface, getID('acceptTypeface'), typeface, () -> FlxG.switchState(new AlphabetEditor(typeface))));
+		function generateList(modsList:Array<String>, folderPath:String = ""):Array<FlxSprite> {
+			var list:Array<FlxSprite> = [];
+
+			for (char in modsList) {
+				if (char.endsWith("/")) {
+					var folderName = CoolUtil.getFilename(char.substr(0, char.length-1));
+
+					list.push(new FolderOption(folderName + ' >', getID('acceptFolder'), () -> {
+						var newModsList = getAlphabetList(char);
+						var newList:Array<FlxSprite> = generateList(newModsList, folderPath + folderName + "/");
+						parent.addMenu(new EditorTreeMenuScreen(folderPath + folderName, translate('desc-folder', [folderPath + folderName + "/"]), newList));
+					}));
+				}
+				else {
+					list.push(new AlphabetIconOption(char, getID('acceptTypeface'), folderPath + char, () -> FlxG.switchState(new AlphabetEditor(folderPath + char))));
+				}
+			}
+
+			return list;
+		}
+
+		for (o in generateList(modsList)) add(o);
+	}
+
+	// this is a duplicate of Character.getList, but using that would cause confusion and yea
+	public function getAlphabetList(folder:String = 'data/alphabet/'):Array<String> {
+		var list:Array<String> = [];
+		for (path in Paths.getFolderDirectories(folder, true, BOTH)) {
+			if(!path.endsWith("/")) path += "/";
+			list.push(path);
+		}
+		for (path in Paths.getFolderContent(folder, true, BOTH))
+			if (Path.extension(path) == "xml")
+				list.push(CoolUtil.getFilename(path));
+		return list;
 	}
 }
 
