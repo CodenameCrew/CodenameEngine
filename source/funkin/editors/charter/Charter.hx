@@ -1196,6 +1196,7 @@ class Charter extends UIState {
 			var note:CharterNote = cast selected;
 			note.strumLineID = strumLines.members.indexOf(note.strumLine);
 			note.strumLine = null; // For static undos :D
+			CharterNote.callScriptOnNote('onCharterNoteDelete', note);
 			notesGroup.remove(note);
 			note.kill();
 		} else if (selected is CharterEvent) {
@@ -1215,9 +1216,11 @@ class Charter extends UIState {
 
 		notesGroup.autoSort = false;
 		selection.loop(function (n:CharterNote) {
+			final lastAlive = n.alive;
 			n.strumLine = strumLines.members[n.strumLineID];
 			n.revive();
 			notesGroup.add(n);
+			if (!lastAlive) CharterNote.callScriptOnNote('onCharterNoteRevive', n);
 		}, function (e:CharterEvent) {
 			e.revive();
 			(e.global ? rightEventsGroup : leftEventsGroup).add(e);
@@ -1761,7 +1764,6 @@ class Charter extends UIState {
 		if (selection == null || selection.length == 0) return;
 		selection.loop((n:CharterNote) -> {
 			noteDeleteAnims.deleteNotes.push({note: n, time: noteDeleteAnims.deleteTime});
-			CharterNote.callScriptOnNote('onCharterNoteDelete', n);
 		});
 		selection = deleteSelection(selection, true);
 	}
@@ -1776,7 +1778,6 @@ class Charter extends UIState {
 			if (oldNote != null && oldNote.step == note.step && oldNote.strumLineID == note.strumLineID && oldNote.id == note.id) {
 				noteDeleteAnims.deleteNotes.push({note: oldNote, time: noteDeleteAnims.deleteTime});
 				toDelete.push(oldNote);
-				CharterNote.callScriptOnNote('onCharterNoteDelete', oldNote);
 			}
 			oldNote = note;
 		}
