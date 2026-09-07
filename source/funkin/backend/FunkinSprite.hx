@@ -147,7 +147,6 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 
 	public function loadSprite(path:String, Unique:Bool = false, Key:String = null)
 	{
-		var noExt = Path.withoutExtension(path);
 		frames = Paths.getFrames(path, true, null, null, animateSettings);
 		return this;
 	}

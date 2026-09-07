@@ -267,8 +267,10 @@ class Paths
 	 * @return FlxFramesCollection Frames
 	 */
 	public static function getMultiFrames(sheets:Array<String>, ?unique:Bool = true, ?key:String = null, ?skipMulti:Bool = false, ?ext:OneOfTwo<String, Array<String>> = null, ?animateSettings:FlxAnimateSettings):FlxFramesCollection {
-		if (sheets.length == 1) return loadFrames('${sheets[0]}.$ext', unique, key, false, false, animateSettings);
+		if (sheets.length == 1)
+			return loadFrames(Paths.image(sheets[0], null, true, ext), unique, key, false, false, animateSettings);
 		if (key == null) key = 'combo/' + sheets.join(',');
+
 		var graphic = FlxG.bitmap.add("flixel/images/logo/default.png", unique, key);
 		var sprFrames:FlxAtlasFrames = new FlxAtlasFrames(graphic);
 		try {
