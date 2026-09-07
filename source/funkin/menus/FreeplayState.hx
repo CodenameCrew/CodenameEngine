@@ -438,6 +438,13 @@ class FreeplaySonglist {
 
 	public function new() {}
 
+	public static function isSubSongDirectory(subs:Array<String>):Bool {
+		for (i in EXCLUDE_SUBFOLDERS) {
+			if (subs.contains(i)) return false;
+		}
+		return true;
+	}
+
 	public function getSongsFromSource(source:funkin.backend.assets.AssetSource, useTxt:Bool = true, ?startDir:String = 'songs/', ?flatten:Bool = true) {
 		var songsFound:Array<String> = null;
 		if (useTxt) {
@@ -455,14 +462,14 @@ class FreeplaySonglist {
 			var songDirs = Paths.getFolderDirectories(startDir, false, source);
 			if (!flatten) {
 				for (i in songDirs) {
-					var subs = Paths.getFolderDirectories('$startDir$i', false, source).filter(a -> !EXCLUDE_SUBFOLDERS.contains(a));
-					songsFound.push((subs.length > 0) ? '$i/' : i);
+					var subs = Paths.getFolderDirectories('$startDir$i', false, source);
+					songsFound.push(isSubSongDirectory(subs) ? '$i/' : i);
 				}
 			} else {
 				function poop(a:Array<Dynamic>, startDir:String) {
 					for (i in a) {
-						var subs = Paths.getFolderDirectories('$startDir$i', false, source).filter(a -> !EXCLUDE_SUBFOLDERS.contains(a));
-						if (subs.length > 0) poop(subs, '$startDir$i/');
+						var subs = Paths.getFolderDirectories('$startDir$i', false, source);
+						if (isSubSongDirectory(subs)) poop(subs, '$startDir$i/');
 						else songsFound.push(startDir.substr('songs/'.length) + i);
 					}
 				}
