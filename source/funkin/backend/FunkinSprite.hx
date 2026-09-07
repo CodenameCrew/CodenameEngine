@@ -120,7 +120,7 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 
 			if (casted != null) {
 				spr.skew.set(casted.skew.x, casted.skew.y);
-				spr.animOffsets = casted.animOffsets.copy();
+				for (i => p in casted.animOffsets) spr.addOffset(i, p.x, p.y);
 				spr.zoomFactor = casted.zoomFactor;
 				spr.angleFactor = casted.angleFactor;
 			}

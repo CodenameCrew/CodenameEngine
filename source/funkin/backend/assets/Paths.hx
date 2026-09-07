@@ -38,7 +38,6 @@ class Paths
 				for (extension in extArray) {
 					var extPath:String = sanitizedPath + '.$extension';
 					if (OpenFlAssets.exists(extPath)) {
-						trace(extPath, OpenFlAssets.exists(extPath));
 						returnedPath = extPath;
 						break;
 					}
@@ -125,12 +124,12 @@ class Paths
 		return OpenFlAssets.exists(diff) ? diff : getPath('songs/$song/song/Inst$suffix', null, ext != null ? ext : Flags.SOUND_EXT);
 	}
 
-	static public function image(key:String, ?library:String, checkForAtlas:Bool = false, ?ext:OneOfTwo<String, Array<String>>) {
+	static public function image(key:String, ?library:String, checkForAtlas:Bool = true, ?ext:OneOfTwo<String, Array<String>>) {
 		if (checkForAtlas) {
-			var atlasPath = getPath('images/$key/spritemap', library, ext != null ? ext : Flags.IMAGE_EXT);
+			var atlasPath = getPath('images/$key/spritemap1', library, ext != null ? ext : Flags.IMAGE_EXT);
 			var multiplePath = getPath('images/$key/1', library, ext != null ? ext : Flags.IMAGE_EXT);
 			if (atlasPath != null && OpenFlAssets.exists(atlasPath)) return atlasPath.substr(0, atlasPath.length - 14);
-			if (multiplePath != null && OpenFlAssets.exists(multiplePath)) return multiplePath.substr(0, multiplePath.length - 6);
+			if (multiplePath != null && OpenFlAssets.exists(multiplePath)) return multiplePath;
 		}
 		return getPath('images/$key', library, ext != null ? ext : Flags.IMAGE_EXT);
 	}
@@ -245,9 +244,10 @@ class Paths
 	public static function framesExists(key:String, checkAtlas:Bool = false, checkMulti:Bool = true, assetsPath:Bool = false, ?library:String) {
 		var path = assetsPath ? key : Paths.image(key, library, true);
 		var noExt = Path.withoutExtension(path);
+		var ext = Path.extension(path);
 		if(checkAtlas && Assets.exists('$noExt/Animation.json'))
 			return true;
-		if(checkMulti && Assets.exists('$noExt/1.png'))
+		if(checkMulti && Assets.exists('$noExt/1.$ext'))
 			return true;
 		if(Assets.exists('$noExt.xml'))
 			return true;
@@ -266,17 +266,18 @@ class Paths
 	 * @param ext (Additional) Extension of the images.
 	 * @return FlxFramesCollection Frames
 	 */
-	public static function getMultiFrames(sheets:Array<String>, ?unique:Bool = true, ?key:String = null, ?ext:OneOfTwo<String, Array<String>> = null, ?animateSettings:FlxAnimateSettings):FlxFramesCollection {
-		// TODO: cache properly
-		if (sheets.length == 1) return loadFrames(sheets[0], unique, key, false, false, animateSettings);
+	public static function getMultiFrames(sheets:Array<String>, ?unique:Bool = true, ?key:String = null, ?skipMulti:Bool = false, ?ext:OneOfTwo<String, Array<String>> = null, ?animateSettings:FlxAnimateSettings):FlxFramesCollection {
+		if (sheets.length == 1) return loadFrames('${sheets[0]}.$ext', unique, key, false, false, animateSettings);
 		if (key == null) key = 'combo/' + sheets.join(',');
 		var graphic = FlxG.bitmap.add("flixel/images/logo/default.png", unique, key);
 		var sprFrames:FlxAtlasFrames = new FlxAtlasFrames(graphic);
 		try {
 			for (x => path in sheets) {
-				var noExt = haxe.io.Path.withoutExtension(Paths.image(path, null, true, ext));
+				final coolPath = Paths.image(path, null, true, ext);
+				final noExt = haxe.io.Path.withoutExtension(coolPath);
+				final ext = haxe.io.Path.extension(coolPath);
 				@:privateAccess
-				var newFrames = cast Paths.loadFrames(noExt, true, key + '_$path', false, false, animateSettings);
+				var newFrames = cast Paths.loadFrames('$noExt.$ext', true, key + '_$path', false, skipMulti, animateSettings);
 				if (newFrames == null) {
 					Logs.warn('There is no Bitmap asset for "$noExt". Skipping...');
 					continue;
@@ -302,24 +303,24 @@ class Paths
 	static function loadFrames(path:String, Unique:Bool = false, Key:String = null, SkipAtlasCheck:Bool = false, SkipMultiCheck:Bool = false, ?animateSettings:FlxAnimateSettings):FlxFramesCollection {
 		var noExt = Path.withoutExtension(path);
 		var ext = Path.extension(path);
-
+		// there NEEDS to be a better way dude
+		if (!SkipMultiCheck && noExt.endsWith('/1'))
+			noExt = noExt.substr(0, noExt.length - 2);
 		if (!SkipMultiCheck && Assets.exists('$noExt/1.${ext}')) {
-			// MULTIPLE SPRITESHEETS!!
-
-			var graphic = FlxG.bitmap.add("flixel/images/logo/default.png", false, '$noExt/mult');
-			var frames = MultiFramesCollection.findFrame(graphic);
-			if (frames != null)
-				return frames;
-
-			var cur = 1;
-			var finalFrames = new MultiFramesCollection(graphic);
-			while(Assets.exists('$noExt/$cur.${ext}')) {
-				var spr = loadFrames('$noExt/$cur.${ext}', false, null, false, true);
-				finalFrames.addFrames(spr);
+			var cur:Int = 1;
+			final finalFrames = [];
+			while (Assets.exists('$noExt/$cur.${ext}')) {
+				finalFrames.push('${noExt.substr(
+					// there should be a Paths.unimage tbh
+					'assets/images/'.length
+				)}/$cur');
 				cur++;
 			}
-			return finalFrames;
+			return getMultiFrames(finalFrames, true,
+				'$noExt/mult', true, ext, animateSettings);
 		} else if (!SkipAtlasCheck && Assets.exists('$noExt/Animation.json')) {
+			// ???
+			if (noExt.endsWith('/')) noExt = noExt.substr(0, noExt.length - 1);
 			return Paths.getAnimateAtlasAlt(noExt, animateSettings);
 		} else if (Assets.exists('$noExt.xml')) {
 			return Paths.getSparrowAtlasAlt(noExt, ext);

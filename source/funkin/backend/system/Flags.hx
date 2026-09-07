@@ -62,11 +62,10 @@ class Flags {
 	public static var REPO_URL:String = 'https://github.com/$REPO_OWNER/$REPO_NAME';
 
 	/**
-	 * Preferred sound extension for the game's audio files.
-	 * Currently is set to `mp3` for web targets, and `ogg` for other targets.
+	 * Preferred file extensions for the game's audio files.
 	 */
 	public static var SOUND_EXT:Array<String> = ["ogg", "mp3", "flac", "wav"];
-	public static var VIDEO_EXT:Array<String> = ["mp4", "webm"]; // is there any more?
+	public static var VIDEO_EXT:Array<String> = ["mp4", "webm", "mkv", "mov"]; // is there any more? // yes frakits
 	public static var IMAGE_EXT:Array<String> = ["png", "jpg", "jpeg"];
 
 	public static var DEFAULT_DISCORD_LOGO_KEY:String = "icon";

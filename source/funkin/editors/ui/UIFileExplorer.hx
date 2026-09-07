@@ -2,6 +2,7 @@ package funkin.editors.ui;
 
 import haxe.io.Bytes;
 import lime.ui.FileDialog;
+import flixel.util.typeLimit.OneOfTwo;
 #if lime_funkin
 import lime.ui.FileDialogFilter;
 #end
@@ -21,9 +22,13 @@ class UIFileExplorer extends UISliceSprite {
 	
 	public var fileType:Array<String> = ["txt"];
 
-	public function new(x:Float, y:Float, ?w:Int, ?h:Int, fileType:Array<String>, ?onFile:(String, Bytes)->Void) {
+	public function new(x:Float, y:Float, ?w:Int, ?h:Int, fileType:OneOfTwo<String, Array<String>>, ?onFile:(String, Bytes)->Void) {
 		super(x, y, (w != null ? w : 320), (h != null ? h : 58), 'editors/ui/inputbox');
-		if (fileType != null) this.fileType = fileType;
+		if (fileType != null) {
+			// backward compat with custom editors
+			if (fileType is String) fileType = cast(fileType, String).split(';');
+			this.fileType = fileType;
+		}
 
 		if (onFile != null) this.onFile = onFile;
 
