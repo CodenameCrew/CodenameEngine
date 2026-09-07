@@ -13,6 +13,7 @@ import lime.tools.imgui.ImGuiInputTextCallbackData;
 import openfl.Lib;
 import funkin.backend.system.Logs;
 import funkin.backend.utils.NativeAPI.ConsoleColor;
+import funkin.backend.system.console.inspector.ConsoleInspector;
 
 using funkin.backend.utils.ImGuiUtil;
 
