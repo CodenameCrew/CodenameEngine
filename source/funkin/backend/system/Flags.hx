@@ -64,9 +64,9 @@ class Flags {
 	/**
 	 * Preferred file extensions for the game's audio files.
 	 */
-	public static var SOUND_EXT:Array<String> = ["ogg", "mp3", "flac", "wav"];
+	public static var SOUND_EXT:Array<String> = ["ogg", "mp3", "flac", "opus", "wav"];
 	public static var VIDEO_EXT:Array<String> = ["mp4", "webm", "mkv", "mov"]; // is there any more? // yes frakits
-	public static var IMAGE_EXT:Array<String> = ["png", "jpg", "jpeg"];
+	public static var IMAGE_EXT:Array<String> = ["png", "jpg", "jpeg"]; // TODO: Add more after another lime rebases for SDLImage
 
 	public static var DEFAULT_DISCORD_LOGO_KEY:String = "icon";
 	public static var DEFAULT_DISCORD_CLIENT_ID:String = "1383853614589673472";
