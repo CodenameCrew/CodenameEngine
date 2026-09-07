@@ -29,7 +29,7 @@ class Config {
 	// Incase any of your files fail
 	// These are the module names
 	public static final DISALLOW_CUSTOM_CLASSES = [
-
+		
 	];
 
 	public static final DISALLOW_ABSTRACT_AND_ENUM = [
@@ -38,6 +38,7 @@ class Config {
 
 	@:unreflective
 	public static final IMPORT_BLACKLIST:Array<String> = [
-		
+		"funkin.backend.system.gamejolt.GameJoltSecurity", // don't want people getting those gamejolt keys!
+		"funkin.backend.system.gamejolt.GameJoltData", // Global data items and really bad things to modify
 	];
 }
