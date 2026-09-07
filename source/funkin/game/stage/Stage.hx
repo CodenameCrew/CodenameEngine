@@ -50,7 +50,7 @@ class LayerGroup extends FlxTypedGroup<FlxSprite> {
 
 /**
  * This is an organizational class that can update and render a bunch of `FlxSprite`s and `Layer`s.
- * @author Jamextreme140 & ItsLJCool
+ * @author Jamextreme140 & ItsLJcool
  */
 class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver implements IHScriptCustomBehaviour {
 	private static final __instanceFields:Array<String> = Type.getInstanceFields(Layer);
@@ -58,35 +58,28 @@ class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver impl
 	/**
 	 * The Layer Name
 	 */
-	public var name:String;
+	public var name(default, null):String;
 
 	/**
 	 * Signal that triggers whenever a sprite is added. Similar to `group.memberAdded`, except sprite specific.
 	 */
-	public final onAddSprite:FlxTypedSignal<FlxSprite -> Void> = new FlxTypedSignal();
+	public final onAddSprite:FlxTypedSignal<FlxSprite -> Void> = new FlxTypedSignal<FlxSprite -> Void>();
 
 	/**
 	 * Signal that triggers whenever a layer is added. Similar to `group.memberAdded`, except layer specific.
 	 */
-	public final onAddLayer:FlxTypedSignal<Layer -> Void> = new FlxTypedSignal();
-
-	/**
-	 * Whether to internally use a render texture when drawing the stage layer.
-	 * This flattens all of the sprites and subsequent layers into a single graphic, making effects such as alpha or shaders apply to
-	 * the entire sprite instead of individual members of the group.
-	 */
-	//public var useRenderTexture:Bool = false;
+	public final onAddLayer:FlxTypedSignal<Layer -> Void> = new FlxTypedSignal<Layer -> Void>();
 
 	/**
 	 * Returns the parent layer in the Stage hierarchy.
-	 * WARNING: can be `null`, normally indicating that this is the main layer.
+	 * WARNING: can be `null`, normally indicating this is the main layer (i.e. the Stage itself).
 	 */
-	public final parent:Layer = null;
+	public var parent:Layer = null;
 
 	/**
-	 * Internal. Used for rendering
+	 * Internal. Used for hitbox reference and rendering (soon...)
 	 */
-	private var _bounds:FlxRect = FlxRect.get();
+	private var _bounds(default, null):FlxRect = FlxRect.get(); // TODO: draw debug for bounding box
 
 	public function new(name:String = 'stage_layer', ?parent:Layer) {
 		super();
@@ -110,17 +103,15 @@ class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver impl
 	}
 	//endregion
 	
-	private var stageSprites:Map<String, FlxSprite> = [];
-	private var stageLayers:Map<String, Layer> = [];
+	private final stageSprites:Map<String, FlxSprite> = [];
+	private final stageLayers:Map<String, Layer> = [];
 
 	//region Stage Layer Management
 	override function preAdd(Sprite:FlxSprite) {
-		if(Sprite == null) return;
-		// var sprite:FlxSprite = cast Sprite; 
+		if(Sprite == null) return; 
 		Sprite.x += x;
 		Sprite.y += y;
 		Sprite.alpha *= alpha;
-		//sprite.scrollFactor.copyFrom(scrollFactor);
 		Sprite.cameras = _cameras; // _cameras instead of cameras because get_cameras() will not return null
 
 		if (clipRect != null) clipRectTransform(Sprite, clipRect);
@@ -233,17 +224,24 @@ class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver impl
 
 	/**
 	 * If false, it will check values of `x`, `y`, `width` and `height` of the members directly
-	 * instead of checking on each axes. This is faster but under some circumstances, 
+	 * instead of checking recursively. This is faster but under some circumstances, 
 	 * it might not be 100% accurate.
 	 */
 	public var updateHitboxDirty:Bool = false;
 
 	override function updateHitbox() {
 		if(group.length == 0) return;
+
+		var x:Float = 0;
+		var y:Float = 0;
+		var width:Float = 0;
+		var height:Float = 0;
+
 		if (updateHitboxDirty) {
-			setPosition(findMinX(), findMinY());
-			this.width = findMaxX() - x;
-			this.height = findMaxY() - y;
+			x = findMinX();
+			y = findMinY();
+			width = findMaxX() - x;
+			height = findMaxY() - y;
 		}
 		else {
 			var minX:Float = Math.POSITIVE_INFINITY;
@@ -259,11 +257,13 @@ class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver impl
 				if (obj.x + obj.width > maxX) maxX = obj.x + obj.width;
 				if (obj.y + obj.height > maxY) maxY = obj.y + obj.height;
 			}
-
-			setPosition(minX, minY);
-			setSize(maxX - minX, maxY - minY);
+			x = minX;
+			y = minY;
+			width = maxX - minX;
+			height = maxY - minY;
 		}
-		_bounds = this.getHitbox(_bounds);
+
+		_bounds.set(x, y, width, height);
 
 		frameWidth = Std.int(_bounds.width);
 		frameHeight = Std.int(_bounds.height);
@@ -271,14 +271,24 @@ class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver impl
 		centerOrigin();
 	}
 
-	//region Methods From FlxSpriteGroup
-	override function get_width():Float {
-		return _bounds.width;
+	override function getHitbox(?rect:FlxRect):FlxRect {
+		rect ??= FlxRect.get();
+		return rect.copyFrom(_bounds);
 	}
 
-	override function get_height():Float {
-		return _bounds.height;
+	//region Methods From FlxSpriteGroup
+	override function set_x(Value:Float):Float {
+		if(exists && x != Value) _bounds.x += Value;
+		return super.set_x(Value);
 	}
+	override function set_y(Value:Float):Float {
+		if(exists && y != Value) _bounds.y += Value;
+		return super.set_y(Value);
+	}
+	override function get_width():Float 
+		return _bounds.width;
+	override function get_height():Float 
+		return _bounds.height;
 
 	public override function findMinX():Float {
 		if(group.length == 0) return 0;
@@ -349,26 +359,25 @@ class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver impl
 	}
 
 	// We disabled these functions since everything is pre-calculated above
-	override function findMaxXHelper():Float {
+	@:dox(hide) override function findMaxXHelper():Float {
 		#if FLX_DEBUG
 		throw "This function is disabled";
 		#end
 		return 0;
 	}
-
-	override function findMaxYHelper():Float {
+	@:dox(hide) override function findMaxYHelper():Float {
 		#if FLX_DEBUG
 		throw "This function is disabled";
 		#end
 		return 0;
 	}
-	override function findMinXHelper():Float {
+	@:dox(hide) override function findMinXHelper():Float {
 		#if FLX_DEBUG
 		throw "This function is disabled";
 		#end
 		return 0;
 	}
-	override function findMinYHelper():Float {
+	@:dox(hide) override function findMinYHelper():Float {
 		#if FLX_DEBUG
 		throw "This function is disabled";
 		#end
@@ -401,6 +410,7 @@ class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver impl
 
 /**
  * A class that handles loading a stage and putting the sprites into the state.
+ * Also you can use layers to organize your stage props more easily.
  * 
  * Usage example:
  * 
@@ -434,14 +444,14 @@ class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver impl
  * add(myStage);
  * ```
  * 
- * @author Jamextreme140 & ItsLJCool
+ * @author Jamextreme140 & ItsLJcool
 **/
 class Stage extends Layer {
 	private static final __instanceFields = Type.getInstanceFields(Stage);
 
 	private static final DEFAULT_ATTRIBUTES:Array<String> = ["name", "startCamPosX", "startCamPosY", "zoom", "folder"];
 
-	private static inline function getDefaultPos(name:String):StageCharPosInfo {
+	private static function getDefaultPos(name:String):StageCharPosInfo {
 		return switch(name) {
 			case "boyfriend" | "bf" | "player": 
 				{x: 770, y: 100, scroll: 1, flip: true};
@@ -474,9 +484,6 @@ class Stage extends Layer {
 	//public var onPostStageCreation:StageXMLEvent->Void;
 	public var onPostStageCreation:DynamicEvent->Void;
 	
-	public var onPrepareInfo:Access -> XMLImportedScriptInfo;
-	public var onRemoveInfo:Script -> Void;
-	
 	//public var onXMLLoaded:(StageXMLEvent)->Array<Access> = null;
 	public var onXMLLoaded:(DynamicEvent)->Access = null;
 	public var onNodeInitalize:(Access)->Dynamic = null;
@@ -502,6 +509,12 @@ class Stage extends Layer {
 		for (key=>ref in stageSprites) script.set(key, ref);
 		for (key=>ref in stageLayers) script.set(key, ref);
 	}
+
+	public dynamic function prepareInfos(node:Access):Null<XMLImportedScriptInfo> {
+		return null;
+	}
+
+	public dynamic function removeInfo(script:Script):Void {}
 
 	/**
 	 * Creates a new stage with a provided file name and an optional `setup` callback
@@ -583,7 +596,7 @@ class Stage extends Layer {
 		data = null;
 	}
 
-	@:dox(hide) private inline function __isExtensionNode(node:Access):Bool {
+	@:dox(hide) private static inline function __isExtensionNode(node:Access):Bool {
 		return node.name == "use-extension" || node.name == "extension" || node.name == "ext";
 	}
 
@@ -603,10 +616,11 @@ class Stage extends Layer {
 					}
 				case 'layer':
 					checkMemoryMode(node, loadAll); // recursive filter in layers
+					continue;
 			}
 
 			if (__isExtensionNode(node) && node.shouldLoadBefore())
-				if (onPrepareInfo != null) onPrepareInfo(node);
+				prepareInfos(node);
 		}
 	}
 	//endregion
@@ -669,10 +683,8 @@ class Stage extends Layer {
 						var h:Int = Std.parseInt(node.att.height);
 						var c:flixel.util.FlxColor = (node.has.color) ? CoolUtil.getColorFromDynamic(node.att.color) : -1;
 						
-						if (isSolid)
-							spr.makeSolid(w, h, c);
-						else
-							spr.makeGraphic(w, h, c);
+						if (isSolid) spr.makeSolid(w, h, c);
+						else spr.makeGraphic(w, h, c);
 						
 						if(isSolid) tempRemove(node.x, "updateHitbox");
 						for (a in ["width", "height", "color"]) tempRemove(node.x, a);
@@ -691,25 +703,19 @@ class Stage extends Layer {
 					case "dad" | "opponent":
 						setCharPos("dad", node, getDefaultPos("dad"), layer, i);
 					case "character" | "char":
-						if (!node.has.name)
-							continue;
+						if (!node.has.name) continue;
 						setCharPos(node.att.name, node, null, layer, i);
 					case "ratings" | "combo":
-						if (onRatingSet == null)
-							continue;
+						if (onRatingSet == null) continue;
 						onRatingSet(Std.parseFloat(node.getAtt("x")), Std.parseFloat(node.getAtt("y")));
 					case 'high-memory' | 'low-memory': // those doesn't count as layers
 						loadLayer(layer, node);
 						null;
 					default:
 						// moved it to be like this, so we can just update the inline function - LJ
-						if (__isExtensionNode(node))
-						{
-							if (node.shouldLoadBefore())
+						if (__isExtensionNode(node)) 
+							if (node.shouldLoadBefore() || prepareInfos(node) == null)
 								continue;
-							if (onPrepareInfo != null && onPrepareInfo(node) == null)
-								continue;
-						}
 						null;
 				}
 			}
@@ -757,7 +763,7 @@ class Stage extends Layer {
 				var scriptInfo = info.getScript();
 				if (scriptInfo == null) continue;
 
-				if (onRemoveInfo != null) onRemoveInfo(scriptInfo);
+				removeInfo(scriptInfo);
 				scriptInfo.destroy();
 			}
 		}
@@ -886,6 +892,7 @@ class Stage extends Layer {
 
 	//region IHScriptCustomBehaviour implementation
 	override function hget(name:String):Dynamic {
+		// TODO: optimize this since "Type.getInstanceFields(Stage)" also gets the inherited fields from "Layer"
 		if (__instanceFields.contains(name) || __instanceFields.contains('get_$name'))
 			return Reflect.getProperty(this, name);
 
@@ -979,7 +986,7 @@ class StageCharPos extends FlxObject {
 		char.zoomFactor *= zoomFactor;
 	}
 
-	public function getOldInfo(char:Character) {
+	public function getOldInfo(char:Character):OldCharInfo {
 		return {
 			x: char.x, y: char.y,
 			scrollX: char.scrollFactor.x, scrollY: char.scrollFactor.y,
