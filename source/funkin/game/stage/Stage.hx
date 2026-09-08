@@ -87,19 +87,18 @@ class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver impl
 		this.parent = parent;
 		group = FlxDestroyUtil.destroy(this.group); // get rid of the prev group implementation
 
-		group = new LayerGroup(this);
-		_sprites = cast group.members;
+		_sprites = cast (group = new LayerGroup(this)).members;
 	}
 
 	//region IBeatReceiver implementation
 	public function beatHit(curBeat:Int) {
-		for(m in members) if(m != null && m is IBeatReceiver) cast(m, IBeatReceiver).beatHit(curBeat);
+		for(m in members) if(m != null && m is IBeatReceiver) (cast m:IBeatReceiver).beatHit(curBeat);
 	}
 	public function stepHit(curStep:Int) {
-		for(m in members) if(m != null && m is IBeatReceiver) cast(m, IBeatReceiver).stepHit(curStep);
+		for(m in members) if(m != null && m is IBeatReceiver) (cast m:IBeatReceiver).stepHit(curStep);
 	}
 	public function measureHit(curMeasure:Int) {
-		for(m in members) if(m != null && m is IBeatReceiver) cast(m, IBeatReceiver).measureHit(curMeasure);
+		for(m in members) if(m != null && m is IBeatReceiver) (cast m:IBeatReceiver).measureHit(curMeasure);
 	}
 	//endregion
 	
@@ -216,7 +215,7 @@ class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver impl
 			return;
 		}
 
-		if (visible || group.length == 0 || alpha <= 0.0)
+		if (!visible || group.length == 0 || alpha <= 0.0)
 			return;
 
 		super.draw();
