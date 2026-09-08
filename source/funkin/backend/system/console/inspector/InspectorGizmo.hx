@@ -150,11 +150,6 @@ class InspectorGizmo {
 			}
 		}
 
-		//drawList.addCircleFilled(position.x, position.y, 5, 0xFFFF0000);
-		if (sprite != null) {
-			//drawList.addCircleFilled(origin.x, origin.y, 5, 0xFF1500FF);
-		}
-
 		if (ImGui.isKeyPressed(ImGuiKey.Q)) gizmoMode = -1;
 		if (ImGui.isKeyPressed(ImGuiKey.W)) gizmoMode = 0;
 		if (ImGui.isKeyPressed(ImGuiKey.E)) gizmoMode = 1;
