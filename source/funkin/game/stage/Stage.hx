@@ -576,7 +576,7 @@ class Stage extends Layer {
 		// Load custom attributes
 		loadCustomAttributes();
 
-		var data:Access = new Access(Xml.parse(xmlFile.x.toString()));
+		var data:Access = new Access(Xml.parse(xmlFile.x.toString()).firstElement());
 		// streamlined way to tag that the sprites are from the group
 		checkMemoryMode(data, loadAll);
 
