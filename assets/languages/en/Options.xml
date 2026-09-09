@@ -67,6 +67,7 @@
 	<group name="AppearanceOptions" prefix="AppearanceOptions.">
 		<str id="framerate-name">Framerate</str>
 		<str id="framerate-desc">Pretty self explanatory, isn't it?</str>
+		<str id="framerate-unlimited">Unlimited</str>
 
 		<str id="flashingMenu-name">Flashing Menu</str>
 		<str id="flashingMenu-desc">If unchecked, will disable menu flashing when you select an option in the Main Menu, and other flashes will be slower.</str>

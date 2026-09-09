@@ -41,6 +41,51 @@ class StageCharacterButton extends StageElementButton {
 		return char;
 	}
 
+	override public function getDefaults():Map<String, Dynamic> {
+		return [
+			"flip" => char.name == "NO_DELETE_boyfriend",
+			"flipX" => char.name == "NO_DELETE_boyfriend",
+			"camxoffset" => 0,
+			"camyoffset" => 0,
+			"spacingx" => 0,
+			"spacingy" => 0,
+			"scale" => 1,
+			"scroll" => 1,
+			"zoomfactor" => 1,
+			"alpha" => 1,
+			"angle" => 0,
+			"skewx" => 0,
+			"skewy" => 0
+		];
+	}
+
+	override public function getPointAttributes():Array<String> {
+		return ["scale", "scroll"];
+	}
+
+	override public function getAttributeOrder():Array<String> {
+		return [
+			"name",
+			"x",
+			"y",
+			"camxoffset",
+			"camyoffset",
+			"scale",
+			"scalex",
+			"scaley",
+			"scroll",
+			"scrollx",
+			"scrolly",
+			"zoomfactor",
+			"alpha",
+			"angle",
+			"skewx",
+			"skewy",
+			"flip",
+			"flipX"
+		];
+	}
+
 	public override function onSelect() {
 		StageEditor.instance.selectSprite(char);
 	}
