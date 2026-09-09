@@ -61,12 +61,21 @@ class Flags {
 	public static var REPO_OWNER:String = "CodenameCrew";
 	public static var REPO_URL:String = 'https://github.com/$REPO_OWNER/$REPO_NAME';
 
+	@:lazy public static var PATHS_CACHE_LIFETIME:Null<Int> = null;
+	public static var PATHS_CACHE_RESET_ON_SWITCH_STATE:Bool = true;
+	public static var PATHS_UNIX_FIX:Bool = true;
+
 	/**
 	 * Preferred file extensions for the game's audio files.
 	 */
-	public static var SOUND_EXT:Array<String> = ["ogg", "mp3", "flac", "opus", "wav"];
-	public static var VIDEO_EXT:Array<String> = ["mp4", "webm", "mkv", "mov"]; // is there any more? // yes frakits
-	public static var IMAGE_EXT:Array<String> = ["png", "jpg", "jpeg"]; // TODO: Add more after another lime rebases for SDLImage
+	public static var SOUND_EXTS:Array<String> = [#if web "mp3", "ogg", #else "ogg", "mp3", #end "flac", "opus", "wav"];
+	public static var VIDEO_EXTS:Array<String> = ["mp4", "webm", "mkv", "mov"]; // is there any more? // yes frakits
+	public static var IMAGE_EXTS:Array<String> = ["png", "jpg", "jpeg"]; // TODO: Add more after another lime rebases for SDLImage
+
+	// DEPRECATED
+	@:lazy public static var SOUND_EXT:Null<String> = null;
+	@:lazy public static var VIDEO_EXT:Null<String> = null;
+	@:lazy public static var IMAGE_EXT:Null<String> = null;
 
 	public static var DEFAULT_DISCORD_LOGO_KEY:String = "icon";
 	public static var DEFAULT_DISCORD_CLIENT_ID:String = "1383853614589673472";
@@ -339,6 +348,10 @@ class Flags {
 
 		if (USE_LEGACY_CENTER_CAM == null) USE_LEGACY_CENTER_CAM = MOD_API_VERSION < 3;
 		if (USE_LEGACY_FLXANIMATE_STAGE_MATRIX == null) USE_LEGACY_FLXANIMATE_STAGE_MATRIX = MOD_API_VERSION < 3;
+
+		if (SOUND_EXT == null) SOUND_EXT = SOUND_EXTS[0]; else SOUND_EXTS = [SOUND_EXT];
+		if (VIDEO_EXT == null) VIDEO_EXT = VIDEO_EXTS[0]; else VIDEO_EXTS = [VIDEO_EXT];
+		if (IMAGE_EXT == null) IMAGE_EXT = IMAGE_EXTS[0]; else IMAGE_EXTS = [IMAGE_EXT];
 	}
 
 	public static function loadFromDatas(datas:Array<String>):Map<String, String> {

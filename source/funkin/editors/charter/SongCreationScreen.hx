@@ -383,7 +383,7 @@ class SongCreationScreen extends UISubstateWindow {
 					}
 					saveFromVSlice(files);
 				case 1 /*"V-Slice"*/:
-					final ogg = Flags.SOUND_EXT[0];
+					final ogg = "ogg";
 					var songId = importIdTextBox.label.text;
 					var files:Map<String, Any> = [];
 					files.set('${songId}-metadata.json', importMetaFile.file);
@@ -457,7 +457,7 @@ class SongCreationScreen extends UISubstateWindow {
 	}
 
 	function saveFromVSlice(files:Map<String, Any>, ?name:String) {
-		final ogg = Flags.SOUND_EXT[0]; // vslice doesnt know about anything that isnt ogg. this should just be a constant
+		final ogg = "ogg"; // vslice doesnt know about anything that isnt ogg. this should just be a constant
 		var songId = name == null && files.exists("manifest.json") ? Json.parse(files.get("manifest.json")).songId : name;
 		var vslicemeta:SwagMetadata = Json.parse(files.get('${songId}-metadata.json'));
 		var vslicechart:NewSwagSong = Json.parse(files.get('${songId}-chart.json'));
