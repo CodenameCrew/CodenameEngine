@@ -743,4 +743,9 @@
 		<str id="createdTitle">Mod config criado!</str>
 		<str id="createdDesc">Seu arquivo mod config foi criado em {0}!</str>
 	</group>
+
+	<group name="ModAPIWarning" prefix="modApiWarning.">
+		<str id="warningTitle">Versão Desatualizada da API! (v{0} &lt; v{1})</str>
+		<str id="warningDesc">A config do seu mod roda uma Versão API desatualizada! Isso VAI causar problemas de compatibilidade e código!\n\nÉ recomendado que você faça mudanças em seu mod e o arquivo config dele para seguir a nova versão.\n\nEnquanto isso, o jogo tentará seu melhor pra fazer seu mod ser compatível, mas você ainda devia atualizar seu mod.\n\n(OBS: Se esse não é seu mod então desative Modo de Desenvolvedor, e notifique os devs do mod se necessário.)</str>
+	</group>
 </language>
