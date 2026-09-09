@@ -61,6 +61,10 @@ class Flags {
 	public static var REPO_OWNER:String = "CodenameCrew";
 	public static var REPO_URL:String = 'https://github.com/$REPO_OWNER/$REPO_NAME';
 
+	@:lazy public static var PATHS_CACHE_LIFETIME:Null<Int> = null;
+	public static var PATHS_CACHE_RESET_ON_SWITCH_STATE:Bool = true;
+	public static var PATHS_UNIX_FIX:Bool = true;
+
 	/**
 	 * Preferred sound extension for the game's audio files.
 	 * Currently is set to `mp3` for web targets, and `ogg` for other targets.
