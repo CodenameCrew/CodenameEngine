@@ -21,6 +21,11 @@ typedef SongCreationData = {
 	var voicesBytes:Bytes;
 	@:optional var playerVocals:Bytes;
 	@:optional var oppVocals:Bytes;
+
+	var instExt:String;
+	var voicesExt:String;
+	@:optional var playerExt:String;
+	@:optional var oppExt:String;
 }
 
 class SongCreationScreen extends UISubstateWindow {
@@ -300,7 +305,7 @@ class SongCreationScreen extends UISubstateWindow {
 				saveButton.selectable = #if TEST_BUILD true #else project ? true : (importInstExplorer.file != null) #end;
 			} else if (curPage == 2) {
 				importIdTextBox.selectable = !project;
-				importChartFile.fileType = project ? ["fnfc"] : ["json"];
+				importChartFile.fileType = [project ? "fnfc" : "json"];
 				importMetaFile.selectable = name == translate("vslice");
 				saveButton.selectable = importChartFile.file != null && (!importMetaFile.selectable || importMetaFile.file != null) && (!importIdTextBox.selectable || importIdTextBox.label.text.trim().length > 0);
 			} else
@@ -378,12 +383,13 @@ class SongCreationScreen extends UISubstateWindow {
 					}
 					saveFromVSlice(files);
 				case 1 /*"V-Slice"*/:
+					final ogg = Flags.SOUND_EXT[0];
 					var songId = importIdTextBox.label.text;
 					var files:Map<String, Any> = [];
 					files.set('${songId}-metadata.json', importMetaFile.file);
 					files.set('${songId}-chart.json', importChartFile.file);
-					files.set('Inst.${Flags.SOUND_EXT}', importInstExplorer.file);
-					files.set('Voices.${Flags.SOUND_EXT}', importVoicesExplorer.file);
+					files.set('Inst.$ogg', importInstExplorer.file);
+					files.set('Voices.$ogg', importVoicesExplorer.file);
 					saveFromVSlice(files, songId);
 				default /*"Psych/Legacy FNF"*/:
 					var songId = importIdTextBox.label.text;
@@ -410,6 +416,8 @@ class SongCreationScreen extends UISubstateWindow {
 						meta: meta,
 						instBytes: importInstExplorer.file,
 						voicesBytes: importVoicesExplorer.file,
+						instExt: importInstExplorer.fileExt,
+						voicesExt: importVoicesExplorer.fileExt
 					}, (songFolder:String) -> {
 						#if sys
 						CoolUtil.safeSaveFile('$songFolder/${getChartSavePath(meta, "normal")}', Json.stringify(base, Flags.JSON_PRETTY_PRINT));
@@ -441,18 +449,21 @@ class SongCreationScreen extends UISubstateWindow {
 			if (onSave != null) onSave({
 				meta: meta,
 				instBytes: instExplorer.file,
-				voicesBytes: voicesExplorer.file
+				voicesBytes: voicesExplorer.file,
+				instExt: instExplorer.fileExt,
+				voicesExt: voicesExplorer.fileExt
 			}, null);
 		}
 	}
 
 	function saveFromVSlice(files:Map<String, Any>, ?name:String) {
+		final ogg = Flags.SOUND_EXT[0]; // vslice doesnt know about anything that isnt ogg. this should just be a constant
 		var songId = name == null && files.exists("manifest.json") ? Json.parse(files.get("manifest.json")).songId : name;
 		var vslicemeta:SwagMetadata = Json.parse(files.get('${songId}-metadata.json'));
 		var vslicechart:NewSwagSong = Json.parse(files.get('${songId}-chart.json'));
 		var playData = vslicemeta.playData;
 
-		var meta:ChartMetaData = formatMeta({name: songId, needsVoices: files.get('Voices.${Flags.SOUND_EXT[0]}') != null});
+		var meta:ChartMetaData = formatMeta({name: songId, needsVoices: files.get('Voices.$ogg') != null});
 		var diffCharts:Array<ChartDataWithInfo> = [], events:Array<ChartEvent> = null;
 		VSliceParser.parse(vslicemeta, vslicechart, meta, diffCharts, songId);
 
@@ -461,10 +472,14 @@ class SongCreationScreen extends UISubstateWindow {
 
 		if (onSave != null) onSave({
 			meta: meta,
-			instBytes: files.get('Inst.${Flags.SOUND_EXT[0]}'),
-			voicesBytes: files.get('Voices.${Flags.SOUND_EXT[0]}'), //it may exist
-			playerVocals: files.get('Voices-${playData.characters.playerVocals != null ? playData.characters.playerVocals[0] : playData.characters.player}.${Flags.SOUND_EXT[0]}'),
-			oppVocals: files.get('Voices-${playData.characters.opponentVocals != null ? playData.characters.opponentVocals[0] : playData.characters.opponent}.${Flags.SOUND_EXT[0]}'),
+			instBytes: files.get('Inst.$ogg'),
+			voicesBytes: files.get('Voices.$ogg'), //it may exist
+			playerVocals: files.get('Voices-${playData.characters.playerVocals != null ? playData.characters.playerVocals[0] : playData.characters.player}.$ogg'),
+			oppVocals: files.get('Voices-${playData.characters.opponentVocals != null ? playData.characters.opponentVocals[0] : playData.characters.opponent}.$ogg'),
+			instExt:   ogg,
+			voicesExt: ogg,
+			playerExt: ogg,
+			oppExt:    ogg
 		}, (songFolder:String) -> {
 			#if sys
 			for (diff in diffCharts) CoolUtil.safeSaveFile('$songFolder/${getChartSavePath(meta, diff.diffName)}', Json.stringify(diff.chart, Flags.JSON_PRETTY_PRINT));

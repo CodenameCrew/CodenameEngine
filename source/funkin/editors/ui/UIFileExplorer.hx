@@ -16,6 +16,7 @@ class UIFileExplorer extends UISliceSprite {
 
 	public var file:Bytes = null;
 	public var filePath:String = null;
+	public var fileExt:String = null; // avoid constant Path.extension checks
 	public var onFile:(String, Bytes)->Void;
 
 	public var uiElement:FlxSprite;
@@ -78,6 +79,7 @@ class UIFileExplorer extends UISliceSprite {
 	public function loadFile(path:String) {
 		if (path == null) return;
 		file = cast sys.io.File.getBytes(filePath = path);
+		fileExt = haxe.io.Path.extension(filePath);
 		deleteButton.visible = deleteButton.selectable = deleteIcon.visible = !(uploadButton.visible = uploadButton.selectable = false);
 
 		if (this.onFile != null) this.onFile(filePath, file);
