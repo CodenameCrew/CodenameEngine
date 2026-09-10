@@ -38,6 +38,10 @@ class Main extends Sprite
 	public static var forceGPUOnlyBitmapsOff:Bool = false;
 	public static var noTerminalColor:Bool = false;
 	public static var verbose:Bool = false;
+	public static var goToSong:String = null;
+	public static var goToDifficulty:String = null;
+	public static var goToVariation:String = null;
+	public static var goToCharter:Bool = false;
 
 	public static var scaleMode:FunkinRatioScaleMode;
 	#if !mobile
@@ -199,7 +203,7 @@ class Main extends Sprite
 		if (PlayerSettings.solo.controls.DEV_CONSOLE)
 			NativeAPI.allocConsole();
 
-		if (PlayerSettings.solo.controls.FPS_COUNTER)
+		if (PlayerSettings.solo.controls.FPS_COUNTER && Options.fpsCounter)
 			Framerate.debugMode = (Framerate.debugMode + 1) % 3;
 	}
 
