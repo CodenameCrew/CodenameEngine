@@ -7,6 +7,7 @@ import lime.utils.AssetLibrary;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
+import flixel.util.typeLimit.OneOfTwo;
 
 import animate.FlxAnimateFrames;
 
@@ -66,7 +67,31 @@ class Paths
 	}
 
 	public static function getPath(file:String, ?library:String, ?exts:OneOfTwo<String, Array<String>>) {
-		return library == null ? getExistingPath(file, 'assets/', false) : getExistingPath('$library/$file', '$library:assets/', false);
+		if (exts == null)
+			return library == null ? getExistingPath(file, 'assets/', false) : getExistingPath('$library/$file', '$library:assets/', false);
+
+		var idx = file.lastIndexOf("/");
+		var p:Null<String> = idx == -1 ? "" : file.substr(0, idx);
+		file = file.substr(idx + 1);
+
+		final e:Array<String> = (exts is String) ? [exts] : (cast exts);
+
+		idx = file.lastIndexOf(".");
+		if (idx != -1) {
+			e.unshift(file.substr(idx + 1));
+			file = file.substr(0, idx);
+		}
+
+		p = library == null ? getExistingPath(p, 'assets/', true) : getExistingPath('$library/$p', '$library:assets/', true);
+		if (p == null) return library == null ? 'assets/$file.${e[0]}' : '$library:assets/$library/$file.${e[0]}';
+		else p += "/";
+
+		for (extension in e) {
+			final path = getExistingPath('$file.$extension', p, true);
+			if (path != null) return path;
+		}
+
+		return '$p$file.${e[0]}';
 	}
 
 	public static inline function video(key:String, ?ext:String)
