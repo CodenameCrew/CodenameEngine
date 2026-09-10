@@ -38,6 +38,10 @@ class Main extends Sprite
 	public static var forceGPUOnlyBitmapsOff:Bool = false;
 	public static var noTerminalColor:Bool = false;
 	public static var verbose:Bool = false;
+	public static var goToSong:String = null;
+	public static var goToDifficulty:String = null;
+	public static var goToVariation:String = null;
+	public static var goToCharter:Bool = false;
 
 	public static var scaleMode:FunkinRatioScaleMode;
 	#if !mobile
@@ -158,6 +162,8 @@ class Main extends Sprite
 		initTransition();
 	}
 
+	static var persistShaderKeys:Map<String, Bool>;
+
 	public static function refreshAssets() @:privateAccess {
 		FunkinCache.instance.clearSecondLayer();
 
@@ -174,6 +180,18 @@ class Main extends Sprite
 		}
 
 		game.addChildAt(game.soundTray = daSndTray, index);
+
+		if (persistShaderKeys == null) {
+			persistShaderKeys = [for (k in @:privateAccess Lib.current.stage.context3D.__programs.keys()) k => true];
+		}
+		else {
+			for (key => program in @:privateAccess Lib.current.stage.context3D.__programs) {
+				if (persistShaderKeys.get(key) || Type.resolveClass(key) != null) continue;
+
+				program.dispose();
+				@:privateAccess Lib.current.stage.context3D.__programs.remove(key);
+			}
+		}
 	}
 
 	public static function initTransition() {
@@ -199,7 +217,7 @@ class Main extends Sprite
 		if (PlayerSettings.solo.controls.DEV_CONSOLE)
 			NativeAPI.allocConsole();
 
-		if (PlayerSettings.solo.controls.FPS_COUNTER)
+		if (PlayerSettings.solo.controls.FPS_COUNTER && Options.fpsCounter)
 			Framerate.debugMode = (Framerate.debugMode + 1) % 3;
 	}
 
