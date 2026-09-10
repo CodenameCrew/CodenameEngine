@@ -14,6 +14,7 @@ import funkin.backend.scripting.Script;
 import funkin.backend.scripting.ScriptPack;
 import funkin.backend.scripting.events.CancellableEvent;
 import funkin.backend.scripting.events.character.*;
+import funkin.backend.scripting.events.sprite.PlayAnimContext;
 import funkin.backend.scripting.events.sprite.*;
 import funkin.backend.scripting.events.PointEvent;
 import funkin.backend.scripting.events.DrawEvent;
