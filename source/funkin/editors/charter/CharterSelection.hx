@@ -37,7 +37,7 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 		curSong = s;
 
 		var isVariant = s.variant != null && s.variant != '';
-		var screen = new EditorTreeMenuScreen((first || !isVariant) ? (CoolUtil.getFilename(s.name) + (isVariant ? ' (${s.variant})' : '')) : s.variant, getID('selectDifficulty'));
+		var screen = new EditorTreeMenuScreen((first || !isVariant) ? (~/(.*[\/])/g.map(s.name, _->'') + (isVariant ? ' (${s.variant})' : '')) : s.variant, getID('selectDifficulty'));
 
 		for (d in s.difficulties) if (d != '') screen.add(makeChartOption(d, isVariant ? s.variant : null, s.name));
 		if (s.difficulties.length > 0 && s.variants.length > 0) screen.add(new Separator()); // Create a separator only when there are both difficulty and variant options available.
@@ -64,7 +64,7 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 	public function makeSongOption(s:ChartMetaData):IconOption {
 		songList.push(s.name.toLowerCase());
 
-		var opt = new IconOption(CoolUtil.getFilename(s.name), getID('acceptSong'), s.icon, () -> openSongOption(s, true));
+		var opt = new IconOption(~/(.*[\/])/g.map(s.name, _->''), getID('acceptSong'), s.icon, () -> openSongOption(s, true));
 		opt.suffix = " >";
 		opt.editorFlashColor = s.color.getDefault(FlxColor.WHITE);
 

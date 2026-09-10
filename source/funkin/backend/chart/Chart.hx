@@ -85,7 +85,7 @@ class Chart {
 	}
 
 	inline public static function defaultChartMetaFields(data:ChartMetaData):ChartMetaData {
-		data.setFieldDefault("displayName", CoolUtil.getFilename(data.name));
+		data.setFieldDefault("displayName", ~/(.*[\/])/g.map(data.name, _->''));
 
 		data.setFieldDefault("bpm", Flags.DEFAULT_BPM);
 		data.setFieldDefault("beatsPerMeasure", Flags.DEFAULT_BEATS_PER_MEASURE);
