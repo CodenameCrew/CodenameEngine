@@ -65,6 +65,7 @@
 	<group name="AppearanceOptions" prefix="AppearanceOptions.">
 		<str id="framerate-name">FPS</str>
 		<str id="framerate-desc">Yo creo que se explica sólo.</str>
+		<str id="framerate-unlimited">Ilimitado</str>
 
 		<str id="flashingMenu-name">Luces Intermitentes</str>
 		<str id="flashingMenu-desc">Si está desactivado, el menú no parpadeará, y otros parpadeos serán más lentos.</str>
@@ -76,6 +77,12 @@
 		<str id="week6PixelPerfect-desc">Si está activado, Week 6 tendrá un efecto que alinea todos los píxeles en la pantalla.</str>
 
 		<group name="AppearanceOptionsAdvanced" prefix="Advanced.">
+			<str id="quality-name">CALIDAD</str>
+			<str id="quality-desc">Modos de calidad del cual elegir, "BAJA" = Quitar efectos fuertes del juego para correr mejor, "ALTA" = Habilita todos los efectos, a costo de rendimiento, "PERSONALIZADA" = Deja cambiar todas las opciones a su gusto.</str>
+			<str id="quality-low">BAJA</str>
+			<str id="quality-high">ALTA</str>
+			<str id="quality-custom">PERSONALIZADA</str>
+
 			<str id="antialiasing-desc">Si está desactivado, desactivará el antialiasing en todos los sprites, lo cual puede aumentar el rendimiento pero hará los visuales más pixelados.</str>
 
 			<str id="lowMemoryMode-name">Modo de Baja Memoria</str>

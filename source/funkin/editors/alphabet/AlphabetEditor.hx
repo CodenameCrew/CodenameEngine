@@ -193,6 +193,8 @@ class AlphabetEditor extends UIState {
 				curLetter = tape.manualLetters.indexOf(lastChar) + charsForDefault.length;
 				changeLetter(0);
 			} else {
+				for (i in 0...tape.loaded.length)
+					tape.loaded[i].remove(lastChar);
 				tape.manualLetters.push(lastChar);
 				tape.text = "";
 				for (def in charsForDefault)
@@ -208,13 +210,16 @@ class AlphabetEditor extends UIState {
 				tape.letterData.set(lastChar, {
 					isDefault: false,
 					advance: Math.NaN,
-					advanceEmpty: true,
+					advanceStyle: AUTO,
 					components: [],
 					startIndex: 0
 				});
 
 				curLetter = tape.manualLetters.length - 1 + charsForDefault.length;
 				changeLetter(0);
+
+				deleteGlyph.selectable = tape.manualLetters.contains(lastChar);
+				confirmGlyph.field.text = translate("glyph.editGlyph");
 			}
 		}, glyphChar.bWidth);
 		confirmGlyph.selectable = false;
