@@ -55,19 +55,6 @@ class UpdateUtil {
 		return 'update-${target}';
 	}
 
-	public static function getNameOfExecutable():String
-	{
-		return #if windows "CodenameEngine.exe" #else "CodenameEngine" #end;
-	}
-
-	public static function getNameOfUpdateExecutable():String
-	{
-		var target:String = #if windows "windows.exe" #end
-							#if mac "mac" #end
-							#if linux "linux" #end;
-		return 'update-${target}';
-	}
-
 	public static function waitForUpdates(force = false, callback:UpdateCheckCallback->Void, lazy = false) {
 		#if (target.threaded)
 		if (__mutex.tryAcquire()) {
