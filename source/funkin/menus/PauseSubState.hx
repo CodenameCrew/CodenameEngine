@@ -42,7 +42,7 @@ class PauseSubState extends MusicBeatSubstate
 
 	private var __cancelDefault:Bool = false;
 
-	public function new(?excludeList:Array<ParentDisableable>, ?items:Array<String>, ?selectCall:NameEvent->Void) {
+	public function new(?items:Array<String>, ?selectCall:NameEvent->Void, ?excludeList:Array<ParentDisableable>) {
 		super();
 
 		parentDisablerExcludeList = excludeList != null ? excludeList : [];
