@@ -85,9 +85,10 @@ class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver impl
 		super();
 		this.name = name;
 		this.parent = parent;
+		@:bypassAccessor
 		group = FlxDestroyUtil.destroy(this.group); // get rid of the prev group implementation
 
-		_sprites = cast (group = new LayerGroup(this)).members;
+		group = new LayerGroup(this);
 	}
 
 	//region IBeatReceiver implementation
