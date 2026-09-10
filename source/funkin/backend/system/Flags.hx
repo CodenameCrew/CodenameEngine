@@ -117,6 +117,7 @@ class Flags {
 	public static var ICONS_AUTOPOSITION:Bool = true;
 
 	@:lazy public static var DEFAULT_SOUND_TIME_SCALED_PITCH:Null<Bool> = null;
+	@:lazy public static var USE_SOUND_VOLUME_CURVE:Null<Bool> = null;
 	@:lazy public static var USE_FLXTRAIL_FRAMES:Null<Bool> = null;
 
 	public static var SUPPORTED_CHART_RUNTIME_FORMATS:Array<String> = ["Legacy", "Psych Engine"];
@@ -341,6 +342,7 @@ class Flags {
 			}
 		}
 		if (DEFAULT_SOUND_TIME_SCALED_PITCH == null) DEFAULT_SOUND_TIME_SCALED_PITCH = MOD_API_VERSION >= 2;
+		if (USE_SOUND_VOLUME_CURVE == null) USE_SOUND_VOLUME_CURVE = MOD_API_VERSION >= 2;
 		if (USE_FLXTRAIL_FRAMES == null) USE_FLXTRAIL_FRAMES = MOD_API_VERSION < 2;
 
 		flixel.sound.FlxSound.defaultTimeScaledPitch = cast DEFAULT_SOUND_TIME_SCALED_PITCH;
