@@ -138,6 +138,8 @@ class Main extends Sprite
 		game.focusLostFramerate = 30;
 		FlxG.fixedTimestep = false;
 		FlxG.scaleMode = scaleMode = new FunkinRatioScaleMode();
+		FlxG.sound.applySoundCurve = applySoundCurve;
+		FlxG.sound.reverseSoundCurve = reverseSoundCurve;
 
 		Conductor.init();
 		EventManager.init();
@@ -160,6 +162,14 @@ class Main extends Sprite
 		#end
 
 		initTransition();
+	}
+
+	public static function applySoundCurve(volume:Float) {
+		return Flags.USE_SOUND_VOLUME_CURVE ? Math.pow(volume, 1.75) : volume;
+	}
+
+	public static function reverseSoundCurve(curvedVolume:Float) {
+		return Flags.USE_SOUND_VOLUME_CURVE ? Math.pow(curvedVolume, 0.5714285714285714) : curvedVolume;
 	}
 
 	static var persistShaderKeys:Map<String, Bool>;
