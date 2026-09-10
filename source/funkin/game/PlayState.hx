@@ -1304,7 +1304,7 @@ class PlayState extends MusicBeatState
 	 * Pauses the game.
 	 */
 	public function pauseGame() {
-		var e = gameAndCharsEvent("onGamePause", EventManger.get(PauseGameEvent).recycle([], allowGitaroo));
+		var e = gameAndCharsEvent("onGamePause", EventManager.get(PauseGameEvent).recycle([], allowGitaroo));
 		if (e.cancelled) return;
 
 		persistentUpdate = false;

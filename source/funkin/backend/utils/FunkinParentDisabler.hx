@@ -30,11 +30,11 @@ class FunkinParentDisabler extends FlxBasic {
 		@:privateAccess {
 			// tweens
 			__tweens = FlxTween.globalManager._tweens.copy().filter(t -> !excludeList.contains(t));
-			FlxTween.globalManager._tweens = excludeList.filter(t -> t is FlxTween);
+			FlxTween.globalManager._tweens = [for (t in excludeList) if (t is FlxTween) cast t];
 
 			// timers
 			__timers = FlxTimer.globalManager._timers.copy().filter(t -> !excludeList.contains(t));
-			FlxTimer.globalManager._timers = excludeList.filter(t -> t is FlxTimer);
+			FlxTimer.globalManager._timers = [for (t in excludeList) if (t is FlxTimer) cast t];
 
 			// cameras
 			__cameras = [for (c in FlxG.cameras.list) if (!excludeList.contains(c) && !c.paused) c];
@@ -82,9 +82,4 @@ abstract ParentDisableable(Any) {
 	@:from static inline function timer(t:FlxTimer):ParentDisableable return cast t;
 	@:from static inline function camera(c:FlxCamera):ParentDisableable return cast c;
 	@:from static inline function sound(s:FlxSound):ParentDisableable return cast s;
-	
-	@:to public inline function toTween():FlxTween return cast this;
-	@:to public inline function toTimer():FlxTimer return cast this;
-	@:to public inline function toCamera():FlxCamera return cast this;
-	@:to public inline function toSound():FlxSound return cast this;
 }
