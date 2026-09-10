@@ -1304,7 +1304,7 @@ class PlayState extends MusicBeatState
 	 * Pauses the game.
 	 */
 	public function pauseGame() {
-		var e = gameAndCharsEvent("onGamePause", new PauseGameEvent([], allowGitaroo));
+		var e = gameAndCharsEvent("onGamePause", EventManger.get(PauseGameEvent).recycle([], allowGitaroo));
 		if (e.cancelled) return;
 
 		persistentUpdate = false;
@@ -1318,7 +1318,7 @@ class PlayState extends MusicBeatState
 			FlxG.switchState(new GitarooPause());
 		}
 		else {
-			openSubState(new PauseSubState(e.excludeList));
+			openSubState(new PauseSubState(null, null, e.excludeList));
 		}
 
 		updateDiscordPresence();

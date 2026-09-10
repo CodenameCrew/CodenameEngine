@@ -22,11 +22,11 @@ class FunkinParentDisabler extends FlxBasic {
 	var __replaceUponDestroy:Bool;
 	var __restoreUponDestroy:Bool;
 
-	public function new(excludeList:Array<ParentDisableable> = [], replaceUponDestroy:Bool = false, restoreUponDestroy:Bool = true) {
+	public function new(?excludeList:Array<ParentDisableable>, replaceUponDestroy:Bool = false, restoreUponDestroy:Bool = true) {
 		super();
 		__replaceUponDestroy = replaceUponDestroy;
 		__restoreUponDestroy = restoreUponDestroy;
-		__excludeList = excludeList;
+		__excludeList = excludeList == null ? [] : excludeList;
 		@:privateAccess {
 			// tweens
 			__tweens = FlxTween.globalManager._tweens.copy().filter(t -> !excludeList.contains(t));
@@ -82,4 +82,9 @@ abstract ParentDisableable(Any) {
 	@:from static inline function timer(t:FlxTimer):ParentDisableable return cast t;
 	@:from static inline function camera(c:FlxCamera):ParentDisableable return cast c;
 	@:from static inline function sound(s:FlxSound):ParentDisableable return cast s;
+	
+	@:to public inline function toTween():FlxTween return cast this;
+	@:to public inline function toTimer():FlxTimer return cast this;
+	@:to public inline function toCamera():FlxCamera return cast this;
+	@:to public inline function toSound():FlxSound return cast this;
 }
