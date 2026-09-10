@@ -78,8 +78,8 @@ class FunkinParentDisabler extends FlxBasic {
 }
 
 abstract ParentDisableable(Any) {
-	@:from static inline function tween(t:FlxTween):Disableable return cast t;
-	@:from static inline function timer(t:FlxTimer):Disableable return cast t;
-	@:from static inline function camera(c:FlxCamera):Disableable return cast c;
-	@:from static inline function sound(s:FlxSound):Disableable return cast s;
+	@:from static inline function tween(t:FlxTween):ParentDisableable return cast t;
+	@:from static inline function timer(t:FlxTimer):ParentDisableable return cast t;
+	@:from static inline function camera(c:FlxCamera):ParentDisableable return cast c;
+	@:from static inline function sound(s:FlxSound):ParentDisableable return cast s;
 }
