@@ -225,7 +225,7 @@ class ConsoleUI {
 		if (toggled) toggleUI();
 
 		var toggledInspector:Bool = false;
-		for (key in [flixel.input.keyboard.FlxKey.F4]) {
+		for (key in Options.SOLO_DEV_INSPECTOR) {
 			if (ImGui.isKeyPressed(key.toImGuiKey(), false)) toggledInspector = true;
 		}
 		if (toggledInspector) toggleInspector();

@@ -214,9 +214,9 @@ class Main extends Sprite
 		if (PlayerSettings.solo.controls.DEV_CONSOLE)
 			NativeAPI.allocConsole();
 		#else
-		if ((ImGuiIO.configFlags & ImGuiConfigFlags.ViewportsEnable) != 0)
+		if ((ImGuiIO.configFlags & ImGuiConfigFlags.ViewportsEnable) != 0) //TODO: fix this because its not working 100% of the time
 		{
-			if (ImGuiIO.navActive || ImGuiIO.wantCaptureMouse) {
+			if (ImGuiIO.navActive || ImGuiIO.wantCaptureMouse || ImGuiIO.wantCaptureKeyboard) {
 				if (!imGuiActiveLastFrame) {
 					imGuiActiveLastFrame = true;
 					FlxG.autoPause = false;

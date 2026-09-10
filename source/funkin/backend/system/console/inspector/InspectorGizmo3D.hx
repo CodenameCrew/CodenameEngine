@@ -139,7 +139,7 @@ class InspectorGizmo3D {
 			var windowY = position.y-(size/2);
 			ImGui.setNextWindowPos(windowX, windowY);
 			ImGui.setNextWindowSize(size, size);
-			var flags = ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings;
+			var flags = ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing;
 			if ((ImGuiIO.configFlags & ImGuiConfigFlags.ViewportsEnable) == 0 || lastViewportID == ImGui.getMainViewport().id) {
 				flags |= ImGuiWindowFlags.NoBackground;
 				ImGui.setNextWindowBGAlpha(0);

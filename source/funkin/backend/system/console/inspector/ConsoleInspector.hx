@@ -156,6 +156,14 @@ class ConsoleInspector {
 		FlxG.mouse.visible = true; //TODO: rework this, temp force on
 		
 		if (ImGui.begin("Inspector")) {
+			ImGui.separatorText("Tools/Gizmo");
+			ImGui.indent();
+			if (ImGui.selectable("None (Q)", gizmo.gizmoMode == -1)) gizmo.gizmoMode = -1;
+			if (ImGui.selectable("Position (W)", gizmo.gizmoMode == 0)) gizmo.gizmoMode = 0;
+			if (ImGui.selectable("Rotation (E)", gizmo.gizmoMode == 1)) gizmo.gizmoMode = 1;
+			if (ImGui.selectable("Scale (R)", gizmo.gizmoMode == 2)) gizmo.gizmoMode = 2;
+			ImGui.unindent();
+			ImGui.separatorText("States");
 			for (index => member in currentStateObjects) {
 				var nodeID = member.name + index;
 				var flags = ImGuiTreeNodeFlags.DefaultOpen;
@@ -170,6 +178,7 @@ class ConsoleInspector {
 					ImGui.treePop();
 				}
 			}
+			//ImGui.separatorText("Cameras");
 		}
 		ImGui.end();
 

@@ -61,6 +61,7 @@
 			<str id="devMenus">Developer Menus</str>
 			<str id="openConsole">Open Console</str>
 			<str id="reloadState">Reload State</str>
+			<str id="openInspector">Open Inspector</str>
 		</group>
 	</group>
 

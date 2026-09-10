@@ -175,6 +175,7 @@ class Options
 	public static var P1_DEV_ACCESS:Array<FlxKey> = [SEVEN];
 	public static var P1_DEV_CONSOLE:Array<FlxKey> = [F2];
 	public static var P1_DEV_RELOAD:Array<FlxKey> = [F5];
+	public static var P1_DEV_INSPECTOR:Array<FlxKey> = [F4];
 
 	/**
 	* PLAYER 2 CONTROLS (ALT)
@@ -208,6 +209,7 @@ class Options
 	public static var P2_DEV_ACCESS:Array<FlxKey> = [];
 	public static var P2_DEV_CONSOLE:Array<FlxKey> = [];
 	public static var P2_DEV_RELOAD:Array<FlxKey> = [];
+	public static var P2_DEV_INSPECTOR:Array<FlxKey> = [];
 
 	/**
 	* SOLO GETTERS
@@ -241,6 +243,7 @@ class Options
 	public static var SOLO_DEV_ACCESS(get, null):Array<FlxKey>;
 	public static var SOLO_DEV_CONSOLE(get, null):Array<FlxKey>;
 	public static var SOLO_DEV_RELOAD(get, null):Array<FlxKey>;
+	public static var SOLO_DEV_INSPECTOR(get, null):Array<FlxKey>;
 
 	public static function load() {
 		var path = haxe.macro.Compiler.getDefine("SAVE_OPTIONS_PATH"), name = haxe.macro.Compiler.getDefine("SAVE_OPTIONS_NAME");

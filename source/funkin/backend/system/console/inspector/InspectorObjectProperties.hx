@@ -154,6 +154,7 @@ class InspectorObjectProperties {
 	function showFlxSpriteAnimationProperties(sprite:FlxSprite) {
 		if (ImGui.collapsingHeader("Animation")) {
 			//TODO
+			ImGui.text("Not yet implemented");
 		}
 	}
 
