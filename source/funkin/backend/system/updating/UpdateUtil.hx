@@ -2,22 +2,30 @@ package funkin.backend.system.updating;
 
 import funkin.backend.system.github.GitHub;
 import funkin.backend.system.github.GitHubRelease;
+#if ALLOW_MULTITHREADING
+import funkin.backend.utils.ThreadUtil;
+#end
 
 import lime.app.Application;
 
-import sys.thread.Mutex;
-import sys.thread.Thread;
 import sys.FileSystem;
 
 import haxe.io.Path;
+
+#if (target.threaded)
+import sys.thread.Thread;
+import sys.thread.Mutex;
+#end
 
 using funkin.backend.system.github.GitHub;
 
 class UpdateUtil {
 	public static var lastUpdateCheck:Null<UpdateCheckCallback>;
 
+	#if (target.threaded)
 	private static var __waitCallbacks:Array<UpdateCheckCallback->Void>;
 	private static var __mutex:Mutex;
+	#end
 
 	public static function init() {
 		// deletes old bak file if it exists
@@ -26,9 +34,25 @@ class UpdateUtil {
 		if (FileSystem.exists(bakPath)) FileSystem.deleteFile(bakPath);
 		#end
 
+		#if (target.threaded)
 		__waitCallbacks = [];
 		__mutex = new Mutex();
-		Thread.create(checkForUpdates.bind(true, false));
+
+		#if ALLOW_MULTITHREADING ThreadUtil.execAsync #else Thread.create #end(checkForUpdates.bind(true, false));
+		#end
+	}
+
+	public static function getNameOfExecutable():String
+	{
+		return #if windows "CodenameEngine.exe" #else "CodenameEngine" #end;
+	}
+
+	public static function getNameOfUpdateExecutable():String
+	{
+		var target:String = #if windows "windows.exe" #end
+							#if mac "mac" #end
+							#if linux "linux" #end;
+		return 'update-${target}';
 	}
 
 	public static function getNameOfExecutable():String
@@ -45,20 +69,25 @@ class UpdateUtil {
 	}
 
 	public static function waitForUpdates(force = false, callback:UpdateCheckCallback->Void, lazy = false) {
+		#if (target.threaded)
 		if (__mutex.tryAcquire()) {
 			__mutex.release();
 			if (__shouldCheck(lazy) || force) {
 				__waitCallbacks.push(callback);
-				Thread.create(checkForUpdates.bind(force, false));
+				#if ALLOW_MULTITHREADING ThreadUtil.execAsync #else Thread.create #end(checkForUpdates.bind(force, false));
 			}
 			else
 				callback(lastUpdateCheck);
 		}
 		else
 			__waitCallbacks.push(callback);
+		#else
+		callback(checkForUpdates(true, false));
+		#end
 	}
 
 	public static function checkForUpdates(force = false, lazy = false):UpdateCheckCallback {
+		#if (target.threaded)
 		var wasAcquired = !__mutex.tryAcquire();
 		if (wasAcquired) __mutex.acquire();
 
@@ -73,7 +102,18 @@ class UpdateUtil {
 		FlxG.signals.preUpdate.addOnce(__callWaitCallbacks);
 
 		return lastUpdateCheck;
+		#else
+		if (!__shouldCheck(lazy)) return lastUpdateCheck;
+		return lastUpdateCheck = __checkForUpdates();
+		#end
 	}
+
+	#if (target.threaded)
+	static function __callWaitCallbacks() {
+		for (callback in __waitCallbacks) callback(lastUpdateCheck);
+		__waitCallbacks.resize(0);
+	}
+	#end
 
 	static function __checkForUpdates():UpdateCheckCallback {
 		var curTag = 'v' + (Flags.VERSION == null ? Application.current.meta.get('version') : Flags.VERSION), error = false;
@@ -94,11 +134,6 @@ class UpdateUtil {
 
 	static function __shouldCheck(lazy:Bool):Bool
 		return lastUpdateCheck == null || !lazy && (!lastUpdateCheck.newUpdate || Date.now().getTime() - lastUpdateCheck.date.getTime() > 1800000);
-
-	static function __callWaitCallbacks() {
-		for (callback in __waitCallbacks) callback(lastUpdateCheck);
-		__waitCallbacks.resize(0);
-	}
 
 	static function __doReleaseFiltering(releases:Array<GitHubRelease>, currentVersionTag:String) {
 		releases = releases.filterReleases(Options.betaUpdates, false);

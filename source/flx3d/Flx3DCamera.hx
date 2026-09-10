@@ -25,19 +25,25 @@ import flx3d.Flx3DUtil;
 import haxe.io.Path;
 import openfl.Assets;
 #end
-
 import flixel.FlxCamera;
 
-class Flx3DCamera extends FlxCamera {
+class Flx3DCamera extends FlxCamera
+{
 	#if THREE_D_SUPPORT
 	private static var __3DIDS:Int = 0;
 
 	public var view:View3D;
 
 	var meshes:Array<Mesh> = [];
-	public function new(X:Int = 0, Y:Int = 0, Width:Int = 0, Height:Int = 0, DefaultZoom:Float = 1) {
+
+	public function new(X:Int = 0, Y:Int = 0, Width:Int = 0, Height:Int = 0, DefaultZoom:Float = 1)
+	{
 		if (!Flx3DUtil.is3DAvailable())
-			throw "[Flx3DCamera] 3D is not available on this platform. Stages in use: " + Flx3DUtil.getTotal3D() + ", Max stages allowed: " + FlxG.stage.stage3Ds.length + ".";
+			throw "[Flx3DCamera] 3D is not available on this platform. Stages in use: "
+				+ Flx3DUtil.getTotal3D()
+				+ ", Max stages allowed: "
+				+ FlxG.stage.stage3Ds.length
+				+ ".";
 		super(X, Y, Width, Height, DefaultZoom);
 		__cur3DStageID = __3DIDS++;
 
@@ -49,7 +55,8 @@ class Flx3DCamera extends FlxCamera {
 		FlxG.stage.addChild(view);
 	}
 
-	public override function render() {
+	public override function render()
+	{
 		super.render();
 
 		view.x = FlxG.game.x + FlxG.game.scaleX * (flashSprite.x + flashSprite.scaleX * (_scrollRect.x + _scrollRect.scaleX * (_scrollRect.scrollRect.x)));
@@ -65,7 +72,8 @@ class Flx3DCamera extends FlxCamera {
 		view.render();
 	}
 
-	public function addModel(assetPath:String, callback:Asset3DEvent->Void, ?texturePath:String, smoothTexture:Bool = true) {
+	public function addModel(assetPath:String, callback:Asset3DEvent->Void, ?texturePath:String, smoothTexture:Bool = true)
+	{
 		var model = Assets.getBytes(assetPath);
 		if (model == null)
 			throw 'Model at ${assetPath} was not found.';
@@ -79,36 +87,43 @@ class Flx3DCamera extends FlxCamera {
 		if (texturePath != null)
 			material = new TextureMaterial(Cast.bitmapTexture(Assets.getBitmapData(texturePath, true, false)), smoothTexture);
 
-		return loadData(model, context, switch(Path.extension(assetPath).toLowerCase()) {
+		return loadData(model, context, switch (Path.extension(assetPath).toLowerCase())
+		{
 			case "dae": new DAEParser();
 			case "md2": new MD2Parser();
 			case "md5": new MD5MeshParser();
 			case "awd": new AWDParser();
-			default:	new OBJParser();
-		}, (event:Asset3DEvent) -> {
-			if (event.asset != null && event.asset.assetType == Asset3DType.MESH) {
-				var mesh:Mesh = cast event.asset;
-				if (material != null)
-					mesh.material = material;
-				meshes.push(mesh);
-			}
-			callback(event);
-		});
+			default: new OBJParser();
+		}, (event:Asset3DEvent) ->
+			{
+				if (event.asset != null && event.asset.assetType == Asset3DType.MESH)
+				{
+					var mesh:Mesh = cast event.asset;
+					if (material != null)
+						mesh.material = material;
+					meshes.push(mesh);
+				}
+				callback(event);
+			});
 	}
 
 	private var __cur3DStageID:Int;
 	private var _loaders:Map<Asset3DLibraryBundle, AssetLoaderToken> = [];
 
-	private function loadData(data:Dynamic, context:AssetLoaderContext, parser:ParserBase, onAssetCallback:Asset3DEvent->Void):AssetLoaderToken {
+	private function loadData(data:Dynamic, context:AssetLoaderContext, parser:ParserBase, onAssetCallback:Asset3DEvent->Void):AssetLoaderToken
+	{
 		var token:AssetLoaderToken;
 
 		var lib:Asset3DLibraryBundle = Asset3DLibraryBundle.getInstance('Flx3DView-${__cur3DStageID}');
 		token = lib.loadData(data, context, null, parser);
 
-		token.addEventListener(Asset3DEvent.ASSET_COMPLETE, (event:Asset3DEvent) -> {
+		token.addEventListener(Asset3DEvent.ASSET_COMPLETE, (event:Asset3DEvent) ->
+		{
 			// ! Taken from Loader3D https://github.com/openfl/away3d/blob/master/away3d/loaders/Loader3D.hx#L207-L232
-			if (event.type == Asset3DEvent.ASSET_COMPLETE) {
-				var obj:ObjectContainer3D = switch (event.asset.assetType) {
+			if (event.type == Asset3DEvent.ASSET_COMPLETE)
+			{
+				var obj:ObjectContainer3D = switch (event.asset.assetType)
+				{
 					case Asset3DType.LIGHT: expect(event.asset, LightBase);
 					case Asset3DType.CONTAINER: expect(event.asset, ObjectContainer3D);
 					case Asset3DType.MESH: expect(event.asset, Mesh);
@@ -126,25 +141,29 @@ class Flx3DCamera extends FlxCamera {
 				onAssetCallback(event);
 		});
 
-		token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (_) -> {
+		token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (_) ->
+		{
 			trace("Loader Finished...");
 		});
 
-		_loaders.set(lib,token);
+		_loaders.set(lib, token);
 
 		return token;
 	}
 
-	override function destroy() {
+	override function destroy()
+	{
 		if (meshes != null)
-			for(mesh in meshes)
+			for (mesh in meshes)
 				mesh.dispose();
 
 		var bundle = Asset3DLibraryBundle.getInstance('Flx3DView-${__cur3DStageID}');
 		bundle.stopAllLoadingSessions();
 		@:privateAccess {
-			if (bundle._loadingSessions != null) {
-				for(load in bundle._loadingSessions) {
+			if (bundle._loadingSessions != null)
+			{
+				for (load in bundle._loadingSessions)
+				{
 					load.dispose();
 				}
 			}
@@ -152,10 +171,12 @@ class Flx3DCamera extends FlxCamera {
 		}
 
 		FlxG.stage.removeChild(view);
-		try {
+		try
+		{
 			view.dispose();
-		} catch(e) {
-
+		}
+		catch (e)
+		{
 		}
 
 		super.destroy();

@@ -20,6 +20,8 @@ class EditorTreeMenu extends funkin.options.TreeMenu {
 		bg.antialiasing = true;
 		setBackgroundRotation(-5);
 		super.createPost();
+
+		if (Paths.assetsTree.hasCompressedLibrary) warnCompressLibrary();
 	}
 
 	public inline function setBackgroundRotation(rotation:Float) {
@@ -58,6 +60,21 @@ class EditorTreeMenu extends funkin.options.TreeMenu {
 		bg.colorTransform.greenMultiplier = FlxMath.lerp(1, color.greenFloat, 0.25);
 		bg.colorTransform.blueMultiplier = FlxMath.lerp(1, color.blueFloat, 0.25);
 	}
+
+	private function warnCompressLibrary() {
+		var warningMessage = "It seems you have libraries loaded that are compressed, and can not have files written to them.\n
+		This is just a friendly reminder that if you're loading a Mod and wish to edit files, you need to uncompress it to be able to use any editors!\n\nCompressed Libraries: ";
+		var compressedList = Paths.assetsTree.libraries.filter(l -> funkin.backend.assets.AssetsLibraryList.getCleanLibrary(l).isCompressed);
+		var modNameList = [for (l in compressedList) {
+			l = funkin.backend.assets.AssetsLibraryList.getCleanLibrary(l);
+			if (l is funkin.backend.assets.IModsAssetLibrary) cast(l, funkin.backend.assets.IModsAssetLibrary).modName;
+		}];
+		warningMessage += modNameList.join(", ");
+		var zipLibraryWarning = new funkin.editors.ui.UIWarningSubstate("Compressed Library Detected!", warningMessage, [{label: "Ok", color: 0x969533, onClick: (state) -> {} }], false);
+
+		openSubState(zipLibraryWarning);
+	}
+
 }
 
 class EditorTreeMenuScreen extends funkin.options.TreeMenuScreen {

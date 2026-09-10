@@ -3,31 +3,15 @@ package funkin.backend.utils;
 #if cpp
 import cpp.Float64;
 #end
-import flxanimate.data.AnimationData.AnimAtlas;
-import flixel.graphics.FlxGraphic;
-import openfl.display.BitmapData;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.graphics.frames.FlxFramesCollection;
 #if sys
 import sys.FileSystem;
 #end
-import flixel.text.FlxText;
-import funkin.backend.utils.XMLUtil.TextFormat;
-import flixel.util.typeLimit.OneOfTwo;
-import flixel.util.typeLimit.OneOfThree;
-import flixel.tweens.FlxTween;
-import flixel.system.frontEnds.SoundFrontEnd;
-import flixel.sound.FlxSound;
-import funkin.backend.system.Conductor;
-import flixel.sound.FlxSoundGroup;
-import haxe.Json;
-import haxe.io.Path;
-import haxe.io.Bytes;
-import haxe.xml.Access;
-import flixel.input.keyboard.FlxKey;
-import lime.utils.Assets;
 import flixel.animation.FlxAnimation;
+import flixel.graphics.FlxGraphic;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFramesCollection;
 import flixel.input.keyboard.FlxKey;
+import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
 import flixel.sound.FlxSoundGroup;
 import flixel.system.frontEnds.SoundFrontEnd;
@@ -35,19 +19,22 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxAxes;
 import flixel.util.FlxColor;
+import flixel.util.typeLimit.OneOfThree;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.backend.system.Conductor;
 import funkin.backend.utils.XMLUtil.TextFormat;
 import haxe.CallStack;
+import haxe.Constraints.IMap;
+import haxe.EnumTools.EnumValueTools;
 import haxe.Json;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.xml.Access;
 import lime.utils.Assets;
+import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
-import flixel.math.FlxPoint;
-import haxe.Constraints.IMap;
-import haxe.EnumTools.EnumValueTools;
+import animate.FlxAnimateJson;
+import flixel.animation.FlxAnimationController;
 
 using StringTools;
 
@@ -453,11 +440,9 @@ final class CoolUtil
 	 * @param fadeIn
 	 */
 	@:noUsing public static function playMenuSong(fadeIn:Bool = false) {
-		if (FlxG.sound.music == null || !FlxG.sound.music.playing)
-		{
+		if (FlxG.sound.music == null || !FlxG.sound.music.playing) {
 			playMusic(Paths.music(Flags.DEFAULT_MENU_MUSIC), true, fadeIn ? 0 : 1, true, 102);
-			if (fadeIn)
-				FlxG.sound.music.fadeIn(4, 0, 0.7);
+			if (fadeIn) FlxG.sound.music.fadeIn(4, 0, 1);
 		}
 	}
 
@@ -586,6 +571,29 @@ final class CoolUtil
 		var old = anim1.frames;
 		anim1.frames = anim2.frames;
 		anim2.frames = old;
+	}
+
+	/**
+	 * Swaps two animations on an animation controller.
+	 * @param animation Animation controller
+	 * @param anim1 First animation
+	 * @param anim2 Second animation
+	 */
+	public static function swapAnims(animation:FlxAnimationController, anim1:String, anim2:String) @:privateAccess {
+		var flxAnim1 = animation.getByName(anim1);
+		animation._animations.remove(anim1);
+
+		var flxAnim2 = animation.getByName(anim2);
+		animation._animations.remove(anim2);
+
+		if (flxAnim1 != null) {
+			flxAnim1.name = anim2;
+			animation._animations.set(anim2, flxAnim1);
+		}
+		if (flxAnim2 != null) {
+			flxAnim2.name = anim1;
+			animation._animations.set(anim1, flxAnim2);
+		}
 	}
 
 	/**
@@ -870,7 +878,7 @@ final class CoolUtil
 	 */
 	public static inline function browsePath(path:String) {
 		var formattedPath:String = Path.normalize(path);
-		
+
 		#if windows
 		formattedPath = formattedPath.replace("/", "\\");
 		Sys.command("explorer", [formattedPath]);
@@ -1018,6 +1026,20 @@ final class CoolUtil
 	}
 
 	/**
+	 * Returns if the mouse is overlapping the sprite on a given camera, taking the camera's position, scroll and zoom into account.
+	 *
+	 * @param   sprite  Any `FlxObject`
+	 * @param   camera  The camera you want to check overlap on. Uses the sprite's camera by default.
+	 * @return  Bool
+	 */
+	public static function mouseOverlaps(sprite:FlxObject, ?camera:FlxCamera) {
+		var camToCheck:FlxCamera = camera ?? sprite.camera;
+		var posthing:FlxPoint = FlxG.mouse.getWorldPosition(camToCheck);
+
+		return posthing != null && FlxMath.inBounds(posthing.x, sprite.x, sprite.x + sprite.width) && FlxMath.inBounds(posthing.y, sprite.y, sprite.y + sprite.height);
+	}
+
+	/**
 	 * Sorts an array alphabetically.
 	 * @param array Array to sort
 	 * @param lowercase Whenever the array should be sorted in lowercase
@@ -1067,7 +1089,7 @@ final class CoolUtil
 			r.add(str);
 		return r.toString();
 	}
-	
+
 	public static inline function bound(Value:Float, Min:Float, Max:Float):Float {
 		#if cpp
 		var _hx_tmp1:Float = Value;
@@ -1214,8 +1236,8 @@ final class CoolUtil
 
 	/**
 	 * ! REQUIRES FULL PATH!!!
-	 * @param path 
-	 * @return Bool 
+	 * @param path
+	 * @return Bool
 	 */
 	public static function imageHasFrameData(path:String):String {
 		if (FileSystem.exists(Path.withExtension(path, "xml"))) return "xml";
@@ -1266,23 +1288,20 @@ final class CoolUtil
 		return animsList;
 	}
 
-	public static function getAnimsListFromAtlas(atlas:AnimAtlas):Array<String> {
+	public static function getAnimsListFromAtlas(atlas:AnimationJson):Array<String> {
 		if (atlas == null) return [];
 
 		var animsList:Array<String> = [];
 		if (atlas.AN.SN != null) animsList.push(atlas.AN.SN);
 		if (atlas.SD != null)
-			for (symbol in atlas.SD.S)
+			for (symbol in atlas.SD)
 				if (symbol.SN != null) animsList.push(symbol.SN);
 
 		return animsList;
 	}
 
 	public static function getAnimsListFromSprite(spr:FunkinSprite):Array<String> {
-		if (spr.animateAtlas != null) {
-			return [for (symbol => timeline in spr.animateAtlas.anim.symbolDictionary) symbol];
-		} else 
-			return getAnimsListFromFrames(spr.frames);
+		return getAnimsListFromFrames(spr.frames);
 	}
 
 	// TODO: check this for bugs
@@ -1435,6 +1454,7 @@ final class CoolUtil
 
 		return toProperty.setValue(fromProperty.getValue());
 	}
+
 }
 
 class PropertyInfo {

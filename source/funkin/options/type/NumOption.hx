@@ -10,14 +10,19 @@ class NumOption extends TextOption {
 	public var max:Float;
 	public var step:Float;
 
-	public var currentValue:Float;
+	public var currentValue(default, set):Float;
 
 	public var parent:Dynamic;
 	public var optionName:String;
 
 	var __number:Alphabet;
 
-	override function set_text(v:String) {
+	function set_currentValue(v:Float):Float {
+		if (__number != null && v != currentValue) __number.text = TextOption.OPTION_VALUE_PREFIX + Std.string(v);
+		return currentValue = v;
+	}
+
+	override function set_text(v:String):String {
 		super.set_text(v);
 		__number.x = __text.x + __text.width + 12;
 		return v;
@@ -32,8 +37,7 @@ class NumOption extends TextOption {
 		this.parent = parent = parent != null ? parent : Options;
 
 		if (Reflect.field(parent, optionName) != null) currentValue = Reflect.field(parent, optionName);
-	
-		__number = new Alphabet(0, 20, ': $currentValue', 'bold');
+		__number = new Alphabet(0, 20, TextOption.OPTION_VALUE_PREFIX + Std.string(currentValue), 'bold');
 		super(text, desc);
 		add(__number);
 	}
@@ -41,7 +45,6 @@ class NumOption extends TextOption {
 	override function changeSelection(change:Int):Void {
 		if (locked) return;
 		if (currentValue == (currentValue = FlxMath.bound(currentValue + change * step, min, max))) return;
-		__number.text = ': $currentValue';
 
 		Reflect.setField(parent, optionName, currentValue);
 		if (changedCallback != null) changedCallback(currentValue);

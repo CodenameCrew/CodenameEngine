@@ -26,6 +26,7 @@ This changelog lists every change that has been added since the last update (inc
 		- `--fast` for quickly downloading git libraries, but requires you to reinstall it fully when updates happen
 - Alphabet now allows multiple lines in the text ([d519db0](https://github.com/CodenameCrew/CodenameEngine/commit/d519db011a14aac0ddfc052089836c6b445f7f44))
 - Allow importing mod root level modules in hscript, instead of only source/ ([7e66ee8](https://github.com/CodenameCrew/CodenameEngine/commit/7e66ee81e24204cd152de20046fa1500bb9d204b))
+- Made the substate have the possibility to open automatically transitions ([d31454c](https://github.com/CodenameCrew/CodenameEngine/commit/d31454c7ddf4cbf6a681cc8b32cd3f9480f8eacd))
 - Added a way to force animations in the `Play Animation` event ([d7b6fbe](https://github.com/CodenameCrew/CodenameEngine/commit/d7b6fbe510edeb832112ab5adc8ab19dfe97d77f))
 - Adde unused boyfriend animations ([be55696](https://github.com/CodenameCrew/CodenameEngine/commit/be55696bbefe537f06ad6550b039278ffcbcfb2f))
 - Made it display the keybind for the mod menu in main menu ([1ac2e7f](https://github.com/CodenameCrew/CodenameEngine/commit/1ac2e7f53390a9e92aa2a1fea94d147ed50d3694))
@@ -198,8 +199,3 @@ This changelog lists every change that has been added since the last update (inc
 - Cleaned up unused variables in TitleState ([2779ef3](https://github.com/CodenameCrew/CodenameEngine/commit/2779ef3314471558e371b3ec2f17f8d4df48943a))
 - Restructured the events folder ([77b7eeb](https://github.com/CodenameCrew/CodenameEngine/commit/77b7eebed1ea077516ff884902528c0ff3d01872))
 - Reduced the amount of data thats stored for the Github Contributors savefile ([2abc45a](https://github.com/CodenameCrew/CodenameEngine/commit/2abc45a9e416a1c5dd2bd0a5297c664e60c6f1d8))
-
-
-## Unsorted list
-
-- @NexIsDumb Please document this i still dont understand it ([d31454c](https://github.com/CodenameCrew/CodenameEngine/commit/d31454c7ddf4cbf6a681cc8b32cd3f9480f8eacd))

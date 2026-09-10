@@ -46,8 +46,9 @@
 
 		<group name="engine" prefix="engine.">
 			<str id="switchMod">Cambiar Mod</str>
+			<str id="fpsCounter">Contador de FPS</str>
 		</group>
-		
+
 		<str id="category.volume">Volumen</str>
 		<str id="volume.up">Arriba</str>
 		<str id="volume.down">Abajo</str>
@@ -64,6 +65,7 @@
 	<group name="AppearanceOptions" prefix="AppearanceOptions.">
 		<str id="framerate-name">FPS</str>
 		<str id="framerate-desc">Yo creo que se explica sólo.</str>
+		<str id="framerate-unlimited">Ilimitado</str>
 
 		<str id="flashingMenu-name">Luces Intermitentes</str>
 		<str id="flashingMenu-desc">Si está desactivado, el menú no parpadeará, y otros parpadeos serán más lentos.</str>
@@ -75,6 +77,12 @@
 		<str id="week6PixelPerfect-desc">Si está activado, Week 6 tendrá un efecto que alinea todos los píxeles en la pantalla.</str>
 
 		<group name="AppearanceOptionsAdvanced" prefix="Advanced.">
+			<str id="quality-name">CALIDAD</str>
+			<str id="quality-desc">Modos de calidad del cual elegir, "BAJA" = Quitar efectos fuertes del juego para correr mejor, "ALTA" = Habilita todos los efectos, a costo de rendimiento, "PERSONALIZADA" = Deja cambiar todas las opciones a su gusto.</str>
+			<str id="quality-low">BAJA</str>
+			<str id="quality-high">ALTA</str>
+			<str id="quality-custom">PERSONALIZADA</str>
+
 			<str id="antialiasing-desc">Si está desactivado, desactivará el antialiasing en todos los sprites, lo cual puede aumentar el rendimiento pero hará los visuales más pixelados.</str>
 
 			<str id="lowMemoryMode-name">Modo de Baja Memoria</str>
@@ -116,7 +124,7 @@
 
 			<str id="streamedMusic-name">Transmición de Música</str>
 			<str id="streamedMusic-desc">Si está activado, la música será transmitida en tiempo real, liberando un montón de RAM, aunque usará más CPU si hay mucho audio al mismo tiempo (EXPERIMENTAL). Desactivarlo consumirá más RAM, especialmente en canciones más largas. Si no estás seguro, déjalo activado.</str>
-			
+
 			<str id="streamedVocals-name">Transmición de Vocales</str>
 			<str id="streamedVocals-desc">Si está activado, las vocales también serán transmitidas, impactará el rendimiento si hay muchas vocales (EXPERIMENTAL). Si no estás seguro, déjalo desactivade.</str>
 		</group>
@@ -157,9 +165,12 @@
 
 		<str id="bypassEditorsResize-name">Desactivar Tamaño Mínimo</str>
 		<str id="bypassEditorsResize-desc">Desactiva el tamaño mínimo de los editores (Editores Adaptables debe estar activado).</str>
-		
+
 		<str id="editorSFX-name">Sonidos del Editor</str>
 		<str id="editorSFX-desc">Si está activado, habran sonidos en los editores (ej: al activar opciones...)</str>
+
+		<str id="charterSwapEventSides-name">Cambiar Lados de Eventos</str>
+		<str id="charterSwapEventSides-desc">Si está activado, eventos globales estarán a la izquierda de las pistas.</str>
 
 		<str id="editorPrettyPrint-desc">Si está activado, los charts se guardarán de forma más legible (no aplica a XMLs)</str>
 
@@ -176,6 +187,9 @@
 		<str id="charterAutoSaveWarningTime-desc">Esto controla por cuánto tiempo te advertirá el editor antes de autoguardar (en segundos..., 0 para desactivar)</str>
 
 		<str id="charterAutoSavesSeparateFolder-name">Carpeta de Autoguardados</str>
-		<str id="charterAutoSavesSeparateFolder-desc">Si está activado, el autoguardado se guardará en otra carpeta con su fecha en vez de sobreescribir el archivo actual. (song/autosaves/)</str>	</group>
+		<str id="charterAutoSavesSeparateFolder-desc">Si está activado, el autoguardado se guardará en otra carpeta con su fecha en vez de sobreescribir el archivo actual. (song/autosaves/)</str>
+
+		<str id="legacyMemoryCounter-name">Contador de Memoria Clásico</str>
+		<str id="legacyMemoryCounter-desc">Si está activado, el contador de memoria mostrará el uso de memoria del GC de Haxe y su máximo (el comportamiento original) en vez de la memoria de trabajo vista en el Administrador de Tareas.</str>	</group>
 
 </language>

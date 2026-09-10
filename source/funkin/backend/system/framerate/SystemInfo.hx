@@ -9,6 +9,7 @@ import cpp.UInt64;
 #end
 
 using StringTools;
+import funkin.backend.system.macros.StringMacro;
 
 class SystemInfo extends FramerateCategory {
 	public static var osInfo:String = "Unknown";
@@ -115,8 +116,7 @@ class SystemInfo extends FramerateCategory {
 					if (vRAMBytes == 1000 || vRAMBytes == 1 || vRAMBytes <= 0)
 						Logs.trace('Unable to grab GPU VRAM', ERROR, RED);
 					else {
-						var vRAMBytesFloat:#if cpp Float64 #else Float #end = vRAMBytes*1024;
-						vRAM = CoolUtil.getSizeString64(vRAMBytesFloat);
+						vRAM = getSizeString(vRAMBytes / 1024);
 					}
 				}
 			} else
@@ -138,32 +138,58 @@ class SystemInfo extends FramerateCategory {
 	}
 
 	static function formatSysInfo() {
-		__formattedSysText = "";
-		if (osInfo != "Unknown") __formattedSysText += 'System: $osInfo';
-		if (cpuName != "Unknown") __formattedSysText += '\nCPU: $cpuName ${openfl.system.Capabilities.cpuArchitecture} ${(openfl.system.Capabilities.supports64BitProcesses ? '64-Bit' : '32-Bit')}';
+		var buf = new StringBuf();
+		if (osInfo != "Unknown") {
+			StringMacro.addLine(buf, 'System: ${osInfo}');
+		}
+		if (cpuName != "Unknown") {
+			StringMacro.addLine(buf, '\nCPU: ${cpuName} ${openfl.system.Capabilities.cpuArchitecture} ${openfl.system.Capabilities.supports64BitProcesses ? "64-Bit" : "32-Bit"}');
+		}
 		if (gpuName != cpuName || vRAM != "Unknown") {
 			var gpuNameKnown = gpuName != "Unknown" && gpuName != cpuName;
 			var vramKnown = vRAM != "Unknown";
 
-			if(gpuNameKnown || vramKnown) __formattedSysText += "\n";
+			if(gpuNameKnown || vramKnown) buf.add("\n");
 
-			if(gpuNameKnown) __formattedSysText += 'GPU: $gpuName';
-			if(gpuNameKnown && vramKnown) __formattedSysText += " | ";
-			if(vramKnown) __formattedSysText += 'VRAM: $vRAM'; // 1000 bytes of vram (apus)
+			if(gpuNameKnown) {
+				StringMacro.addLine(buf, 'GPU: ${gpuName}');
+			}
+			if(gpuNameKnown && vramKnown) buf.add(" | ");
+			if(vramKnown) {
+				StringMacro.addLine(buf, 'VRAM: ${vRAM}');
+			}
 		}
-		//if (gpuMaxSize != "Unknown") __formattedSysText += '\nMax Bitmap Size: $gpuMaxSize';
-		if (totalMem != "Unknown" && memType != "Unknown") __formattedSysText += '\nTotal MEM: $totalMem $memType';
+		//if (gpuMaxSize != "Unknown") StringMacro.addLine(buf, '\nMax Bitmap Size: ',gpuMaxSize);
+		if (totalMem != "Unknown" && memType != "Unknown") {
+			StringMacro.addLine(buf, '\nTotal MEM: ${totalMem} ${memType}');
+		}
+		__formattedSysText = buf.toString();
+	}
+
+	static function getSizeString(size:Float):String {
+		if (size < 1024)
+			return Std.int(size) + " MB";
+		else if (size < 1024 * 1024)
+			return Std.int(size / 1024) + " GB";
+		else {
+			var tb = size / (1024 * 1024);
+			return Std.int(tb) + "." + CoolUtil.addZeros(Std.string(Std.int((tb % 1) * 100)), 2) + " TB";
+		}
 	}
 
 	public function new() {
 		super("System Info");
+		visible = Options.fpsCounterSystem;
 	}
 
 	public override function __enterFrame(t:Int) {
 		if (alpha <= 0.05) return;
 
-		_text = __formattedSysText;
-		_text += '${__formattedSysText == "" ? "" : "\n"}Garbage Collector: ${MemoryUtil.disableCount > 0 ? "OFF" : "ON"} (${MemoryUtil.disableCount})';
+		var buf = new StringBuf();
+		buf.add(__formattedSysText);
+		if (__formattedSysText != '') buf.add('\n');
+		StringMacro.addLine(buf, 'Garbage Collector: ${MemoryUtil.disableCount > 0 ? "OFF" : "ON"} (${MemoryUtil.disableCount})');
+		_text = buf.toString();
 
 		this.text.text = _text;
 		super.__enterFrame(t);

@@ -55,9 +55,6 @@ class GlobalScript {
 				reloading = false;
 				MusicBeatState.ALLOW_DEV_RELOAD = _lastAllow_Reload;
 			}
-
-			if (PlayerSettings.solo.controls.DEV_CONSOLE)
-				NativeAPI.allocConsole();
 		});
 		FlxG.signals.preDraw.add(function() {
 			call("preDraw");
@@ -72,7 +69,9 @@ class GlobalScript {
 			call("preStateCreate", [state]);
 		});
 		FlxG.signals.preStateSwitch.add(function() {
-			call("preStateSwitch", []);
+			call("preStateSwitch");
+
+			if (Flags.PATHS_CACHE_RESET_ON_SWITCH_STATE) Paths.assetsTree.resetAssetPathCache();
 
 			var stateName = Type.getClassName(Type.getClass(@:privateAccess FlxG.game._requestedState));
 			stateName = stateName.substring(stateName.lastIndexOf(".") + 1);
@@ -106,38 +105,41 @@ class GlobalScript {
 		});
 	}
 
-	public static function event<T:CancellableEvent>(name:String, event:T):T {
-		if (scripts != null)
-			scripts.event(name, event);
-		return event;
-	}
-
-	public static function call(name:String, ?args:Array<Dynamic>) {
-		if (scripts != null)
-			scripts.call(name, args);
-	}
-
 	public static function onModSwitch(newMod:String) {
-		call("destroy");
-		scripts = FlxDestroyUtil.destroy(scripts);
+		destroy();
 		scripts = new ScriptPack("GlobalScript");
-		for (i in funkin.backend.assets.ModsFolder.getLoadedMods()) {
-			var path = Paths.script('data/global/LIB_$i');
+		for (lib in funkin.backend.assets.ModsFolder.getLoadedModsLibs()) {
+			var modName = lib.modName;
+			var path = Paths.script('data/global/LIB_$modName');
 			var script = Script.create(path);
-			if (script is DummyScript)
-				continue;
-			script.remappedNames.set(script.fileName, '$i:${script.fileName}');
+			if (script is DummyScript) continue;
+			script.remappedNames.set(script.fileName, '$modName:${script.fileName}');
+			// so you can get the current mod's library in GloablScript :)
+			// you should not make this a static variable then all scripts will try to reference the 1 static variable, which will be overwritten :yoikes:
+			script.set("MOD_LIBRARY", lib);
 			scripts.add(script);
 			script.load();
 		}
 	}
 
-	public static function beatHit(curBeat:Int) {
-		call("beatHit", [curBeat]);
+	public static inline function event<T:CancellableEvent>(name:String, event:T):T {
+		if (scripts != null)
+			scripts.event(name, event);
+		return event;
 	}
 
-	public static function stepHit(curStep:Int) {
+	public static inline function call(name:String, ?args:Array<Dynamic>)
+		if (scripts != null) scripts.call(name, args);
+
+	public static inline function beatHit(curBeat:Int)
+		call("beatHit", [curBeat]);
+
+	public static inline function stepHit(curStep:Int)
 		call("stepHit", [curStep]);
+
+	public static inline function destroy() if (scripts != null) {
+		call("destroy");
+		scripts = FlxDestroyUtil.destroy(scripts);
 	}
 }
 #end

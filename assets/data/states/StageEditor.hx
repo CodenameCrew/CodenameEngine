@@ -7,11 +7,13 @@
 * 		- Angle + Scale (like already at a angle)
 */
 
+import flixel.FlxSprite;
 import funkin.editors.stage.StageEditor;
 import funkin.editors.ui.UIWarningSubstate;
 import funkin.backend.utils.WindowUtils;
 import funkin.backend.utils.MatrixUtil;
 import flixel.math.FlxAngle;
+import flixel.math.FlxRect;
 import openfl.Lib;
 
 var exID = StageEditor.exID;
@@ -30,59 +32,7 @@ function tryUpdateHitbox(sprite) {
 	return false;
 }
 
-var allowClose = false;
-function create() {
-	WindowUtils.preventClosing = true;
-	WindowUtils.resetClosing();
-	WindowUtils.onClosing = function() {
-		if(!allowClose)
-			Lib.application.window.onClose.cancel();
-
-		var substate;
-		substate = new UIWarningSubstate("nuh uh", "you dont need to close goofus doofus", [
-			{
-				label: "Actually Exit",
-				onClick: function(t) {
-					allowClose = true;
-					Lib.application.window.close();
-				}
-			},
-			{
-				label: "Reload State",
-				onClick: function(t) {
-					FlxG.switchState(new StageEditor(StageEditor.__stage));
-				}
-			},
-			{
-				label: "oh whoops",
-				onClick: function(t) {
-					substate.close();
-				}
-			}
-		]);
-	
-		openSubState(substate);
-	}
-}
-
-function destroy() {
-	WindowUtils.preventClosing = false;
-	WindowUtils.resetClosing();
-	WindowUtils.onClosing = null;
-}
-
-function update() {
-	if (FlxG.mouse.justPressed)
-		lastRelative.set();
-
-	if(FlxG.keys.justPressed.R) {
-		trace("reloading");
-		FlxG.switchState(new StageEditor(StageEditor.__stage));
-	}
-}
-
 function genericScale(sprite, relative, doX, doY) {
-
 	var relativeMult = 1 / (FlxMath.lerp(1, stageCamera.zoom, sprite.zoomFactor) / stageCamera.zoom) * (FlxG.keys.pressed.ALT ? 2 : 1);
 	relative.x *= relativeMult;
 	relative.y *= relativeMult;
@@ -124,16 +74,27 @@ function genericOppositeScale(sprite, relative, scaleX, scaleY, repositionX, rep
 	}
 }
 
-var oldSpritePos = FlxPoint.get();
-function SCALE_BOTTOM_RIGHT(sprite, relative) {
-	preRotBullshit(sprite, relative);
-	genericScale(sprite, relative, true, true);
-	postRotBullshit(sprite, relative);
+function mouseModeChanged(sprite) {
+	// SKEW_TOP = 10, LEFT = 11, RIGHT = 12, BOTTOM = 13
+	if (mouseMode == 10 || mouseMode == 13) {
+		skewPoint1.set(0, 0);
+		skewPoint2.set(0, 1);
+		gimmeSkewBounds(sprite);
+		applySkewPoints(sprite);
+		lastSkewSize = skewSize.x;
+	} else if (mouseMode == 11 || mouseMode == 12) {
+		skewPoint1.set(0, 0);
+		skewPoint2.set(1, 0);
+		gimmeSkewBounds(sprite);
+		applySkewPoints(sprite);
+		lastSkewSize = skewSize.y;
+	}
 }
 
 /**
 	ROTATION
 **/
+var oldSpritePos = FlxPoint.get();
 function preRotBullshit(sprite, relative) {
 	if (sprite.angle != 0)
 		relative = rotateByDegrees(relative, -sprite.angle);
@@ -174,20 +135,26 @@ function rotateByDegrees(p, angle) {
  **/
 
 
+function MOVE_CENTER(sprite, relative) {
+	sprite.x = storedPos.x-relative.x;
+	sprite.y = storedPos.y-relative.y;
+}
+
 function SCALE_TOP_RIGHT(sprite, relative) {
 	preRotBullshit(sprite, relative);
 	genericOppositeScale(sprite, relative, true, true, false, true);
 	postRotBullshit(sprite, relative);
 }
 
-function MOVE_CENTER(sprite, relative) {
-	sprite.x = storedPos.x-relative.x;
-	sprite.y = storedPos.y-relative.y;
-}
-
 function SCALE_TOP_LEFT(sprite, relative) {
 	preRotBullshit(sprite, relative);
 	genericOppositeScale(sprite, relative, true, true, true, true);
+	postRotBullshit(sprite, relative);
+}
+
+function SCALE_BOTTOM_RIGHT(sprite, relative) {
+	preRotBullshit(sprite, relative);
+	genericScale(sprite, relative, true, true);
 	postRotBullshit(sprite, relative);
 }
 
@@ -221,76 +188,84 @@ function SCALE_BOTTOM(sprite, relative) {
 	postRotBullshit(sprite, relative);
 }
 
-var lastRelative = FlxPoint.get();
+var toDeg = 180 / Math.PI; // the constants stopped working
+var toRad = Math.PI / 180;
+var skewInfo = FlxRect.get();
+var skewSize = FlxPoint.get();
+var lastSkewSize = 0;
 var skewPoint1 = FlxPoint.get();
 var skewPoint2 = FlxPoint.get();
 
 function SKEW_LEFT(sprite, relative) {
-	preRotBullshit(sprite, relative);
 	if (!FlxG.keys.pressed.SHIFT) {
+		var lastX = relative.x;
+		var lastY = relative.y;
+		preRotBullshit(sprite, relative);
 		genericOppositeScale(sprite, relative, true, false, true, false);
 		postRotBullshit(sprite, relative);
+		relative.set(lastX, lastY);
 	}
 
-	skewPoint1.set(0, 0);
-	skewPoint2.set(1, 0);
-	gimmeSkewCorners(sprite, 0, 1);
-
-	sprite.y = storedPos.y - relative.y * 0.5;
-	sprite.skew.y += ((relative.y - lastRelative.y) * 0.02);
-
-	lastRelative.set((FlxG.keys.pressed.SHIFT ? lastRelative.x : relative.x), relative.y);
+	sprite.skew.y = CoolUtil.bound(Math.atan2(
+		skewPoint2.y - (skewPoint1.y - relative.y),
+		skewPoint2.x - (skewPoint1.x - (FlxG.keys.pressed.SHIFT ? 0 : relative.x))
+	) * toDeg, -89, 89);
+	gimmeSkewBounds(sprite);
+	sprite.y = storedPos.y - (skewSize.y - lastSkewSize) * 0.5;
 }
 
 function SKEW_BOTTOM(sprite, relative) {
-	preRotBullshit(sprite, relative);
 	if (!FlxG.keys.pressed.SHIFT) {
+		var lastX = relative.x;
+		var lastY = relative.y;
+		preRotBullshit(sprite, relative);
 		genericScale(sprite, relative, false, true);
 		postRotBullshit(sprite, relative);
+		relative.set(lastX, lastY);
 	}
 
-	skewPoint1.set(0, 0);
-	skewPoint2.set(0, 1);
-	gimmeSkewCorners(sprite, 0, 2);
-
-	sprite.x = storedPos.x - relative.x * 0.4;
-	sprite.skew.x -= ((relative.x - lastRelative.x) * 0.03);
-
-	lastRelative.set(relative.x, (FlxG.keys.pressed.SHIFT ? lastRelative.y : relative.y));
+	sprite.skew.x = CoolUtil.bound(Math.atan2(
+		(skewPoint2.x - relative.x) - skewPoint1.x,
+		(skewPoint2.y - (FlxG.keys.pressed.SHIFT ? 0 : relative.y)) - skewPoint1.y
+	) * toDeg, -89, 89);
+	gimmeSkewBounds(sprite);
+	sprite.x = storedPos.x + (skewSize.x - lastSkewSize) * 0.5;
 }
 
 function SKEW_TOP(sprite, relative) {
-	preRotBullshit(sprite, relative);
 	if (!FlxG.keys.pressed.SHIFT) {
+		var lastX = relative.x;
+		var lastY = relative.y;
+		preRotBullshit(sprite, relative);
 		genericOppositeScale(sprite, relative, false, true, false, true);
 		postRotBullshit(sprite, relative);
+		relative.set(lastX, lastY);
 	}
 
-	skewPoint1.set(0, 0);
-	skewPoint2.set(0, 1);
-	gimmeSkewCorners(sprite, 0, 2);
-
-	sprite.x = storedPos.x - relative.x * 0.4;
-	sprite.skew.x += ((relative.x - lastRelative.x) * 0.03);
-
-	lastRelative.set(relative.x, (FlxG.keys.pressed.SHIFT ? lastRelative.y : relative.y));
+	sprite.skew.x = CoolUtil.bound(Math.atan2(
+		skewPoint2.x - (skewPoint1.x - relative.x),
+		skewPoint2.y - (skewPoint1.y - (FlxG.keys.pressed.SHIFT ? 0 : relative.y))
+	) * toDeg, -89, 89);
+	gimmeSkewBounds(sprite);
+	sprite.x = storedPos.x - (skewSize.x - lastSkewSize) * 0.5;
 }
 
 function SKEW_RIGHT(sprite, relative) {
-	preRotBullshit(sprite, relative);
 	if (!FlxG.keys.pressed.SHIFT) {
+		var lastX = relative.x;
+		var lastY = relative.y;
+		preRotBullshit(sprite, relative);
 		genericScale(sprite, relative, true, false);
 		postRotBullshit(sprite, relative);
+		relative.set(lastX, lastY);
 	}
 
-	skewPoint1.set(0, 0);
-	skewPoint2.set(1, 0);
-	gimmeSkewCorners(sprite, 0, 1);
-
-	sprite.y = storedPos.y - relative.y * 0.5;
-	sprite.skew.y -= ((relative.y - lastRelative.y) * 0.02);
-
-	lastRelative.set((FlxG.keys.pressed.SHIFT ? lastRelative.x : relative.x), relative.y);
+	sprite.skew.y = CoolUtil.bound(Math.atan2(
+		(skewPoint2.y - relative.y) - skewPoint1.y,
+		(skewPoint2.x - (FlxG.keys.pressed.SHIFT ? 0 : relative.x)) - skewPoint1.x
+	) * toDeg, -89, 89);
+	gimmeSkewBounds(sprite);
+	sprite.y = storedPos.y + (skewSize.y - lastSkewSize) * 0.5;
 }
 
 function ROTATE(sprite, relative) {
@@ -307,22 +282,25 @@ function ROTATE(sprite, relative) {
 }
 
 
-/*function postDraw() {
-	if(storedCenter.x != 0 || storedCenter.y != 0) {
-		drawLine(storedCenter, storedRelative, 0.3);
-	}
-}*/
-
-function gimmeSkewCorners(sprite, index1, index2) {
-	if (sprite.angle == 0) {
-		var corners = sprite.extra.get(exID("buttonBoxes"));
-		skewPoint1.set(corners[index1].x, corners[index1].y);
-		skewPoint2.set(corners[index2].x, corners[index2].y);
-		return;
-	}
-
-	var ogAngle = sprite.angle;
-	sprite.angle = 0;
-	MatrixUtil.getMatrixPosition(sprite, [skewPoint1, skewPoint2], sprite.camera, sprite.frameWidth, sprite.frameHeight);
-	sprite.angle = ogAngle;
+function gimmeSkewBounds(sprite) {
+	skewInfo.set(
+		sprite.x + sprite.offset.x + sprite.frameWidth * 0.5,
+		sprite.y + sprite.offset.y + sprite.frameHeight * 0.5,
+		sprite.frameWidth * sprite.scale.x * sprite._cosAngle + sprite.frameHeight * sprite.scale.y * sprite._sinAngle,
+		sprite.frameWidth * sprite.scale.x * sprite._sinAngle + sprite.frameHeight * sprite.scale.y * sprite._cosAngle
+	);
+	skewSize.set(
+		skewInfo.height * Math.tan(sprite.skew.x * toRad),
+		skewInfo.width * Math.tan(sprite.skew.y * toRad)
+	);
+}
+function applySkewPoints(sprite) {
+	skewPoint1.set(
+		(skewInfo.x + skewSize.x * (skewPoint1.y - 0.5)) + skewInfo.width * skewPoint1.x,
+		(skewInfo.y + skewSize.y * (skewPoint1.x - 0.5)) + skewInfo.height * skewPoint1.y
+	);
+	skewPoint2.set(
+		(skewInfo.x + skewSize.x * (skewPoint2.y - 0.5)) + skewInfo.width * skewPoint2.x,
+		(skewInfo.y + skewSize.y * (skewPoint2.x - 0.5)) + skewInfo.height * skewPoint2.y
+	);
 }

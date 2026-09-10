@@ -5,6 +5,7 @@ import funkin.backend.utils.NativeAPI.CodeCursor;
 import openfl.ui.Mouse;
 
 @:headerInclude('sys/sysctl.h')
+@:headerInclude('mach/mach.h')
 @:dox(hide)
 final class Mac
 {
@@ -19,6 +20,19 @@ final class Mac
 	return value / 1024 / 1024;
 	')
 	public static function getTotalRam():Float
+	{
+		return 0;
+	}
+
+	@:functionCode('
+		task_basic_info_data_t info;
+		mach_msg_type_number_t count = TASK_BASIC_INFO_COUNT;
+		if (task_info(mach_task_self(), TASK_BASIC_INFO, (task_info_t)&info, &count) == KERN_SUCCESS) {
+			return (double)info.resident_size;
+		}
+		return 0.0;
+	')
+	public static function getCurrentProcessMemory():Float
 	{
 		return 0;
 	}

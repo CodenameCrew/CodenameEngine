@@ -65,10 +65,12 @@ class PauseSubState extends MusicBeatSubstate
 
 		menuItems = event.options;
 
-		pauseMusic = FlxG.sound.load(Assets.getMusic(Paths.music(event.music)), 0, true);
-		pauseMusic.persist = false;
-		pauseMusic.group = FlxG.sound.defaultMusicGroup;
-		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
+		if (Assets.exists(Paths.music(event.music))) {
+			pauseMusic = FlxG.sound.load(Assets.getMusic(Paths.music(event.music)), 0, true);
+			pauseMusic.persist = false;
+			pauseMusic.group = FlxG.sound.defaultMusicGroup;
+			pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
+		}
 
 		if (__cancelDefault = event.cancelled) return;
 
@@ -79,8 +81,8 @@ class PauseSubState extends MusicBeatSubstate
 		bg.scrollFactor.set();
 		add(bg);
 
-		var multiplayerInfo:String = PlayState.opponentMode ? 'pause.coopMode' :
-									 PlayState.coopMode ? 'pause.opponentMode' :
+		var multiplayerInfo:String = PlayState.opponentMode ? 'pause.opponentMode' :
+									 PlayState.coopMode ? 'pause.coopMode' :
 									 null;
 
 		levelInfo = new FunkinText(20, 15, 0, PlayState.SONG.meta.displayName, 32, false);
@@ -119,9 +121,11 @@ class PauseSubState extends MusicBeatSubstate
 		camera = new FlxCamera();
 		camera.bgColor = 0;
 		FlxG.cameras.add(camera, false);
+	}
 
+	override function createPost() {
+		super.createPost();
 		pauseScript.call("postCreate");
-
 		game.updateDiscordPresence();
 	}
 
@@ -129,7 +133,7 @@ class PauseSubState extends MusicBeatSubstate
 	{
 		super.update(elapsed);
 
-		if (pauseMusic.volume < 0.5)
+		if (pauseMusic != null && pauseMusic.volume < 0.5)
 			pauseMusic.volume += 0.01 * elapsed;
 
 		pauseScript.call("update", [elapsed]);

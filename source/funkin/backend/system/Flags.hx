@@ -15,14 +15,20 @@ import lime.utils.AssetType;
  */
 @:build(funkin.backend.system.macros.FlagMacro.build())
 class Flags {
+	public static var overridenFlags:Map<String, Bool> = [];
+
 	// -- Codename's Addon Config --
 	@:bypass public static var addonFlags:Map<String, Dynamic> = [];
+	public static var CURRENT_API_VERSION:Int = 3;
+
+	// -- Codename's ZipFolderLibrary Config --
+	public static var ALLOWED_ZIP_EXTENSIONS:Array<String> = ["zip"];
 
 	// -- Codename's Mod Config --
 	public static var MOD_NAME:String = "";
 	public static var MOD_DESCRIPTION:String = "";
 	public static var MOD_AUTHOR:String = "";
-	public static var MOD_API_VERSION:Int = 1;
+	@:lazy public static var MOD_API_VERSION:Null<Int> = null;
 	public static var MOD_DOWNLOAD_LINK:String  = "";
 	public static var MOD_DEPENDENCIES:Array<String> = [];
 
@@ -41,12 +47,11 @@ class Flags {
 	@:lazy public static var SAVE_PATH:String = haxe.macro.Compiler.getDefine("SAVE_PATH");
 	@:lazy public static var SAVE_NAME:String = haxe.macro.Compiler.getDefine("SAVE_NAME");
 
-	public static var CURRENT_API_VERSION:Int = 1;
 	public static var COMMIT_NUMBER:Int = GitCommitMacro.commitNumber;
 	public static var COMMIT_HASH:String = GitCommitMacro.commitHash;
 	public static var COMMIT_MESSAGE:String = 'Commit $COMMIT_NUMBER ($COMMIT_HASH)';
 
-	@:bypass public static var WINDOW_TITLE_USE_MOD_NAME:Bool = false;
+	@:lazy public static var WINDOW_TITLE_USE_MOD_NAME:Null<Bool> = null;
 	@:lazy public static var TITLE:String = Application.current.meta.get('name');
 	@:lazy public static var VERSION:String = Application.current.meta.get('version');
 
@@ -55,6 +60,10 @@ class Flags {
 	public static var REPO_NAME:String = "CodenameEngine";
 	public static var REPO_OWNER:String = "CodenameCrew";
 	public static var REPO_URL:String = 'https://github.com/$REPO_OWNER/$REPO_NAME';
+
+	@:lazy public static var PATHS_CACHE_LIFETIME:Null<Int> = null;
+	public static var PATHS_CACHE_RESET_ON_SWITCH_STATE:Bool = true;
+	public static var PATHS_UNIX_FIX:Bool = true;
 
 	/**
 	 * Preferred sound extension for the game's audio files.
@@ -101,7 +110,7 @@ class Flags {
 	public static var DEFAULT_BEATS_PER_MEASURE:Int = 4;
 	public static var DEFAULT_STEPS_PER_BEAT:Int = 4;
 	public static var DEFAULT_LOOP_TIME:Float = 0.0;
-
+	public static var ICONS_AUTOPOSITION:Bool = true;
 	public static var SUPPORTED_CHART_RUNTIME_FORMATS:Array<String> = ["Legacy", "Psych Engine"];
 	public static var SUPPORTED_CHART_FORMATS:Array<String> = ["BaseGame"];
 
@@ -125,11 +134,23 @@ class Flags {
 	@:also(funkin.game.PlayState.opponentMode)
 	public static var DEFAULT_OPPONENT_MODE:Bool = false;
 
+	public static var EARLY_HIT_WINDOW_RANGE:Float = 1.0; // was 0.5 for easier early hitting, but now 1 to demotivate mashing and getting away with it.
+	public static var LATE_HIT_WINDOW_RANGE:Float = 1.0;
+	public static var SHITS_BREAK_COMBO:Bool = true;
+	public static var USE_LEGACY_TIMING:Null<Bool> = null;
+
 	public static var DEFAULT_NOTE_MS_LIMIT:Float = 1500;
 	public static var DEFAULT_NOTE_SCALE:Float = 0.7;
 	#if MODCHARTING_FEATURES
 	public static var DEFAULT_MODCHART_HOLD_SUBDIVISIONS:Int = 4;
 	#end
+
+	public static var SUSTAINS_AS_ONE_NOTE:Null<Bool> = null;
+
+	public static var USE_LEGACY_CENTER_CAM:Null<Bool> = null;
+	public static var USE_LEGACY_FLXANIMATE_STAGE_MATRIX:Null<Bool> = null;
+
+	public static var CHANGE_WINDOW_TITLE_PLAYSTATE:Bool = true;
 
 	@:also(funkin.game.Character.FALLBACK_DEAD_CHARACTER)
 	public static var DEFAULT_GAMEOVER_CHARACTER:String = "bf-dead";
@@ -148,6 +169,12 @@ class Flags {
 	public static var DEFAULT_HUD_ZOOM_MULT:Float = 0.03;
 	public static var DEFAULT_CAM_ZOOM_LERP:Float = 0.05;
 	public static var DEFAULT_HUD_ZOOM_LERP:Float = 0.05;
+
+	// Font configuration
+	public static var DEFAULT_FONT:String = "vcr.ttf";
+	public static var DEFAULT_FONT_SIZE:Int = 16;
+	
+	public static var DEFAULT_ALT_ANIM_SUFFIX:String = "-alt";
 
 	// to translate these you need to convert them into ids
 	// Resume -> pause.resume
@@ -169,6 +196,7 @@ class Flags {
 	public static var DEFAULT_HEALTH:Null<Float> = null;//DEFAULT_MAX_HEALTH / 2.0;
 	public static var DEFAULT_ICONBOP:Bool = true;
 	public static var BOP_ICON_SCALE:Float = 1.2;
+	public static var ICON_DEFAULT_SCALE:Float = 1;
 	public static var ICON_OFFSET:Float = 26;
 	public static var ICON_LERP:Float = 0.33;
 
@@ -272,8 +300,6 @@ class Flags {
 	@:bypass public static var customFlags:Map<String, String> = [];
 
 	public static function loadFromData(flags:Map<String, String>, data:String) {
-		WINDOW_TITLE_USE_MOD_NAME = false;
-
 		if (!(data.length > 0)) return;
 		var res = IniUtil.parseString(data);
 
@@ -290,28 +316,40 @@ class Flags {
 					else trace('Invalid section $name');
 			}
 		}
-
-		if (!flags.exists("WINDOW_TITLE_USE_MOD_NAME")) WINDOW_TITLE_USE_MOD_NAME = !flags.exists('TITLE') && flags.exists('MOD_NAME');
-		else WINDOW_TITLE_USE_MOD_NAME = parseBool(flags.get("WINDOW_TITLE_USE_MOD_NAME"));
-
-		flags.remove("WINDOW_TITLE_USE_MOD_NAME");
 	}
 
-	public static function loadFromDatas(datas:Array<String>) {
+	private static function loadPost() {
+		if (MOD_API_VERSION == null) MOD_API_VERSION = CURRENT_API_VERSION;
+		if (WINDOW_TITLE_USE_MOD_NAME == null) WINDOW_TITLE_USE_MOD_NAME = !overridenFlags.exists('TITLE') && overridenFlags.exists('MOD_NAME');
+		if (USE_LEGACY_TIMING == null) USE_LEGACY_TIMING = MOD_API_VERSION < 2;
+		if (SUSTAINS_AS_ONE_NOTE == null) SUSTAINS_AS_ONE_NOTE = MOD_API_VERSION >= 2;
+		if (USE_LEGACY_CENTER_CAM == null) USE_LEGACY_CENTER_CAM = MOD_API_VERSION < 3;
+		if (USE_LEGACY_FLXANIMATE_STAGE_MATRIX == null) USE_LEGACY_FLXANIMATE_STAGE_MATRIX = MOD_API_VERSION < 3;
+	}
+
+	public static function loadFromDatas(datas:Array<String>):Map<String, String> {
 		var flags:Map<String, String> = [];
-		for(data in datas) {
-			if(data != null)
+		for (data in datas) {
+			if (data != null)
 				loadFromData(flags, data);
 		}
+		loadPost();
 		return flags;
 	}
 
 	public static function parseFlags(flags:Map<String, String>) {
-		for(name=>value in flags)
-			if(!parse(name, value))
-				customFlags.set(name, value);
-
+		var parsed:Bool;
+		for (name => value in flags) switch (name) {
+			case "MOD_API_VERSION":
+				var version = Std.parseInt(value) ?? CURRENT_API_VERSION;
+				if (version > MOD_API_VERSION || MOD_API_VERSION == null) MOD_API_VERSION = version;
+			default:
+				if (!(parsed = parse(name, value))) customFlags.set(name, value);
+				if (!overridenFlags.exists(name)) overridenFlags.set(name, parsed);
+		}
+		#if MODCHARTING_FEATURES
 		Options.modchartingHoldSubdivisions = DEFAULT_MODCHART_HOLD_SUBDIVISIONS;
+		#end
 	}
 
 	/**
@@ -360,5 +398,6 @@ class Flags {
 				parseFlags(flags);
 			}
 		}
+		loadPost();
 	}
 }

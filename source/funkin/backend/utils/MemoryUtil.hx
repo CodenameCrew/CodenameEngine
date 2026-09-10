@@ -119,6 +119,23 @@ final class MemoryUtil {
 		#end
 	}
 
+	/**
+	 * Gets the current process memory usage (Working Set / RSS) from the OS.
+	 * This is much more granular than Haxe GC memory and updates more frequently.
+	 * Returns the value in bytes, matching what you see in Task Manager / Activity Monitor.
+	 */
+	public static inline function currentProcessMemUsage():Float {
+		#if (cpp && windows)
+		return funkin.backend.utils.native.Windows.getCurrentProcessMemory();
+		#elseif (cpp && mac)
+		return funkin.backend.utils.native.Mac.getCurrentProcessMemory();
+		#elseif (cpp && linux)
+		return funkin.backend.utils.native.Linux.getCurrentProcessMemory();
+		#else
+		return currentMemUsage();
+		#end
+	}
+
 
 	/**
 	 * Gets the memory type of the system.

@@ -21,6 +21,7 @@ import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
 import flixel.util.FlxStringUtil;
 import flixel.FlxBasic;
@@ -136,10 +137,17 @@ class FlxSound extends FlxBasic {
 	public var radius:Float;
 
 	/**
-	 * Whether the proximity alters the pan or not
+	 * Whether the proximity alters the pan or not.
 	 * @since raltyMod
 	 */
 	public var proximityPan:Bool;
+
+	/**
+	 * Controls how much this object is affected by camera scrolling. `0` = no movement (e.g. a static sound),
+	 * This is only useful if used with proximity (Initialized once proximity is used).
+	 * @since raltyMod
+	 */
+	public var scrollFactor(default, null):FlxPoint;
 
 	/**
 	 * Stores for how much channels are in the loaded sound.
@@ -302,6 +310,8 @@ class FlxSound extends FlxBasic {
 		_lastTime = null;
 
 		if (destroySound) {
+			scrollFactor = FlxDestroyUtil.put(scrollFactor);
+
 			if (group != null) group.remove(this);
 
 			if (_channel != null) {
@@ -348,15 +358,24 @@ class FlxSound extends FlxBasic {
 
 		_amplitudeUpdate = true;
 
-		// Distance-based volume control (TODO for Ralty: REDO THIS)
+		// Distance-based volume control
 		if (target != null) {
-			var targetPosition = target.getPosition();
-			var radialMultiplier = targetPosition.distanceTo(FlxPoint.weak(x, y)) / radius;
-			targetPosition.put();
-			radialMultiplier = 1 - FlxMath.bound(radialMultiplier, 0, 1);
+			var targetPosition = target.getPosition(), position = getPosition();
+			var camera = camera;
+			if (camera != null) {
+				targetPosition.subtract(camera.scroll.x * target.scrollFactor.x, camera.scroll.y * target.scrollFactor.y);
+				if (scrollFactor != null) position.subtract(camera.scroll.x * scrollFactor.x, camera.scroll.y * scrollFactor.y);
+				else position.subtract(camera.scroll.x, camera.scroll.y);
+			}
 
-			_volumeAdjust = radialMultiplier;
-			if (proximityPan) _panAdjust = (x - target.x) / radius;
+			var radialMultiplier = targetPosition.distanceTo(position) / radius;
+
+			// Make it so it affects the 3d position of the source and not just the panning?
+			_volumeAdjust = 1 - FlxMath.bound(radialMultiplier, 0, 1);
+			if (proximityPan) _panAdjust = (position.x - targetPosition.x) / radius;
+
+			targetPosition.put();
+			position.put();
 		}
 		else
 			_volumeAdjust = 1.0;
@@ -536,11 +555,14 @@ class FlxSound extends FlxBasic {
 	 * @param	Pan			Whether panning should be used in addition to the volume changes.
 	 * @return	This FlxSound instance (nice for chaining stuff together, if you're into that).
 	 */
-	public function proximity(x = 0.0, y = 0.0, ?targetObject:FlxObject, ?radius:Float, pan = true):FlxSound {
+	public function proximity(x = 0.0, y = 0.0, ?targetObject:FlxObject, ?radius:Float, pan = true, ?scrollFactor:FlxPoint):FlxSound {
 		setPosition(x, y);
 		if (targetObject != null) this.target = targetObject;
 		if (radius != null) this.radius = radius;
 		proximityPan = pan;
+
+		if (this.scrollFactor == null) this.scrollFactor = FlxPoint.get(1, 1);
+		if (scrollFactor != null) this.scrollFactor.copyFrom(scrollFactor);
 
 		return this;
 	}
@@ -549,12 +571,26 @@ class FlxSound extends FlxBasic {
 	 * Helper function to set the coordinates of this object.
 	 * Sound positioning is used in conjunction with proximity/panning.
 	 *
-	 * @param        x        The new x position
-	 * @param        y        The new y position
+	 * @param  x  The new x position
+	 * @param  y  The new y position
 	 */
-	public inline function setPosition(x = 0.0, y = 0.0):Void {
+	public function setPosition(x = 0.0, y = 0.0):Void {
 		this.x = x;
 		this.y = y;
+	}
+
+	/**
+	 * Returns the world position of this object.
+	 * 
+	 * @param   result  Optional arg for the returning point.
+	 * @return  The world position of this object.
+	 * @since   raltyMod
+	 */
+	public function getPosition(?result:FlxPoint):FlxPoint {
+		if (result == null)
+			result = FlxPoint.get();
+
+		return result.set(x, y);
 	}
 
 	/**
@@ -682,7 +718,7 @@ class FlxSound extends FlxBasic {
 		_paused = false;
 		_time = startTime;
 		_lastTime = FlxG.game.getTicks();
-		if (_channel == null || !_channel.__isValid || _source == null #if lime_cffi || _source.__backend.disposed || _source.__backend.handle == null #end)
+		if (_channel == null || !_channel.__isValid || _source == null #if lime_cffi || _source.__backend.disposed #end)
 			makeChannel();
 
 		if (_channel != null) {
@@ -733,7 +769,8 @@ class FlxSound extends FlxBasic {
 			_lastTime = FlxG.game.getTicks();
 			_time = loopTime;
 		}
-		else _channel.loops = 999;
+		else if (_source != null)
+			_source.loops = 999;
 	}
 
 	/**
@@ -763,7 +800,7 @@ class FlxSound extends FlxBasic {
 	}
 
 	inline function get_playing():Bool @:privateAccess
-		return _channel != null && _channel.__isValid && _source.playing;
+		return _source != null && _source.playing;
 
 	inline function get_volume():Float
 		return _volume;
@@ -796,12 +833,12 @@ class FlxSound extends FlxBasic {
 	inline function get_buffer():AudioBuffer
 		@:privateAccess return _sound != null ? _sound.__buffer : null;
 
-	function update_amplitude():Void @:privateAccess {
-		if (_channel == null || !_channel.__updatePeaks(get_time()) || !_amplitudeUpdate) return;
-
-		_amplitudeUpdate = false;
-		_amplitudeLeft = _channel.__leftPeak;
-		_amplitudeRight = _channel.__rightPeak;
+	inline function update_amplitude():Void @:privateAccess {
+		if (_channel != null && _channel.__updatePeaks(get_time()) && _amplitudeUpdate) {
+			_amplitudeUpdate = false;
+			_amplitudeLeft = _channel.__leftPeak;
+			_amplitudeRight = _channel.__rightPeak;
+		}
 	}
 
 	inline function get_amplitudeLeft():Float {
@@ -829,30 +866,27 @@ class FlxSound extends FlxBasic {
 	inline function get_pitch():Float
 		return _pitch;
 
-	function set_pitch(v:Float):Float {
+	inline function set_pitch(v:Float):Float {
 		_realPitch = (_pitch = v) * _timeScaleAdjust;
-		if (_channel != null) _channel.pitch = _realPitch;
+		if (_source != null) _source.pitch = _realPitch;
 		return _pitch;
 	}
 	#end
 
 	function set_looped(v:Bool):Bool {
-		if (playing) {
-			if (v) _channel.loops = 999;
-			else _channel.loops = 0;
-		}
+		if (playing) _source.loops = v ? 999 : 0;
 		return looped = v;
 	}
 
 	function set_loopTime(v:Float):Float {
-		if (playing) _channel.loopTime = v;
+		if (playing) _source.loopTime = v;
 		return loopTime = v;
 	}
 
 	function set_endTime(v:Null<Float>):Null<Float> {
 		if (playing) {
-			if (v != null && v > 0 && v < _length) _channel.endTime = v;
-			else _channel.endTime = null;
+			if (v != null && v > 0 && v < _length) _source.length = v;
+			else _source.length = null;
 		}
 		return endTime = v;
 	}
@@ -864,7 +898,7 @@ class FlxSound extends FlxBasic {
 			return _time;
 	}
 	function get_time():Float {
-		if (_channel == null || @:privateAccess !_channel.__isValid || /*AudioManager.context == null*/funkin.backend.system.Main.audioDisconnected) return _time;
+		if (_source == null || /*AudioManager.context == null*/funkin.backend.system.Main.audioDisconnected) return _time;
 
 		final sourceTime = _source.currentTime - _source.offset - _offset;
 		if (!_source.playing || _realPitch <= 0) {
@@ -903,24 +937,21 @@ class FlxSound extends FlxBasic {
 		return _time = time;
 	}
 
-	inline function get_offset():Float return _offset;
-	inline function set_offset(offset:Float):Float {
+	function get_offset():Float return _offset;
+	function set_offset(offset:Float):Float {
 		if (_offset == (_offset = offset)) return offset;
 		//time = time + _offset;
 		return offset;
 	}
 
-	inline function get_length():Float return _length - _offset;
+	function get_length():Float return _length - _offset;
 
-	/*function get_latency():Float {
-		if (_channel != null) return _source.latency;
-		return 0;
-	}*/
+	//function get_latency():Float return _source != null ? _source.latency : 0;
 
 	override function toString():String {
 		return FlxStringUtil.getDebugString([
 			LabelValuePair.weak("playing", playing),
-			LabelValuePair.weak("time", _time),
+			LabelValuePair.weak("time", time),
 			LabelValuePair.weak("length", length),
 			LabelValuePair.weak("volume", volume),
 			LabelValuePair.weak("pitch", pitch)

@@ -97,28 +97,35 @@ class FunkinSave {
 	 */
 	public static inline function getSongHighscore(name:String, diff:String, ?variation:String, ?changes:Array<HighscoreChange>) {
 		if (changes == null) changes = [];
-		return safeGetHighscore(HSongEntry(name.toLowerCase(), diff.toLowerCase(), variation, changes));
+		return safeGetHighscore(getSongEntry(name, diff, variation, changes));
 	}
 
-	public static inline function setSongHighscore(name:String, diff:String, ?variation:String, highscore:SongScore, ?changes:Array<HighscoreChange>) {
+	public static inline function setSongHighscore(name:String, diff:String, ?variation:String, highscore:SongScore, ?changes:Array<HighscoreChange>, ?force:Bool) {
 		if (changes == null) changes = [];
-		if (safeRegisterHighscore(HSongEntry(name.toLowerCase(), diff.toLowerCase(), variation, changes), highscore)) {
+		if (safeRegisterHighscore(getSongEntry(name, diff, variation, changes), highscore, force)) {
 			flush();
 			return true;
 		}
 		return false;
 	}
+
+	public static inline function getSongEntry(name:String, diff:String, ?variation:String, ?changes:Array<HighscoreChange>):HighscoreEntry
+		return HSongEntry(name.toLowerCase(), diff.toLowerCase(), variation, changes);
 
 	public static inline function getWeekHighscore(name:String, diff:String)
-		return safeGetHighscore(HWeekEntry(name.toLowerCase(), diff.toLowerCase()));
+		return safeGetHighscore(getWeekEntry(name, diff));
 
-	public static inline function setWeekHighscore(name:String, diff:String, highscore:SongScore) {
-		if (safeRegisterHighscore(HWeekEntry(name.toLowerCase(), diff.toLowerCase()), highscore)) {
+	public static inline function setWeekHighscore(name:String, diff:String, highscore:SongScore, ?force:Bool) {
+		if (safeRegisterHighscore(getWeekEntry(name, diff), highscore, force)) {
 			flush();
 			return true;
 		}
 		return false;
 	}
+
+
+	public static inline function getWeekEntry(name, diff:String):HighscoreEntry
+		return HWeekEntry(name.toLowerCase(), diff.toLowerCase());
 
 	private static function safeGetHighscore(entry:HighscoreEntry):SongScore {
 		if (!highscores.exists(entry)) {
@@ -133,9 +140,9 @@ class FunkinSave {
 		return highscores.get(entry);
 	}
 
-	private static function safeRegisterHighscore(entry:HighscoreEntry, highscore:SongScore) {
+	private static function safeRegisterHighscore(entry:HighscoreEntry, highscore:SongScore, force = false) {
 		var oldHigh = safeGetHighscore(entry);
-		if (oldHigh.date == null || oldHigh.score < highscore.score) {
+		if (force || oldHigh.date == null || oldHigh.score < highscore.score) {
 			highscores.set(entry, highscore);
 			return true;
 		}

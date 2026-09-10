@@ -119,6 +119,14 @@ class Stage extends FlxBasic implements IBeatReceiver {
 				elems = onXMLLoaded(xml, elems);
 			}
 
+			var curRemoved:Map<String, String> = [];
+			inline function tempRemove(xml:Xml, att:String) {
+				if (xml.exists(att)) {
+					curRemoved.set(att, xml.get(att));
+					xml.remove(att);
+				}
+			}
+
 			for(node in elems) {
 				var sprite:Dynamic = switch(node.name) {
 					case "sprite" | "spr" | "sparrow":
@@ -140,9 +148,14 @@ class Stage extends FlxBasic implements IBeatReceiver {
 							(node.has.color) ? CoolUtil.getColorFromDynamic(node.att.color) : -1
 						);
 
-						if (isSolid) node.x.remove("updateHitbox");
-						for (a in ["width", "height", "color"]) node.x.remove(a);
+						if (isSolid) tempRemove(node.x, "updateHitbox");
+						for (a in ["width", "height", "color"]) tempRemove(node.x, a);
 						XMLUtil.loadSpriteFromXML(spr, node, "", NONE, false);
+
+						// mainly for the stage editor
+						for (k => v in curRemoved)
+							node.x.set(k, v);
+						curRemoved.clear();
 
 						stageSprites.set(spr.name, spr);
 						addSprite(spr);
@@ -206,7 +219,7 @@ class Stage extends FlxBasic implements IBeatReceiver {
 			}
 
 			// idk lemme check anyways just in case scripts did smth  - Nex
-			if (event != null) PlayState.instance.scripts.event("onPostStageCreation", event);
+			if (event != null) PlayState.instance.gameAndCharsEvent("onPostStageCreation", event);
 
 			// shortlived scripts destroy when the stage finishes setting up  - Nex
 			for (info in xmlImportedScripts) if (info.shortLived) {
@@ -349,16 +362,36 @@ class Stage extends FlxBasic implements IBeatReceiver {
 		}
 	}
 
+	/**
+	 * Same of destroy, but doesn't call the various script events.
+	 * @param destroySprites Whether the stage sprites should be destroyed
+	 * @param destroyScript Whether the stage script should be destroyed
+	**/
+	public function destroySilently(destroySprites:Bool = true, destroyScript:Bool = true) {
+		if (destroyScript && stageScript != null) {
+			if (PlayState.instance == state && PlayState.instance.scripts != null) PlayState.instance.scripts.remove(stageScript);
+			stageScript.destroy();
+		}
+
+		if (destroySprites)
+			for (e in stageSprites)
+				e?.destroy();
+
+		startCam.put();
+		super.destroy();
+	}
+
+	public override function destroy() {
+		if (PlayState.instance == state && PlayState.instance.scripts != null) PlayState.instance.gameAndCharsCall("onStageDestroy", [this]);
+		stageScript?.call("destroy");
+		destroySilently();
+	}
+
 	public function beatHit(curBeat:Int) {}
 
 	public function stepHit(curStep:Int) {}
 
 	public function measureHit(curMeasure:Int) {}
-
-	public override function destroy() {
-		startCam.put();
-		super.destroy();
-	}
 
 	/**
 	 * Gets a list of stages that are available to be used.
@@ -372,7 +405,7 @@ class Stage extends FlxBasic implements IBeatReceiver {
 		for (path in Paths.getFolderContent("data/stages/", false, mods ? MODS : BOTH)) {
 			var extension = Path.extension(path);
 			if (extensions.contains(extension)) {
-				list.pushOnce("test");
+				// list.pushOnce("test");
 				list.pushOnce(Path.withoutExtension(path));
 			}
 		}

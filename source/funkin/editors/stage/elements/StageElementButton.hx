@@ -184,6 +184,18 @@ class StageElementButton extends UIButton {
 		return "UNKNOWN";
 	}
 
+	public function getDefaults():Map<String, Dynamic> {
+		return [];
+	}
+
+	public function getPointAttributes():Array<String> {
+		return [];
+	}
+
+	public function getAttributeOrder():Array<String> {
+		return ["name"];
+	}
+
 	public function onSelect() {
 		// TODO: implement
 	}
@@ -216,5 +228,33 @@ class StageElementButton extends UIButton {
 		}
 		pos.put();
 		return text;
+	}
+
+	public function cleanupXML() {
+		var defaults = getDefaults();
+		var queuedPoints = [];
+		xml.x.attributeOrder = getAttributeOrder();
+		for (a in xml.x.attributes()) {
+			var attribIsPoint:Bool = isPoint(a);
+			var attrib = attribIsPoint ? a.substring(0, a.length - 1) : a;
+
+			var def:Dynamic = defaults[attrib];
+			def = def is Bool ? Std.string(def) : def;
+
+			var value:Dynamic = def is Float ? Std.parseFloat(xml.x.get(attrib)) : xml.x.get(attrib);
+			if (value == def || (def is Float && Math.abs(def - value) < 0.001)) {
+				if (!attribIsPoint || queuedPoints.contains(attrib)) {
+					xml.x.remove(a);
+					if (attribIsPoint)
+						xml.x.remove(attrib + (a.charCodeAt(a.length - 1) == 'x'.code ? 'y' : 'x'));
+				} else
+					queuedPoints.push(attrib);
+			}
+		}
+	}
+	public function isPoint(attrib:String):Bool {
+		var lastChar = attrib.charCodeAt(attrib.length - 1);
+		var points = getPointAttributes();
+		return (lastChar == 'x'.code || lastChar == 'y'.code) && points.contains(attrib.substring(0, attrib.length - 1));
 	}
 }

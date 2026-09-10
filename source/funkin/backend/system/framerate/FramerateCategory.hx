@@ -36,7 +36,6 @@ class FramerateCategory extends Sprite {
 		this.title.multiline = this.title.wordWrap = false;
 		this.text.multiline = true;
 
-
 		this.text.y = this.title.y + this.title.height + 2;
 	}
 
@@ -51,5 +50,9 @@ class FramerateCategory extends Sprite {
 		bgSprite.x = -Framerate.instance.x;
 		bgSprite.scaleX = width;
 		bgSprite.scaleY = height;
+	}
+
+	public static inline function addLine(buf:StringBuf, ...values:Array<Dynamic>):Void {
+		for (v in values) buf.add(v);
 	}
 }

@@ -26,6 +26,11 @@ class Options
 	public static var flashingMenu:Bool = true;
 	public static var camZoomOnBeat:Bool = true;
 	public static var fpsCounter:Bool = true;
+	public static var fpsCounterConductor:Bool = true;
+	public static var fpsCounterFlixel:Bool = true;
+	public static var fpsCounterSystem:Bool = true;
+	public static var fpsCounterAssets:Bool = true;
+	public static var fpsCounterStats:Bool = true;
 	public static var autoPause:Bool = true;
 	public static var antialiasing:Bool = true;
 	public static var volume:Float = 1;
@@ -38,12 +43,13 @@ class Options
 	public static var devMode:Bool = false;
 	public static var betaUpdates:Bool = false;
 	public static var splashesEnabled:Bool = true;
-	public static var hitWindow:Float = 250;
+	public static var legacyMemoryCounter:Bool = false;
+	@:dox(hide) @:doNotSave public static var hitWindow:Float = 250; // DEPRECATED
 	public static var songOffset:Float = 0;
 	public static var framerate:Int = 120;
 	public static var gpuOnlyBitmaps:Bool = #if (mac || web) false #else true #end; // causes issues on mac and web
 	public static var language = "en"; // default to english, Flags.DEFAULT_LANGUAGE should not modify this
-	public static var streamedMusic:Bool = true;
+	public static var streamedMusic:Bool = false;
 	public static var streamedVocals:Bool = false;
 	public static var quality:Int = 1;
 	public static var allowConfigWarning:Bool = true;
@@ -58,6 +64,7 @@ class Options
 	 */
 	public static var intensiveBlur:Bool = true;
 	public static var editorSFX:Bool = true;
+	public static var charterSwapEventSides:Bool = false;
 
 	public static var editorCharterPrettyPrint:Bool = false;
 	public static var editorCharacterPrettyPrint:Bool = true;
@@ -84,6 +91,7 @@ class Options
 	public static var charterMetronomeEnabled:Bool = false;
 	public static var charterShowSections:Bool = true;
 	public static var charterShowBeats:Bool = true;
+	public static var charterShowCameraHighlights:Bool = true;
 	public static var charterEnablePlaytestScripts:Bool = true;
 	public static var charterRainbowWaveforms:Bool = false;
 	public static var charterLowDetailWaveforms:Bool = false;
@@ -126,6 +134,7 @@ class Options
 	public static var P1_VOLUME_UP:Array<FlxKey> = [PLUS];
 	public static var P1_VOLUME_DOWN:Array<FlxKey> = [MINUS];
 	public static var P1_VOLUME_MUTE:Array<FlxKey> = [ZERO];
+	public static var P1_FPS_COUNTER:Array<FlxKey> = [#if web THREE #else F3 #end]; // 3 on web or F3 on windows, linux and other things that runs code
 
 	// Debugs
 	public static var P1_DEV_ACCESS:Array<FlxKey> = [SEVEN];
@@ -158,6 +167,7 @@ class Options
 	public static var P2_VOLUME_UP:Array<FlxKey> = [NUMPADPLUS];
 	public static var P2_VOLUME_DOWN:Array<FlxKey> = [NUMPADMINUS];
 	public static var P2_VOLUME_MUTE:Array<FlxKey> = [NUMPADZERO];
+	public static var P2_FPS_COUNTER:Array<FlxKey> = [];
 
 	// Debugs
 	public static var P2_DEV_ACCESS:Array<FlxKey> = [];
@@ -190,6 +200,7 @@ class Options
 	public static var SOLO_VOLUME_UP(get, null):Array<FlxKey>;
 	public static var SOLO_VOLUME_DOWN(get, null):Array<FlxKey>;
 	public static var SOLO_VOLUME_MUTE(get, null):Array<FlxKey>;
+	public static var SOLO_FPS_COUNTER(get, null):Array<FlxKey>;
 
 	// Debugs
 	public static var SOLO_DEV_ACCESS(get, null):Array<FlxKey>;
@@ -223,7 +234,15 @@ class Options
 
 	public static function applySettings() {
 		applyKeybinds();
+		applyQuality();
 
+		FlxG.sound.defaultMusicGroup.volume = volumeMusic;
+		FlxG.autoPause = autoPause;
+		if (FlxG.updateFramerate < framerate) FlxG.drawFramerate = FlxG.updateFramerate = framerate;
+		else FlxG.updateFramerate = FlxG.drawFramerate = framerate;
+	}
+
+	public static function applyQuality() {
 		switch (quality) {
 			case 0:
 				antialiasing = false;
@@ -235,11 +254,7 @@ class Options
 				gameplayShaders = true;
 		}
 
-		FlxG.sound.defaultMusicGroup.volume = volumeMusic;
 		FlxG.game.stage.quality = (FlxG.enableAntialiasing = antialiasing) ? BEST : LOW;
-		FlxG.autoPause = autoPause;
-		if (FlxG.updateFramerate < framerate) FlxG.drawFramerate = FlxG.updateFramerate = framerate;
-		else FlxG.updateFramerate = FlxG.drawFramerate = framerate;
 	}
 
 	public static function applyKeybinds() {

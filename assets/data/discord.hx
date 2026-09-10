@@ -8,7 +8,7 @@ function onDiscordPresenceUpdate(e) {
 	var data = e.presence;
 
 	if(data.button1Label == null)
-		data.button1Label = "meow"; // "Codename Engine Discord"
+		data.button1Label = "Codename Engine Discord";
 	if(data.button1Url == null)
 		data.button1Url = "https://discord.gg/2NTCdsQvx4";
 }
@@ -33,8 +33,8 @@ function onEditorTreeLoaded(name:String) {
 			DiscordUtil.changePresenceSince("Choosing a Character", null);
 		case "Chart Editor":
 			DiscordUtil.changePresenceSince("Choosing a Chart", null);
-		//case "Stage Editor": // secret for now
-		//	DiscordUtil.changePresenceSince("Choosing a Stage", null);
+		case "Stage Editor": // secret for now
+			DiscordUtil.changePresenceSince("Choosing a Stage", null);
 	}
 }
 
@@ -44,7 +44,7 @@ function onEditorLoaded(name:String, editingThing:String) {
 			DiscordUtil.changePresenceSince("Editing a Character", editingThing);
 		case "Chart Editor":
 			DiscordUtil.changePresenceSince("Editing a Chart", editingThing);
-		//case "Stage Editor":
-		//	DiscordUtil.changePresenceSince("Editing a Stage", editingThing);
+		case "Stage Editor":
+			DiscordUtil.changePresenceSince("Editing a Stage", editingThing);
 	}
 }

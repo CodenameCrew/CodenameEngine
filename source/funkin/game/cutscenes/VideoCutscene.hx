@@ -60,7 +60,9 @@ class VideoCutscene extends Cutscene {
 
 		add(video = new FlxVideoSprite());
 		video.antialiasing = true;
+		#if (hxvlc < version("2.0.0"))
 		video.autoPause = false;  // Imma handle it better inside this class, mainly because of the pause menu  - Nex
+		#end
 		video.bitmap.onEndReached.add(close);
 		video.bitmap.onFormatSetup.add(function() if (video.bitmap != null && video.bitmap.bitmapData != null) {
 			final width = video.bitmap.bitmapData.width;
@@ -101,14 +103,9 @@ class VideoCutscene extends Cutscene {
 		FlxTween.tween(loadingBackdrop, {alpha: 1}, 0.5, {ease: FlxEase.sineInOut});
 
 		Main.execAsync(function() {
-			if (localPath.startsWith("[ZIP]")) {
-				// ZIP PATH: EXPORT
-				// TODO: this but better and more ram friendly
-				localPath = './.temp/video-${curVideo++}.mp4';
-				File.saveBytes(localPath, Assets.getBytes(path));
-			}
-
-			if (video.load(localPath)) new FlxTimer().start(0.001, function(_) { mutex.acquire(); onReady(); mutex.release(); });
+			if (video.load(localPath)) new FlxTimer().start(0.001, function(_) {
+				mutex.acquire(); onReady(); mutex.release();
+			});
 			else { mutex.acquire(); close(); mutex.release(); }
 		});
 
@@ -180,6 +177,7 @@ class VideoCutscene extends Cutscene {
 	}
 
 	public inline function onReady() {
+		trace("VideoCutscene: Ready");
 		FlxTween.cancelTweensOf(loadingBackdrop);
 		FlxTween.tween(loadingBackdrop, {alpha: 0}, 0.7, {ease: FlxEase.sineInOut, onComplete: function(_) {
 			loadingBackdrop.destroy();
@@ -205,6 +203,7 @@ class VideoCutscene extends Cutscene {
 		}
 	}
 
+	#if (hxvlc < version("2.0.0"))
 	@:dox(hide) override public function onFocus() {
 		if(FlxG.autoPause && !paused) video.resume();
 		super.onFocus();
@@ -214,6 +213,7 @@ class VideoCutscene extends Cutscene {
 		if(FlxG.autoPause && !paused) video.pause();
 		super.onFocusLost();
 	}
+	#end
 
 	public override function pauseCutscene() {
 		video.pause();

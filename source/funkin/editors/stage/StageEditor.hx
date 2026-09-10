@@ -17,6 +17,7 @@ import haxe.xml.Access;
 import haxe.xml.Printer;
 import lime.ui.MouseCursor;
 import openfl.ui.Mouse;
+import openfl.display.BlendMode;
 
 using funkin.backend.utils.MatrixUtil;
 
@@ -260,6 +261,7 @@ class StageEditor extends UIState {
 					stageSpritesWindow.add(button);
 				} else if(sprite == null) {
 					var basic = new FlxBasic(); // prevent awkward layering
+					basic.exists = false;
 					insert(i, basic);
 					var button = new StageUnknownButton(0,0, basic, xml);
 					stageSpritesWindow.add(button);
@@ -308,8 +310,8 @@ class StageEditor extends UIState {
 				sprite.extra.set(exID("type"), node.name);
 				sprite.extra.set(exID("imageFile"), '${node.getAtt("sprite").getDefault(sprite.name)}');
 				sprite.extra.set(exID("parentNode"), parent);
-				sprite.extra.set(exID("highMemory"), parent.name == "highMemory");
-				sprite.extra.set(exID("lowMemory"), parent.name == "lowMemory");
+				sprite.extra.set(exID("highMemory"), parent.name == "high-memory");
+				sprite.extra.set(exID("lowMemory"), parent.name == "low-memory");
 				//sprite.active = false;
 			}
 			if(sprite is StageCharPos)
@@ -359,10 +361,10 @@ class StageEditor extends UIState {
 		var parent = new Access(node.x.parent);
 
 		var charName = switch(node.name) {
-			case "dad" | "opponent": "dad";
-			case "gf" | "girlfriend": "gf";
-			case "bf" | "boyfriend" | "player": "bf";
-			default: (charPos.flipX) ? "bf" : "dad";
+			case "dad" | "opponent": Flags.DEFAULT_OPPONENT;
+			case "gf" | "girlfriend": Flags.DEFAULT_GIRLFRIEND;
+			case "bf" | "boyfriend" | "player": Flags.DEFAULT_CHARACTER;
+			default: (charPos.flipX) ? Flags.DEFAULT_CHARACTER : Flags.DEFAULT_OPPONENT;
 		}
 
 		var char = new Character(0,0, charName, charPos.flipX, true);
@@ -374,14 +376,11 @@ class StageEditor extends UIState {
 		}
 		char.name = charName;
 		char.debugMode = true;
-		// Play first anim, and make it the last frame
+		char.useRenderTexture = true;
+		// Play first anim, and make it the last frame by reversing and stopping.
 		var animToPlay = char.getAnimOrder()[0];
-		char.playAnim(animToPlay, true, NONE);
-		var lastIndx = (char.animateAtlas != null) ?
-			char.animateAtlas.anim.length - 1 :
-			char.animation.curAnim.numFrames - 1;
-		char.playAnim(animToPlay, true, NONE, false, lastIndx);
-		char.stopAnimation();
+		char.playAnim(animToPlay, true, NONE, true, 0);
+		char.stopAnim();
 
 		// Add it to the stage
 		char.visible = true;
@@ -394,8 +393,8 @@ class StageEditor extends UIState {
 		char.extra.set(exID("camY"), charPos.camyoffset);
 
 		char.extra.set(exID("parentNode"), parent);
-		char.extra.set(exID("highMemory"), parent.name == "highMemory");
-		char.extra.set(exID("lowMemory"), parent.name == "lowMemory");
+		char.extra.set(exID("highMemory"), parent.name == "high-memory");
+		char.extra.set(exID("lowMemory"), parent.name == "low-memory");
 
 		chars.push(char);
 		stage.applyCharStuff(char, charPos.name, 0);
@@ -510,7 +509,7 @@ class StageEditor extends UIState {
 
 	function _file_save(_) {
 		#if sys
-		FlxG.sound.play(Paths.sound('editors/save'));
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);
 		CoolUtil.safeSaveFile(
 			'${Paths.getAssetsRoot()}/data/stages/${__stage}.xml',
 			buildStage()
@@ -522,7 +521,7 @@ class StageEditor extends UIState {
 	}
 
 	function _file_saveas(_) {
-		FlxG.sound.play(Paths.sound('editors/save'));
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_SAVE_SOUND);
 		openSubState(new SaveSubstate(buildStage(), {
 			defaultSaveFile: '${__stage}.xml'
 		}));
@@ -554,6 +553,31 @@ class StageEditor extends UIState {
 		openSubState(substate);
 	}
 
+	function _solid_new(_) {
+		var node:Access = new Access(Xml.createElement("solid"));
+		stage.stageXML.x.addChild(node.x);
+		node.att.name = "solid_" + stageSpritesWindow.buttons.members.length;
+
+		var sprite:FunkinSprite = new FunkinSprite();
+		insert(members.indexOf(stage), sprite);
+		sprite.extra.set(exID("node"), node);
+		sprite.extra.set(exID("type"), node.name);
+		sprite.extra.set(exID("imageFile"), '');
+		sprite.extra.set(exID("parentNode"), stage.stageXML.x);
+		sprite.extra.set(exID("highMemory"), false);
+		sprite.extra.set(exID("lowMemory"), false);
+		sprite.antialiasing = true;
+		xmlMap.set(sprite, node);
+
+		var button:StageSpriteButton = new StageSolidButton(0, 0, sprite, node);
+		sprite.extra.set(exID("button"), button);
+		stageSpritesWindow.add(button);
+
+		var substate = new StageSpriteEditScreen(button, "layouts/stage/solidEditScreen");
+		substate.newSprite = true;
+		openSubState(substate);
+	}
+
 	function _character_new(_) {
 		var node:Access = new Access(Xml.createElement("char"));
 		stage.stageXML.x.addChild(node.x);
@@ -565,9 +589,7 @@ class StageEditor extends UIState {
 		// Play first anim, and make it the last frame
 		var animToPlay = char.getAnimOrder()[0];
 		char.playAnim(animToPlay, true, NONE);
-		var lastIndx = (char.animateAtlas != null) ?
-			char.animateAtlas.anim.length - 1 :
-			char.animation.curAnim.numFrames - 1;
+		var lastIndx = char.animation.curAnim.numFrames - 1;
 		char.playAnim(animToPlay, true, NONE, false, lastIndx);
 		char.stopAnimation();
 
@@ -625,6 +647,7 @@ class StageEditor extends UIState {
 		saveToXml(xml, "folder", stage.spritesParentFolder);
 		saveToXml(xml, "startCamPosX", stage.startCam.x, 0);
 		saveToXml(xml, "startCamPosY", stage.startCam.y, 0);
+		xml.attributeOrder = ["name", "folder", "zoom", "startCamPosX", "startCamPosY"];
 
 		for(prop in stage.extra.keys())
 			if(!Stage.DEFAULT_ATTRIBUTES.contains(prop) && !prop.startsWith("stageEditor."))
@@ -633,91 +656,19 @@ class StageEditor extends UIState {
 		var group:Xml = null;
 		var curGroup:String = null;
 
-		for(sprite in getSprites()) {
-			var button:StageElementButton = sprite.extra.get(exID("button"));
-			var newNode:Xml = null;
+		for(button in stageSpritesWindow.buttons.members) {
+			button.cleanupXML();
 			var sprite:FunkinSprite = button.getSprite();
-			if(button is StageSolidButton) {
-				var button:StageSolidButton = cast button;
-				var node:Access = cast sprite.extra.get(exID("node"));
-				Logs.trace("SOLID / BOX isnt implemented yet!");
-			} else if(button is StageSpriteButton) {
-				var button:StageSpriteButton = cast button;
-				var node:Access = cast sprite.extra.get(exID("node"));
-				var spriteXML = Xml.createElement("sprite");
-				saveToXml(spriteXML, "name", sprite.name);
-				saveToXml(spriteXML, "x", sprite.x, 0);
-				saveToXml(spriteXML, "y", sprite.y, 0);
-				saveToXml(spriteXML, "sprite", sprite.extra.get(exID("imageFile")));
-				savePointToXml(spriteXML, "scale", sprite.scale, 1);
-				savePointToXml(spriteXML, "scroll", sprite.scrollFactor, 1);
-				saveToXml(spriteXML, "skewx", sprite.skew.x, 0);
-				saveToXml(spriteXML, "skewy", sprite.skew.y, 0);
-				saveToXml(spriteXML, "alpha", sprite.alpha, 1);
-				saveToXml(spriteXML, "angle", sprite.angle, 0);
-				//saveToXml(spriteXML, "graphicSize", sprite.width, sprite.width);
-				//saveToXml(spriteXML, "graphicSizex", sprite.height, sprite.height);
-				//saveToXml(spriteXML, "graphicSizey", sprite.height, sprite.height);
-				saveToXml(spriteXML, "zoomfactor", sprite.zoomFactor, 1);
-				saveToXml(spriteXML, "updateHitbox", getBoolOfNode(node, "updateHitbox"), false);
-				saveToXml(spriteXML, "antialiasing", sprite.antialiasing, true);
-				//saveToXml(spriteXML, "width", sprite.width);
-				//saveToXml(spriteXML, "height", sprite.height);
-				saveToXml(spriteXML, "playOnCountdown", getBoolOfNode(node, "playOnCountdown"), false);
-				saveToXml(spriteXML, "interval", node.getAtt("beatInterval"), 2);
-				saveToXml(spriteXML, "interval", node.getAtt("interval"), 2);
-				saveToXml(spriteXML, "beatOffset", node.getAtt("beatOffset"), 0);
-				if(sprite.spriteAnimType != LOOP)
-					spriteXML.set("type", sprite.spriteAnimType.toString());
-				saveToXml(spriteXML, "color", sprite.color.toWebString(), "#FFFFFF");
-				// TODO: save custom parameters
-				//saveToXml(spriteXML, "flipX", sprite.flipX, false);
-				newNode = spriteXML;
-			} else if(button is StageCharacterButton) {
-				var button:StageCharacterButton = cast button;
-				var char:Character = button.char;
-				var node:Access = cast char.extra.get(exID("node"));
-				var defaultPos = Stage.getDefaultPos(char.name.replace("NO_DELETE_", ""));
-				var charXML:Xml = Xml.createElement(node.name);
-				if(!char.name.startsWith("NO_DELETE_"))
-					saveToXml(charXML, "name", char.name);
-				saveToXml(charXML, "x", char.x, defaultPos.x);
-				saveToXml(charXML, "y", char.y, defaultPos.y);
-				saveToXml(charXML, "camxoffset", char.extra.get(exID("camX")), 0);
-				saveToXml(charXML, "camyoffset", char.extra.get(exID("camY")), 0);
-				saveToXml(charXML, "skewx", char.skew.x, 0);
-				saveToXml(charXML, "skewy", char.skew.y, 0);
-				saveToXml(charXML, "spacingx", char.extra.get(exID("spacingX")), 20);
-				saveToXml(charXML, "spacingy", char.extra.get(exID("spacingY")), 0);
-				saveToXml(charXML, "alpha", char.alpha / 0.75, 1);
-				saveToXml(charXML, "angle", char.angle, 0);
-				saveToXml(charXML, "zoomfactor", char.zoomFactor, 1);
-				saveToXml(charXML, "flipX", char.isPlayer, defaultPos.flip);
-				savePointToXml(charXML, "scroll", char.scrollFactor, defaultPos.scroll);
-				savePointToXml(charXML, "scale", char.scale.scaleNew(button.charScale), 1);
-				// TODO: save custom parameters
-				newNode = charXML;
-			} else if(button is StageUnknownButton) {
-				var button:StageUnknownButton = cast button;
-				newNode = button.xml.x;
-			}
-			else {
-				Logs.trace("Unknown Stage Type : " + Type.getClassName(Type.getClass(button)));
-				Logs.trace("> Sprite : " + Type.getClassName(Type.getClass(sprite)));
-			}
+			var newNode:Xml = button.xml.x;
 
 			if(newNode != null && sprite != null) {
-				var isLowMemory = sprite.extra.get(exID("lowMemory")) == true;
-				var isHighMemory = sprite.extra.get(exID("highMemory")) == true;
-				/* // Only if this compiled :sob:
-				var groupName:String = null;
-				if ((groupName = isLowMemory ? "low-memory" : isHighMemory ? "high-memory" : null) != null) {
-					var a = group != null && groupName != curGroup && ((group = cast xml.addChild(group)) != null);
-					(group = (group == null ? Xml.createElement(curGroup = groupName) : group)).addChild(newNode);
-				}else xml.addChild(newNode);
-				*/
+				var groupName = (sprite == null ? null : 
+					(
+						(sprite.extra.get(exID("lowMemory")) == true) ? "low-memory" :
+						(sprite.extra.get(exID("highMemory")) == true) ? "high-memory" : null
+					)
+				);
 
-				var groupName = isLowMemory ? "low-memory" : isHighMemory ? "high-memory" : null;
 				if(group != null && groupName != curGroup) {
 					xml.addChild(group);
 					group = null;
@@ -734,7 +685,7 @@ class StageEditor extends UIState {
 	}
 
 	function _edit_undo(_) {
-		FlxG.sound.play(Flags.DEFAULT_EDITOR_UNDO_SOUND);
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_UNDO_SOUND);
 		var undo = undos.undo();
 		switch(undo) {
 			case null:
@@ -760,7 +711,7 @@ class StageEditor extends UIState {
 	}
 
 	function _edit_redo(_) {
-		FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_REDO_SOUND));
+		UIState.playEditorSound(Flags.DEFAULT_EDITOR_REDO_SOUND);
 		var redo = undos.redo();
 		switch(redo) {
 			case null:
@@ -1160,7 +1111,9 @@ class StageEditor extends UIState {
 		}
 
 		mouseMode = (FlxG.mouse.justReleased) ? NONE : mouseMode;
-
+		if (prevMode != mouseMode)
+			call("mouseModeChanged", [sprite]);
+		
 		if (prevMode == NONE && mouseMode == NONE) return;
 
 		if (prevMode != NONE && mouseMode == NONE) {

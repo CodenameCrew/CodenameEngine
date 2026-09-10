@@ -16,7 +16,7 @@
 		<str id="animation">Animación</str>
 		<str id="atlas">Atlas</str>
 		<str id="spritemap">Mapa de sprites</str>
-		
+
 		<str id="directory">Ubicación ({0}/)</str>
 		<str id="found">{0} {1} Encontrado</str>
 		<str id="foundplural">{0} {1} Encontrados</str>
@@ -188,6 +188,7 @@
 					<str id="paste">Pegar</str>
 					<str id="cut">Cortar</str>
 					<str id="delete">Eliminar</str>
+					<str id="deletestacked">Eliminar Notas Apiladas</str>
 				</group>
 
 				<str id="topBar.chart">Chart</str>
@@ -550,7 +551,7 @@
 			<str id="title">Info. del Escenario</str>
 			<str id="stageName">Nombre del Escenario</str>
 			<str id="spritePath">Ubicación de Imágenes\n(Necesita Refrescar)</str>
-			<str id="startCamPos">Posición inicial de la cámara (X, Y)</str>
+			<str id="startCamPos">Posición inicial de la cámara\n(X, Y)</str>
 			<str id="zoom">Zoom</str>
 		</group>
 
@@ -565,7 +566,7 @@
 
 			<str id="elementName">Nombre del Elemento</str>
 			<str id="nameID">Identificador de Nombre</str>
-			<str id="imageFile">Imagen (WIP: necesita refrescar)\nEn (${stage.spritesParentFolder})</str>
+			<str id="imageFile">Imagen\n(en "{0}")</str>
 			<str id="scroll">Desplazamiento {0}</str>
 			<str id="scale">Tamaño {0}</str>
 			<str id="camera">Cámara {0}</str>
@@ -579,6 +580,7 @@
 			<str id="lowMemory">Baja Memoria</str>
 			<str id="attributes">Atributos</str>
 			<str id="transformPreview">Preview:</str>
+			<str id="animations">Animaciónes</str>
 
 			<str id="animType">Tipo de Animación</str>
 			<group name="AnimTypeDropdown" prefix="animType.">
@@ -601,6 +603,7 @@
 		<group name="StageElement" prefix="stageElement.">
 			<str id="scale">Tamaño: {0}, {1}</str>
 			<str id="scroll">Desplazamiento: {0}, {1}</str>
+			<str id="unknown">Sprite Desconocido:\n{0}</str>
 		</group>
 
 		<group name="StageSprites" prefix="stageSprites.">
@@ -635,5 +638,18 @@
 		<str id="saveAndExitGame">Guardar y Salir del Juego</str>
 		<str id="saveAndExitToMenu">Guardar y Volver al Menú</str>
 		<str id="cancel">Cancelar</str>
+	</group>
+	
+	<group name="ModConfigWarning" prefix="modConfigWarning.">
+		<str id="warningTitle">¡Falta la configuración del mod!</str>
+		<str id="warningDesc">¡Tu mod actualmente no tiene un archivo de configuración!\n\n¿Quisieras generar uno automáticamente?\n\n(PD: Si este no es tu mod por favor deshabilita el Modo Desarrollador para que no aparezca esta ventana.)</str>
+
+		<str id="createdTitle">¡Configuración creada!</str>
+		<str id="createdDesc">¡Tu archivo de configuración se creó en {0}!</str>
+	</group>
+
+	<group name="ModAPIWarning" prefix="modApiWarning.">
+		<str id="warningTitle">¡Versión de API desactualizada! (v{0} &lt; v{1})</str>
+		<str id="warningDesc">¡La configuración de tu mod usa una versión API antigua! ¡Esto CAUSARÁ problemas con código y compatibilidad!\n\nSe recomienda que cambies el código y configuración de tu mod para encajar con la versión nueva.\n\nMientras tanto, se hará lo mejor posible para compatibilizar el código actual, pero aún se recomienda actualizarlo.\n\n(PD: Si este no es tu mod por favor deshabilita el Modo Desarrollador, y notifique a los desarrolladores del mod si es necesario.)</str>
 	</group>
 </language>

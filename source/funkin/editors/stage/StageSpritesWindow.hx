@@ -34,10 +34,7 @@ class StageSpritesWindow extends UIButtonList<StageElementButton> {
 				},
 				{
 					label: translate("box"),
-					onSelect: function(_) {
-						UIState.state.displayNotification(new UIBaseNotification(translate("warnings.not-implemented"), 2, BOTTOM_LEFT));
-						CoolUtil.playMenuSFX(WARNING, 0.45);
-					},
+					onSelect: StageEditor.instance._solid_new,
 					color: 0xFF00FF00,
 					icon: 2
 				},

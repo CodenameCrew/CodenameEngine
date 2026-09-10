@@ -32,7 +32,7 @@ class KeybindSetting extends FlxTypedSpriteGroup<FlxSprite> {
 		option1 = controlArrayP1[0];
 		option2 = controlArrayP2[0];
 
-		for(i in 1...3) {
+		for (i in 1...3) {
 			var b = null;
 			var bx = FlxG.width * (0.25 * (i+1)) - x;
 			if (i == 1)
@@ -58,6 +58,11 @@ class KeybindSetting extends FlxTypedSpriteGroup<FlxSprite> {
 			add(icon);
 
 			title.setPosition(100, 0);
+		}
+
+		if (title.x + title.width > bind1.x - 20) {
+			title.scale.x = (bind1.x - 20 - title.x) / title.width;
+			title.updateHitbox();
 		}
 
 		setPosition(x, y);

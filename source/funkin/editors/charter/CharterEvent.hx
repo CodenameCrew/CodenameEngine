@@ -50,7 +50,7 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 
 		if (snappedToGrid && eventsBackdrop != null) {
 			bWidth = 37 + (icons.length * 22);
-			x = eventsBackdrop.x + (global ? 0 : eventsBackdrop.width - bWidth);
+			x = eventsBackdrop.x + ((global != Options.charterSwapEventSides) ? 0 : eventsBackdrop.width - bWidth);
 		}
 
 		for(k=>i in icons) {
@@ -68,7 +68,7 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 			selectedColorTransform(sprite.colorTransform);
 		}
 
-		flipX = displayGlobal;
+		flipX = (displayGlobal != Options.charterSwapEventSides);
 	}
 
 	@:noCompletion private inline function selectedColorTransform(transform:ColorTransform) {
@@ -82,7 +82,7 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 	}
 
 	/**
-	 * Pack data is a list of 4 strings separated by `________PACKSEP________`
+	 * Pack data is a list of 5 strings separated by `________PACKSEP________`
 	 * [0] Event Name
 	 * [1] Event Script
 	 * [2] Event JSON Info
@@ -106,9 +106,8 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 			var packData = getPackData(event.name);
 			if(packData != null) {
 				var scriptFile = packData[4];
-				if(scriptFile != null) {
-					script = Script.fromString(scriptFile, uiScript);
-				}
+				if (scriptFile != null)
+					script = Script.fromString(scriptFile, uiScript+'.hx');
 			}
 		}
 
@@ -276,10 +275,47 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 				}
 
 			case "Camera Movement":
-				// camera movement, use health icon
-				if(event.params != null) {
-					var icon = getIconFromStrumline(event.params[0]);
-					if(icon != null) return icon;
+				var shouldDoArrow:Bool = false;
+				var icon:Null<FlxSprite> = null;
+				if (event.params != null) {
+					shouldDoArrow = event.params[1] && event.params[3] != "CLASSIC"; // is Tweened and isnt Lerped
+					icon = getIconFromStrumline(event.params[0]); // camera movement, use health icon
+				}
+
+				if (icon == null) icon = generateDefaultIcon(event.name);
+
+				if(event.params != null && shouldDoArrow && !inMenu) {
+					var group = new EventIconGroup();
+					group.add(icon);
+					group.members[0].x -= 8;
+					group.members[0].y -= 8;
+					generateEventIconDurationArrow(group, event.params[2]);
+					return group;
+				} else
+					return icon;
+
+			case "Camera Position":
+				var shouldDoArrow:Bool = false;
+				if (event.params != null)
+					shouldDoArrow = event.params[2] && event.params[4] != "CLASSIC"; // is Tweened and isnt Lerped
+
+				if(event.params != null && shouldDoArrow && !inMenu) {
+					var group = new EventIconGroup();
+					group.add(generateDefaultIcon(event.name));
+					generateEventIconDurationArrow(group, event.params[3]);
+					return group;
+				}
+
+			case "Camera Zoom":
+				var shouldDoArrow:Bool = false;
+				if (event.params != null)
+					shouldDoArrow = event.params[0] && event.params[4] != "CLASSIC";
+
+				if(event.params != null && shouldDoArrow && !inMenu) {
+					var group = new EventIconGroup();
+					group.add(generateDefaultIcon(event.name));
+					generateEventIconDurationArrow(group, event.params[3]);
+					return group;
 				}
 		}
 		return generateDefaultIcon(event.name);
@@ -375,7 +411,7 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 		draggable = true;
 
 		bWidth = 37 + (icons.length * 22);
-		x = (snappedToGrid && eventsBackdrop != null && global ? eventsBackdrop.x - bWidth : (global ? 0 : -bWidth));
+		x = (snappedToGrid && eventsBackdrop != null && (global != Options.charterSwapEventSides) ? eventsBackdrop.x - bWidth : ((global != Options.charterSwapEventSides) ? 0 : -bWidth));
 	}
 }
 

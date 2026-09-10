@@ -29,12 +29,15 @@ class ModSwitchMenu extends MusicBeatSubstate {
 		bg.alpha = 0;
 		FlxTween.tween(bg, {alpha: 0.5}, 0.25, {ease: FlxEase.cubeOut});
 
-		mods = ModsFolder.getModsList();
+		mods = ModsFolder.getModsList({
+		    descending: false,
+			mode: CLEAN,
+		});
 		mods.push(null);
 
 		alphabets = new FlxTypedGroup<Alphabet>();
 		for(mod in mods) {
-			var a = new Alphabet(0, 0, mod == null ? TU.translate("mods.disableMods") : mod, "bold");
+			var a = new Alphabet(0, 0, mod == null ? TU.translate("mods.disableMods") : Path.withoutExtension(mod), "bold");
 			if(mod == ModsFolder.currentModFolder)
 				a.color = FlxColor.LIME;
 			a.isMenuItem = true;

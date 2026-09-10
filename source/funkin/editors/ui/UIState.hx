@@ -18,9 +18,11 @@ class UIState extends MusicBeatState {
 	public var curContextMenu:UIContextMenu = null;
 
 	public static var state(get, never):UIState;
+	
+	public static var fallbackState:UIState = null;
 
 	private inline static function get_state()
-		return FlxG.state is UIState ? cast FlxG.state : null;
+		return FlxG.state is UIState ? cast FlxG.state : fallbackState;
 
 	public var buttonHandler:Void->Void = null;
 	public var hoveredSprite:UISprite = null;
@@ -106,7 +108,7 @@ class UIState extends MusicBeatState {
 		}
 
 		if (FlxG.mouse.justPressed) {
-			FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_CLICK_SOUND));
+			playEditorSound(Flags.DEFAULT_EDITOR_CLICK_SOUND);
 		}
 
 		if (FlxG.mouse.justReleased)
@@ -147,7 +149,7 @@ class UIState extends MusicBeatState {
 	}
 
 	public function closeCurrentContextMenu() {
-		FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_WINDOWCLOSE_SOUND));
+		playEditorSound(Flags.DEFAULT_EDITOR_WINDOWCLOSE_SOUND);
 		if(curContextMenu != null) {
 			curContextMenu.close();
 			curContextMenu = null;
@@ -155,7 +157,7 @@ class UIState extends MusicBeatState {
 	}
 
 	public function openContextMenu(options:Array<UIContextMenuOption>, ?callback:UIContextMenuCallback, ?x:Float, ?y:Float, ?w:Int) {
-		FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_WINDOWAPPEAR_SOUND));
+		playEditorSound(Flags.DEFAULT_EDITOR_WINDOWAPPEAR_SOUND);
 		var state = FlxG.state;
 		while(state.subState != null && !(state._requestSubStateReset && state._requestedSubState == null))
 			state = state.subState;
@@ -190,5 +192,10 @@ class UIState extends MusicBeatState {
 	public static function setResolutionAware() {
 		resolutionAware = true;
 		FlxG.scaleMode = uiScaleMode;
+	}
+
+	public static function playEditorSound(path:String) {
+		if (!Options.editorSFX) return;
+		FlxG.sound.play(Paths.sound(path));
 	}
 }

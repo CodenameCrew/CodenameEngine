@@ -40,7 +40,7 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 		var screen = new EditorTreeMenuScreen((first || !isVariant) ? (s.name + (isVariant ? ' (${s.variant})' : '')) : s.variant, getID('selectDifficulty'));
 
 		for (d in s.difficulties) if (d != '') screen.add(makeChartOption(d, isVariant ? s.variant : null, s.name));
-		screen.add(new Separator());
+		if (s.difficulties.length > 0 && s.variants.length > 0) screen.add(new Separator()); // Create a separator only when there are both difficulty and variant options available.
 		for (v in s.variants) if (s.metas.get(v) != null) screen.add(makeVariationOption(s.metas.get(v)));
 
 		#if sys
@@ -48,13 +48,13 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 			parent.openSubState(new ChartCreationScreen(saveChart));
 		}));
 
-		if (!first) screen.curSelected = 1;
+		if (!first) screen.curSelected = (s.difficulties.length + s.variants.length) > 0 ? 1 : 0;
 		else {
 			cast(screen.members[0], NewOption).itemHeight = 120;
 			screen.insert(1, new NewOption(getID('newVariation'), getID('newVariationDesc'), () -> {
 				parent.openSubState(new VariationCreationScreen(s, saveSong));
 			}));
-			screen.curSelected = 2;
+			screen.curSelected = (s.difficulties.length + s.variants.length) > 0 ? 2 : 1;
 		}
 		#end
 
@@ -146,11 +146,10 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 
 		var screen = parent.tree.last();
 		var idx = 0;
-		while (!(screen.members[idx] is Separator)) idx++;
+		while (!(screen.members[idx] is Separator || idx >= screen.members.length)) idx++;
 		screen.insert(idx, makeChartOption(name, curSong.variant != null && curSong.variant != "" ? curSong.variant : null, curSong.name));
-
 		// Add to Meta
-		var metaPath = '$songFolder/meta${curSong.variant != null && curSong.variant == "" ? "-" + curSong.variant : ""}.json';
+		var metaPath = '$songFolder/meta${curSong.variant != null && curSong.variant != "" ? "-" + curSong.variant : ""}.json';
 		CoolUtil.safeSaveFile(metaPath, Chart.makeMetaSaveable(curSong));
 	}
 	#end

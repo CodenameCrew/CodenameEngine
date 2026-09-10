@@ -48,6 +48,7 @@
 		<str id="category.engine">Engine</str>
 		<group name="engine" prefix="engine.">
 			<str id="switchMod">Switch Mod</str>
+			<str id="fpsCounter">FPS Counter</str>
 		</group>
 
 		<str id="category.volume">Volume</str>
@@ -66,6 +67,13 @@
 	<group name="AppearanceOptions" prefix="AppearanceOptions.">
 		<str id="framerate-name">Framerate</str>
 		<str id="framerate-desc">Pretty self explanatory, isn't it?</str>
+		<str id="framerate-unlimited">Unlimited</str>
+
+		<str id="fpsCounter-name">FPS Counter</str>
+		<str id="fpsCounter-desc">If checked, displays the Framerate and Memory counter in the top left.</str>
+
+		<str id="fpsAdvanced-name">More Options</str>
+		<str id="fpsAdvanced-desc">Use this menu to toggle the debug info categories on the FPS counter.</str>
 
 		<str id="flashingMenu-name">Flashing Menu</str>
 		<str id="flashingMenu-desc">If unchecked, will disable menu flashing when you select an option in the Main Menu, and other flashes will be slower.</str>
@@ -94,6 +102,23 @@
 
 			<str id="gpuOnlyBitmaps-name">VRAM-Only Sprites</str>
 			<str id="gpuOnlyBitmaps-desc">If checked, will only store the bitmaps in the GPU, freeing a LOT of memory (EXPERIMENTAL). Turning this off will consume a lot of memory, especially on bigger sprites. If you aren't sure, leave this on.</str>
+		</group>
+
+		<group name="AppearanceOptionsFramerate" prefix="Advanced.">
+			<str id="fpsCounterConductor-name">Show Conductor Info</str>
+			<str id="fpsCounterConductor-desc">If checked, will display information relating to the conductor on the debug FPS Counter menu.</str>
+
+			<str id="fpsCounterFlixel-name">Show Flixel Info</str>
+			<str id="fpsCounterFlixel-desc">If checked, will display information relating to Flixel on the debug FPS Counter menu.</str>
+		
+			<str id="fpsCounterSystem-name">Show System Info</str>
+			<str id="fpsCounterSystem-desc">If checked, will display information relating to your system on the debug FPS Counter menu.</str>
+		
+			<str id="fpsCounterAssets-name">Show Assets Tree Info</str>
+			<str id="fpsCounterAssets-desc">If checked, will display information relating to the assets tree on the debug FPS Counter menu.</str>
+		
+			<str id="fpsCounterStats-name">Show Stats Info</str>
+			<str id="fpsCounterStats-desc">If checked, will Fuck idk</str>
 		</group>
 	</group>
 
@@ -176,6 +201,9 @@
 		<str id="editorSFX-name">Editor SFXs</str>
 		<str id="editorSFX-desc">If checked, will play sound effects when working on editors (ex: will play sfxs when checking checkboxes...)</str>
 
+		<str id="charterSwapEventSides-name">Swap Event Sides</str>
+		<str id="charterSwapEventSides-desc">If checked, global events will be on the left of the strumlines.</str>
+
 		<str id="editorCharterPrettyPrint-name">Chart Pretty Print</str>
 		<str id="editorCharterPrettyPrint-desc">If checked, the saved files from the chart editor will be formatted to be easily viewable</str>
 
@@ -202,6 +230,9 @@
 
 		<str id="songOffsetAffectEditors-name">Offset in Charter</str>
 		<str id="songOffsetAffectEditors-desc">If checked, this will enable the Song Offset option in the Chart Editor too.</str>
+
+		<str id="legacyMemoryCounter-name">Legacy Memory Counter</str>
+		<str id="legacyMemoryCounter-desc">If checked, the memory counter will show the Haxe GC memory usage and its peak (the original behavior) instead of the working set memory seen in Task Manager.</str>
 	</group>
 
 </language>

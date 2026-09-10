@@ -21,7 +21,7 @@ class CharterPreviewStrumLine extends FlxTypedGroup<FlxSprite>
 		for (i in 0...keyCount){
 			var strum = new FlxSprite();
 			strum.frames = Paths.getFrames("game/notes/default");
-			strum.setGraphicSize(Std.int((strum.width * 0.7) * scale));
+			strum.setGraphicSize(Std.int((strum.width * Flags.DEFAULT_NOTE_SCALE) * scale));
 			strum.updateHitbox();
 
 			var animPrefix = strumAnimPrefix[i % 4];
@@ -33,7 +33,7 @@ class CharterPreviewStrumLine extends FlxTypedGroup<FlxSprite>
 
 		note = new FlxSprite();
 		note.frames = Paths.getFrames("game/notes/default");
-		note.setGraphicSize(Std.int((note.width * 0.7) * scale));
+		note.setGraphicSize(Std.int((note.width * Flags.DEFAULT_NOTE_SCALE) * scale));
 		note.updateHitbox();
 		note.animation.addByPrefix('purple', 'purple0');
 		note.animation.play('purple');
@@ -41,7 +41,7 @@ class CharterPreviewStrumLine extends FlxTypedGroup<FlxSprite>
 		add(note);
 	}
 
-	var noteTime:Float = FlxG.height;
+	var noteTime:Float = FlxG.initialHeight;
 	var scroll:Float = 1.0;
 
 	public function updatePos(x:Float, y:Float, scale:Float, spacing:Float, keyCount:Int, scrollSpeed:Float){
@@ -53,7 +53,7 @@ class CharterPreviewStrumLine extends FlxTypedGroup<FlxSprite>
 
 			strum.x = CoolUtil.fpsLerp(strum.x, x + (Note.swagWidth * scale * spacing * i), 0.2);
 			strum.y = CoolUtil.fpsLerp(strum.y, y + (Note.swagWidth*0.5) - (Note.swagWidth * scale * 0.5), 0.2);
-			strum.scale.x = strum.scale.y = CoolUtil.fpsLerp(strum.scale.x, 0.7 * scale, 0.2);
+			strum.scale.x = strum.scale.y = CoolUtil.fpsLerp(strum.scale.x, Flags.DEFAULT_NOTE_SCALE * scale, 0.2);
 			strum.updateHitbox();
 		}
 
@@ -61,7 +61,7 @@ class CharterPreviewStrumLine extends FlxTypedGroup<FlxSprite>
 		scroll = CoolUtil.fpsLerp(scroll, scrollSpeed, 0.2);
 		noteTime -= FlxG.elapsed * scroll * 1000 * 0.45;
 		if (noteTime <= 0.0)
-			noteTime = FlxG.height;
+			noteTime = FlxG.initialHeight;
 
 		note.x = members[0].x;
 		note.y = members[0].y + noteTime;

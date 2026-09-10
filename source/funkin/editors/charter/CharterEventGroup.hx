@@ -17,7 +17,7 @@ class CharterEventGroup extends FlxTypedGroup<CharterEvent> {
 		if (autoSort && members.length != __lastSort)
 			sortEvents();
 
-		eventsRowText.y = FlxMath.lerp(eventsRowText.y, -40 + (members[0] != null ? Math.min(members[0].y, 0) : 0), 1/20);
+		eventsRowText.y = FlxMath.lerp(eventsRowText.y, -40 + (members[0] != null ? Math.min(members[0].y, 0) : 0), 1/10);
 	}
 
 	public override function remove(v:CharterEvent, force:Bool = true):CharterEvent {
