@@ -23,5 +23,8 @@ class DebugOptions extends TreeMenuScreen {
 		#if (cpp && (windows || mac || linux))
 		add(new Checkbox(getNameID("legacyMemoryCounter"), getDescID("legacyMemoryCounter"), "legacyMemoryCounter"));
 		#end
+		#if IMGUI_ENABLED
+		add(new Checkbox(getNameID("imguiMultiViewport"), getDescID("imguiMultiViewport"), "imguiMultiViewport"));
+		#end
 	}
 }
