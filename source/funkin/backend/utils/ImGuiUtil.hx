@@ -1,8 +1,10 @@
 package funkin.backend.utils;
 
 import flixel.input.keyboard.FlxKey;
+import openfl.Lib;
 #if IMGUI_ENABLED
-import lime.tools.imgui.ImGuiTypes.ImGuiKey;
+import lime.tools.imgui.ImGuiFlags;
+import lime.tools.imgui.ImGuiTypes;
 #end
 
 class ImGuiUtil {
@@ -113,6 +115,13 @@ class ImGuiUtil {
 			default:
 		}
 		return ImGuiKey.None;
+	}
+
+	public static function getWindowSpaceX() {
+		return (ImGuiIO.configFlags & ImGuiConfigFlags.ViewportsEnable) != 0 ? Lib.application.window.x : 0;
+	}
+	public static function getWindowSpaceY() {
+		return (ImGuiIO.configFlags & ImGuiConfigFlags.ViewportsEnable) != 0 ? Lib.application.window.y : 0;
 	}
 	#end
 }

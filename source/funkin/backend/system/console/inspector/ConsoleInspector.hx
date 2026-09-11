@@ -2,6 +2,7 @@ package funkin.backend.system.console.inspector;
 
 //WIP
 
+import openfl.Lib;
 import flixel.FlxState;
 import flixel.group.FlxSpriteGroup;
 import funkin.backend.scripting.HScript;
@@ -21,6 +22,8 @@ import foxlite.FoxBasic;
 import foxlite.FoxObject;
 import foxlite.FoxModel;
 #end
+
+using funkin.backend.utils.ImGuiUtil;
 
 typedef InspectorObject = {
 	var obj:Dynamic;
@@ -155,6 +158,8 @@ class ConsoleInspector {
 
 		FlxG.mouse.visible = true; //TODO: rework this, temp force on
 		
+		ImGui.setNextWindowPos(ImGuiUtil.getWindowSpaceX(), ImGuiUtil.getWindowSpaceY(), ImGuiCond.FirstUseEver);
+		ImGui.setNextWindowSize(300, Lib.application.window.height, ImGuiCond.FirstUseEver);
 		if (ImGui.begin("Inspector")) {
 			ImGui.separatorText("Tools/Gizmo");
 			ImGui.indent();

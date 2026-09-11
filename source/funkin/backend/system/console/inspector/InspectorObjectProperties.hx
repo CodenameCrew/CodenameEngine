@@ -1,5 +1,6 @@
 package funkin.backend.system.console.inspector;
 
+import openfl.Lib;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.backend.system.console.inspector.ConsoleInspector.InspectorObject;
@@ -17,6 +18,8 @@ import foxlite.FoxBasic;
 import foxlite.FoxObject;
 import foxlite.FoxModel;
 #end
+
+using funkin.backend.utils.ImGuiUtil;
 
 class InspectorObjectProperties {
 
@@ -48,6 +51,8 @@ class InspectorObjectProperties {
 
 		var selectedObject:Dynamic = objectData.obj;
 
+		ImGui.setNextWindowPos(ImGuiUtil.getWindowSpaceX() + Lib.application.window.width - 300, ImGuiUtil.getWindowSpaceY(), ImGuiCond.FirstUseEver);
+		ImGui.setNextWindowSize(300, Lib.application.window.height, ImGuiCond.FirstUseEver);
 		if (ImGui.begin("Object Properties")) {
 			ImGui.text(objectData.name + " - " + objectData.type);
 
@@ -203,7 +208,7 @@ class InspectorObjectProperties {
 					ImGui.setNextItemWidth(wid);
 
 					var index = intPool.get();
-					var list = ["NONE", "SHADOW", "SHADOW_XY", "OUTLINE", "OUTLINE_FAST"];
+					var list = ["NONE", "SHADOW", "SHADOW_XY", "OUTLINE", "OUTLINE_FAST", "OUTLINE_CARDINAL"];
 					switch(text.borderStyle) { //not that easy to automate due to args on SHADOW_XY
 						case NONE:
 							index.value = 0;
@@ -215,6 +220,8 @@ class InspectorObjectProperties {
 							index.value = 3;
 						case OUTLINE_FAST:
 							index.value = 4;
+						case OUTLINE_CARDINAL:
+							index.value = 5;
 					}			
 					if (ImGui.combo("##Border StyleborderStyle", index, list)) {
 						switch(index.value) {
@@ -228,6 +235,8 @@ class InspectorObjectProperties {
 								text.borderStyle = OUTLINE;
 							case 4:
 								text.borderStyle = OUTLINE_FAST;
+							case 5:
+								text.borderStyle = OUTLINE_CARDINAL;
 						}
 					}
 

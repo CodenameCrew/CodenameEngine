@@ -234,7 +234,7 @@ class ConsoleUI {
 		if (!active) return;
 
 		if (settingsOpen.value) {
-			ImGui.setNextWindowPos(Lib.application.window.x + Lib.application.window.width - 240, Lib.application.window.y, ImGuiCond.FirstUseEver);
+			ImGui.setNextWindowPos(ImGuiUtil.getWindowSpaceX() + Lib.application.window.width - 240, ImGuiUtil.getWindowSpaceY(), ImGuiCond.FirstUseEver);
 			ImGui.setNextWindowSize(240, 405, ImGuiCond.FirstUseEver);
 			if (ImGui.begin("Console Settings", settingsOpen, 0)) {
 				//ImGui.checkbox("Count duplicated output##Console Settings", countDuplicatedOutput); ImGui.setItemTooltip("Toggles if duplicated logs add a counter instead of displaying again");
@@ -259,7 +259,7 @@ class ConsoleUI {
 			saveSettings();
 		}
 
-		ImGui.setNextWindowPos(Lib.application.window.x, Lib.application.window.y + (Lib.application.window.height-250), ImGuiCond.FirstUseEver);
+		ImGui.setNextWindowPos(ImGuiUtil.getWindowSpaceX(), ImGuiUtil.getWindowSpaceY() + (Lib.application.window.height-250), ImGuiCond.FirstUseEver);
 		ImGui.setNextWindowSize(Lib.application.window.width, 250, ImGuiCond.FirstUseEver);
 		ImGui.setNextWindowDockID(0, ImGuiCond.FirstUseEver);
 		if (ImGui.begin("Console", null, ImGuiWindowFlags.NoScrollbar)) {
