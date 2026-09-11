@@ -123,7 +123,7 @@ class SongCreationScreen extends UISubstateWindow {
 		denominatorStepper = new UINumericStepper(beatsPerMeasureStepper.x + 30 + 24, beatsPerMeasureStepper.y, 4, 1, 0, 1, null, 54);
 		songDataGroup.add(denominatorStepper);
 
-		instExplorer = new UIFileExplorer(songNameTextBox.x, songNameTextBox.y + 32 + 36, null, null, Flags.SOUND_EXT, function (path, res) {
+		instExplorer = new UIFileExplorer(songNameTextBox.x, songNameTextBox.y + 32 + 36, null, null, Flags.SOUND_EXTS, function (path, res) {
 			if (path == null || res == null) return;
 			var audioPlayer:UIAudioPlayer = new UIAudioPlayer(instExplorer.x + 8, instExplorer.y + 8, res);
 			instExplorer.members.push(audioPlayer);
@@ -134,7 +134,7 @@ class SongCreationScreen extends UISubstateWindow {
 			translate("instAudio"),
 			[new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFAD1212), "$")]);
 
-		voicesExplorer = new UIFileExplorer(instExplorer.x + 320 + 26, instExplorer.y, null, null, Flags.SOUND_EXT, function (path, res) {
+		voicesExplorer = new UIFileExplorer(instExplorer.x + 320 + 26, instExplorer.y, null, null, Flags.SOUND_EXTS, function (path, res) {
 			if (path == null || res == null) return;
 			var audioPlayer:UIAudioPlayer = new UIAudioPlayer(voicesExplorer.x + 8, voicesExplorer.y + 8, res);
 			voicesExplorer.members.push(audioPlayer);
@@ -207,7 +207,7 @@ class SongCreationScreen extends UISubstateWindow {
 		var menuTitle:UIText;
 		importAudioGroup.add(menuTitle = new UIText(windowSpr.x + 20, windowSpr.y + 30 + 16, 0, translate("importAudios"), 28));
 
-		importInstExplorer = new UIFileExplorer(menuTitle.x, menuTitle.y + menuTitle.height + 36, null, null, Flags.SOUND_EXT, function (path, res) {
+		importInstExplorer = new UIFileExplorer(menuTitle.x, menuTitle.y + menuTitle.height + 36, null, null, Flags.SOUND_EXTS, function (path, res) {
 			if (path == null || res == null) return;
 			var audioPlayer:UIAudioPlayer = new UIAudioPlayer(importInstExplorer.x + 8, importInstExplorer.y + 8, res);
 			importInstExplorer.members.push(audioPlayer);
@@ -218,7 +218,7 @@ class SongCreationScreen extends UISubstateWindow {
 			translate("instAudio"),
 			[new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFAD1212), "$")]);
 
-		importVoicesExplorer = new UIFileExplorer(importInstExplorer.x + 320 + 26, importInstExplorer.y, null, null, Flags.SOUND_EXT, function (path, res) {
+		importVoicesExplorer = new UIFileExplorer(importInstExplorer.x + 320 + 26, importInstExplorer.y, null, null, Flags.SOUND_EXTS, function (path, res) {
 			if (path == null || res == null) return;
 			var audioPlayer:UIAudioPlayer = new UIAudioPlayer(importVoicesExplorer.x + 8, importVoicesExplorer.y + 8, res);
 			importVoicesExplorer.members.push(audioPlayer);
