@@ -22,15 +22,25 @@
 	<define name="DARK_MODE_WINDOW"/>
 
 	<!-- Should it checks for updates? -->
-	<define name="UPDATE_CHECKING" if="desktop" unless="hl || debug"/>
+	<define name="UPDATE_CHECKING" if="desktop" unless="hl || debug || COMPILE_EXPERIMENTAL || TEST_BUILD"/>
 
 	<section if="cpp">
 		<!-- Compile With Discord Rich Presence -->
 		<!-- TODO: Update Discord RPC Library & Rewrite DiscordUtil -->
-		<!-- <define name="DISCORD_RPC" if="desktop"/> -->
+		<!-- NOTE before v1.1.0 release: PLEASE DO THIS ABOVE -->
+		<define name="DISCORD_RPC" if="desktop"/>
 
 		<!-- Compile with video support (hxvlc) -->
 		<define name="VIDEO_CUTSCENES" if="desktop || mobile"/>
+	</section>
+
+	<!-- Compile with tracy, use to catch memory leaks, generally, don't use this, inflates memory usages by 16gb~ -->
+	<section if="TRACY">
+		<haxedef name="HXCPP_TELEMETRY"/>
+		<haxedef name="HXCPP_TRACY"/>
+		<haxedef name="HXCPP_TRACY_MEMORY"/>
+		<haxedef name="HXCPP_TRACY_ON_DEMAND"/>
+		<haxedef name="HXCPP_TRACY_INCLUDE_CALLSTACKS"/>
 	</section>
 
 	<!-- Uncomment this to achive faster compile times, will strip extraneous and commonly unused features. -->
@@ -152,6 +162,7 @@
 	<set name="BUILD_DIR" value="export/release" unless="debug"/>
 	<set name="BUILD_DIR" value="export/debug-32bit" if="debug 32bit"/>
 	<set name="BUILD_DIR" value="export/release-32bit" if="32bit" unless="debug"/>
+	<set name="BUILD_DIR" value="export/tracy" if="TRACY"/>
 	<set name="BUILD_DIR" value="latest/" if="beta"/>
 
 	<app main="funkin.backend.system.Main" preloader="flixel.system.FlxPreloader"/>

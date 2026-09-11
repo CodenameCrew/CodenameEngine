@@ -397,7 +397,9 @@ class StageEditor extends UIState {
 		char.extra.set(exID("lowMemory"), parent.name == "low-memory");
 
 		chars.push(char);
-		stage.applyCharStuff(char, charPos.name, 0);
+		// stage.applyCharStuff(char, charPos.name, 0); it can grab characterPoses[char.curCharacter] which is REALLY BAD SINCE I DESTROY THEM
+		charPos.prepareCharacter(char, 0);
+		insert(members.indexOf(charPos), char);
 		charMap[charName] = char;
 
 		remove(charPos, true);
@@ -583,14 +585,12 @@ class StageEditor extends UIState {
 		stage.stageXML.x.addChild(node.x);
 		node.att.name = "character_" + stageSpritesWindow.buttons.members.length;
 
-		var char = new Character(0,0, "bf", false, true);
+		var char = new Character(0,0, Flags.DEFAULT_OPPONENT, false, true);
 		char.name = node.att.name;
 		char.debugMode = true;
-		// Play first anim, and make it the last frame
+		// Play first anim, and make it the last frame by reversing and stopping
 		var animToPlay = char.getAnimOrder()[0];
-		char.playAnim(animToPlay, true, NONE);
-		var lastIndx = char.animation.curAnim.numFrames - 1;
-		char.playAnim(animToPlay, true, NONE, false, lastIndx);
+		char.playAnim(animToPlay, true, NONE, true, 0);
 		char.stopAnimation();
 
 		// Add it to the stage

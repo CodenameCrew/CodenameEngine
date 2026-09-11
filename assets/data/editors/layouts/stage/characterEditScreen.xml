@@ -156,6 +156,36 @@
 			}
 			char.name = posName;
 
+			function saveXY(name:String, x:UINumericStepper, y:UINumericStepper) {
+				button.xml.remove(name + "");
+				button.xml.remove(name + "x");
+				button.xml.remove(name + "y");
+
+				if(x.value == y.value)
+					button.xml.set(name, x.value);
+				else {
+					button.xml.set(name + "x", x.value);
+					button.xml.set(name + "y", y.value);
+				}
+			}
+
+			if (!StringTools.startsWith(char.name, "NO_DELETE_"))
+				button.xml.set("name", char.name);
+			saveXY("", xStepper, yStepper);
+			button.xml.set("camxoffset", camxStepper.value);
+			button.xml.set("camyoffset", camyStepper.value);
+
+			saveXY("scale", scaleXStepper, scaleYStepper);
+			saveXY("scroll", scrollXStepper, scrollYStepper);
+			button.xml.set("zoomfactor", zoomFactorStepper.value);
+			button.xml.set("alpha", alphaStepper.value);
+			button.xml.set("angle", angleStepper.value);
+			button.xml.set("skewx", skewXStepper.value);
+			button.xml.set("skewy", skewYStepper.value);
+
+			button.xml.remove("flip");
+			button.xml.remove("flipX");
+			button.xml.set("flip", flipXCheckbox.checked);
 		}
 	</exec>
 </window>

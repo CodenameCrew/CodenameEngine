@@ -44,6 +44,8 @@
 	<group name="ChartEditor">
 		<group name="CharterSelection" prefix="charterSelection.">
 			<str id="desc">Select a song to modify the charts from.</str>
+			<str id="acceptFolder">Press ACCEPT to edit this folder.</str>
+			<str id="desc-folder">Select a song to modify the charts from in {0}</str>
 			<str id="acceptSong">Press ACCEPT to choose a difficulty to edit.</str>
 			<str id="acceptVariation">Press ACCEPT to choose a song variation to edit.</str>
 			<str id="acceptDifficulty">Press ACCEPT to edit the chart for the selected difficulty.</str>
@@ -470,6 +472,8 @@
 			<str id="newTypeface">New Typeface</str>
 			<str id="newTypefaceDesc">Press ACCEPT to create a new typeface.</str>
 			<str id="desc">Select a typeface to edit</str>
+			<str id="desc-folder">Select a typeface to edit in {0}</str>
+			<str id="acceptFolder">Press ACCEPT to edit this folder.</str>
 
 			<group name="Warnings" prefix="warnings.">
 				<str id="notImplemented-title">New Typeface: Feature Not Implemented!</str>
@@ -530,6 +534,8 @@
 			<str id="acceptStage">Press ACCEPT to edit this stage.</str>
 			<str id="newStage">New Stage</str>
 			<str id="acceptNewStage">Press ACCEPT to create a new stage.</str>
+			<str id="acceptFolder">Press ACCEPT to edit this folder.</str>
+			<str id="desc-folder">Select a stage to edit in {0}</str>
 		</group>
 
 		<group name="StageEditor" prefix="stageEditor.">

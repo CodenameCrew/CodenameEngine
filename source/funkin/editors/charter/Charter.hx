@@ -495,6 +495,7 @@ class Charter extends UIState {
 
 		songPosInfo = new UIText(FlxG.width - 30 - 400, scrollBar.y + 10, 400, "00:00 / 00:00\nBeat: 0\nStep: 0\nMeasure: 0\nBPM: 0\nTime Signature: 4/4");
 		songPosInfo.alignment = RIGHT;
+		songPosInfo.fieldHeight = 115; // ?????
 		uiGroup.add(songPosInfo);
 
 		playBackSlider = new UISlider(FlxG.width - 160 - 26 - 20, (23/2) - (12/2), 160, 1, [{start: 0.25, end: 1, size: 0.5}, {start: 1, end: 2, size: 0.5}], true);
@@ -1195,6 +1196,7 @@ class Charter extends UIState {
 			var note:CharterNote = cast selected;
 			note.strumLineID = strumLines.members.indexOf(note.strumLine);
 			note.strumLine = null; // For static undos :D
+			CharterNote.callScriptOnNote('onCharterNoteDelete', note);
 			notesGroup.remove(note);
 			note.kill();
 		} else if (selected is CharterEvent) {
@@ -1214,9 +1216,11 @@ class Charter extends UIState {
 
 		notesGroup.autoSort = false;
 		selection.loop(function (n:CharterNote) {
+			final lastAlive = n.alive;
 			n.strumLine = strumLines.members[n.strumLineID];
 			n.revive();
 			notesGroup.add(n);
+			if (!lastAlive) CharterNote.callScriptOnNote('onCharterNoteRevive', n);
 		}, function (e:CharterEvent) {
 			e.revive();
 			(e.global ? rightEventsGroup : leftEventsGroup).add(e);
@@ -1386,6 +1390,18 @@ class Charter extends UIState {
 	var __crochet:Float;
 	var __firstFrame:Bool = true;
 	var __timer:Float = 0;
+	var ugly:Array<Dynamic> = [];
+
+	// dynamic in case scripts want to add more text
+	public dynamic function getSongPosInfoText(songLength:Float, curChange):String {
+		return'${CoolUtil.timeToStr(Conductor.songPosition)} / ${CoolUtil.timeToStr(songLength)}'
+			+'\n'+SONGPOSINFO_STEP.format({ugly[0]=curStep;ugly;})
+			+'\n'+SONGPOSINFO_BEAT.format({ugly[0]=curBeat;ugly;})
+			+'\n'+SONGPOSINFO_MEASURE.format({ugly[0]=curMeasure;ugly;})
+			+'\n'+SONGPOSINFO_BPM.format({ugly[0]=(curChange != null && curChange.continuous && curChange.endSongTime > songPos) ? FlxMath.roundDecimal(Conductor.bpm, 3) : Conductor.bpm;ugly;})
+			+'\n'+SONGPOSINFO_TIMESIGNATURE.format({ugly[0]=Conductor.beatsPerMeasure;ugly[1]=Conductor.denominator;ugly;});
+	}
+
 	public override function update(elapsed:Float) {
 		if (Options.charterRainbowWaveforms) {
 			__timer += elapsed/8;
@@ -1491,14 +1507,7 @@ class Charter extends UIState {
 			for (strumLine in strumLines.members) strumLine.vocals.pause();
 		}
 
-		var curChange = Conductor.curChange;
-		var targetText = '${CoolUtil.timeToStr(Conductor.songPosition)} / ${CoolUtil.timeToStr(songLength)}'
-			+'\n'+SONGPOSINFO_STEP.format([curStep])
-			+'\n'+SONGPOSINFO_BEAT.format([curBeat])
-			+'\n'+SONGPOSINFO_MEASURE.format([curMeasure])
-			+'\n'+SONGPOSINFO_BPM.format([(curChange != null && curChange.continuous && curChange.endSongTime > songPos) ? FlxMath.roundDecimal(Conductor.bpm, 3) : Conductor.bpm])
-			+'\n'+SONGPOSINFO_TIMESIGNATURE.format([Conductor.beatsPerMeasure, Conductor.denominator]);
-
+		var targetText = getSongPosInfoText(songLength, Conductor.curChange);
 		if (songPosInfo.text != targetText) songPosInfo.text = targetText;
 
 		if (charterCamera.zoom != (charterCamera.zoom = lerp(charterCamera.zoom, __camZoom, __firstFrame ? 1 : 0.125)))
@@ -1755,7 +1764,6 @@ class Charter extends UIState {
 		if (selection == null || selection.length == 0) return;
 		selection.loop((n:CharterNote) -> {
 			noteDeleteAnims.deleteNotes.push({note: n, time: noteDeleteAnims.deleteTime});
-			CharterNote.callScriptOnNote('onCharterNoteDelete', n);
 		});
 		selection = deleteSelection(selection, true);
 	}
@@ -1770,7 +1778,6 @@ class Charter extends UIState {
 			if (oldNote != null && oldNote.step == note.step && oldNote.strumLineID == note.strumLineID && oldNote.id == note.id) {
 				noteDeleteAnims.deleteNotes.push({note: oldNote, time: noteDeleteAnims.deleteTime});
 				toDelete.push(oldNote);
-				CharterNote.callScriptOnNote('onCharterNoteDelete', oldNote);
 			}
 			oldNote = note;
 		}

@@ -29,11 +29,7 @@ class MainState extends FlxState {
 	public static var initiated:Bool = false;
 	public override function create() {
 		super.create();
-		if (!initiated) {
-			Main.loadGameSettings();
-		}
-
-		initiated = true;
+		if (!initiated) Main.loadGameSettings();
 
 		#if sys
 		CoolUtil.deleteFolder('./.temp/'); // delete temp folder
@@ -165,21 +161,34 @@ class MainState extends FlxState {
 			if (cast(lib, ZipFolderLibrary).PRELOAD_VIDEOS) cast(lib, ZipFolderLibrary).precacheVideos();
 		}
 
-		var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
-		var outdatedAPI:Bool = (Flags.MOD_API_VERSION ?? Flags.CURRENT_API_VERSION) < Flags.CURRENT_API_VERSION;
-		// In this case if the mod we just loaded a compressed modpack, we can't edit or modify files without decompressing it.
-		if (Options.devMode && Options.allowConfigWarning && !isZipMod) {
-			var lib:ModsFolderLibrary;
-			for (e in Paths.assetsTree.libraries) if ((lib = cast AssetsLibraryList.getCleanLibrary(e)) is ModsFolderLibrary
-				&& lib.modName == ModsFolder.currentModFolder)
-			{
-				if (!outdatedAPI && lib.exists(Paths.ini("config/modpack"), lime.utils.AssetType.TEXT)) break;
-
-				FlxG.switchState(new ModConfigWarning(lib, startState, outdatedAPI));
-				return;
+		if (!initiated) {
+			if (Main.goToSong != null) {
+				if (Main.goToCharter) FlxG.switchState(new funkin.editors.charter.Charter(Main.goToSong, Main.goToDifficulty, Main.goToVariation));
+				else {
+					PlayState.loadSong(Main.goToSong, Main.goToDifficulty, Main.goToVariation);
+					FlxG.switchState(new PlayState());
+				}
 			}
 		}
+		initiated = true;
 
-		FlxG.switchState(cast Type.createInstance(startState, []));
+		if (@:privateAccess FlxG.game._nextState == null) {
+			var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
+			var outdatedAPI:Bool = (Flags.MOD_API_VERSION ?? Flags.CURRENT_API_VERSION) < Flags.CURRENT_API_VERSION;
+			// In this case if the mod we just loaded a compressed modpack, we can't edit or modify files without decompressing it.
+			if (Options.devMode && Options.allowConfigWarning && !isZipMod) {
+				var lib:ModsFolderLibrary;
+				for (e in Paths.assetsTree.libraries) if ((lib = cast AssetsLibraryList.getCleanLibrary(e)) is ModsFolderLibrary
+					&& lib.modName == ModsFolder.currentModFolder)
+				{
+					if (!outdatedAPI && lib.exists(Paths.ini("config/modpack"), lime.utils.AssetType.TEXT)) break;
+
+					FlxG.switchState(new ModConfigWarning(lib, startState, outdatedAPI));
+					return;
+				}
+			}
+
+			FlxG.switchState(cast Type.createInstance(startState, []));
+		}
 	}
 }

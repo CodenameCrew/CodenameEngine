@@ -243,9 +243,11 @@ class StageElementButton extends UIButton {
 
 			var value:Dynamic = def is Float ? Std.parseFloat(xml.x.get(attrib)) : xml.x.get(attrib);
 			if (value == def || (def is Float && Math.abs(def - value) < 0.001)) {
-				if (!attribIsPoint || queuedPoints.contains(attrib))
+				if (!attribIsPoint || queuedPoints.contains(attrib)) {
 					xml.x.remove(a);
-				else
+					if (attribIsPoint)
+						xml.x.remove(attrib + (a.charCodeAt(a.length - 1) == 'x'.code ? 'y' : 'x'));
+				} else
 					queuedPoints.push(attrib);
 			}
 		}

@@ -397,12 +397,19 @@ class Stage extends FlxBasic implements IBeatReceiver {
 	 * Gets a list of stages that are available to be used.
 	 * @param mods Whenever only the mods folder should be checked
 	**/
-	public static function getList(?mods:Bool = false, ?xmlOnly:Bool = false):Array<String> {
+	public static function getList(?mods:Bool = false, ?xmlOnly:Bool = false, includeFolders:Bool = false, folder:String = 'data/stages/'):Array<String> {
 		var list:Array<String> = [];
 		var extensions:Array<String> = ["xml"];
 		if (!xmlOnly) extensions.push("hx");
 
-		for (path in Paths.getFolderContent("data/stages/", false, mods ? MODS : BOTH)) {
+		if(includeFolders) {
+			for (path in Paths.getFolderDirectories(folder, true, mods ? MODS : BOTH)) {
+				if(!path.endsWith("/")) path += "/";
+				list.push(path);
+			}
+		}
+		
+		for (path in Paths.getFolderContent(folder, false, mods ? MODS : BOTH)) {
 			var extension = Path.extension(path);
 			if (extensions.contains(extension)) {
 				// list.pushOnce("test");

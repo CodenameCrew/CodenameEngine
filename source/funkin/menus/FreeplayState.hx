@@ -210,6 +210,16 @@ class FreeplayState extends MusicBeatState
 			changeDiff((controls.LEFT_P ? -1 : 0) + (controls.RIGHT_P ? 1 : 0));
 			changeCoopMode((controls.CHANGE_MODE ? 1 : 0)); // TODO: make this configurable
 			// putting it before so that its actually smooth
+
+			if (FlxG.mouse.justPressed && grpSongs != null) {
+				for (index => sprite in grpSongs.members) {
+					if (curSelected != index && FlxG.mouse.overlaps(sprite)) {
+						changeSelection(index - curSelected);
+						break;
+					}
+				}
+			}
+
 			updateOptionsAlpha();
 		}
 
@@ -224,7 +234,7 @@ class FreeplayState extends MusicBeatState
 		interpColor.fpsLerpTo(curSong.color, 0.0625);
 		bg.color = interpColor.color;
 
-		if (controls.BACK)
+		if (controls.BACK || FlxG.mouse.justPressedRight)
 		{
 			CoolUtil.playMenuSFX(CANCEL, 0.7);
 			FlxG.switchState(new MainMenuState());
@@ -235,8 +245,11 @@ class FreeplayState extends MusicBeatState
 			convertChart();
 		#end
 
-		if (controls.ACCEPT)
+		if ((controls.ACCEPT || (FlxG.mouse.justPressed && grpSongs?.members[curSelected] != null
+			&& FlxG.mouse.overlaps(grpSongs.members[curSelected]))))
+		{
 			select();
+		}
 	}
 
 	var __opponentMode:Bool = false;
@@ -434,10 +447,18 @@ class FreeplayState extends MusicBeatState
 
 class FreeplaySonglist {
 	public var songs:Array<ChartMetaData> = [];
+	public static final EXCLUDE_SUBFOLDERS:Array<String> = ['charts', 'scripts', 'song'];
 
 	public function new() {}
 
-	public function getSongsFromSource(source:funkin.backend.assets.AssetSource, useTxt:Bool = true) {
+	public static function isSubSongDirectory(subs:Array<String>):Bool {
+		for (i in EXCLUDE_SUBFOLDERS) {
+			if (subs.contains(i)) return false;
+		}
+		return true;
+	}
+
+	public function getSongsFromSource(source:funkin.backend.assets.AssetSource, useTxt:Bool = true, ?startDir:String = 'songs/', ?flatten:Bool = true) {
 		var songsFound:Array<String> = null;
 		if (useTxt) {
 			var oldPath = Paths.txt('freeplaySonglist');
@@ -448,27 +469,49 @@ class FreeplaySonglist {
 				songsFound = CoolUtil.coolTextFile(oldPath);
 			}
 		}
-		if (songsFound == null) songsFound = Paths.getFolderDirectories("songs", false, source);
+		// todo: make this better
+		if (songsFound == null) {
+			songsFound = [];
+			var songDirs = Paths.getFolderDirectories(startDir, false, source);
+			if (!flatten) {
+				for (i in songDirs) {
+					var subs = Paths.getFolderDirectories('$startDir$i', false, source);
+					songsFound.push(isSubSongDirectory(subs) ? '$i/' : i);
+				}
+			} else {
+				function poop(a:Array<Dynamic>, startDir:String) {
+					for (i in a) {
+						var subs = Paths.getFolderDirectories('$startDir$i', false, source);
+						if (isSubSongDirectory(subs)) poop(subs, '$startDir$i/');
+						else songsFound.push(startDir.substr('songs/'.length) + i);
+					}
+				}
+				poop(songDirs, startDir);
+			}
+			// put folders at the top
+			songsFound = songsFound.filter(a -> a.endsWith('/'))
+				.concat(songsFound.filter(a -> !a.endsWith('/')));
+		}
 		if (songsFound.length > 0) {
-			for (s in songsFound) songs.push(Chart.loadChartMeta(s, source == MODS));
+			for (s in songsFound) songs.push(Chart.loadChartMeta(startDir.substr('songs/'.length) + s, source == MODS));
 			return false;
 		}
 		return true;
 	}
 
-	public static function get(useTxt:Bool = true) {
+	public static function get(useTxt:Bool = true, ?startDir:String = 'songs/', ?flatten:Bool = true) {
 		var songList = new FreeplaySonglist();
 
 		switch(Flags.SONGS_LIST_MOD_MODE) {
 			case 'prepend':
-				songList.getSongsFromSource(MODS, useTxt);
-				songList.getSongsFromSource(SOURCE, useTxt);
+				songList.getSongsFromSource(MODS, useTxt, startDir, flatten);
+				songList.getSongsFromSource(SOURCE, useTxt, startDir, flatten);
 			case 'append':
-				songList.getSongsFromSource(SOURCE, useTxt);
-				songList.getSongsFromSource(MODS, useTxt);
+				songList.getSongsFromSource(SOURCE, useTxt, startDir, flatten);
+				songList.getSongsFromSource(MODS, useTxt, startDir, flatten);
 			default /*case 'override'*/:
-				if (songList.getSongsFromSource(MODS, useTxt))
-					songList.getSongsFromSource(SOURCE, useTxt);
+				if (songList.getSongsFromSource(MODS, useTxt, startDir, flatten))
+					songList.getSongsFromSource(SOURCE, useTxt, startDir, flatten);
 		}
 
 		return songList;

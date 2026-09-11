@@ -30,7 +30,8 @@ class CharterStrumLineGroup extends FlxTypedGroup<CharterStrumline> {
 		for (strumLine in members) {
 			if (strumLine == null) continue;
 			strumLine.draggable = draggable;
-			if (draggable && UIState.state.isOverlapping(strumLine.draggingSprite, @:privateAccess strumLine.draggingSprite.__rect) && FlxG.mouse.justPressed) {
+			if (draggable && FlxG.mouse.justPressed) {
+				if (!UIState.state.isOverlapping(strumLine.draggingSprite, @:privateAccess strumLine.draggingSprite.__rect)) continue;
 				draggingObj = strumLine;
 				strumLine.dragging = true;
 

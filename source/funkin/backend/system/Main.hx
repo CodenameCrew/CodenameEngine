@@ -44,6 +44,10 @@ class Main extends Sprite
 	public static var forceGPUOnlyBitmapsOff:Bool = false;
 	public static var noTerminalColor:Bool = false;
 	public static var verbose:Bool = false;
+	public static var goToSong:String = null;
+	public static var goToDifficulty:String = null;
+	public static var goToVariation:String = null;
+	public static var goToCharter:Bool = false;
 
 	public static var scaleMode:FunkinRatioScaleMode;
 	#if !mobile
@@ -145,6 +149,8 @@ class Main extends Sprite
 		game.focusLostFramerate = 30;
 		FlxG.fixedTimestep = false;
 		FlxG.scaleMode = scaleMode = new FunkinRatioScaleMode();
+		FlxG.sound.applySoundCurve = applySoundCurve;
+		FlxG.sound.reverseSoundCurve = reverseSoundCurve;
 
 		Conductor.init();
 		EventManager.init();
@@ -169,6 +175,16 @@ class Main extends Sprite
 		initTransition();
 	}
 
+	public static function applySoundCurve(volume:Float) {
+		return Flags.USE_SOUND_VOLUME_CURVE ? Math.pow(volume, 1.75) : volume;
+	}
+
+	public static function reverseSoundCurve(curvedVolume:Float) {
+		return Flags.USE_SOUND_VOLUME_CURVE ? Math.pow(curvedVolume, 0.5714285714285714) : curvedVolume;
+	}
+
+	static var persistShaderKeys:Map<String, Bool>;
+
 	public static function refreshAssets() @:privateAccess {
 		FunkinCache.instance.clearSecondLayer();
 
@@ -185,6 +201,18 @@ class Main extends Sprite
 		}
 
 		game.addChildAt(game.soundTray = daSndTray, index);
+
+		if (persistShaderKeys == null) {
+			persistShaderKeys = [for (k in @:privateAccess Lib.current.stage.context3D.__programs.keys()) k => true];
+		}
+		else {
+			for (key => program in @:privateAccess Lib.current.stage.context3D.__programs) {
+				if (persistShaderKeys.get(key) || Type.resolveClass(key) != null) continue;
+
+				program.dispose();
+				@:privateAccess Lib.current.stage.context3D.__programs.remove(key);
+			}
+		}
 	}
 
 	public static function initTransition() {
@@ -211,7 +239,7 @@ class Main extends Sprite
 			NativeAPI.allocConsole();
 		#end
 
-		if (PlayerSettings.solo.controls.FPS_COUNTER)
+		if (PlayerSettings.solo.controls.FPS_COUNTER && Options.fpsCounter)
 			Framerate.debugMode = (Framerate.debugMode + 1) % 3;
 	}
 
