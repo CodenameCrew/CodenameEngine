@@ -26,6 +26,9 @@ class Config {
 		"haxe.xml",
 		"haxe.CallStack",
 		"funkin",
+		#if IMGUI_ENABLED
+		"lime.tools.imgui",
+		#end
 		#if foxlite 
 		"foxlite" 
 		#end

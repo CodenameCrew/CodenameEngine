@@ -624,17 +624,30 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		return icon;
 	}
 
-	public static function getList(?mods:Bool = false, includeFolders:Bool = false, folder:String = 'data/characters/'):Array<String> {
+	public static function getList(?mods:Bool = false, includeFolders:Bool = false, ?folder:String = null, ?recursive:Bool = false):Array<String> {
+		final defaultFolder:String = 'data/characters/';
+		if (folder == null) folder = defaultFolder;
 		var list:Array<String> = [];
-		if(includeFolders) {
+		if(includeFolders || recursive) {
 			for (path in Paths.getFolderDirectories(folder, true, mods ? MODS : BOTH)) {
 				if(!path.endsWith("/")) path += "/";
-				list.push(path);
+				if (recursive) {
+					list = list.concat(Character.getList(mods, includeFolders, path, recursive));
+				} else {
+					list.push(path);
+				}
 			}
 		}
 		for (path in Paths.getFolderContent(folder, true, mods ? MODS : BOTH))
-			if (Path.extension(path) == "xml")
-				list.push(CoolUtil.getFilename(path));
+			if (Path.extension(path) == "xml") {
+				if (recursive) {
+					var file:String = folder + CoolUtil.getFilename(path);
+					if (file.startsWith(defaultFolder)) file = file.substr(defaultFolder.length);
+					list.push(file);
+				} else {
+					list.push(CoolUtil.getFilename(path));
+				}
+			}
 		return list;
 	}
 }

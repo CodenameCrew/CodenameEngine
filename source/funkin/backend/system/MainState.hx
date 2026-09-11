@@ -1,5 +1,6 @@
 package funkin.backend.system;
 
+import funkin.backend.system.console.ConsoleCommandManager;
 #if MOD_SUPPORT
 import sys.FileSystem;
 #end
@@ -36,6 +37,7 @@ class MainState extends FlxState {
 		Options.save();
 
 		ControlsUtil.resetCustomControls();
+		ConsoleCommandManager.unregisterModdedCommands();
 		FlxG.bitmap.reset();
 		FlxG.sound.destroy(true);
 		FlxG.sound.resetCache();
