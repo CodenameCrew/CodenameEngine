@@ -205,31 +205,10 @@ class Main extends Sprite
 	private static function onStateSwitch() {
 		scaleMode.resetSize();
 	}
-
-	#if IMGUI_ENABLED
-	private static var imGuiActiveLastFrame:Bool = true;
-	#end
 	public static function onUpdate() {
 		#if !IMGUI_ENABLED
 		if (PlayerSettings.solo.controls.DEV_CONSOLE)
 			NativeAPI.allocConsole();
-		#else
-		if ((ImGuiIO.configFlags & ImGuiConfigFlags.ViewportsEnable) != 0) //TODO: fix this because its not working 100% of the time
-		{
-			if (ImGuiIO.navActive || ImGuiIO.wantCaptureMouse || ImGuiIO.wantCaptureKeyboard) {
-				if (!imGuiActiveLastFrame) {
-					imGuiActiveLastFrame = true;
-					FlxG.autoPause = false;
-					FlxG.game.focusLostFramerate = FlxG.drawFramerate;
-				}
-			} else {
-				if (imGuiActiveLastFrame) {
-					imGuiActiveLastFrame = false;
-					FlxG.autoPause = Options.autoPause;
-					FlxG.game.focusLostFramerate = 10;
-				}
-			}
-		}
 		#end
 
 		if (PlayerSettings.solo.controls.FPS_COUNTER)
@@ -261,6 +240,9 @@ class Main extends Sprite
 		return (FlxG.game.ticks - _tickFocused) / 1000;
 	}
 
+	#if IMGUI_ENABLED
+	private static var imGuiActiveLastFrame:Bool = true;
+	#end
 	private static function initImGui() {
 		#if IMGUI_ENABLED
 		//codename styled
@@ -308,6 +290,22 @@ class Main extends Sprite
 		style.setColor(ImGuiCol.DockingPreview,         new ImVec4(0.56, 0.11, 0.71, 1.00));
 
 		ImGuiHandler.instance.addCallback(function() {
+			if ((ImGuiIO.configFlags & ImGuiConfigFlags.ViewportsEnable) != 0)
+			{
+				if (ImGuiIO.metricsRenderWindows > 2) { //debug window + dockspace
+					if (!imGuiActiveLastFrame) {
+						imGuiActiveLastFrame = true;
+						FlxG.autoPause = false;
+						FlxG.game.focusLostFramerate = FlxG.drawFramerate;
+					}
+				} else {
+					if (imGuiActiveLastFrame) {
+						imGuiActiveLastFrame = false;
+						FlxG.autoPause = Options.autoPause;
+						//FlxG.game.focusLostFramerate = 30; //just keep as draw fps, some timing issues with window focusing that keep it from working correctly
+					}
+				}
+			}
 			ImGui.dockSpaceOverViewport(0, null, ImGuiDockNodeFlags.PassthruCentralNode);
 		});
 		#end
