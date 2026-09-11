@@ -53,7 +53,7 @@ function create() {
 			else {
 				timers.remove(swagTimer);
 				camHUD.visible = true;
-				self.startDialogue("assets/songs/" + PlayState.instance.SONG.meta.name.toLowerCase() + "/creepyDialogue.xml", self.close);
+				self.startDialogue("assets/songs/" + PlayState.SONG.meta.name.toLowerCase() + "/creepyDialogue.xml", self.close);
 			}
 		}));
 	});
