@@ -17,7 +17,7 @@ import hscript.IHScriptCustomBehaviour;
  * @author Jamextreme140 & ItsLJcool
  */
 class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver implements IHScriptCustomBehaviour {
-	private static final __instanceFields:Array<String> = Type.getInstanceFields(Layer);
+	private static final __instanceFields:Map<String, Bool> = [for(f in Type.getInstanceFields(Layer)) f => true];
 
 	/**
 	 * The Layer Name
@@ -160,7 +160,7 @@ class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver impl
 
 	//region IHScriptCustomBehaviour implementation
 	public function hget(name:String):Dynamic {
-		if (__instanceFields.contains(name) || __instanceFields.contains('get_$name'))
+		if (__instanceFields.exists(name) || __instanceFields.exists('get_$name'))
 			return Reflect.getProperty(this, name);
 		if (stageSprites.exists(name)) return stageSprites[name];
 		if (stageLayers.exists(name)) return stageLayers[name];
@@ -168,7 +168,7 @@ class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver impl
 	}
 
 	public function hset(name:String, val:Dynamic):Dynamic {
-		if (__instanceFields.contains(name) || __instanceFields.contains('set_$name')) {
+		if (__instanceFields.exists(name) || __instanceFields.exists('set_$name')) {
 			Reflect.setProperty(this, name, val);
 			return val;
 		}

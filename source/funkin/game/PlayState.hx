@@ -16,6 +16,7 @@ import funkin.backend.FunkinText;
 import funkin.backend.chart.Chart;
 import funkin.backend.chart.ChartData;
 import funkin.backend.chart.EventsData;
+import funkin.backend.utils.XMLUtil.XMLImportedScriptInfo;
 import funkin.backend.scripting.DummyScript;
 import funkin.backend.scripting.Script;
 import funkin.backend.scripting.ScriptPack;
@@ -31,6 +32,7 @@ import funkin.game.SplashHandler;
 import funkin.game.cutscenes.*;
 import funkin.game.scoring.*;
 import funkin.game.scoring.RatingManager.Rating;
+import funkin.game.stage.Stage;
 import funkin.menus.*;
 import funkin.backend.week.WeekData;
 import funkin.savedata.FunkinSave;
@@ -42,7 +44,7 @@ using StringTools;
 @:access(funkin.game.StrumLine)
 class PlayState extends MusicBeatState
 {
-	public static final __instanceFields = Type.getInstanceFields(PlayState);
+	public static final __instanceFields:Map<String, Bool> = [for(f in Type.getInstanceFields(PlayState)) f => true];
 	/**
 	 * Current PlayState instance.
 	 */
@@ -744,7 +746,7 @@ class PlayState extends MusicBeatState
 		cameraFocusOffset = FlxPoint.get();
 
 		if (SONG.stage == null || SONG.stage.trim() == "") SONG.stage = Flags.DEFAULT_STAGE;
-		add(stage = new Stage(SONG.stage));
+		add(stage = new Stage(SONG.stage, setupStage));
 
 		if (!chartingMode || Options.charterEnablePlaytestScripts) {
 			switch(SONG.meta.name) {
@@ -2308,6 +2310,33 @@ class PlayState extends MusicBeatState
 	private inline static function get_campaignAccuracy()
 		return campaignAccuracyCount == 0 ? 0 : campaignAccuracyTotal / campaignAccuracyCount;
 	#end
+
+	//region INITIAL SETUP
+	private function setupStage(stage:Stage):Bool {
+		stage.prepareInfos = (node) -> {
+			return XMLImportedScriptInfo.prepareInfos(node, scripts, (infos) -> stage.xmlImportedScripts.push(infos));
+		};
+		stage.onStageScriptLoad = (stageScript) -> scripts.add(stageScript);
+		stage.onStartCamSet = (startCam, defaultZoom) -> {
+			camFollow.x = startCam.x; camFollow.y = startCam.y;
+			defaultCamZoom = defaultZoom;
+		};
+		stage.onXMLLoaded = (event) -> return gameAndCharsEvent("onStageXMLParsed", event).value3; // temporary
+		stage.onRatingSet = (x, y) -> {
+			comboGroup.setPosition(x, y);
+			add(comboGroup); // unnecessary since it's getting added later
+			return comboGroup;
+		};
+		stage.onNodeLoaded = (node, sprite) -> {
+			return gameAndCharsEvent("onStageNodeParsed", EventManager.get(DynamicEvent).recycle(stage, node, sprite, node.name)).value3; // temporary
+		};
+		stage.onPostStageCreation = (event) -> gameAndCharsEvent("onPostStageCreation", event);
+		stage.removeInfo = (scriptInfo) -> scripts.remove(scriptInfo);
+		stage.onStageDestroy = (_) -> gameAndCharsCall("onStageDestroy", [_]);
+		stage.onSilentDestroy = (stageScript) -> scripts.remove(stageScript);
+		return true;
+	}
+	//endregion
 
 	/**
 	 * Load a week into PlayState.

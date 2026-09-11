@@ -58,7 +58,7 @@ using funkin.backend.utils.XMLUtil.XMLImportedScriptInfo;
  * @author Jamextreme140 & ItsLJcool
 **/
 class Stage extends Layer {
-	private static final __instanceFields = Type.getInstanceFields(Stage);
+	private static final __instanceFields:Map<String, Bool> = [for(f in Type.getInstanceFields(Stage)) f => true];
 
 	private static final DEFAULT_ATTRIBUTES:Array<String> = ["name", "startCamPosX", "startCamPosY", "zoom", "folder"];
 
@@ -503,21 +503,21 @@ class Stage extends Layer {
 	//region IHScriptCustomBehaviour implementation
 	override function hget(name:String):Dynamic {
 		// TODO: optimize this since "Type.getInstanceFields(Stage)" also gets the inherited fields from "Layer"
-		if (__instanceFields.contains(name) || __instanceFields.contains('get_$name'))
+		if (__instanceFields.exists(name) || __instanceFields.exists('get_$name'))
 			return Reflect.getProperty(this, name);
 
 		// We should check PlayState last, and check sub-layers before.
 		var og_val:Dynamic = super.hget(name);
 		if (og_val != null) return og_val;
 
-		if (PlayState.instance != null && (PlayState.__instanceFields.contains(name) || PlayState.__instanceFields.contains('get_$name')))
+		if (PlayState.instance != null && (PlayState.__instanceFields.exists(name) || PlayState.__instanceFields.exists('get_$name')))
 			return Reflect.getProperty(PlayState.instance, name);
 		
 		return null;
 	}
 
 	override function hset(name:String, val:Dynamic):Dynamic {
-		if (__instanceFields.contains(name) || __instanceFields.contains('set_$name')) {
+		if (__instanceFields.exists(name) || __instanceFields.exists('set_$name')) {
 			Reflect.setProperty(this, name, val);
 			return val;
 		}
@@ -525,7 +525,7 @@ class Stage extends Layer {
 		var og_val:Dynamic = super.hget(name);
 		if (og_val != null) return og_val;
 
-		if (PlayState.instance != null && (PlayState.__instanceFields.contains(name) || PlayState.__instanceFields.contains('set_$name'))) {
+		if (PlayState.instance != null && (PlayState.__instanceFields.exists(name) || PlayState.__instanceFields.exists('set_$name'))) {
 			Reflect.setProperty(PlayState.instance, name, val);
 			return val;
 		}
@@ -546,6 +546,6 @@ class Stage extends Layer {
 	function get_stageName():String { return this.name; }
 	function set_stageName(name:String):String { return this.name = name; }
 	function get_characterPoses():Map<String, StageCharPos> { return this.characterPosLookup; }
-	inline function applyCharStuff(char:Character, posName:String, id:Float = 0) { applyCharPos(char, posName, id); }
+	public inline function applyCharStuff(char:Character, posName:String, id:Float = 0) { applyCharPos(char, posName, id); }
 	//endregion
 }
