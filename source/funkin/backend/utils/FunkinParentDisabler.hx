@@ -22,26 +22,26 @@ class FunkinParentDisabler extends FlxBasic {
 	var __replaceUponDestroy:Bool;
 	var __restoreUponDestroy:Bool;
 
-	public function new(?excludeList:Array<ParentDisableable>, replaceUponDestroy:Bool = false, restoreUponDestroy:Bool = true) {
+	public function new(replaceUponDestroy:Bool = false, restoreUponDestroy:Bool = true, ?excludeList:Array<ParentDisableable>) {
 		super();
 		__replaceUponDestroy = replaceUponDestroy;
 		__restoreUponDestroy = restoreUponDestroy;
 		__excludeList = excludeList == null ? [] : excludeList;
 		@:privateAccess {
 			// tweens
-			__tweens = FlxTween.globalManager._tweens.copy().filter(t -> !excludeList.contains(t));
-			FlxTween.globalManager._tweens = [for (t in excludeList) if (t is FlxTween) cast t];
+			__tweens = FlxTween.globalManager._tweens.copy().filter(t -> !__excludeList.contains(t));
+			FlxTween.globalManager._tweens = [for (t in __excludeList) if (t is FlxTween) cast t];
 
 			// timers
-			__timers = FlxTimer.globalManager._timers.copy().filter(t -> !excludeList.contains(t));
-			FlxTimer.globalManager._timers = [for (t in excludeList) if (t is FlxTimer) cast t];
+			__timers = FlxTimer.globalManager._timers.copy().filter(t -> !__excludeList.contains(t));
+			FlxTimer.globalManager._timers = [for (t in __excludeList) if (t is FlxTimer) cast t];
 
 			// cameras
-			__cameras = [for (c in FlxG.cameras.list) if (!excludeList.contains(c) && !c.paused) c];
+			__cameras = [for (c in FlxG.cameras.list) if (!__excludeList.contains(c) && !c.paused) c];
 			for (c in __cameras) c.paused = true;
 
 			// sounds
-			__sounds = [for (s in FlxG.sound.list) if (!excludeList.contains(s) && s.playing && !s.persist) s];
+			__sounds = [for (s in FlxG.sound.list) if (!__excludeList.contains(s) && s.playing && !s.persist) s];
 			for (s in __sounds) s.pause();
 		}
 	}
