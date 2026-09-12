@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-16"?>
+<TextureAtlas imagePath="story mode.png">
+	<!-- Created with Adobe Flash CS6 version 12.0.0.481 -->
+	<!-- http://www.adobe.com/products/flash.html -->
+	<SubTexture name="story mode basic0000" x="0" y="581" width="863" height="137"/>
+	<SubTexture name="story mode basic0001" x="0" y="581" width="863" height="137"/>
+	<SubTexture name="story mode basic0002" x="0" y="581" width="863" height="137"/>
+	<SubTexture name="story mode basic0003" x="0" y="720" width="863" height="137"/>
+	<SubTexture name="story mode basic0004" x="0" y="720" width="863" height="137"/>
+	<SubTexture name="story mode basic0005" x="0" y="720" width="863" height="137"/>
+	<SubTexture name="story mode basic0006" x="0" y="859" width="863" height="137"/>
+	<SubTexture name="story mode basic0007" x="0" y="859" width="863" height="137"/>
+	<SubTexture name="story mode basic0008" x="0" y="859" width="863" height="137"/>
+	<SubTexture name="story mode white0000" x="0" y="398" width="954" height="181" frameX="-3" frameY="-15" frameWidth="966" frameHeight="202"/>
+	<SubTexture name="story mode white0001" x="0" y="204" width="961" height="192" frameX="0" frameY="-7" frameWidth="966" frameHeight="202"/>
+	<SubTexture name="story mode white0002" x="0" y="0" width="966" height="202"/>
+</TextureAtlas>

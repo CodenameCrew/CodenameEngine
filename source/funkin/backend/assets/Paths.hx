@@ -14,6 +14,8 @@ import animate.FlxAnimateFrames;
 import funkin.backend.assets.ModsFolder;
 import funkin.backend.scripting.Script;
 
+import flixel.util.typeLimit.OneOfTwo;
+
 using StringTools;
 
 class Paths
