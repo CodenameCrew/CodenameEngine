@@ -149,13 +149,15 @@ class Paths
 	}
 
 	static public function image(key:String, ?library:String, checkForAtlas:Bool = true, ?ext:OneOfTwo<String, Array<String>>) {
+		final defaultPath = getPath('images/$key', library, ext != null ? ext : Flags.IMAGE_EXTS);
 		if (checkForAtlas) {
+			final ogExt = Path.extension(defaultPath);
 			var atlasPath = getPath('images/$key/spritemap1', library, ext != null ? ext : Flags.IMAGE_EXTS);
 			var multiplePath = getPath('images/$key/1', library, ext != null ? ext : Flags.IMAGE_EXTS);
-			if (atlasPath != null && Assets.exists(atlasPath)) return atlasPath.substr(0, atlasPath.length - 14);
-			if (multiplePath != null && Assets.exists(multiplePath)) return multiplePath;
+			if (atlasPath != null && Assets.exists(atlasPath)) return atlasPath.substr(0, atlasPath.length - 15) + '.$ogExt';
+			if (multiplePath != null && Assets.exists(multiplePath)) return multiplePath.substr(0, multiplePath.length - 6) + '.$ogExt';
 		}
-		return getPath('images/$key', library, ext != null ? ext : Flags.IMAGE_EXTS);
+		return defaultPath;
 	}
 
 	public static inline function script(key:String, ?library:String, isAssetsPath:Bool = false) {
@@ -302,7 +304,7 @@ class Paths
 
 			frames = loadFrames(path, unique, null, false, skipMulti, animateSettings);
 			if (frames == null) {
-				Logs.warn('There is no Bitmap asset for "path". Skipping...');
+				Logs.warn('There is no Bitmap asset for "$path". Skipping...');
 				continue;
 			}
 
@@ -311,8 +313,11 @@ class Paths
 
 		if (frameCollections.length == 1 && !unique && (key == null || key == assetKey)) return frameCollections[0];
 
-		asset = new FlxAnimateFrames(FlxGraphic.fromFrame(FlxG.bitmap.whitePixel, unique, assetKey));
-		for (frames in frameCollections) asset.addAtlas(cast frames); // wont compile in hashlink because of mismatch type
+		//asset = new FlxAnimateFrames(FlxGraphic.fromFrame(FlxG.bitmap.whitePixel, unique, assetKey));
+		//for (frames in frameCollections) asset.addAtlas(cast frames); // wont compile in hashlink because of mismatch type
+		
+		// see FlxAnimateFrames#L495
+		asset = FlxAnimateFrames.combineAtlas(cast /* how do you make this good */ frameCollections);
 
 		if (!unique) tempFramesCache.set(assetKey, asset);
 		return asset;
@@ -362,20 +367,14 @@ class Paths
 		var noExt = Path.withoutExtension(path);
 		var ext = Ext != null ? Ext : Path.extension(path);
 
-		// there NEEDS to be a better way dude
-		if (!SkipMultiCheck && noExt.endsWith('/1'))
-			noExt = noExt.substr(0, noExt.length - 2);
-		if (!SkipMultiCheck && Assets.exists('$noExt/1.${ext}')) {
+		if (!SkipMultiCheck && Assets.exists('$noExt/1.$ext')) {
 			var cur:Int = 1;
 			final finalFrames = [];
-			while (Assets.exists('$noExt/$cur.${ext}')) {
-				finalFrames.push('${noExt.substr(
-					// there should be a Paths.unimage tbh
-					'assets/images/'.length
-				)}/$cur');
+			while (Assets.exists('$noExt/$cur.$ext')) {
+				finalFrames.push('$noExt/$cur.$ext');
 				cur++;
 			}
-			return getMultiFrames(finalFrames, true,
+			return getMultiFrames(finalFrames, true, true,
 				'$noExt/mult', true, ext, animateSettings);
 		} else if (!SkipAtlasCheck && Assets.exists('$noExt/Animation.json')) {
 			// ???
