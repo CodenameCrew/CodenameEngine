@@ -623,8 +623,25 @@ class Charter extends UIState {
 		noteTypes = PlayState.SONG.noteTypes;
 
 		FlxG.sound.setMusic(FlxG.sound.load(Paths.inst(__song, __diff, PlayState.SONG.meta.instSuffix)));
-		if (Assets.exists(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix)))
+
+		// force full load the audio datas for waveform, maybe in the future dont do this and
+		// make it so it continously loads the only necessary waveform data in preview?
+
+		if (FlxG.sound.music.data?.buffer != null && FlxG.sound.music.data.buffer.data == null) {
+			FlxG.sound.music.data.buffer.load();
+			FlxG.sound.music.data.buffer.decoder?.dispose();
+			FlxG.sound.music.data.buffer.decoder = null;
+		}
+
+		if (Assets.exists(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix))) {
 			vocals = FlxG.sound.load(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix));
+
+			if (vocals.data?.buffer != null && vocals.data.buffer.data == null) {
+				vocals.data.buffer.load();
+				vocals.data.buffer.decoder?.dispose();
+				vocals.data.buffer.decoder = null;
+			}
+		}
 		else
 			vocals = new FlxSound();
 
@@ -1179,6 +1196,7 @@ class Charter extends UIState {
 			var note:CharterNote = cast selected;
 			note.strumLineID = strumLines.members.indexOf(note.strumLine);
 			note.strumLine = null; // For static undos :D
+			CharterNote.callScriptOnNote('onCharterNoteDelete', note);
 			notesGroup.remove(note);
 			note.kill();
 		} else if (selected is CharterEvent) {
@@ -1198,9 +1216,11 @@ class Charter extends UIState {
 
 		notesGroup.autoSort = false;
 		selection.loop(function (n:CharterNote) {
+			final lastAlive = n.alive;
 			n.strumLine = strumLines.members[n.strumLineID];
 			n.revive();
 			notesGroup.add(n);
+			if (!lastAlive) CharterNote.callScriptOnNote('onCharterNoteRevive', n);
 		}, function (e:CharterEvent) {
 			e.revive();
 			(e.global ? rightEventsGroup : leftEventsGroup).add(e);
@@ -1744,7 +1764,6 @@ class Charter extends UIState {
 		if (selection == null || selection.length == 0) return;
 		selection.loop((n:CharterNote) -> {
 			noteDeleteAnims.deleteNotes.push({note: n, time: noteDeleteAnims.deleteTime});
-			CharterNote.callScriptOnNote('onCharterNoteDelete', n);
 		});
 		selection = deleteSelection(selection, true);
 	}
@@ -1759,7 +1778,6 @@ class Charter extends UIState {
 			if (oldNote != null && oldNote.step == note.step && oldNote.strumLineID == note.strumLineID && oldNote.id == note.id) {
 				noteDeleteAnims.deleteNotes.push({note: oldNote, time: noteDeleteAnims.deleteTime});
 				toDelete.push(oldNote);
-				CharterNote.callScriptOnNote('onCharterNoteDelete', oldNote);
 			}
 			oldNote = note;
 		}

@@ -987,15 +987,13 @@ final class CoolUtil
 	 * Returns the screen position of an object, while taking the camera zoom into account.
 	 *
 	 * @param	object	Any `FlxObject`
-	 * @param   camera  The desired "screen" coordinate space. If `null`, `FlxG.camera` is used.
+	 * @param   camera  The desired "screen" coordinate space. If `null`, a default camera is used.
 	 * @param   result  Optional arg for the returning point
 	 * @return  The screen position of the object.
 	 */
 	public static function worldToScreenPosition(object:FlxObject, ?camera:FlxCamera, ?result:FlxPoint) {
-		if (result == null)
-			result = FlxPoint.get();
-		if (camera == null)
-			camera = FlxG.camera;
+		if (result == null) result = FlxPoint.get();
+		if (camera == null) camera = object.getDefaultCamera();
 
 		result.set(object.x, object.y);
 		result.x = (((result.x - camera.scroll.x * object.scrollFactor.x) * camera.zoom) - ((camera.width * 0.5) * (camera.zoom - camera.initialZoom)));

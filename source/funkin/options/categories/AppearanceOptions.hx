@@ -3,16 +3,18 @@ package funkin.options.categories;
 import funkin.backend.system.framerate.Framerate;
 
 class AppearanceOptions extends TreeMenuScreen {
+	var framerateOption:NumOption; // use for changing the text
 	var fpsAdvancedOption:TextOption;
 	var lastFPSDebugMode:Int = 1; 
 
 	public function new() {
 		super('optionsTree.appearance-name', 'optionsTree.appearance-desc', 'AppearanceOptions.');
 
-		add(new NumOption(getNameID('framerate'), getDescID('framerate'),
-			30, 240, 1,
+		add(framerateOption = new NumOption(getNameID('framerate'), getDescID('framerate'),
+			30, Options.maxFrameRate + 1, 1,
 			'framerate', __changeFPS
 		));
+		if (framerateOption.currentValue > Options.maxFrameRate) __changeFPS(framerateOption.currentValue);
 		add(new Checkbox(getNameID('fpsCounter'), getDescID('fpsCounter'), 'fpsCounter', __changeFPSCounter));
 		add(new Checkbox(getNameID('flashingMenu'), getDescID('flashingMenu'), 'flashingMenu'));
 		add(new Checkbox(getNameID('colorHealthBar'), getDescID('colorHealthBar'), 'colorHealthBar'));
@@ -27,6 +29,10 @@ class AppearanceOptions extends TreeMenuScreen {
 
 	private function __changeFPS(value:Float) {
 		var framerate = Math.floor(value);
+		@:privateAccess if (framerate > Options.maxFrameRate) {
+			framerate = 0;
+			framerateOption.__number.text = TextOption.OPTION_VALUE_PREFIX + translate('framerate-unlimited');
+		}
 		if (FlxG.updateFramerate < framerate) FlxG.drawFramerate = FlxG.updateFramerate = framerate;
 		else FlxG.updateFramerate = FlxG.drawFramerate = framerate;
 	}
@@ -55,7 +61,7 @@ class AdvancedAppearanceOptions extends TreeMenuScreen {
 
 		add(new ArrayOption(getNameID('quality'), getDescID('quality'),
 			[0, 1, 2], [getID('quality-low'), getID('quality-high'), getID('quality-custom')],
-			'quality', __changeQuality, null
+			'quality', __changeQuality
 		));
 
 		for (option in (qualityOptions = [

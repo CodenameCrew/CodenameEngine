@@ -1,5 +1,6 @@
 package funkin.backend.system;
 
+import funkin.backend.system.console.ConsoleCommandManager;
 #if MOD_SUPPORT
 import sys.FileSystem;
 #end
@@ -36,8 +37,10 @@ class MainState extends FlxState {
 		Options.save();
 
 		ControlsUtil.resetCustomControls();
+		ConsoleCommandManager.unregisterModdedCommands();
 		FlxG.bitmap.reset();
 		FlxG.sound.destroy(true);
+		FlxG.sound.resetCache();
 
 		Paths.assetsTree.reset();
 
@@ -169,7 +172,7 @@ class MainState extends FlxState {
 		}
 		initiated = true;
 
-		if (@:privateAccess FlxG.game._requestedState == null || @:privateAccess FlxG.game._requestedState == this) {
+		if (@:privateAccess FlxG.game._nextState == null) {
 			var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
 			var outdatedAPI:Bool = (Flags.MOD_API_VERSION ?? Flags.CURRENT_API_VERSION) < Flags.CURRENT_API_VERSION;
 			// In this case if the mod we just loaded a compressed modpack, we can't edit or modify files without decompressing it.

@@ -222,7 +222,6 @@ class StageEditor extends UIState {
 
 		axisGizmo = new AxisGizmo();
 		axisGizmo.cameras = [gizmosCamera];
-		add(axisGizmo);
 
 		uiCamera = new FlxCamera();
 		uiCamera.bgColor = 0;
@@ -272,6 +271,7 @@ class StageEditor extends UIState {
 
 		add(topMenuSpr);
 		add(uiGroup);
+		add(axisGizmo);
 
 		if(Framerate.isLoaded) {
 			Framerate.fpsCounter.alpha = 0.4;
@@ -397,7 +397,9 @@ class StageEditor extends UIState {
 		char.extra.set(exID("lowMemory"), parent.name == "low-memory");
 
 		chars.push(char);
-		stage.applyCharStuff(char, charPos.name, 0);
+		// stage.applyCharStuff(char, charPos.name, 0); it can grab characterPoses[char.curCharacter] which is REALLY BAD SINCE I DESTROY THEM
+		charPos.prepareCharacter(char, 0);
+		insert(members.indexOf(charPos), char);
 		charMap[charName] = char;
 
 		remove(charPos, true);
@@ -583,14 +585,12 @@ class StageEditor extends UIState {
 		stage.stageXML.x.addChild(node.x);
 		node.att.name = "character_" + stageSpritesWindow.buttons.members.length;
 
-		var char = new Character(0,0, "bf", false, true);
+		var char = new Character(0,0, Flags.DEFAULT_OPPONENT, false, true);
 		char.name = node.att.name;
 		char.debugMode = true;
-		// Play first anim, and make it the last frame
+		// Play first anim, and make it the last frame by reversing and stopping
 		var animToPlay = char.getAnimOrder()[0];
-		char.playAnim(animToPlay, true, NONE);
-		var lastIndx = char.animation.curAnim.numFrames - 1;
-		char.playAnim(animToPlay, true, NONE, false, lastIndx);
+		char.playAnim(animToPlay, true, NONE, true, 0);
 		char.stopAnimation();
 
 		// Add it to the stage
@@ -684,6 +684,36 @@ class StageEditor extends UIState {
 		return Options.editorStagePrettyPrint ? xmlThingYea : xmlThingYea.replace("\n", "");
 	}
 
+	function storeSpriteTransform(sprite:FunkinSprite) {
+		sprite.setPosition(CoolUtil.quantize(sprite.x, 100), CoolUtil.quantize(sprite.y, 100));
+		sprite.scale.set(CoolUtil.quantize(sprite.scale.x, 100), CoolUtil.quantize(sprite.scale.y, 100));
+		sprite.skew.set(CoolUtil.quantize(sprite.skew.x, 100), CoolUtil.quantize(sprite.skew.y, 100));
+		sprite.angle = CoolUtil.quantize(sprite.angle, 100);
+
+		var button:StageElementButton = cast(sprite.extra.get(exID("button")), StageElementButton);
+		button.xml.att.x = Std.string(sprite.x);
+		button.xml.att.y = Std.string(sprite.y);
+		button.xml.att.skewx = Std.string(sprite.skew.x);
+		button.xml.att.skewy = Std.string(sprite.skew.y);
+		button.xml.att.angle = Std.string(sprite.angle);
+
+		for (attrib in ["graphicSize", "graphicSizex", "graphicSizey"])
+			button.xml.x.remove(attrib);
+		if (MathUtil.equal(sprite.scale.x, sprite.scale.y)) {
+			button.xml.att.scale = Std.string(sprite.scale.x);
+		} else {
+			button.xml.att.scalex = Std.string(sprite.scale.x);
+			button.xml.att.scaley = Std.string(sprite.scale.y);
+		}
+
+		if (button.xml.has.width)
+			button.xml.att.width = Std.string(sprite.width);
+		if (button.xml.has.height)
+			button.xml.att.height = Std.string(sprite.height);
+
+		button.updateInfo();
+	}
+
 	function _edit_undo(_) {
 		UIState.playEditorSound(Flags.DEFAULT_EDITOR_UNDO_SOUND);
 		var undo = undos.undo();
@@ -706,7 +736,7 @@ class StageEditor extends UIState {
 				sprite.scale.set(oldInfo.scaleX, oldInfo.scaleY);
 				sprite.skew.set(oldInfo.skewX, oldInfo.skewY);
 				sprite.angle = oldInfo.angle;
-				cast(sprite.extra.get(exID("button")), StageElementButton).updateInfo();
+				storeSpriteTransform(sprite);
 		}
 	}
 
@@ -732,7 +762,7 @@ class StageEditor extends UIState {
 				sprite.scale.set(newInfo.scaleX, newInfo.scaleY);
 				sprite.skew.set(newInfo.skewX, newInfo.skewY);
 				sprite.angle = newInfo.angle;
-				cast(sprite.extra.get(exID("button")), StageElementButton).updateInfo();
+				storeSpriteTransform(sprite);
 		}
 	}
 
@@ -1117,6 +1147,7 @@ class StageEditor extends UIState {
 		if (prevMode == NONE && mouseMode == NONE) return;
 
 		if (prevMode != NONE && mouseMode == NONE) {
+			storeSpriteTransform(sprite);
 			undos.addToUndo(CTransform(sprite, {
 				x: storedPos.x,
 				y: storedPos.y,

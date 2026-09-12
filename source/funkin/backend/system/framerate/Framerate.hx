@@ -83,6 +83,7 @@ class Framerate extends Sprite {
 	}
 
 	public function reload() {
+		textFormat = new TextFormat(fontName, 12, -1);
 		for(c in categories)
 			c.reload();
 		#if SHOW_BUILD_ON_FPS
@@ -107,7 +108,7 @@ class Framerate extends Sprite {
 
 
 	var debugAlpha:Float = 0;
-	public override function __enterFrame(t:Int) {
+	public override function __enterFrame(t:Float) {
 		alpha = CoolUtil.fpsLerp(alpha, debugMode > 0 ? 1 : 0, 0.5);
 		debugAlpha = CoolUtil.fpsLerp(debugAlpha, debugMode > 1 ? 1 : 0, 0.5);
 
