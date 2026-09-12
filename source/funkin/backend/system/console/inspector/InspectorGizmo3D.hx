@@ -50,6 +50,7 @@ class InspectorGizmo3D {
 		var screen = camera.getScreenPoint(point);
 		point.x = screen.x;
 		point.y = screen.y;
+		point.z = screen.z;
 		point.x = ((point.x*0.5) + 0.5);
 		point.y = (-((point.y*0.5) + 0.5) + 1.0);
 		if (clamp) {
@@ -89,7 +90,7 @@ class InspectorGizmo3D {
 		var position = object.position.clone();
 		transformVector3DWorldSpaceToScreenSpace(position, camera, scene);
 		transformVector3DScreenSpaceToWindowSpace(position);
-		drawList.addCircleFilled(position.x, position.y, 10, 0xFFFF0000);
+		if (position.z < 1.0) drawList.addCircleFilled(position.x, position.y, 10, 0xFFFF0000);
 
 		if (model != null) {
 			for (mesh in model.meshes) {
@@ -105,7 +106,6 @@ class InspectorGizmo3D {
 					var bottomBottomLeft = model.transform.transformVector(new Vector3D(mesh.bounds.center.x - mesh.bounds.extents.x, mesh.bounds.center.y + mesh.bounds.extents.y, mesh.bounds.center.z + mesh.bounds.extents.z));
 					var bottomBottomRight = model.transform.transformVector(new Vector3D(mesh.bounds.center.x + mesh.bounds.extents.x, mesh.bounds.center.y + mesh.bounds.extents.y, mesh.bounds.center.z + mesh.bounds.extents.z));
 
-					//TODO: fix offscreen weirdness
 					transformVector3DWorldSpaceToScreenSpace(topTopLeft, camera, scene); transformVector3DScreenSpaceToWindowSpace(topTopLeft);
 					transformVector3DWorldSpaceToScreenSpace(topTopRight, camera, scene); transformVector3DScreenSpaceToWindowSpace(topTopRight);
 					transformVector3DWorldSpaceToScreenSpace(topBottomLeft, camera, scene); transformVector3DScreenSpaceToWindowSpace(topBottomLeft);
@@ -115,12 +115,22 @@ class InspectorGizmo3D {
 					transformVector3DWorldSpaceToScreenSpace(bottomBottomLeft, camera, scene); transformVector3DScreenSpaceToWindowSpace(bottomBottomLeft);
 					transformVector3DWorldSpaceToScreenSpace(bottomBottomRight, camera, scene); transformVector3DScreenSpaceToWindowSpace(bottomBottomRight);
 
-					drawList.addQuad([topTopLeft.x, topTopLeft.y, topTopRight.x, topTopRight.y, topBottomRight.x, topBottomRight.y, topBottomLeft.x, topBottomLeft.y], 0xFFB922F5, 4);
-					drawList.addLine([topTopLeft.x, topTopLeft.y, bottomTopLeft.x, bottomTopLeft.y], 0xFFB922F5, 4);
-					drawList.addLine([topTopRight.x, topTopRight.y, bottomTopRight.x, bottomTopRight.y], 0xFFB922F5, 4);
-					drawList.addLine([topBottomLeft.x, topBottomLeft.y, bottomBottomLeft.x, bottomBottomLeft.y], 0xFFB922F5, 4);
-					drawList.addLine([topBottomRight.x, topBottomRight.y, bottomBottomRight.x, bottomBottomRight.y], 0xFFB922F5, 4);
-					drawList.addQuad([bottomTopLeft.x, bottomTopLeft.y, bottomTopRight.x, bottomTopRight.y, bottomBottomRight.x, bottomBottomRight.y, bottomBottomLeft.x, bottomBottomLeft.y], 0xFFB922F5, 4);
+					//drawList.addQuad([topTopLeft.x, topTopLeft.y, topTopRight.x, topTopRight.y, topBottomRight.x, topBottomRight.y, topBottomLeft.x, topBottomLeft.y], 0xFFB922F5, 4);
+					if (topTopLeft.z < 1.0 && topTopRight.z < 1.0) drawList.addLine([topTopLeft.x, topTopLeft.y, topTopRight.x, topTopRight.y], 0xFFB922F5, 4);
+					if (topTopRight.z < 1.0 && topBottomRight.z < 1.0) drawList.addLine([topTopRight.x, topTopRight.y, topBottomRight.x, topBottomRight.y], 0xFFB922F5, 4);
+					if (topBottomRight.z < 1.0 && topBottomLeft.z < 1.0) drawList.addLine([topBottomRight.x, topBottomRight.y, topBottomLeft.x, topBottomLeft.y], 0xFFB922F5, 4);
+					if (topBottomLeft.z < 1.0 && topTopLeft.z < 1.0) drawList.addLine([topBottomLeft.x, topBottomLeft.y, topTopLeft.x, topTopLeft.y], 0xFFB922F5, 4);
+
+					if (topTopLeft.z < 1.0 && bottomTopLeft.z < 1.0) drawList.addLine([topTopLeft.x, topTopLeft.y, bottomTopLeft.x, bottomTopLeft.y], 0xFFB922F5, 4);
+					if (topTopRight.z < 1.0 && bottomTopRight.z < 1.0) drawList.addLine([topTopRight.x, topTopRight.y, bottomTopRight.x, bottomTopRight.y], 0xFFB922F5, 4);
+					if (topBottomLeft.z < 1.0 && bottomBottomLeft.z < 1.0) drawList.addLine([topBottomLeft.x, topBottomLeft.y, bottomBottomLeft.x, bottomBottomLeft.y], 0xFFB922F5, 4);
+					if (topBottomRight.z < 1.0 && bottomBottomRight.z < 1.0) drawList.addLine([topBottomRight.x, topBottomRight.y, bottomBottomRight.x, bottomBottomRight.y], 0xFFB922F5, 4);
+
+					if (bottomTopLeft.z < 1.0 && bottomTopRight.z < 1.0) drawList.addLine([bottomTopLeft.x, bottomTopLeft.y, bottomTopRight.x, bottomTopRight.y], 0xFFB922F5, 4);
+					if (bottomTopRight.z < 1.0 && bottomBottomRight.z < 1.0) drawList.addLine([bottomTopRight.x, bottomTopRight.y, bottomBottomRight.x, bottomBottomRight.y], 0xFFB922F5, 4);
+					if (bottomBottomRight.z < 1.0 && bottomBottomLeft.z < 1.0) drawList.addLine([bottomBottomRight.x, bottomBottomRight.y, bottomBottomLeft.x, bottomBottomLeft.y], 0xFFB922F5, 4);
+					if (bottomBottomLeft.z < 1.0 && bottomTopLeft.z < 1.0) drawList.addLine([bottomBottomLeft.x, bottomBottomLeft.y, bottomTopLeft.x, bottomTopLeft.y], 0xFFB922F5, 4);
+					//drawList.addQuad([bottomTopLeft.x, bottomTopLeft.y, bottomTopRight.x, bottomTopRight.y, bottomBottomRight.x, bottomBottomRight.y, bottomBottomLeft.x, bottomBottomLeft.y], 0xFFB922F5, 4);
 				}
 			}
 		}
@@ -134,7 +144,7 @@ class InspectorGizmo3D {
 		if (ImGui.isKeyPressed(ImGuiKey.E)) gizmoMode = 1;
 		if (ImGui.isKeyPressed(ImGuiKey.R)) gizmoMode = 2;
 
-		if (gizmoMode > -1) {
+		if (gizmoMode > -1 && position.z < 1.0) {
 			var windowX = position.x-(size/2);
 			var windowY = position.y-(size/2);
 			ImGui.setNextWindowPos(windowX, windowY);

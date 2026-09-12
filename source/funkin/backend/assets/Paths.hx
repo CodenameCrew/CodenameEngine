@@ -149,13 +149,15 @@ class Paths
 	}
 
 	static public function image(key:String, ?library:String, checkForAtlas:Bool = true, ?ext:OneOfTwo<String, Array<String>>) {
+		final defaultPath = getPath('images/$key', library, ext != null ? ext : Flags.IMAGE_EXTS);
 		if (checkForAtlas) {
+			final ogExt = Path.extension(defaultPath);
 			var atlasPath = getPath('images/$key/spritemap1', library, ext != null ? ext : Flags.IMAGE_EXTS);
 			var multiplePath = getPath('images/$key/1', library, ext != null ? ext : Flags.IMAGE_EXTS);
-			if (atlasPath != null && Assets.exists(atlasPath)) return atlasPath.substr(0, atlasPath.length - 14);
-			if (multiplePath != null && Assets.exists(multiplePath)) return multiplePath;
+			if (atlasPath != null && Assets.exists(atlasPath)) return atlasPath.substr(0, atlasPath.length - 15) + '.$ogExt';
+			if (multiplePath != null && Assets.exists(multiplePath)) return multiplePath.substr(0, multiplePath.length - 6) + '.$ogExt';
 		}
-		return getPath('images/$key', library, ext != null ? ext : Flags.IMAGE_EXTS);
+		return defaultPath;
 	}
 
 	public static inline function script(key:String, ?library:String, isAssetsPath:Bool = false) {
@@ -244,17 +246,78 @@ class Paths
 	/**
 	 * Gets frames at specified path.
 	 * @param key Path to the frames
+	 * @param assetsPath (Additional) Whether's the key already a path to an asset.
 	 * @param library (Additional) library to load the frames from.
 	 */
 	public static function getFrames(key:String, assetsPath:Bool = false, ?library:String, ?ext:OneOfTwo<String, Array<String>> = null, ?animateSettings:FlxAnimateSettings) {
 		if (tempFramesCache.exists(key)) {
 			var frames = tempFramesCache[key];
-			if (frames != null && frames.parent != null && frames.parent.bitmap != null && frames.parent.bitmap.readable)
-				return frames;
-			else
-				tempFramesCache.remove(key);
+			if (frames != null && frames.parent != null && frames.parent.bitmap != null) return frames;
+			else tempFramesCache.remove(key);
 		}
 		return tempFramesCache[key] = loadFrames(assetsPath ? key : Paths.image(key, library, true, ext), false, null, false, animateSettings);
+	}
+
+	/**
+	 * Gets frames from multiple specified image with supporting all atlas types.
+	 * @param sheets An array of paths to the images
+	 * @param assetsPath (Additional) Whether's the key already a path to an asset.
+	 * @param unique (Additional) Whenever the images should be unique in the cache.
+	 * @param key (Additional) Key for the returned frames in the cache, although the frames are still cached normally.
+	 *  If, left undefined, the key will the be joint sheets argument that is passed
+	 * @param skipMulti (Additional) Whenever the multi spritesheet check should be skipped.
+	 * @param ext (Additional) Extension(s) of the images.
+	 * @return FlxFramesCollection Frames
+	**/
+	public static function getMultiFrames(sheets:Array<String>, assetsPath:Bool = false, ?unique:Bool = false, ?key:String = null,
+			?skipMulti:Bool = false, ?ext:OneOfTwo<String, Array<String>> = null, ?animateSettings:FlxAnimateSettings):FlxFramesCollection
+	{
+		final assetKey = key != null ? key : "combo/" + sheets.join(",");
+
+		var asset:FlxAtlasFrames = cast tempFramesCache.get(assetKey);
+
+		if (asset != null && asset.parent != null && asset.parent.bitmap != null) return asset;
+		else tempFramesCache.remove(assetKey);
+
+		if (!unique) {
+			final graphic = FlxG.bitmap.get(assetKey);
+			if (graphic != null && (asset = graphic.atlasFrames) != null) {
+				tempFramesCache.set(assetKey, asset);
+				return asset;
+			}
+		}
+
+		final frameCollections:Array<FlxFramesCollection> = [];
+
+		for (key in sheets) {
+			final path = assetsPath ? key : image(key, null, true, ext);
+
+			var frames:FlxFramesCollection;
+			if (tempFramesCache.exists(key)) {
+				if ((frames = tempFramesCache.get(key)) != null && frames.parent != null && frames.parent.bitmap != null) {
+					frameCollections.push(frames);
+					continue;
+				}
+				else
+					tempFramesCache.remove(key);
+			}
+
+			frames = loadFrames(path, unique, null, false, skipMulti, animateSettings);
+			if (frames == null) {
+				Logs.warn('There is no Bitmap asset for "$path". Skipping...');
+				continue;
+			}
+
+			frameCollections.push(frames);
+		}
+
+		if (frameCollections.length == 1 && !unique && (key == null || key == assetKey)) return frameCollections[0];
+
+		asset = new FlxAnimateFrames(FlxGraphic.fromFrame(FlxG.bitmap.whitePixel, unique, assetKey));
+		for (frames in frameCollections) asset.addAtlas(cast frames); // wont compile in hashlink because of mismatch type
+
+		if (!unique) tempFramesCache.set(assetKey, asset);
+		return asset;
 	}
 
 	/**
@@ -267,82 +330,48 @@ class Paths
 	**/
 	public static function framesExists(key:String, checkAtlas:Bool = false, checkMulti:Bool = true, assetsPath:Bool = false, ?library:String) {
 		var path = assetsPath ? key : Paths.image(key, library, true);
+
 		var noExt = Path.withoutExtension(path);
 		var ext = Path.extension(path);
-		if(checkAtlas && Assets.exists('$noExt/Animation.json'))
+
+		if (checkAtlas && Assets.exists('$noExt/Animation.json'))
 			return true;
-		if(checkMulti && Assets.exists('$noExt/1.$ext'))
+		if (checkMulti && Assets.exists('$noExt/1.$ext'))
 			return true;
-		if(Assets.exists('$noExt.xml'))
+		if (Assets.exists('$noExt.xml'))
 			return true;
-		if(Assets.exists('$noExt.txt'))
+		if (Assets.exists('$noExt.txt'))
 			return true;
-		if(Assets.exists('$noExt.json'))
+		if (Assets.exists('$noExt.json'))
 			return true;
 		return false;
 	}
-
-	/*
-	 * Loads frames from multiple specified image paths. Supports all atlas types.
-	 * @param sheets An array of paths to the images
-	 * @param unique (Additional) Whenever the image should be unique in the cache
-	 * @param key (Additional) Key to the image in the cache
-	 * @param ext (Additional) Extension of the images.
-	 * @return FlxFramesCollection Frames
-	 */
-	public static function getMultiFrames(sheets:Array<String>, ?unique:Bool = true, ?key:String = null, ?skipMulti:Bool = false, ?ext:OneOfTwo<String, Array<String>> = null, ?animateSettings:FlxAnimateSettings):FlxFramesCollection {
-		if (sheets.length == 1)
-			return loadFrames(Paths.image(sheets[0], null, true, ext), unique, key, false, false, animateSettings);
-		if (key == null) key = 'combo/' + sheets.join(',');
-
-		var graphic = FlxG.bitmap.add("flixel/images/logo/default.png", unique, key);
-		var sprFrames:FlxAtlasFrames = new FlxAtlasFrames(graphic);
-		try {
-			for (x => path in sheets) {
-				final coolPath = Paths.image(path, null, true, ext);
-				final noExt = haxe.io.Path.withoutExtension(coolPath);
-				final ext = haxe.io.Path.extension(coolPath);
-				@:privateAccess
-				var newFrames = cast Paths.loadFrames('$noExt.$ext', true, key + '_$path', false, skipMulti, animateSettings);
-				if (newFrames == null) {
-					Logs.warn('There is no Bitmap asset for "$noExt". Skipping...');
-					continue;
-				}
-				sprFrames = FlxAnimateFrames.combineAtlas(sprFrames, newFrames);
-			}
-		} catch(e:Dynamic) {
-			Logs.error('Multisheet load error: ' + e.toString());
-		}
-		return sprFrames;
-	}
 	
 	/**
+	 * Unintended for future normal usage, use getMultiFrames or loadMultiFrames instead.
+	 * 
 	 * Loads frames from a specific image path. Supports Sparrow Atlases, Packer Atlases, and multiple spritesheets.
 	 * @param path Path to the image
 	 * @param Unique Whenever the image should be unique in the cache
 	 * @param Key Key to the image in the cache
 	 * @param SkipAtlasCheck Whenever the atlas check should be skipped.
 	 * @param SkipMultiCheck Whenever the multi spritesheet check should be skipped.
-	 * @param Ext Extension of the image.
 	 * @return FlxFramesCollection Frames
 	 */
-	static function loadFrames(path:String, Unique:Bool = false, Key:String = null, SkipAtlasCheck:Bool = false, SkipMultiCheck:Bool = false, ?animateSettings:FlxAnimateSettings):FlxFramesCollection {
+	static function loadFrames(path:String, Unique:Bool = false, Key:String = null, SkipAtlasCheck:Bool = false, SkipMultiCheck:Bool = false,
+			Ext:String = null, ?animateSettings:FlxAnimateSettings):FlxFramesCollection
+	{
 		var noExt = Path.withoutExtension(path);
-		var ext = Path.extension(path);
-		// there NEEDS to be a better way dude
-		if (!SkipMultiCheck && noExt.endsWith('/1'))
-			noExt = noExt.substr(0, noExt.length - 2);
-		if (!SkipMultiCheck && Assets.exists('$noExt/1.${ext}')) {
+		var ext = Ext != null ? Ext : Path.extension(path);
+
+		if (!SkipMultiCheck && Assets.exists('$noExt/1.$ext')) {
 			var cur:Int = 1;
 			final finalFrames = [];
-			while (Assets.exists('$noExt/$cur.${ext}')) {
-				finalFrames.push('${noExt.substr(
-					// there should be a Paths.unimage tbh
-					'assets/images/'.length
-				)}/$cur');
+			while (Assets.exists('$noExt/$cur.$ext')) {
+				finalFrames.push('$noExt/$cur.$ext');
 				cur++;
 			}
-			return getMultiFrames(finalFrames, true,
+			return getMultiFrames(finalFrames, true, true,
 				'$noExt/mult', true, ext, animateSettings);
 		} else if (!SkipAtlasCheck && Assets.exists('$noExt/Animation.json')) {
 			// ???

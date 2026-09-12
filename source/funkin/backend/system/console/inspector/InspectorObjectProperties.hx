@@ -17,6 +17,8 @@ import foxlite.group.FoxObjectGroup;
 import foxlite.FoxBasic;
 import foxlite.FoxObject;
 import foxlite.FoxModel;
+import foxlite.mesh.buffer.FoxVertexBuffer;
+import foxlite.mesh.buffer.FoxVertexBufferType;
 #end
 
 using funkin.backend.utils.ImGuiUtil;
@@ -318,14 +320,24 @@ class InspectorObjectProperties {
 						textField("Key", mesh.assetsKey);
 						textField("Is Copy", mesh.__isCopy ? "True" : "False");
 						@:privateAccess {
-							if (mesh.vertexBuffer != null) textField("Vertex Buffer", "Num: " + mesh.vertexBuffer.__numVertices + ", Stride: " + mesh.vertexBuffer.__stride + ", Size: " + mesh.vertexBuffer.__memoryUsage);
-							if (mesh.uvBuffer != null) textField("UV Buffer", "Num: " + mesh.uvBuffer.__numVertices + ", Stride: " + mesh.uvBuffer.__stride + ", Size: " + mesh.uvBuffer.__memoryUsage);
-							if (mesh.indexBuffer != null) textField("Index Buffer", "Num: " + mesh.indexBuffer.__numIndices + ", Size: " + mesh.indexBuffer.__memoryUsage);
-							if (mesh.normalBuffer != null) textField("Normal Buffer", "Num: " + mesh.normalBuffer.__numVertices + ", Stride: " + mesh.normalBuffer.__stride + ", Size: " + mesh.normalBuffer.__memoryUsage);
-							if (mesh.tangentBuffer != null) textField("Tangent Buffer", "Num: " + mesh.tangentBuffer.__numVertices + ", Stride: " + mesh.tangentBuffer.__stride + ", Size: " + mesh.tangentBuffer.__memoryUsage);
-							if (mesh.colorBuffer != null) textField("Color Buffer", "Num: " + mesh.colorBuffer.__numVertices + ", Stride: " + mesh.colorBuffer.__stride + ", Size: " + mesh.colorBuffer.__memoryUsage);
-							if (mesh.boneWeights != null) textField("Bone Weights Buffer", "Num: " + mesh.boneWeights.__numVertices + ", Stride: " + mesh.boneWeights.__stride + ", Size: " + mesh.boneWeights.__memoryUsage);
-							if (mesh.colorBuffer != null) textField("Bone Indices Buffer", "Num: " + mesh.boneIndices.__numVertices + ", Stride: " + mesh.boneIndices.__stride + ", Size: " + mesh.boneIndices.__memoryUsage);
+							final vertexBuffer  = mesh.buffers[FoxVertexBufferType.VERTICES],
+								  uvBuffer      = mesh.buffers[FoxVertexBufferType.UVS],
+								  normalBuffer  = mesh.buffers[FoxVertexBufferType.NORMALS],
+								  tangentBuffer = mesh.buffers[FoxVertexBufferType.TANGENTS],
+								  colorBuffer   = mesh.buffers[FoxVertexBufferType.COLORS],
+								  boneWeights   = mesh.buffers[FoxVertexBufferType.WEIGHTS],
+								  boneIndices   = mesh.buffers[FoxVertexBufferType.BONE_INDICES],
+								  indexBuffer   = mesh.buffers[FoxVertexBufferType.INDICES];
+							// this should be better
+							inline function stride(buffer:FoxVertexBuffer) return buffer.components * buffer.bytesPerElement;
+							if (vertexBuffer != null) textField("Vertex Buffer", 	  "Num: " + vertexBuffer.count  + ", Stride: " + stride(vertexBuffer)  + ", Size: " + (vertexBuffer.count  * stride(vertexBuffer) ));
+							if (uvBuffer != null) textField("UV Buffer", 			  "Num: " + uvBuffer.count      + ", Stride: " + stride(uvBuffer)      + ", Size: " + (uvBuffer.count      * stride(uvBuffer)     ));
+							if (indexBuffer != null) textField("Index Buffer",        "Num: " + indexBuffer.count   				    				   + ", Size: " + (indexBuffer.count   * stride(indexBuffer)  ));
+							if (normalBuffer != null) textField("Normal Buffer",      "Num: " + normalBuffer.count  + ", Stride: " + stride(normalBuffer)  + ", Size: " + (normalBuffer.count  * stride(normalBuffer) ));
+							if (tangentBuffer != null) textField("Tangent Buffer",    "Num: " + tangentBuffer.count + ", Stride: " + stride(tangentBuffer) + ", Size: " + (tangentBuffer.count * stride(tangentBuffer)));
+							if (colorBuffer != null) textField("Color Buffer", 		  "Num: " + colorBuffer.count   + ", Stride: " + stride(colorBuffer)   + ", Size: " + (colorBuffer.count   * stride(colorBuffer)  ));
+							if (boneWeights != null) textField("Bone Weights Buffer", "Num: " + boneWeights.count   + ", Stride: " + stride(boneWeights)   + ", Size: " + (boneWeights.count   * stride(boneWeights)  ));
+							if (boneIndices != null) textField("Bone Indices Buffer", "Num: " + boneIndices.count   + ", Stride: " + stride(boneIndices)   + ", Size: " + (boneIndices.count   * stride(boneIndices)  ));
 						}
 						ImGui.endTable();
 					}
