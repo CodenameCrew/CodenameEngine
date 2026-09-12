@@ -785,7 +785,7 @@ class Alphabet extends FlxSprite {
 
 		for (node in xml.elements())
 			checkNode(node);
-		frames = Paths.getMultiFrames(sheets, false);
+		frames = Paths.getMultiFrames(sheets);
 	}
 
 	private static var alphabetProperties:Array<String> = ["fps", "advance", "lineGap", "forceCasing", "colorMode", "antialiasing"];

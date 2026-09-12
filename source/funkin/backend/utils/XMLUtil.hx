@@ -144,7 +144,7 @@ final class XMLUtil {
 			}
 			seenSheets.push(path);
 		}
-		return spr.frames = Paths.getMultiFrames(seenSheets, false, null, null, spr.animateSettings);
+		return spr.frames = Paths.getMultiFrames(seenSheets, false, false, null, false, null, spr.animateSettings);
 	}
 	/**
 	 * Sets the properties of a sprite based on a XML node.
