@@ -7,7 +7,6 @@ import openfl.text.TextFormat;
 class FramerateCounter extends Sprite {
 	public var fpsNum:TextField;
 	public var fpsLabel:TextField;
-	public var lowFPS:TextField;
 	public var lastFPS:Float = 0;
 
 	private var frameCount:Int = 0;
@@ -17,17 +16,13 @@ class FramerateCounter extends Sprite {
 	private final updateInterval:Float = 1 / 15;
 	private var lastUpdateTime:Float = 0;
 
-	private final history:Array<Float> = [];
-
 	public function new() {
 		super();
 
 		fpsNum = new TextField();
 		fpsLabel = new TextField();
-		lowFPS = new TextField();
-		history.resize(15);
 
-		for (label in [fpsNum, fpsLabel, lowFPS]) {
+		for(label in [fpsNum, fpsLabel]) {
 			label.autoSize = LEFT;
 			label.x = 0;
 			label.y = 0;
@@ -37,17 +32,14 @@ class FramerateCounter extends Sprite {
 			label.selectable = false;
 			addChild(label);
 		}
-
-		lowFPS.alpha = 0.5;
 	}
 
 	public function reload() {
-		for (label in [fpsNum, fpsLabel, lowFPS]) label.defaultTextFormat = new TextFormat(Framerate.fontName, label == fpsNum ? 18 : 12, -1);
 		lastUpdateTime = 0;
 	}
 
 	public override function __enterFrame(t:Int) {
-		if (alpha <= 0.001) return;
+		if (alpha <= 0.05) return;
 
 		super.__enterFrame(t);
 
@@ -60,15 +52,12 @@ class FramerateCounter extends Sprite {
 		}
 
 		final timer = openfl.Lib.getTimer();
-		final delta = timer - accumulatedTime;
+
+		final time = timer - accumulatedTime;
+
 		accumulatedTime = timer;
 
-		history.shift();
-		history.push(lastFPS = FlxMath.lerp(lastFPS, delta <= 0 ? 0 : (1000.0 / delta * frameCount), 1.0 - Math.pow(0.75, delta * 0.06)));
-
-		var lowest = history[0];
-		for (f in history) if (f < lowest || f == 0) lowest = f;
-		lowFPS.text = "/1%: " + Math.round(lowest);
+		lastFPS = FlxMath.lerp(lastFPS, time <= 0 ? 0 : (1000 / time * frameCount), 1.0 - Math.pow(0.75, time * 0.06));
 
 		fpsNum.text = Std.string(Math.round(lastFPS));
 		lastUpdateTime = frameCount = 0;
@@ -80,8 +69,5 @@ class FramerateCounter extends Sprite {
 	{
 		fpsLabel.x = fpsNum.x + fpsNum.width;
 		fpsLabel.y = (fpsNum.y + fpsNum.height) - fpsLabel.height;
-
-		lowFPS.x = fpsLabel.x + fpsLabel.width;
-		lowFPS.y = (fpsLabel.y + fpsLabel.height) - lowFPS.height;
 	}
 }

@@ -8,18 +8,9 @@
 			return 20 + (150 + XOFFSET) * c;
 		}
 		previewSprite = null;
-		if(!char.isAnimate) {
+		if(char.animateAtlas == null) {
 			previewSprite = new FunkinSprite(0, 0);
 			previewSprite.frame = char.frame;
-
-			self.add(previewSprite);
-		} else {
-			previewSprite = new FunkinSprite(0, 0);
-			previewSprite.frames = char.frames;
-			previewSprite.applyStageMatrix = false;
-			// quite a bit of hacking to it buuuuuut
-			previewSprite.animation._curAnim = char.animation._curAnim;
-			previewSprite.animation.frameIndex = char.animation.frameIndex;
 
 			self.add(previewSprite);
 		}
@@ -62,10 +53,8 @@
 
 		<stepper name="zoomFactorStepper" label="${translate('zoomFactor')}" value="char.zoomFactor" x="col(1)" y="curY" precision="2" step="0.01" width="100" />
 
-		<set name="charTypeY" value="curY" />
 		<section if="!StringTools.startsWith(char.name, 'NO_DELETE_')">
-			<textbox name="charName" label="${translate('positionName')}" value="char.name" x="col(2)" y="curY" width="145"/>
-			<set name="charTypeY" value="self.winHeight - 200" />
+			<textbox name="charName" label="${translate('positionName')}" value="char.name" x="col(2)" y="curY" width="100"/>
 		</section>
 	</section>
 
@@ -89,12 +78,12 @@
 	</section>
 
 	<section>
-		<label name="curCharLabel" text="Character (XML)" x="col(2)" y="charTypeY" size="15" />
+		<label name="curCharLabel" text="Character (XML)" x="col(2)" y="curY - 52" size="15" />
 		 <exec>
 			import funkin.editors.ui.UIAutoCompleteTextBox;
 			import funkin.game.Character;
 
-			var curCharBox = new UIAutoCompleteTextBox(col(2), charTypeY, char.curCharacter, 145, 32);
+			var curCharBox = new UIAutoCompleteTextBox(col(2), curY - 52, char.curCharacter, 148, 32);
 			curCharBox.suggestItems = Character.getList(false);
 			self.add(curCharBox);
 		 </exec>
@@ -121,6 +110,9 @@
 			setEx("highMemory", highMemoryRadio.checked);
 			setEx("lowMemory", lowMemoryRadio.checked);
 
+			if (!StringTools.startsWith(char.name, 'NO_DELETE_'))
+				char.name = charName.field.text;
+
 			char.x = xStepper.value;
 			char.y = yStepper.value;
 			char.scrollFactor.set(scrollXStepper.value, scrollYStepper.value);
@@ -143,7 +135,6 @@
 			char.zoomFactor = zoomFactorStepper.value;
 			char.angle = angleStepper.value;
 
-			var posName = StringTools.startsWith(char.name, 'NO_DELETE_') ? char.name : charName.label.text;
 			var newCharName = curCharBox.label.text;
 			if (newCharName != char.curCharacter) {
 				char.curCharacter = newCharName;
@@ -151,41 +142,12 @@
 				char.applyXML(char.xml);
 
 				var anim = char.getAnimOrder()[0];
-				char.playAnim(anim, true, 0, true, 0);
-				char.stopAnim();
-			}
-			char.name = posName;
-
-			function saveXY(name:String, x:UINumericStepper, y:UINumericStepper) {
-				button.xml.remove(name + "");
-				button.xml.remove(name + "x");
-				button.xml.remove(name + "y");
-
-				if(x.value == y.value)
-					button.xml.set(name, x.value);
-				else {
-					button.xml.set(name + "x", x.value);
-					button.xml.set(name + "y", y.value);
-				}
+				char.playAnim(anim, true);
+				var lastIndx = char.animation.curAnim.numFrames - 1;
+				char.playAnim(anim, true, null, false, lastIndx);
+				char.stopAnimation();
 			}
 
-			if (!StringTools.startsWith(char.name, "NO_DELETE_"))
-				button.xml.set("name", char.name);
-			saveXY("", xStepper, yStepper);
-			button.xml.set("camxoffset", camxStepper.value);
-			button.xml.set("camyoffset", camyStepper.value);
-
-			saveXY("scale", scaleXStepper, scaleYStepper);
-			saveXY("scroll", scrollXStepper, scrollYStepper);
-			button.xml.set("zoomfactor", zoomFactorStepper.value);
-			button.xml.set("alpha", alphaStepper.value);
-			button.xml.set("angle", angleStepper.value);
-			button.xml.set("skewx", skewXStepper.value);
-			button.xml.set("skewy", skewYStepper.value);
-
-			button.xml.remove("flip");
-			button.xml.remove("flipX");
-			button.xml.set("flip", flipXCheckbox.checked);
 		}
 	</exec>
 </window>

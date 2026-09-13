@@ -1,158 +1,149 @@
 package funkin.backend;
 
-import animate.FlxAnimate;
 import flixel.FlxCamera;
 import flixel.FlxG;
-import flixel.math.FlxAngle;
-import flixel.math.FlxMatrix;
-import flixel.math.FlxPoint;
-import flixel.math.FlxRect;
+import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import flixel.graphics.frames.FlxFrame;
-
 import funkin.backend.system.Flags;
 
-@:access(animate.FlxAnimate)
 class FunkinText extends FlxText
 {
-	public var zoomFactor:Float = 1;
-	public var zoomFactorEnabled:Bool = true;
+    public var zoomFactor:Float = 1;
+    public var zoomFactorEnabled:Bool = true;
+    public var angleFactor:Float = 1;
+    public var angleFactorEnabled:Bool = true;
 
-	public var angleFactor:Float = 1;
-	public var angleFactorEnabled:Bool = true;
+    public function new(X:Float = 0, Y:Float = 0, FieldWidth:Float = 0, ?Text:String, ?Size:Int, Border:Bool = true)
+    {
+        if (Size == null)
+            Size = Flags.DEFAULT_FONT_SIZE;
 
-	/**
-	 * Change the skew of your sprite's graphic.
-	 */
-	public var skew(default, null):FlxPoint;
+        super(X, Y, FieldWidth, Text, Size);
 
-	/**
-	 * The matrix to use for rendering if `matrixExposed` is true.
-	 */
-	public var transformMatrix(default, null):FlxMatrix;
+        setFormat(Paths.font(Flags.DEFAULT_FONT), Size, FlxColor.WHITE);
 
-	/**
-	 * Whether to draw the matrix exposed with `transformMatrix`.
-	 */
-	public var matrixExposed:Bool = false;
+        if (Border)
+        {
+            borderStyle = OUTLINE;
+            borderSize = 1;
+            borderColor = 0xFF000000;
+        }
+    }
 
-	public function new(X:Float = 0, Y:Float = 0, FieldWidth:Float = 0, ?Text:String, ?Size:Int, Border:Bool = true)
-	{
-		if (Size == null) Size = Flags.DEFAULT_FONT_SIZE;
+    private inline function __shouldDoZoomFactor():Bool
+    {
+        return zoomFactorEnabled && zoomFactor != 1;
+    }
 
-		super(X, Y, FieldWidth, Text, Size);
+    private inline function __getZoomScaleX(camera:FlxCamera):Float
+    {
+        return (camera.scaleX > 0 ? Math.max : Math.min)(0, FlxMath.lerp(1 / camera.scaleX, 1, zoomFactor));
+    }
 
-		setFormat(Paths.font(Flags.DEFAULT_FONT), Size, FlxColor.WHITE);
+    private inline function __getZoomScaleY(camera:FlxCamera):Float
+    {
+        return (camera.scaleY > 0 ? Math.max : Math.min)(0, FlxMath.lerp(1 / camera.scaleY, 1, zoomFactor));
+    }
 
-		if (Border)
-		{
-			borderStyle = OUTLINE;
-			borderSize = 1;
-			borderColor = 0xFF000000;
-		}
-	}
+    private inline function __getZoomAnchorX(camera:FlxCamera):Float
+    {
+        if (Flags.USE_LEGACY_ZOOM_FACTOR)
+            return camera.width * 0.5 - origin.x;
 
-	override function initVars()
-	{
-		super.initVars();
-		skew = new FlxPoint();
-		transformMatrix = new FlxMatrix();
-	}
+        return camera.width * 0.5 + camera.scroll.x * scrollFactor.x - origin.x;
+    }
 
-	override function destroy()
-	{
-		super.destroy();
-		skew = FlxDestroyUtil.put(skew);
-		transformMatrix = null;
-	}
+    private inline function __getZoomAnchorY(camera:FlxCamera):Float
+    {
+        if (Flags.USE_LEGACY_ZOOM_FACTOR)
+            return camera.height * 0.5 - origin.y;
 
-	override function drawComplex(camera:FlxCamera):Void
-	{
-		_frame.prepareMatrix(_matrix, ANGLE_0, checkFlipX(), checkFlipY());
-		_matrix.translate(-origin.x, -origin.y);
+        return camera.height * 0.5 + camera.scroll.y * scrollFactor.y - origin.y;
+    }
 
-		if (frameOffsetAngle != null && frameOffsetAngle != angle)
-		{
-			var angleOff = (frameOffsetAngle - angle) * FlxAngle.TO_RAD;
-			var cos = Math.cos(angleOff), sin = Math.sin(angleOff);
-			// cos doesnt need to be negated
-			_matrix.rotateWithTrig(cos, -sin);
-			_matrix.translate(-frameOffset.x, -frameOffset.y);
-			_matrix.rotateWithTrig(cos, sin);
-		}
-		else
-			_matrix.translate(-frameOffset.x, -frameOffset.y);
+    private inline function __getAngleAnchorX(camera:FlxCamera):Float
+    {
+        if (Flags.USE_LEGACY_ZOOM_FACTOR)
+            return camera.width * 0.5 - origin.x;
 
-		_matrix.scale(scale.x, scale.y);
+        return camera.width * 0.5 + camera.scroll.x * scrollFactor.x - origin.x;
+    }
 
-		if (matrixExposed) _matrix.concat(transformMatrix);
-		else {
-			if (angle != 0)
-			{
-				updateTrig();
-				_matrix.rotateWithTrig(_cosAngle, _sinAngle);
-			}
-			if (skew.x != 0 || skew.y != 0)
-			{
-				FlxAnimate._skewMatrix.setTo(1, Math.tan(skew.y * FlxAngle.TO_RAD), Math.tan(skew.x * FlxAngle.TO_RAD), 1, 0, 0);
-				_matrix.concat(FlxAnimate._skewMatrix);
-			}
-		}
+    private inline function __getAngleAnchorY(camera:FlxCamera):Float
+    {
+        if (Flags.USE_LEGACY_ZOOM_FACTOR)
+            return camera.height * 0.5 - origin.y;
 
-		getScreenPosition(_point, camera).subtractPoint(offset).addPoint(origin);
-		_matrix.translate(_point.x, _point.y);
+        return camera.height * 0.5 + camera.scroll.y * scrollFactor.y - origin.y;
+    }
 
-		if (isPixelPerfectRender(camera))
-		{
-			_matrix.tx = Math.floor(_matrix.tx);
-			_matrix.ty = Math.floor(_matrix.ty);
-		}
+    private inline function __shouldDoAngleFactor():Bool
+    {
+        return angleFactorEnabled && angleFactor != 1;
+    }
 
-		// Copied from FunkinSprite
-		final ox = camera.width * 0.5, oy = camera.height * 0.5;
-		final sx = (camera.scaleX > 0.0 ? Math.max : Math.min)(0.0, (1.0 - zoomFactor) / camera.scaleX + zoomFactor);
-		final sy = (camera.scaleY > 0.0 ? Math.max : Math.min)(0.0, (1.0 - zoomFactor) / camera.scaleY + zoomFactor);
+    private inline function __prepareAngleFactor(camera:FlxCamera):Float
+    {
+        return FlxMath.lerp(-camera.angle, 0, angleFactor);
+    }
 
-		if (zoomFactorEnabled && zoomFactor != 1) {
-			_matrix.setTo(
-				_matrix.a * sx, _matrix.b * sy,
-				_matrix.c * sx, _matrix.d * sy,
-				(_matrix.tx - ox) * sx + ox,
-				(_matrix.ty - oy) * sy + oy
-			);
-		}
+    override public function draw():Void
+    {
+        if (!__shouldDoZoomFactor() && !__shouldDoAngleFactor())
+        {
+            super.draw();
+            return;
+        }
 
-		if (angleFactorEnabled && angleFactor != 1) {
-			_matrix.translate(-ox, -oy);
-			_matrix.rotate(-camera.angle * FlxAngle.TO_RAD * (1.0 - angleFactor));
-			_matrix.translate(ox, oy);
-		}
-		
-		if (layer != null)
-			layer.drawPixels(this, camera, _frame, framePixels, _matrix, colorTransform, blend, antialiasing, shaderEnabled ? shader : null);
-		else
-			camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, shaderEnabled ? shader : null);
-	}
+        var camera:FlxCamera = this.camera;
 
-	override function getScreenBounds(?rect:FlxRect, ?camera:FlxCamera):FlxRect
-	{
-		if (camera == null) camera = FlxG.camera;
-		rect = super.getScreenBounds(rect, camera);
+        if (camera == null)
+            camera = FlxG.camera;
 
-		if (zoomFactorEnabled && zoomFactor != 1) {
-			final ox = camera.width * 0.5, oy = camera.height * 0.5;
-			final sx = (camera.scaleX > 0.0 ? Math.max : Math.min)(0.0, (1.0 - zoomFactor) / camera.scaleX + zoomFactor);
-			final sy = (camera.scaleY > 0.0 ? Math.max : Math.min)(0.0, (1.0 - zoomFactor) / camera.scaleY + zoomFactor);
+        var oldX:Float = x;
+        var oldY:Float = y;
+        var oldScaleX:Float = scale.x;
+        var oldScaleY:Float = scale.y;
+        var oldAngle:Float = angle;
 
-			rect.set(
-				(rect.x - ox) * sx + ox,
-				(rect.y - oy) * sy + oy,
-				rect.width * sx,
-				rect.height * sy
-			);
-		}
+        if (__shouldDoZoomFactor())
+        {
+            var zoomScaleX:Float = __getZoomScaleX(camera);
+            var zoomScaleY:Float = __getZoomScaleY(camera);
 
-		return rect;
-	}
+            var anchorX:Float = __getZoomAnchorX(camera);
+            var anchorY:Float = __getZoomAnchorY(camera);
+
+            x = (x - anchorX) * zoomScaleX + anchorX;
+            y = (y - anchorY) * zoomScaleY + anchorY;
+
+            scale.set(scale.x * zoomScaleX, scale.y * zoomScaleY);
+        }
+
+        if (__shouldDoAngleFactor())
+        {
+            var anchorX:Float = __getAngleAnchorX(camera);
+            var anchorY:Float = __getAngleAnchorY(camera);
+            var prepAngle:Float = __prepareAngleFactor(camera);
+
+            var rad:Float = prepAngle * (Math.PI / 180);
+            var cos:Float = Math.cos(rad);
+            var sin:Float = Math.sin(rad);
+
+            var dx:Float = x - anchorX;
+            var dy:Float = y - anchorY;
+
+            x = dx * cos - dy * sin + anchorX;
+            y = dx * sin + dy * cos + anchorY;
+            angle += prepAngle;
+        }
+
+        super.draw();
+
+        x = oldX;
+        y = oldY;
+        scale.set(oldScaleX, oldScaleY);
+        angle = oldAngle;
+    }
 }
