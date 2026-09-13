@@ -3,6 +3,7 @@ package funkin.editors.charter;
 import funkin.game.StrumLine;
 import flixel.math.FlxPoint;
 import funkin.backend.chart.ChartData.ChartStrumLine;
+import sys.FileSystem;
 import funkin.game.Character;
 import funkin.game.Note;
 import funkin.game.HudCamera;
@@ -159,6 +160,36 @@ class CharterStrumlineScreen extends UISubstateWindow {
 		}, 125);
 		add(closeButton);
 		closeButton.color = 0xFFFF0000;
+
+		var songPath = haxe.io.Path.join([Paths.getAssetsRoot(), 'songs', Charter.__song.toLowerCase(), 'song']);
+		var renamedFiles:Array<String> = [];
+		if (songPath != null && FileSystem.exists(songPath) && FileSystem.isDirectory(songPath))
+		{
+			for (file in FileSystem.readDirectory(songPath))
+			{
+				if (file.toLowerCase().startsWith("voices-") && !file.startsWith("Voices-"))
+				{
+					var oldPath = haxe.io.Path.join([songPath, file]);
+					var newPath = haxe.io.Path.join([songPath, 'Voices-${file.substr("voices-".length)}']);
+					try
+					{
+						FileSystem.rename(oldPath, newPath);
+						renamedFiles.push(file);
+					}
+					catch (e) { }
+				}
+			}
+		}
+		if (renamedFiles.length > 0)
+		{
+			var fileList = renamedFiles.join(", ");
+			FlxG.state.openSubState(new funkin.editors.ui.UIWarningSubstate(
+				"Warning: Detected misnamed voice files!",
+				'Detected ${renamedFiles.length} file(s) with lowercase "voices-": $fileList. They have been renamed to use "Voices-".',
+				[{label: "Ok", color: 0x969533, onClick: (state) -> {}}],
+				false
+			));
+		}
 
 		var suffixList = ["NONE"];
 		for (i in Paths.getFolderContent('songs/${Charter.__song.toLowerCase()}/song'))
