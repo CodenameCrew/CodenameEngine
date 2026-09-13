@@ -83,8 +83,8 @@
 			import funkin.editors.ui.UIAutoCompleteTextBox;
 			import funkin.game.Character;
 
-			var curCharBox = new UIAutoCompleteTextBox(col(2), curY - 52, char.curCharacter, 148, 32);
-			curCharBox.suggestItems = Character.getList(false);
+			var curCharBox = new UIAutoCompleteTextBox(col(2), charTypeY, char.curCharacter, 145, 32);
+			curCharBox.suggestItems = Character.getList(false, false, null, true);
 			self.add(curCharBox);
 		 </exec>
 	</section>

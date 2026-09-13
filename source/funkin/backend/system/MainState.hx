@@ -1,5 +1,6 @@
 package funkin.backend.system;
 
+import funkin.backend.system.console.ConsoleCommandManager;
 #if MOD_SUPPORT
 import sys.FileSystem;
 #end
@@ -43,8 +44,10 @@ class MainState extends FlxState {
 		Options.save();
 
 		ControlsUtil.resetCustomControls();
+		ConsoleCommandManager.unregisterModdedCommands();
 		FlxG.bitmap.reset();
 		FlxG.sound.destroy(true);
+		FlxG.sound.resetCache();
 
 		Paths.assetsTree.reset();
 
@@ -169,7 +172,21 @@ class MainState extends FlxState {
 		GJUtil.init();
 		#end
 
-		var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
+		if (@:privateAccess FlxG.game._nextState == null) {
+			var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
+			var outdatedAPI:Bool = (Flags.MOD_API_VERSION ?? Flags.CURRENT_API_VERSION) < Flags.CURRENT_API_VERSION;
+			// In this case if the mod we just loaded a compressed modpack, we can't edit or modify files without decompressing it.
+			if (Options.devMode && Options.allowConfigWarning && !isZipMod) {
+				var lib:ModsFolderLibrary;
+				for (e in Paths.assetsTree.libraries) if ((lib = cast AssetsLibraryList.getCleanLibrary(e)) is ModsFolderLibrary
+					&& lib.modName == ModsFolder.currentModFolder)
+				{
+					if (!outdatedAPI && lib.exists(Paths.ini("config/modpack"), lime.utils.AssetType.TEXT)) break;
+
+					FlxG.switchState(new ModConfigWarning(lib, startState, outdatedAPI));
+					return;
+				}
+			}
 
 		// In this case if the mod we just loaded a compressed modpack, we can't edit or modify files without decompressing it.
 		if (Options.devMode && Options.allowConfigWarning && !isZipMod) {
