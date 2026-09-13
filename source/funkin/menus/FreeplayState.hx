@@ -241,6 +241,16 @@ class FreeplayState extends MusicBeatState
 			changeDiff((controls.LEFT_P ? -1 : 0) + (controls.RIGHT_P ? 1 : 0));
 			changeCoopMode((controls.CHANGE_MODE ? 1 : 0)); // TODO: make this configurable
 			// putting it before so that its actually smooth
+
+			if (FlxG.mouse.justPressed && grpSongs != null) {
+				for (index => sprite in grpSongs.members) {
+					if (curSelected != index && FlxG.mouse.overlaps(sprite)) {
+						changeSelection(index - curSelected);
+						break;
+					}
+				}
+			}
+
 			updateOptionsAlpha();
 		}
 
@@ -295,7 +305,7 @@ class FreeplayState extends MusicBeatState
 		#end
 
 
-		if (controls.BACK)
+		if (controls.BACK || FlxG.mouse.justPressedRight)
 		{
 			CoolUtil.playMenuSFX(CANCEL, 0.7);
 			FlxG.switchState(new MainMenuState());
@@ -306,8 +316,11 @@ class FreeplayState extends MusicBeatState
 			convertChart();
 		#end
 
-		if (controls.ACCEPT #if PRELOAD_ALL && !dontPlaySongThisFrame #end)
+		if ((controls.ACCEPT || (FlxG.mouse.justPressed && grpSongs?.members[curSelected] != null && FlxG.mouse.overlaps(grpSongs.members[curSelected])))
+			#if PRELOAD_ALL && !dontPlaySongThisFrame #end)
+		{
 			select();
+		}
 	}
 
 	var __opponentMode:Bool = false;

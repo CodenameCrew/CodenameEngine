@@ -206,6 +206,9 @@
 
 		<str id="songOffsetAffectEditors-name">Atraso no Mapeador</str>
 		<str id="songOffsetAffectEditors-desc">Se marcado, irá ativar o Atraso da Música no Editor de Mapas, também.</str>
+
+		<str id="legacyMemoryCounter-name">Contador de Memória Clássico</str>
+		<str id="legacyMemoryCounter-desc">Se marcado, o contador de memória mostrará o uso de memória do GC de Haxe e o seu máximo (o comportamento original) em vez da memória de trabalho vista no Gerenciador de Tarefas.</str>
 	</group>
 
 </language>

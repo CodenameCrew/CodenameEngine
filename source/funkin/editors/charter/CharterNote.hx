@@ -20,6 +20,7 @@ class CharterNote extends UISprite implements ICharterSelectable {
 		0xFFF9393F
 	];
 
+	public var noDefaultAnims:Bool = false;
 	public var sustainSpr:UISprite;
 	public var tempSusLength:Float = 0;
 	public var sustainDraggable:Bool = false;
@@ -28,8 +29,17 @@ class CharterNote extends UISprite implements ICharterSelectable {
 
 	public var selected:Bool = false;
 	public var draggable:Bool = true;
+	public var extra:Map<String, Dynamic> = [];
 
 	static var noteTypeTexts:Array<UIText> = [];
+	static var __stupidScriptParamArray:Array<CharterNote> = [];
+
+	public static function callScriptOnNote(event:String, note:CharterNote) {
+		if (Charter.instance != null) {
+			__stupidScriptParamArray[0] = note;
+			Charter.instance.stateScripts.call(event, __stupidScriptParamArray);
+		}
+	}
 
 	public function new() {
 		super();
@@ -49,6 +59,11 @@ class CharterNote extends UISprite implements ICharterSelectable {
 
 		cursor = sustainSpr.cursor = CLICK;
 		moves = false;
+
+		// this would also call it on the hoverer and deleter and . i dont think i want that
+		// for unsuspecting users so it will be comented out but can still be edited after
+		// in a charter state script
+		// callScriptOnNote('onCharterNoteCreation', this);
 	}
 
 	public override function updateButtonHandler() {
@@ -100,6 +115,11 @@ class CharterNote extends UISprite implements ICharterSelectable {
 
 		if (angleTween != null) angleTween.cancel();
 
+		if (noDefaultAnims) {
+			// angle = 0;
+			return callScriptOnNote('onCharterNoteUpdatePos', this);
+		}
+
 		var destAngle:Float = switch(animation.curAnim.curFrame = (id % 4)) {
 			case 0: 270;
 			case 1: 180;
@@ -112,10 +132,10 @@ class CharterNote extends UISprite implements ICharterSelectable {
 
 		if (!__doAnim) {
 			angle = destAngle;
-			return;
+			return callScriptOnNote('onCharterNoteUpdatePos', this);
 		}
 
-		if (angle == destAngle) return;
+		if (angle == destAngle) return callScriptOnNote('onCharterNoteUpdatePos', this);
 
 		if(angleTween != null)
 			angleTween.cancel();
@@ -125,25 +145,30 @@ class CharterNote extends UISprite implements ICharterSelectable {
 		angleTween = FlxTween.angle(this, angle, destAngle, (2/3)/__animSpeed, {ease: function(t) {
 			return ((Math.sin(t * Math.PI) * 0.35) * 3 * t * Math.sqrt(1 - t)) + t;
 		}});
+		
+		callScriptOnNote('onCharterNoteUpdatePos', this);
 	}
 
 	public override function kill() {
-		if (angleTween != null) {
-			angleTween.cancel();
-			angleTween = null;
-			angle = switch(animation.curAnim.curFrame = (id % 4)) {
-				case 0: 270;
-				case 1: 180;
-				case 2: 0;
-				case 3: 90;
-				default: 0; // how is that even possible
-			};
-			__doAnim = false;
+		if (!noDefaultAnims) {
+			if (angleTween != null) {
+				angleTween.cancel();
+				angleTween = null;
+				angle = switch(animation.curAnim.curFrame = (id % 4)) {
+					case 0: 270;
+					case 1: 180;
+					case 2: 0;
+					case 3: 90;
+					default: 0; // how is that even possible
+				};
+				__doAnim = false;
+			}
 		}
 		super.kill();
 	}
 
 	var __passed:Bool = false;
+	var __selected:Bool = false;
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
 
@@ -163,6 +188,7 @@ class CharterNote extends UISprite implements ICharterSelectable {
 		if (__passed != (__passed = step < Conductor.curStepFloat + (Options.songOffsetAffectEditors ? (Conductor.songOffset / Conductor.stepCrochet) : 0))) {
 			if (__passed && FlxG.sound.music.playing) {
 				Charter.instance.playHitsound(strumLineID);
+				callScriptOnNote('onCharterNoteHit', this);
 			}
 		}
 
@@ -172,9 +198,12 @@ class CharterNote extends UISprite implements ICharterSelectable {
 			typeAlpha = !isVisible ? (__passed ? 0.4 : 0.6) : (__passed ? 0.8 : 1);
 		}
 
-		colorTransform.redMultiplier = colorTransform.greenMultiplier = colorTransform.blueMultiplier = selected ? 0.75 : 1;
-		colorTransform.redOffset = colorTransform.greenOffset = selected ? 96 : 0;
-		colorTransform.blueOffset = selected ? 168 : 0;
+		if (__selected != (__selected = selected)) {
+			colorTransform.redMultiplier = colorTransform.greenMultiplier = colorTransform.blueMultiplier = selected ? 0.75 : 1;
+			colorTransform.redOffset = colorTransform.greenOffset = selected ? 96 : 0;
+			colorTransform.blueOffset = selected ? 168 : 0;
+			callScriptOnNote('onCharterNoteSelect', this);
+		}
 
 		__doAnim = true;
 	}

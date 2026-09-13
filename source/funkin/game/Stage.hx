@@ -119,6 +119,14 @@ class Stage extends FlxBasic implements IBeatReceiver {
 				elems = onXMLLoaded(xml, elems);
 			}
 
+			var curRemoved:Map<String, String> = [];
+			inline function tempRemove(xml:Xml, att:String) {
+				if (xml.exists(att)) {
+					curRemoved.set(att, xml.get(att));
+					xml.remove(att);
+				}
+			}
+
 			for(node in elems) {
 				var sprite:Dynamic = switch(node.name) {
 					case "sprite" | "spr" | "sparrow":
@@ -140,9 +148,14 @@ class Stage extends FlxBasic implements IBeatReceiver {
 							(node.has.color) ? CoolUtil.getColorFromDynamic(node.att.color) : -1
 						);
 
-						if (isSolid) node.x.remove("updateHitbox");
-						for (a in ["width", "height", "color"]) node.x.remove(a);
+						if (isSolid) tempRemove(node.x, "updateHitbox");
+						for (a in ["width", "height", "color"]) tempRemove(node.x, a);
 						XMLUtil.loadSpriteFromXML(spr, node, "", NONE, false);
+
+						// mainly for the stage editor
+						for (k => v in curRemoved)
+							node.x.set(k, v);
+						curRemoved.clear();
 
 						stageSprites.set(spr.name, spr);
 						addSprite(spr);
@@ -392,7 +405,7 @@ class Stage extends FlxBasic implements IBeatReceiver {
 		for (path in Paths.getFolderContent("data/stages/", false, mods ? MODS : BOTH)) {
 			var extension = Path.extension(path);
 			if (extensions.contains(extension)) {
-				list.pushOnce("test");
+				// list.pushOnce("test");
 				list.pushOnce(Path.withoutExtension(path));
 			}
 		}

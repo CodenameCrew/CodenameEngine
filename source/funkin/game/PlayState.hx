@@ -936,8 +936,10 @@ class PlayState extends MusicBeatState
 				FlxG.sound.load(Paths.sound(s));
 
 		if (chartingMode) {
-			WindowUtils.prefix = Charter.undos.unsaved ? Flags.UNDO_PREFIX : "";
-			WindowUtils.suffix = TU.translate("playtesting.chartPlaytesting");
+			if (Flags.CHANGE_WINDOW_TITLE_PLAYSTATE) {
+				WindowUtils.prefix = Charter.undos.unsaved ? Flags.UNDO_PREFIX : "";
+				WindowUtils.suffix = TU.translate("playtesting.chartPlaytesting");
+			}
 
 			SaveWarning.showWarning = Charter.undos.unsaved;
 			SaveWarning.selectionClass = CharterSelection;
@@ -1131,7 +1133,7 @@ class PlayState extends MusicBeatState
 
 		super.destroy();
 
-		WindowUtils.resetAffixes();
+		if (Flags.CHANGE_WINDOW_TITLE_PLAYSTATE) WindowUtils.resetAffixes();
 		SaveWarning.reset();
 
 		instance = null;
@@ -1427,13 +1429,8 @@ class PlayState extends MusicBeatState
 			var beat = Conductor.getBeats(camZoomingEvery, camZoomingInterval, camZoomingOffset);
 			if (camZoomingLastBeat != beat) {
 				camZoomingLastBeat = beat;
-				if (useCamZoomMult) {
-					if (camZoomingMult < maxCamZoomMult) camZoomingMult += camZoomingStrength;
-				}
-				else if (FlxG.camera.zoom < maxCamZoom) {
-					FlxG.camera.zoom += camGameZoomMult * camZoomingStrength;
-					camHUD.zoom += camHUDZoomMult * camZoomingStrength;
-				}
+				
+				doBopZoom();
 			}
 		}
 
@@ -1511,6 +1508,29 @@ class PlayState extends MusicBeatState
 		if (!e.cancelled)
 			super.draw();
 		scripts.event("postDraw", e);
+	}
+
+	public function doBopZoom()
+	{
+		var event:BopZoomEvent = EventManager.get(BopZoomEvent).recycle(useCamZoomMult, maxCamZoomMult, camZoomingStrength);
+		gameAndCharsEvent("onBopZoom", event);
+
+		if (event.cancelled)
+		{
+			gameAndCharsEvent("onPostBopZoom", event);
+			return;
+		}
+
+		if (event.useZoomMultiplier) {
+			if (camZoomingMult < event.maxZoomMultiplier)
+				camZoomingMult += event.zoomStrength;
+		}
+		else if (FlxG.camera.zoom < maxCamZoom) {
+			FlxG.camera.zoom += camGameZoomMult * event.zoomStrength;
+			camHUD.zoom += camHUDZoomMult * event.zoomStrength;
+		}
+
+		gameAndCharsEvent("onPostBopZoom", event);
 	}
 
 	public function moveCamera() if (strumLines.members[curCameraTarget] != null) {

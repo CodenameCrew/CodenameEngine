@@ -20,5 +20,8 @@ class DebugOptions extends TreeMenuScreen {
 		add(new NumOption(getNameID("charterAutoSaveWarningTime"), getDescID("charterAutoSaveWarningTime"), 0, 15, 1, "charterAutoSaveWarningTime"));
 		add(new Checkbox(getNameID("charterAutoSavesSeparateFolder"), getDescID("charterAutoSavesSeparateFolder"), "charterAutoSavesSeparateFolder"));
 		add(new Checkbox(getNameID("songOffsetAffectEditors"), getDescID("songOffsetAffectEditors"), "songOffsetAffectEditors"));
+		#if (cpp && (windows || mac || linux))
+		add(new Checkbox(getNameID("legacyMemoryCounter"), getDescID("legacyMemoryCounter"), "legacyMemoryCounter"));
+		#end
 	}
 }

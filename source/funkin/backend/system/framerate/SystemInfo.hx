@@ -179,6 +179,7 @@ class SystemInfo extends FramerateCategory {
 
 	public function new() {
 		super("System Info");
+		visible = Options.fpsCounterSystem;
 	}
 
 	public override function __enterFrame(t:Int) {
