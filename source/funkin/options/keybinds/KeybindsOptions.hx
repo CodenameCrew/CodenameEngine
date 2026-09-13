@@ -145,6 +145,10 @@ class KeybindsOptions extends MusicBeatSubstate {
 					name: "developer.reloadState",
 					control: 'DEV_RELOAD'
 				},
+				{
+					name: "developer.openInspector",
+					control: 'DEV_INSPECTOR'
+				},
 			]
 		}
 	];

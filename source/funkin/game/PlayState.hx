@@ -1113,7 +1113,7 @@ class PlayState extends MusicBeatState
 		if (notNull) PlayState.instance.gameAndCharsCall("onStageDestroy", [stage]);
 		scripts.call("destroy");
 
-		for (g in __cachedGraphics) g.useCount--;
+		for (g in __cachedGraphics) g.decrementUseCount();
 		@:privateAccess {
 			for (strumLine in strumLines.members) FlxG.sound.destroySound(strumLine.vocals);
 			if (FlxG.sound.music != inst) FlxG.sound.destroySound(inst);
@@ -1264,11 +1264,6 @@ class PlayState extends MusicBeatState
 	@:dox(hide)
 	override public function onFocus():Void
 	{
-		if (!paused && FlxG.autoPause) {
-			for (strumLine in strumLines.members) strumLine.vocals.resume();
-			inst.resume();
-			vocals.resume();
-		}
 		gameAndCharsCall("onFocus");
 		updateDiscordPresence();
 		super.onFocus();
@@ -1277,11 +1272,6 @@ class PlayState extends MusicBeatState
 	@:dox(hide)
 	override public function onFocusLost():Void
 	{
-		if (!paused && FlxG.autoPause) {
-			for (strumLine in strumLines.members) strumLine.vocals.pause();
-			inst.pause();
-			vocals.pause();
-		}
 		gameAndCharsCall("onFocusLost");
 		updateDiscordPresence();
 		super.onFocusLost();
@@ -1303,7 +1293,7 @@ class PlayState extends MusicBeatState
 	 * Pauses the game.
 	 */
 	public function pauseGame() {
-		var e = gameAndCharsEvent("onGamePause", new CancellableEvent());
+		var e = gameAndCharsEvent("onGamePause", EventManager.get(PauseGameEvent).recycle([], allowGitaroo));
 		if (e.cancelled) return;
 
 		persistentUpdate = false;
@@ -1311,13 +1301,13 @@ class PlayState extends MusicBeatState
 		paused = true;
 
 		// 1 / 1000 chance for Gitaroo Man easter egg
-		if (!chartingMode && allowGitaroo && FlxG.random.bool(Flags.GITAROO_CHANCE))
+		if (!chartingMode && e.allowGitaroo && FlxG.random.bool(Flags.GITAROO_CHANCE))
 		{
 			// gitaroo man easter egg
 			FlxG.switchState(new GitarooPause());
 		}
 		else {
-			openSubState(new PauseSubState());
+			openSubState(new PauseSubState(null, null, e.excludeList));
 		}
 
 		updateDiscordPresence();
