@@ -11,7 +11,6 @@ import sys.io.File;
 import funkin.backend.utils.GJUtil;
 import funkin.backend.system.gamejolt.GameJoltSecurity;
 import funkin.backend.assets.AssetSource;
-import funkin.menus.gamejolt.GameJoltCompleteScreen;
 import funkin.savedata.FunkinSave;
 
 //region Typedefs
@@ -59,14 +58,10 @@ typedef GJTrophyData = {
  * only be set by the owner of the GameJolt game) or the user-specific
  * data store.
  */
+@:noCustomClass
 class GameJoltData
 {
 	//region Variables
-	/**
-	 * Whether to go to the page displaying the key and successful data transfer.
-	 */
-	public static var freshStart(default, null):Bool = false;
-
 	/**
 	 * The username of the owner of the GameJolt page.
 	 * Set using the global data store.
@@ -199,8 +194,7 @@ your game key, and inject the data into the global data store.';
 					GJUtil.logout(false, true);
 					if (bl) {
 						if (buildGamejoltXml()) {
-							freshStart = true;
-							FlxG.switchState(new GameJoltCompleteScreen());
+							Main.goToGJConfirm = true;
 						}
 					}
 				}, access);
@@ -553,7 +547,6 @@ your game key, and inject the data into the global data store.';
 			definedTrophies.clear();
 			customTrophies.clear();
 			dataToInclude.clear();
-			freshStart = false;
 		}
 	}
 

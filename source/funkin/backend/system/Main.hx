@@ -40,6 +40,7 @@ class Main extends Sprite
 	public static var goToDifficulty:String = null;
 	public static var goToVariation:String = null;
 	public static var goToCharter:Bool = false;
+	public static var goToGJConfirm:Bool = false;
 
 	public static var scaleMode:FunkinRatioScaleMode;
 	#if !mobile

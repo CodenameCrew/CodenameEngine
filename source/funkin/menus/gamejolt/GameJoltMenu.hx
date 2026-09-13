@@ -15,13 +15,48 @@ import funkin.menus.gamejolt.*;
 
 class GameJoltMenu extends UIState
 {
+	//region Variables
+	/**
+	 * How many entries the API will get from any given leaderboard.
+	 */
 	public static var leaderboardLimit:Int = 50;
+
+	/**
+	 * The space, in pixels, between each achievement image.
+	 */
 	public static var achRowSpacing:Int = 10;
+
+	/**
+	 * The amount of achievements shown per row.
+	 */
 	public static var achRowAmount:Int = 5;
+
+	/**
+	 * How large, in pixels, the border of each achievement/leaderboard
+	 * content box should be.
+	 */
 	public static var boxContentBorderSize:Int = 5;
+
+	/**
+	 * The scale of the achievement image when selected.
+	 */
 	public static var achievementSelectScale:Float = 1.2;
+
+	/**
+	 * The ease function for the previously selected and newly selected
+	 * achievements.
+	 */
 	public static var achEase:Float->Float = FlxEase.elasticOut;
+
+	/**
+	 * How long, in seconds, the transition between the previously selected
+	 * and newly selected achievements should last.
+	 */
 	public static var achScaleTime:Float = 1.5;
+
+	/**
+	 * Whether any hidden trophies should be included on the trophy list.
+	 */
 	public static var displayHiddenTrophies:Bool = false;
 
 	// Main page variables
@@ -64,6 +99,7 @@ class GameJoltMenu extends UIState
 	var noScaleTween:Bool = false;
 	var inTween:FlxTween = null;
 	var outTween:FlxTween = null;
+	//endregion
 
 	override function create()
 	{
@@ -348,6 +384,10 @@ class GameJoltMenu extends UIState
 		secondaryPage = 'achievements';
 	}
 
+	/**
+	 * Input handler.
+	 * @param elapsed 
+	 */
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -377,6 +417,12 @@ class GameJoltMenu extends UIState
 		}
 	}
 
+	/**
+	 * Setter to determine if we're on home page or a secondary page.
+	 * Default secondary pages are 'achievements' and 'leaderboards'.
+	 * @param onH 
+	 * @return Bool
+	 */
 	function set_onHome(onH:Bool):Bool
 	{
 		FlxTween.num(0, FlxG.width, 1, { }, function(num:Float) {
@@ -387,6 +433,11 @@ class GameJoltMenu extends UIState
 		return onHome = onH;
 	}
 
+	/**
+	 * Changes the currently selected item.
+	 * @param newInd 
+	 * @return Int
+	 */
 	function set_daInd(newInd:Int):Int
 	{
 		if (secondaryTitleText != null) switch(secondaryTitleText.text) {
@@ -447,6 +498,11 @@ class GameJoltMenu extends UIState
 		return daInd = newInd;
 	}
 
+	/**
+	 * Changing the secondary page to one of the two defaults.
+	 * @param type 
+	 * @return String
+	 */
 	function set_secondaryPage(type:String):String
 	{
 		if (secondaryTitleText != null) switch(type) {
