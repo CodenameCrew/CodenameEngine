@@ -53,7 +53,7 @@ Do you want to turn your source code into a playable build to play? Then you wan
 1. Run `generate-docs-unix.sh` using the terminal or double-clicking it and wait for the `doc.xml` to be generated inside the `docs` folder.
 </details>
 
-2. You can use this `doc.xml` file to generate a full HTML documentation (that you can open in your browser for example) using Haxe's [dox](https://github.com/HaxeFoundation/dox) generator; check [Codename Engine's webiste](https://github.com/CodenameCrew/codename-website/tree/main/api-generator) for example.
+2. You can use this `doc.xml` file to generate a full HTML documentation (that you can open in your browser for example) using Haxe's [dox](https://github.com/HaxeFoundation/dox) generator; check [Codename Engine's website](https://github.com/CodenameCrew/codename-website/tree/main/api-generator) for example.
 
 > [!CAUTION]
 > The doc.xml might contain some sensible paths of your computer: make sure to filter the file before publishing it for everyone if you want to keep those paths private!<br>To filter and delete those paths, you may use Codename Engine's website's [doc filter Python script](https://github.com/CodenameCrew/codename-website/blob/main/api-generator/api/filter.py) by simply running it in the same folder of your `doc.xml` file. This script will also delete everything irrelevant to the engine that was generated in your documentation, such as libraries' (like OpenFL or Flixel) APIs.
