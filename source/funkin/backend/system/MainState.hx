@@ -187,6 +187,7 @@ class MainState extends FlxState {
 					return;
 				}
 			}
+		}
 
 		// In this case if the mod we just loaded a compressed modpack, we can't edit or modify files without decompressing it.
 		if (Options.devMode && Options.allowConfigWarning && !isZipMod) {
