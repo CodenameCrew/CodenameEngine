@@ -60,6 +60,7 @@ class GameJoltCompleteScreen extends UIState
 				var gjDat:Array<String> = FlxG.save.data.gameJoltArray;
 				GJUtil.attemptLogin(gjDat[0], gjDat[1]);
 			}
+			Main.goToGJConfirm = false;
 			FlxG.switchState(new TitleState());
 		}
 	}
