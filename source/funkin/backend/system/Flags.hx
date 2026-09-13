@@ -66,12 +66,16 @@ class Flags {
 	public static var PATHS_UNIX_FIX:Bool = true;
 
 	/**
-	 * Preferred sound extension for the game's audio files.
-	 * Currently is set to `mp3` for web targets, and `ogg` for other targets.
+	 * Preferred file extensions for the game's audio files.
 	 */
-	public static var SOUND_EXT:String = #if web "mp3" #else "ogg" #end; // we also support wav
-	public static var VIDEO_EXT:String = "mp4";
-	public static var IMAGE_EXT:String = "png"; // we also support jpg
+	public static var SOUND_EXTS:Array<String> = [#if web "mp3", "ogg", #else "ogg", "mp3", #end "flac", "opus", "wav"];
+	public static var VIDEO_EXTS:Array<String> = ["mp4", "webm", "mkv", "mov"]; // is there any more? // yes frakits
+	public static var IMAGE_EXTS:Array<String> = ["png", "jpg", "jpeg"]; // TODO: Add more after another lime rebases for SDLImage
+
+	// DEPRECATED
+	@:lazy public static var SOUND_EXT:Null<String> = null;
+	@:lazy public static var VIDEO_EXT:Null<String> = null;
+	@:lazy public static var IMAGE_EXT:Null<String> = null;
 
 	public static var DEFAULT_DISCORD_LOGO_KEY:String = "icon";
 	public static var DEFAULT_DISCORD_CLIENT_ID:String = "1383853614589673472";
@@ -111,6 +115,11 @@ class Flags {
 	public static var DEFAULT_STEPS_PER_BEAT:Int = 4;
 	public static var DEFAULT_LOOP_TIME:Float = 0.0;
 	public static var ICONS_AUTOPOSITION:Bool = true;
+
+	@:lazy public static var DEFAULT_SOUND_TIME_SCALED_PITCH:Null<Bool> = null;
+	@:lazy public static var USE_SOUND_VOLUME_CURVE:Null<Bool> = null;
+	@:lazy public static var USE_FLXTRAIL_FRAMES:Null<Bool> = null;
+
 	public static var SUPPORTED_CHART_RUNTIME_FORMATS:Array<String> = ["Legacy", "Psych Engine"];
 	public static var SUPPORTED_CHART_FORMATS:Array<String> = ["BaseGame"];
 
@@ -289,7 +298,7 @@ class Flags {
 	public static var DEFAULT_CHARACTER_GHOSTDISABLE_SOUND:String = "editors/character/ghostDisable";
 	public static var DEFAULT_CHARACTER_GHOSTENABLE_SOUND:String = "editors/character/ghostEnable";
 
-	public static var DEFAULT_GLSL_VERSION:String = "120";
+	@:lazy public static var DEFAULT_GLSL_VERSION:String = null;
 	@:also(funkin.backend.utils.HttpUtil.userAgent)
 	public static var USER_AGENT:String = 'request';
 	// -- End of Codename's Default Flags --
@@ -323,8 +332,28 @@ class Flags {
 		if (WINDOW_TITLE_USE_MOD_NAME == null) WINDOW_TITLE_USE_MOD_NAME = !overridenFlags.exists('TITLE') && overridenFlags.exists('MOD_NAME');
 		if (USE_LEGACY_TIMING == null) USE_LEGACY_TIMING = MOD_API_VERSION < 2;
 		if (SUSTAINS_AS_ONE_NOTE == null) SUSTAINS_AS_ONE_NOTE = MOD_API_VERSION >= 2;
+		if (DEFAULT_GLSL_VERSION == null) {
+			if (MOD_API_VERSION < 2) {
+				DEFAULT_GLSL_VERSION = #if (android || mac || web) "100" #else "120" #end;
+				Logs.warn("Blend Mode Extensions won't work in MOD_API_VERSION below than 2");
+			}
+			else {
+				DEFAULT_GLSL_VERSION = openfl.utils.GLSLSourceAssembler.getDefaultVersion();
+			}
+		}
+		if (DEFAULT_SOUND_TIME_SCALED_PITCH == null) DEFAULT_SOUND_TIME_SCALED_PITCH = MOD_API_VERSION >= 2;
+		if (USE_SOUND_VOLUME_CURVE == null) USE_SOUND_VOLUME_CURVE = MOD_API_VERSION >= 2;
+		if (USE_FLXTRAIL_FRAMES == null) USE_FLXTRAIL_FRAMES = MOD_API_VERSION < 2;
+
+		flixel.sound.FlxSound.defaultTimeScaledPitch = cast DEFAULT_SOUND_TIME_SCALED_PITCH;
+		flixel.addons.effects.FlxTrail.defaultDelayBackwardCompatibility = cast USE_FLXTRAIL_FRAMES;
+
 		if (USE_LEGACY_CENTER_CAM == null) USE_LEGACY_CENTER_CAM = MOD_API_VERSION < 3;
 		if (USE_LEGACY_FLXANIMATE_STAGE_MATRIX == null) USE_LEGACY_FLXANIMATE_STAGE_MATRIX = MOD_API_VERSION < 3;
+
+		if (SOUND_EXT == null) SOUND_EXT = SOUND_EXTS[0]; else SOUND_EXTS = [SOUND_EXT];
+		if (VIDEO_EXT == null) VIDEO_EXT = VIDEO_EXTS[0]; else VIDEO_EXTS = [VIDEO_EXT];
+		if (IMAGE_EXT == null) IMAGE_EXT = IMAGE_EXTS[0]; else IMAGE_EXTS = [IMAGE_EXT];
 	}
 
 	public static function loadFromDatas(datas:Array<String>):Map<String, String> {

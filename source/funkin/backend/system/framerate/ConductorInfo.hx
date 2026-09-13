@@ -5,9 +5,10 @@ import funkin.backend.system.macros.StringMacro;
 class ConductorInfo extends FramerateCategory {
 	public function new() {
 		super("Conductor Info");
+		visible = Options.fpsCounterConductor;
 	}
 
-	public override function __enterFrame(t:Int) {
+	public override function __enterFrame(t:Float) {
 		if (alpha <= 0.05) return;
 
 		var buf = new StringBuf();

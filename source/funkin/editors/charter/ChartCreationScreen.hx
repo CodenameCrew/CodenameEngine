@@ -39,8 +39,8 @@ class ChartCreationScreen extends UISubstateWindow {
 			return text;
 		}
 
-		charFileList = Character.getList(true);
-		if (charFileList.length == 0) charFileList = Character.getList(false);
+		charFileList = Character.getList(true, false, null, true);
+		if (charFileList.length == 0) charFileList = Character.getList(false, false, null, true);
 
 		var chartTitle:UIText;
 		add(chartTitle = new UIText(windowSpr.x + 20, windowSpr.y + 30 + 16, 0, TU.translate("chartCreation.info"), 28));

@@ -3,6 +3,7 @@ package funkin.backend;
 import animate.FlxAnimate;
 import flixel.FlxCamera;
 import flixel.FlxG;
+import flixel.math.FlxMath;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxPoint;
@@ -70,7 +71,7 @@ class FunkinText extends FlxText
 	override function drawComplex(camera:FlxCamera):Void
 	{
 		_frame.prepareMatrix(_matrix, ANGLE_0, checkFlipX(), checkFlipY());
-		_matrix.translate(-origin.x, -origin.y);
+		_matrix.translate(-origin.x - _graphicOffset.x, -origin.y - _graphicOffset.y);
 
 		if (frameOffsetAngle != null && frameOffsetAngle != angle)
 		{
@@ -137,7 +138,7 @@ class FunkinText extends FlxText
 
 	override function getScreenBounds(?rect:FlxRect, ?camera:FlxCamera):FlxRect
 	{
-		if (camera == null) camera = FlxG.camera;
+		if (camera == null) camera = getDefaultCamera();
 		rect = super.getScreenBounds(rect, camera);
 
 		if (zoomFactorEnabled && zoomFactor != 1) {

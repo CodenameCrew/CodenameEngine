@@ -8,9 +8,10 @@ import funkin.backend.system.macros.StringMacro;
 class StatsInfo extends FramerateCategory {
 	public function new() {
 		super("Asset Libraries Tree Info");
+		visible = Options.fpsCounterStats;
 	}
 
-	public override function __enterFrame(t:Int) {
+	public override function __enterFrame(t:Float) {
 		if (alpha <= 0.05) return;
 
 		var buf = new StringBuf();

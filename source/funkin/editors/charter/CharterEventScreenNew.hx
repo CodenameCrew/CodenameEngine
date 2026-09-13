@@ -177,7 +177,7 @@ class CharterEventScreenNew extends MusicBeatSubstate {
 						dropdown;
 					case TCharacter:
 						addLabel();
-						var charFileList = Character.getList(false);
+						var charFileList = Character.getList(false, false, null, true);
 						var textBox:UIAutoCompleteTextBox = new UIAutoCompleteTextBox(eventName.x+6, winHeight, cast value);
 						textBox.suggestItems = charFileList;
 						paramsPanel.add(textBox); paramsFields.push(textBox);

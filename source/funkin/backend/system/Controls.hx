@@ -31,6 +31,7 @@ enum Control
 	DEV_ACCESS;
 	DEV_CONSOLE;
 	DEV_RELOAD;
+	DEV_INSPECTOR;
 }
 
 enum KeyboardScheme
@@ -184,6 +185,12 @@ class Controls extends FlxActionSet
 	@:justPressed("dev-reload") public var DEV_RELOAD(get, set): Bool;
 	@:pressed("dev-reload") public var DEV_RELOAD_HOLD(get, set): Bool;
 	@:justReleased("dev-reload") public var DEV_RELOAD_R(get, set): Bool;
+
+	@:devModeOnly
+	@:gamepad([])
+	@:justPressed("dev-inspector") public var DEV_INSPECTOR(get, set): Bool;
+	@:pressed("dev-inspector") public var DEV_INSPECTOR_HOLD(get, set): Bool;
+	@:justReleased("dev-inspector") public var DEV_INSPECTOR_R(get, set): Bool;
 
 	@:allow(funkin.backend.utils.ControlsUtil)
 	var byName:Map<String, FlxActionDigital> = [];

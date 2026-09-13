@@ -541,12 +541,6 @@ class Alphabet extends FlxSprite {
 		switch (node.nodeName) {
 			case "spritesheet":
 				final sheet = node.firstChild().nodeValue.trim();
-				if (frames == null)
-					frames = Paths.getFrames(sheet);
-				else {
-					for (frame in Paths.getFrames(sheet).frames)
-						frames.pushFrame(frame);
-				}
 				sheets.push(sheet);
 			case "defaultAnim":
 				var idx = ["UPPER", "LOWER"].indexOf(node.get("casing").toUpperCase()) + 1;
@@ -789,10 +783,9 @@ class Alphabet extends FlxSprite {
 		colorMode = (["offsets", "none"].indexOf(xml.get("colorMode")) + 1);
 		antialiasing = xml.get("antialiasing").getDefault("true") == "true";
 
-		frames = null;
-
 		for (node in xml.elements())
 			checkNode(node);
+		frames = Paths.getMultiFrames(sheets);
 	}
 
 	private static var alphabetProperties:Array<String> = ["fps", "advance", "lineGap", "forceCasing", "colorMode", "antialiasing"];
