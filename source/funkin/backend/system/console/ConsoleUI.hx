@@ -405,6 +405,7 @@ class ConsoleUI {
 			ImGui.pushStyleColor(ImGuiCol.WindowBg, CONSOLE_BG_COLOR);
 			ImGui.setNextWindowPos(inputTextCursorPos.x, inputTextCursorPos.y - (ImGui.getTextLineHeightWithSpacing() * (end-start))-12);
 			if (ImGui.begin("Command Search window", null, ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoFocusOnAppearing)) {
+				ImGui.bringNamedWindowToDisplayFront("Command Search window");
 				for (i in start...end) {
 					var cmd = commandSearch[i];
 					if (!cyclingCommands) {

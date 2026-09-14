@@ -10,6 +10,7 @@ import flixel.graphics.frames.FlxFramesCollection;
 import flixel.util.typeLimit.OneOfTwo;
 
 import animate.FlxAnimateFrames;
+import animate.FlxAnimateFrames.FlxAnimateSpritemapCollection;
 
 import funkin.backend.assets.ModsFolder;
 import funkin.backend.scripting.Script;
@@ -21,10 +22,16 @@ class Paths
 	public static var assetsTree:AssetsLibraryList;
 
 	public static var tempFramesCache:Map<String, FlxFramesCollection> = [];
+	#if (sys && !windows)
+	static var tempPathsCache:Map<String, Null<String>> = [];
+	#end
 
 	public static function init() {
 		FlxG.signals.preStateSwitch.add(function() {
 			tempFramesCache.clear();
+			#if (sys && !windows)
+			tempPathsCache.clear();
+			#end
 		});
 	}
 
@@ -34,29 +41,29 @@ class Paths
 		#if (sys && !windows)
 		if (Assets.exists(fixedPath)) return fixedPath;
 		else if (Flags.PATHS_UNIX_FIX) {
+			if (tempPathsCache.exists(fixedPath)) return tempPathsCache.get(fixedPath);
+
 			final isFile = path.lastIndexOf(".") != -1, parts = path.split("/");
-			final n = parts.length - 1;
+			final n = parts.length - 1, keyCache = fixedPath;
 
 			fixedPath = prefix;
 			for (i => part in parts) {
-				final partIsFile = isFile && i == n;
-				final lower = part.toLowerCase(), entries = partIsFile ? assetsTree.getFiles(fixedPath) : assetsTree.getFolders(fixedPath);
+				final lower = part.toLowerCase(), entries = (isFile && i == n) ? assetsTree.getFiles(fixedPath) : assetsTree.getFolders(fixedPath);
 				var pass = false;
 
 				for (entry in entries) if (entry.toLowerCase() == lower) {
 					pass = true;
-					if (partIsFile) fixedPath += entry;
-					else fixedPath += entry + "/";
+					fixedPath += i == n ? entry : entry + "/";
 					break;
 				}
 
 				if (!pass) {
-					if (nullFail) return null;
-					else fixedPath += part;
+					if (nullFail) return tempPathsCache[keyCache] = null;
+					else fixedPath += i == n ? part : part + "/";
 				}
 			}
 
-			return fixedPath;
+			return tempPathsCache[keyCache] = fixedPath;
 		}
 		else if (!nullFail) return fixedPath;
 		#else
@@ -295,6 +302,7 @@ class Paths
 			var frames:FlxFramesCollection;
 			if (tempFramesCache.exists(key)) {
 				if ((frames = tempFramesCache.get(key)) != null && frames.parent != null && frames.parent.bitmap != null) {
+					if ((frames is FlxAnimateFrames) && asset == null) asset = cast frames;
 					frameCollections.push(frames);
 					continue;
 				}
@@ -308,12 +316,21 @@ class Paths
 				continue;
 			}
 
+			if ((frames is FlxAnimateFrames) && asset == null) asset = cast frames;
 			frameCollections.push(frames);
 		}
 
 		if (frameCollections.length == 1 && !unique && (key == null || key == assetKey)) return frameCollections[0];
 
-		asset = new FlxAnimateFrames(FlxGraphic.fromFrame(FlxG.bitmap.whitePixel, unique, assetKey));
+		if (asset == null) asset = new FlxAtlasFrames(FlxGraphic.fromFrame(FlxG.bitmap.whitePixel, unique, assetKey));
+		else {
+			@:privateAccess asset.parent.key = assetKey;
+			asset.parent.unique = unique;
+			//asset.parent.bitmap = FlxG.bitmap.whitePixel;
+			asset.parent.addFrameCollection(asset);
+			FlxG.bitmap.addGraphic(asset.parent);
+		}
+
 		for (frames in frameCollections) asset.addAtlas(cast frames); // wont compile in hashlink because of mismatch type
 
 		if (!unique) tempFramesCache.set(assetKey, asset);
