@@ -48,7 +48,7 @@ final class AlphabetComponent {
 final class AlphabetLetterData {
 	@:optional public var isDefault:Bool = false;
 	public var advance:Float;
-	public var advanceStyle:AdvanceMode;
+	public var advanceEmpty:Bool;
 	public var components:Array<AlphabetComponent>;
 	public var startIndex:Int = 0;
 }
@@ -115,13 +115,6 @@ enum abstract ColorMode(ByteInt) from ByteInt to ByteInt {
 enum abstract AlphabetRenderMode(ByteUInt) from ByteUInt to ByteUInt {
 	var DEFAULT = 0;
 	var MONOSPACE = 1;
-}
-
-enum abstract AdvanceMode(ByteUInt) from ByteUInt to ByteUInt {
-	var EMPTY;
-	var GIVEN;
-	var AUTO;
-	var CALCULATED;
 }
 
 @:allow(funkin.editors.alphabet.AlphabetEditor)
@@ -281,11 +274,14 @@ class Alphabet extends FlxSprite {
 				continue;
 			}
 
-			var advance:Float = getAdvance(letter, data);
+			var advance:Float = Math.NaN;
 
 			for (i in 0...data.components.length) {
 				__component = data.components[i];
 				var anim = getLetterAnim(letter, data, __component, i);
+				//if (cantrace)
+					//trace(anim.name + " | " + __component.anim + " | " + frames.frames[anim.frames[0]]);
+				advance = (Math.isNaN(advance) && i >= data.startIndex) ? getAdvance(letter, anim, data) : advance;
 
 				if (anim == null || __renderData.alpha <= 0.0)
 					continue;
@@ -432,38 +428,21 @@ class Alphabet extends FlxSprite {
 				continue;
 			}
 
-			final data = getData(letter);
-			__laneWidths[curLine] += renderMode == MONOSPACE ? defaultAdvance : getAdvance(letter, data);
+			var data = getData(letter);
+			__laneWidths[curLine] += (data != null && data.components.length > 0) ? getAdvance(letter, getLetterAnim(letter, data, data.components[data.startIndex], data.startIndex), data) : defaultAdvance;
 			@:bypassAccessor textWidth = Math.max(textWidth, __laneWidths[curLine]);
 		}
 
 		origin.set(textWidth * 0.5 + originOffset.x, textHeight * 0.5 + originOffset.y);
 	}
 
-	function getAdvance(letter:String, data:AlphabetLetterData):Float {
-		if (data == null || frames.numFrames <= 0)
+	function getAdvance(letter:String, anim:FlxAnimation, data:AlphabetLetterData):Float {
+		if (anim == null)
 			return defaultAdvance;
 
-		if (data.advanceStyle & GIVEN != 0) // just return if GIVEN or CALCULATED
-			return data.advance;
-
-		var result = 0.0;
-
-		for (i in 0...data.components.length) {
-			final compon = data.components[i];
-			final anim = getLetterAnim(letter, data, compon, i);
-			if (anim == null || anim.numFrames <= 0)
-				continue;
-
-			final wid = frames.frames[anim.frames[0]].sourceSize.x;
-			result = Math.max(wid + (wid * compon.scaleX - wid) * 0.5 - compon.x, result);
-		}
-
-		if (data.advanceStyle == AUTO) {
-			data.advance = result;
-			data.advanceStyle = CALCULATED;
-		}
-		return result;
+		if (data.advanceEmpty && !data.isDefault)
+			data.advance = frames.frames[anim.frames[0]].sourceSize.x;
+		return (data.isDefault) ? frames.frames[anim.frames[0]].sourceSize.x : data.advance;
 	}
 
 	private function fastGetData(char:String):AlphabetLetterData {
@@ -553,7 +532,7 @@ class Alphabet extends FlxSprite {
 				var res:AlphabetLetterData = {
 					isDefault: true,
 					advance: 0.0,
-					advanceStyle: EMPTY,
+					advanceEmpty: true,
 					components: [{
 						anim: node.firstChild().nodeValue.trim(),
 
@@ -657,7 +636,7 @@ class Alphabet extends FlxSprite {
 				letterData.set(char, {
 					isDefault: false,
 					advance: advance,
-					advanceStyle: Math.isNaN(advance) ? AUTO : GIVEN,
+					advanceEmpty: Math.isNaN(advance),
 					components: components,
 					startIndex: startIndex
 				});
@@ -732,7 +711,7 @@ class Alphabet extends FlxSprite {
 				letterData.set(char, {
 					isDefault: false,
 					advance: advance,
-					advanceStyle: Math.isNaN(advance) ? AUTO : GIVEN,
+					advanceEmpty: Math.isNaN(advance),
 					components: components,
 					startIndex: (node.get("hasOutline") == "true") ? 1 : 0
 				});
@@ -836,7 +815,7 @@ class Alphabet extends FlxSprite {
 			var data = fastGetData(let);
 			var node = Xml.createElement(data.components.length - data.startIndex > 1 ? "composite" : "anim");
 			node.set("char", let);
-			if (data.advanceStyle == GIVEN)
+			if (!data.advanceEmpty)
 				node.set("advance", Std.string(data.advance));
 
 			for (i in data.startIndex...data.components.length) {

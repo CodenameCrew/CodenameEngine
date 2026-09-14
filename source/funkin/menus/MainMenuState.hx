@@ -7,6 +7,7 @@ import funkin.backend.FunkinText;
 import funkin.backend.scripting.events.menu.MenuChangeEvent;
 import funkin.backend.scripting.events.NameEvent;
 import funkin.menus.credits.CreditsMain;
+import funkin.menus.gamejolt.GameJoltMenu;
 import funkin.options.OptionsMenu;
 import lime.app.Application;
 
@@ -62,16 +63,33 @@ class MainMenuState extends MusicBeatState
 
 		for (i=>option in optionShit)
 		{
-			var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
-			menuItem.frames = Paths.getFrames('menus/mainmenu/${option}');
-			menuItem.animation.addByPrefix('idle', option + " basic", 24);
-			menuItem.animation.addByPrefix('selected', option + " white", 24);
-			menuItem.animation.play('idle');
-			menuItem.ID = i;
-			menuItem.screenCenter(X);
-			menuItems.add(menuItem);
-			menuItem.scrollFactor.set();
-			menuItem.antialiasing = true;
+			if (option == 'gamejolt') {
+				#if GAMEJOLT_API
+				var menuItem:FlxSprite = new FlxSprite(FlxG.width - 138, FlxG.height - 138).loadGraphic(Paths.image('menus/gamejolt-icon'));
+				menuItem.setGraphicSize(128);
+				menuItem.updateHitbox();
+				menuItem.animation.add('idle', [0], 1, false);
+				menuItem.animation.add('selected', [0], 1, false);
+				menuItem.animation.play('idle');
+				menuItem.ID = i;
+				menuItems.add(menuItem);
+				menuItem.scrollFactor.set();
+				menuItem.antialiasing = true;
+				#else
+				continue;
+				#end
+			} else {
+				var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
+				menuItem.frames = Paths.getFrames('menus/mainmenu/${option}');
+				menuItem.animation.addByPrefix('idle', option + " basic", 24);
+				menuItem.animation.addByPrefix('selected', option + " white", 24);
+				menuItem.animation.play('idle');
+				menuItem.ID = i;
+				menuItem.screenCenter(X);
+				menuItems.add(menuItem);
+				menuItem.scrollFactor.set();
+				menuItem.antialiasing = true;
+			}
 		}
 
 		FlxG.camera.follow(camFollow, null, 0.06);
@@ -143,7 +161,7 @@ class MainMenuState extends MusicBeatState
 				FlxG.switchState(new TitleState());
 
 			#if MOD_SUPPORT
-			if (controls.SWITCHMOD || (FlxG.mouse.justPressed && versionText != null && FlxG.mouse.overlaps(versionText))) {
+			if (controls.SWITCHMOD) {
 				openSubState(new ModSwitchMenu());
 				persistentUpdate = false;
 				persistentDraw = true;
@@ -152,26 +170,15 @@ class MainMenuState extends MusicBeatState
 
 			if (controls.ACCEPT)
 				selectItem();
-
-			if (FlxG.mouse.justPressed && menuItems != null) {
-				for (index => sprite in menuItems.members) {
-					if (FlxG.mouse.overlaps(sprite)) {
-						if (curSelected != index) changeItem(index - curSelected);
-						else selectItem();
-						break;
-					}
-				}
-			}
 		}
 
 		super.update(elapsed);
 
-		if (forceCenterX) {
-			menuItems.forEach(function(spr:FlxSprite)
-			{
-				spr.screenCenter(X);
-			});
-		}
+		if (forceCenterX)
+		menuItems.forEach(function(spr:FlxSprite)
+		{
+			spr.screenCenter(X);
+		});
 	}
 
 	public override function switchTo(nextState:FlxState):Bool {
@@ -201,6 +208,7 @@ class MainMenuState extends MusicBeatState
 				case 'freeplay': FlxG.switchState(new FreeplayState());
 				case 'donate', 'credits': FlxG.switchState(new CreditsMain());  // kept donate for not breaking scripts, if you don't want donate to bring you to the credits menu, thats easy softcodable  - Nex
 				case 'options': FlxG.switchState(new OptionsMenu());
+				case 'gamejolt': FlxG.switchState(new GameJoltMenu());
 			}
 		});
 	}

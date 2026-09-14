@@ -171,17 +171,5 @@ final class Windows {
 	{
 		return 0;
 	}
-
-	@:functionCode("
-		PROCESS_MEMORY_COUNTERS_EX pmc;
-		if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc))) {
-			return (double)pmc.WorkingSetSize;
-		}
-		return 0.0;
-	")
-	public static function getCurrentProcessMemory():Float
-	{
-		return 0;
-	}
 }
 #end

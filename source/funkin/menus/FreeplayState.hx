@@ -210,16 +210,6 @@ class FreeplayState extends MusicBeatState
 			changeDiff((controls.LEFT_P ? -1 : 0) + (controls.RIGHT_P ? 1 : 0));
 			changeCoopMode((controls.CHANGE_MODE ? 1 : 0)); // TODO: make this configurable
 			// putting it before so that its actually smooth
-
-			if (FlxG.mouse.justPressed && grpSongs != null) {
-				for (index => sprite in grpSongs.members) {
-					if (curSelected != index && FlxG.mouse.overlaps(sprite)) {
-						changeSelection(index - curSelected);
-						break;
-					}
-				}
-			}
-
 			updateOptionsAlpha();
 		}
 
@@ -249,7 +239,6 @@ class FreeplayState extends MusicBeatState
 			&& FlxG.mouse.overlaps(grpSongs.members[curSelected]))))
 		{
 			select();
-		}
 	}
 
 	var __opponentMode:Bool = false;
