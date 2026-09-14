@@ -22,31 +22,47 @@ class Paths
 	public static var assetsTree:AssetsLibraryList;
 
 	public static var tempFramesCache:Map<String, FlxFramesCollection> = [];
+	#if (sys && !windows)
+	static var tempPathsCache:Map<String, Null<String>> = [];
+	#end
 
 	public static function init() {
 		FlxG.signals.preStateSwitch.add(function() {
 			tempFramesCache.clear();
+			#if (sys && !windows)
+			tempPathsCache.clear();
+			#end
 		});
 	}
 
 	public static inline function getPath(file:String, ?library:String) {
 		var returnedPath:String = library != null ? '$library:assets/$library/$file' : 'assets/$file';
 		#if (sys && !windows)
-		returnedPath = Path.normalize(returnedPath);
-		if (OpenFlAssets.exists(returnedPath)) return returnedPath;
-		var fixedPath:String = library != null ? '$library:assets/$library/' : 'assets/';
-		var parts:Array<String> = returnedPath.split("/");
-		for (it=>part in parts) {
-			if (it == 0) continue;
-			var entries:Array<String> = null;
-			if (Path.extension(part) == "") entries = assetsTree.getFolders(fixedPath);
-			else entries = assetsTree.getFiles(fixedPath);
-			for (entry in entries) {
-				if (entry.toLowerCase() == part.toLowerCase()) {
-					fixedPath += entry + (it != parts.length - 1 ? "/" : "");
+		if (Assets.exists(fixedPath)) return fixedPath;
+		else if (Flags.PATHS_UNIX_FIX) {
+			if (tempPathsCache.exists(fixedPath)) return tempPathsCache.get(fixedPath);
+
+			final isFile = path.lastIndexOf(".") != -1, parts = path.split("/");
+			final n = parts.length - 1, keyCache = fixedPath;
+
+			fixedPath = prefix;
+			for (i => part in parts) {
+				final lower = part.toLowerCase(), entries = (isFile && i == n) ? assetsTree.getFiles(fixedPath) : assetsTree.getFolders(fixedPath);
+				var pass = false;
+
+				for (entry in entries) if (entry.toLowerCase() == lower) {
+					pass = true;
+					fixedPath += i == n ? entry : entry + "/";
 					break;
 				}
+
+				if (!pass) {
+					if (nullFail) return tempPathsCache[keyCache] = null;
+					else fixedPath += i == n ? part : part + "/";
+				}
 			}
+
+			return tempPathsCache[keyCache] = fixedPath;
 		}
 		if (returnedPath.toLowerCase() == fixedPath.toLowerCase()) returnedPath = fixedPath;
 		#end
