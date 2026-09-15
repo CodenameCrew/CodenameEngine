@@ -1,7 +1,6 @@
 package funkin.options.categories;
 
 import funkin.backend.system.framerate.Framerate;
-import funkin.backend.utils.DiscordUtil;
 
 class AppearanceOptions extends TreeMenuScreen {
 	var framerateOption:NumOption; // use for changing the text
@@ -20,7 +19,7 @@ class AppearanceOptions extends TreeMenuScreen {
 		add(new Checkbox(getNameID('flashingMenu'), getDescID('flashingMenu'), 'flashingMenu'));
 		add(new Checkbox(getNameID('colorHealthBar'), getDescID('colorHealthBar'), 'colorHealthBar'));
 		add(new Checkbox(getNameID('week6PixelPerfect'), getDescID('week6PixelPerfect'), 'week6PixelPerfect'));
-		add(new Checkbox(getNameID('discordRPC'), getDescID('discordRPC'), 'discordRPC'));
+		#if DISCORD_RPC add(new Checkbox(getNameID('discordRPC'), getDescID('discordRPC'), 'discordRPC')); #end
 
 		add(new Separator());
 		add(new TextOption('optionsMenu.advanced', 'optionsTree.appearance.advanced-desc', ' >', () ->
