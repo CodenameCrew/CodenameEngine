@@ -85,6 +85,9 @@
 		<str id="week6PixelPerfect-name">Pixel Perfect Effect</str>
 		<str id="week6PixelPerfect-desc">If checked, Week 6 or other pixel stages will have a pixel perfect effect to it enabled, aligning every pixel on the screen.</str>
 
+		<str id="discordRPC-name">Discord RPC</str>
+		<str id="discordRPC-desc">If unchecked, Codename Engine and its mods are not displayed under the "Playing" widget.</str>
+
 		<group name="AppearanceOptionsAdvanced" prefix="Advanced.">
 			<str id="quality-name">Quality</str>
 			<str id="quality-desc">Quality modes to choose, "LOW" = Disable every heavy visual effects as it can get to smoothen the gameplay, "HIGH" = Enable all of the visual effects, with the cost of performance, "CUSTOM" = Allow of custom options that is available in Advanced.</str>
