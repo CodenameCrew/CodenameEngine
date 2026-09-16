@@ -42,7 +42,7 @@ final class NoteHitEvent extends CancellableEvent {
 	/**
 	 * Whenever anybody with a combo anim for your combo ought to play it (think GF's "combo50" anim).
 	 */
-	public var gfComboAnim:Null<Bool>;
+	public var charsComboAnim:Null<Bool>;
 	/**
 	 * Note that has been pressed
 	 */
