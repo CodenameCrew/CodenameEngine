@@ -325,6 +325,7 @@ class ConsoleInspector {
 			for (script in pack.scripts) {
 				if (script is HScript) {
 					var hscript:HScript = cast script;
+					if (hscript.interp == null) continue;
 					for (name => scriptObj in hscript.interp.variables) {
 						if (scriptObj is FlxBasic) {
 							if (scriptObj == object) return name;
