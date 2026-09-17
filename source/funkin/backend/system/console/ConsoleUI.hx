@@ -33,11 +33,11 @@ typedef ConsoleLogData = {
 
 class ConsoleUI {
 
-	static final CONSOLE_BG_COLOR = 0xFF380051;
-	static final SEARCH_HIGHLIGHT_COLOR = 0xFF00FF00;
-	static final SEARCH_SELECTED_COLOR = 0xFFE2D302;
-	static final SEARCH_DESC_COLOR = 0xFF636363;
-	static final SEARCH_ARGS_COLOR = 0xFF58804F;
+	static final CONSOLE_BG_COLOR = new ImGuiFloat3Ptr(0.22, 0.0, 0.32);
+	static final SEARCH_HIGHLIGHT_COLOR = new ImGuiFloat3Ptr(0.0, 1.0, 0.0);
+	static final SEARCH_SELECTED_COLOR = new ImGuiFloat3Ptr(0.888, 0.83, 0.008);
+	static final SEARCH_DESC_COLOR = new ImGuiFloat3Ptr(0.6, 0.6, 0.6);
+	static final SEARCH_ARGS_COLOR = new ImGuiFloat3Ptr(0.35, 0.5, 0.31);
 
 	static final CONSOLE_MAX_OUPUT = 100;
 	static final SEARCH_MAX_OUTPUT = 25;
@@ -71,6 +71,7 @@ class ConsoleUI {
 
 	#if IMGUI_ENABLED
 	var settingsOpen:ImGuiBoolPtr = new ImGuiBoolPtr(false);
+	var stylesOpen:ImGuiBoolPtr = new ImGuiBoolPtr(false);
 
 	var timeFilter:ImGuiBoolPtr = new ImGuiBoolPtr(true);
 	var typeFilter:ImGuiBoolPtr = new ImGuiBoolPtr(true);
@@ -210,6 +211,35 @@ class ConsoleUI {
 		#end
 	}
 
+	private static final CONSOLE_COLOR_ORDER:Array<ConsoleColor> = [
+		BLACK, DARKBLUE, DARKGREEN, DARKCYAN, DARKRED, DARKMAGENTA, DARKYELLOW, LIGHTGRAY,
+		GRAY, BLUE, GREEN, CYAN, RED, MAGENTA, YELLOW, WHITE
+	];
+
+	public static final consoleColors:Map<ConsoleColor, ImGuiFloat3Ptr> = [
+		BLACK 			=> new ImGuiFloat3Ptr(0.0, 0.0, 0.0),
+		DARKBLUE 		=> new ImGuiFloat3Ptr(0.04, 0.04, 0.76),
+		DARKGREEN 		=> new ImGuiFloat3Ptr(0.0, 0.53, 0.0),
+		DARKCYAN 		=> new ImGuiFloat3Ptr(0.0, 0.53, 0.53),
+		DARKRED 		=> new ImGuiFloat3Ptr(0.53, 0.0, 0.0),
+		DARKMAGENTA 	=> new ImGuiFloat3Ptr(0.6, 0.11, 0.77),
+		DARKYELLOW 		=> new ImGuiFloat3Ptr(0.74, 0.74, 0.0),
+		LIGHTGRAY 		=> new ImGuiFloat3Ptr(0.83, 0.83, 0.83),
+		///////////////////////////////////////////////////////
+		GRAY 			=> new ImGuiFloat3Ptr(0.64, 0.64, 0.64),
+		BLUE 			=> new ImGuiFloat3Ptr(0.16, 0.29, 0.92),
+		GREEN 			=> new ImGuiFloat3Ptr(0.0, 1.0, 0.0),
+		CYAN			=> new ImGuiFloat3Ptr(0.0, 0.54, 1.0),
+		RED 			=> new ImGuiFloat3Ptr(1.0, 0.0, 0.0),
+		MAGENTA 		=> new ImGuiFloat3Ptr(1.0, 0.0, 1.0),
+		YELLOW 			=> new ImGuiFloat3Ptr(1.0, 1.0, 0.0),
+		WHITE 			=> new ImGuiFloat3Ptr(1.0, 1.0, 1.0),
+	];
+
+	public static function consoleColorToImColor(color:ConsoleColor) {
+		return (consoleColors.get(color) ?? consoleColors.get(WHITE)).toImColor();
+	}
+
 	public function displayUI() {
 		#if IMGUI_ENABLED
 		if (!Options.devMode) {
@@ -219,8 +249,10 @@ class ConsoleUI {
 		}
 		
 		var toggled:Bool = false;
-		for (key in Options.SOLO_DEV_CONSOLE) {
-			if (ImGui.isKeyPressed(key.toImGuiKey(), false)) toggled = true;
+		if (!Options.useNativeConsole) {
+			for (key in Options.SOLO_DEV_CONSOLE) {
+				if (ImGui.isKeyPressed(key.toImGuiKey(), false)) toggled = true;
+			}
 		}
 		if (toggled) toggleUI();
 
@@ -237,6 +269,9 @@ class ConsoleUI {
 			ImGui.setNextWindowPos(ImGuiUtil.getWindowSpaceX() + Lib.application.window.width - 240, ImGuiUtil.getWindowSpaceY(), ImGuiCond.FirstUseEver);
 			ImGui.setNextWindowSize(240, 405, ImGuiCond.FirstUseEver);
 			if (ImGui.begin("Console Settings", settingsOpen, 0)) {
+				if (ImGui.button("Open Style Editor")) {
+					stylesOpen.value = !stylesOpen.value;
+				}
 				//ImGui.checkbox("Count duplicated output##Console Settings", countDuplicatedOutput); ImGui.setItemTooltip("Toggles if duplicated logs add a counter instead of displaying again");
 				ImGui.separatorText("Log Filter:");
 				ImGui.checkbox("Time##Console Settings", timeFilter); ImGui.setItemTooltip("Toggles if timestamp shows in each log");
@@ -257,6 +292,27 @@ class ConsoleUI {
 			}
 			ImGui.end();
 			saveSettings();
+		}
+
+		if (stylesOpen.value) {
+			if (ImGui.begin("Style Editor")) {
+				ImGui.textWrapped("THIS WILL NOT SAVE !!! (yet)");
+				ImGui.textWrapped("Expect cool stuff to share with people once you're able to save though");
+				ImGui.separator();
+				ImGui.separatorText("Console Colors");
+				ImGui.colorEdit3("Input BG Color##Style Editor", CONSOLE_BG_COLOR, ImGuiColorEditFlags.NoInputs);
+				ImGui.colorEdit3("Search Highlight##Style Editor", SEARCH_HIGHLIGHT_COLOR, ImGuiColorEditFlags.NoInputs);
+				ImGui.colorEdit3("Search Selection##Style Editor", SEARCH_SELECTED_COLOR, ImGuiColorEditFlags.NoInputs);
+				ImGui.colorEdit3("Search Description##Style Editor", SEARCH_DESC_COLOR, ImGuiColorEditFlags.NoInputs);
+				ImGui.colorEdit3("Search Arguments##Style Editor", SEARCH_ARGS_COLOR, ImGuiColorEditFlags.NoInputs);
+				ImGui.separatorText("Text Colors");
+				for (x => i in CONSOLE_COLOR_ORDER) {
+					ImGui.colorEdit3("Text Color #${x+1}##$x", consoleColors[i], ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel);
+					if ((x + 1) % Std.int(CONSOLE_COLOR_ORDER.length / 2) != 0) ImGui.sameLine(0, 2);
+				}
+				ImGui.showStyleEditor();
+			}
+			ImGui.end();
 		}
 
 		ImGui.setNextWindowPos(ImGuiUtil.getWindowSpaceX(), ImGuiUtil.getWindowSpaceY() + (Lib.application.window.height-250), ImGuiCond.FirstUseEver);
@@ -321,18 +377,23 @@ class ConsoleUI {
 				}
 			}
 
+			// TODO: text wraping
+			inline function drawText(text:String) {
+				ImGui.textUnformatted(text);
+			}
+
 			for (textIndex => t in consoleOutput[i].log) {
 				if (indicesToIgnore.contains(textIndex)) continue;
 				if (!timeFilter.value && textIndex == 0) { //fix padding
 					ImGui.sameLine(0, 0);
 					ImGui.pushStyleColor(ImGuiCol.Text, consoleColorToImColor(t.color));
-					ImGui.textUnformatted("[");
+					drawText("[");
 					ImGui.popStyleColor();
 					continue;
 				} else if (!typeFilter.value && textIndex == 4) {
 					ImGui.sameLine(0, 0);
 					ImGui.pushStyleColor(ImGuiCol.Text, consoleColorToImColor(t.color));
-					ImGui.textUnformatted("  ] ");
+					drawText("  ] ");
 					ImGui.popStyleColor();
 					continue;
 				}
@@ -341,14 +402,14 @@ class ConsoleUI {
 				ImGui.pushStyleColor(ImGuiCol.Text, consoleColorToImColor(t.color));
 				var lines = t.text.split("\n");
 				for (i => l in lines) {
-					ImGui.textUnformatted(l);
+					drawText(l);
 				}
 				ImGui.popStyleColor();
 			}
 
 			if (countDuplicatedOutput.value && consoleOutput[i].times > 1) {
 				ImGui.sameLine(0, 0);
-				ImGui.textUnformatted("  ("+consoleOutput[i].times +"x)");
+				drawText("  ("+consoleOutput[i].times +"x)");
 			}
 
 			ImGui.newLine();
@@ -402,7 +463,7 @@ class ConsoleUI {
 			if (end < SEARCH_MAX_OUTPUT) end = SEARCH_MAX_OUTPUT;
 			if (end > commandSearch.length) end = commandSearch.length;
 
-			ImGui.pushStyleColor(ImGuiCol.WindowBg, CONSOLE_BG_COLOR);
+			ImGui.pushStyleColor(ImGuiCol.WindowBg, CONSOLE_BG_COLOR.toImColor());
 			ImGui.setNextWindowPos(inputTextCursorPos.x, inputTextCursorPos.y - (ImGui.getTextLineHeightWithSpacing() * (end-start))-12);
 			if (ImGui.begin("Command Search window", null, ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoFocusOnAppearing)) {
 				ImGui.bringNamedWindowToDisplayFront("Command Search window");
@@ -415,16 +476,16 @@ class ConsoleUI {
 						var after:String = cmdName.substring(cmd.searchIndex+inputName.length, cmdName.length);
 
 						if (before != "") {
-							if (i == commandSearch.length-1) ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_SELECTED_COLOR);
+							if (i == commandSearch.length-1) ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_SELECTED_COLOR.toImColor());
 							ImGui.textUnformatted(before);
 							ImGui.sameLine(0, 0);
 							if (i == commandSearch.length-1) ImGui.popStyleColor();
 						}
-						ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_HIGHLIGHT_COLOR);
+						ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_HIGHLIGHT_COLOR.toImColor());
 						ImGui.textUnformatted(cmdName.substring(cmd.searchIndex, cmd.searchIndex+inputName.length));
 						ImGui.popStyleColor();
 						if (after != "") {
-							if (i == commandSearch.length-1) ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_SELECTED_COLOR);
+							if (i == commandSearch.length-1) ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_SELECTED_COLOR.toImColor());
 							ImGui.sameLine(0, 0);
 							ImGui.textUnformatted(after);
 							if (i == commandSearch.length-1) ImGui.popStyleColor();
@@ -435,20 +496,20 @@ class ConsoleUI {
 							ImGui.textUnformatted("(TAB to Autocomplete)");
 						}
 					} else {
-						if (i == cycleIndex) ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_SELECTED_COLOR);
+						if (i == cycleIndex) ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_SELECTED_COLOR.toImColor());
 						ImGui.textUnformatted(cmd.name);
 						if (i == cycleIndex) ImGui.popStyleColor();
 					}
 
 					if (cmd.argsDesc != null && cmd.argsDesc != "") {
 						ImGui.sameLine();
-						ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_ARGS_COLOR);
+						ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_ARGS_COLOR.toImColor());
 						ImGui.textUnformatted(cmd.argsDesc);
 						ImGui.popStyleColor();
 					}
 					if (cmd.desc != "") {
 						ImGui.sameLine();
-						ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_DESC_COLOR);
+						ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_DESC_COLOR.toImColor());
 						ImGui.textUnformatted(cmd.desc);
 						ImGui.popStyleColor();
 					}
@@ -674,27 +735,6 @@ class ConsoleUI {
 		if (!ConsoleCommandManager.tryExecute(str)) { //run hscript if there was no command
 			Logs.infos("Executing hscript: " + str, LIGHTGRAY, "Console");
 			Logs.infos(Std.string(consoleHscript.tryExecute(str)), LIGHTGRAY, "Console");
-		}
-	}
-
-	public static function consoleColorToImColor(color:ConsoleColor) {
-		return switch(color) {
-			case BLACK:			0xFF000000;
-			case DARKBLUE:		0xFF0909C3;
-			case DARKGREEN:		0xFF008800;
-			case DARKCYAN:		0xFF008888;
-			case DARKRED:		0xFF880000;
-			case DARKMAGENTA:	0xFF9A1CC5;
-			case DARKYELLOW:	0xFFBCBC00;
-			case LIGHTGRAY:		0xFFD4D4D4;
-			case GRAY:			0xFFA4A4A4;
-			case BLUE:			0xFF2A4AEA;
-			case GREEN:			0xFF00FF00;
-			case CYAN:			0xFF008CFF;
-			case RED:			0xFFFF0000;
-			case MAGENTA:		0xFFFF00FF;
-			case YELLOW:		0xFFFFFF00;
-			case WHITE | _:		0xFFFFFFFF;
 		}
 	}
 }

@@ -99,7 +99,7 @@
 			<str id="songData">Data de la Canción</str>
 			<str id="songName">Nombre de la Canción</str>
 			<str id="timeSignature">Marca de Tiempo</str>
-			<str id="menusData">Info. de los Menús (Juego Libre/Historia)</str>
+			<str id="menusData">Info. de los Menús (Modo Libre/Historia)</str>
 			<str id="displayName">Nombre Visual</str>
 			<str id="icon">Ícono</str>
 			<str id="modesAllowed">Modos Permitidos</str>

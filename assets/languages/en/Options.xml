@@ -193,6 +193,9 @@
 		<str id="showConsole-name">Show Console</str>
 		<str id="showConsole-desc">Select this to show the debug console, which contains log information about the game.</str>
 
+		<str id="useNativeConsole-name">Use Native Console</str>
+		<str id="useNativeConsole-desc">If checked, will always use the native console instead of the ImGui console when pressing its keybind.</str>
+
 		<str id="editorsResizable-name">Resizable Editors</str>
 		<str id="editorsResizable-desc">If checked, this will allow the editors to render beyond the base 1280x720 resolution of FNF (allowing for more detail and space...)</str>
 
