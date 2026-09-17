@@ -323,10 +323,9 @@ class KeybindsOptions extends MusicBeatSubstate {
 		var filePaths:Array<String> = [];
 		for (lib in ModsFolder.getLoadedModsLibs()) {
 			var modName = lib.modName;
-			var folder = Paths.xml('config/controls', modName);
-			folder = lib.basePath + "/data/config/controls.xml";
+			var folder = Paths.xml('config/controls/LIB_$modName');
 			Logs.trace(folder);
-			if (FileSystem.exists(folder)) filePaths.push(folder);
+			if (Assets.exists(folder)) filePaths.push(folder);
 		}
 
 		Logs.trace("Found " + filePaths.length + " custom controls");
@@ -337,7 +336,7 @@ class KeybindsOptions extends MusicBeatSubstate {
 			var access:Access = null;
 
 			try {
-				access = new Access(Xml.parse(File.getContent(source)).firstElement());
+				access = new Access(Xml.parse(Assets.getText(source)).firstElement());
 			} catch(e) {
 				Logs.trace('Error while parsing controls.xml: ${Std.string(e)}', ERROR);
 			}
