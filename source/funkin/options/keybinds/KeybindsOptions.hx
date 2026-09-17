@@ -309,9 +309,9 @@ class KeybindsOptions extends MusicBeatSubstate {
 			alphabet.p2Selected = p2Selected;
 			alphabet.alpha = 1;
 			var minH = FlxG.height / 2;
-			var maxH = alphabets.members[alphabets.length-1].y + alphabets.members[alphabets.length-1].height - (FlxG.height / 2);
+			var maxH = alphabets.members[alphabets.length-1].y + alphabets.members[alphabets.length-1].height - (FlxG.height / 2) + 35;
 			if (minH < maxH)
-				camFollow.setPosition(FlxG.width / 2, CoolUtil.bound(alphabet.y + (alphabet.height / 2) - 35, minH, maxH));
+				camFollow.setPosition(FlxG.width / 2, CoolUtil.bound(alphabet.y + (alphabet.height / 2), minH, maxH));
 			else
 				camFollow.setPosition(FlxG.width / 2, FlxG.height / 2);
 		}
