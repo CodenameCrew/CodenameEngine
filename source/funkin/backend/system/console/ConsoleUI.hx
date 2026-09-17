@@ -307,7 +307,7 @@ class ConsoleUI {
 				ImGui.colorEdit3("Search Arguments##Style Editor", SEARCH_ARGS_COLOR, ImGuiColorEditFlags.NoInputs);
 				ImGui.separatorText("Text Colors");
 				for (x => i in CONSOLE_COLOR_ORDER) {
-					ImGui.colorEdit3("Text Color #${x+1}##$x", consoleColors[i], ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel);
+					ImGui.colorEdit3('Text Color #${x+1}##Text Colors', consoleColors[i], ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel);
 					if ((x + 1) % Std.int(CONSOLE_COLOR_ORDER.length / 2) != 0) ImGui.sameLine(0, 2);
 				}
 				ImGui.showStyleEditor();
