@@ -113,6 +113,9 @@ class MainState extends FlxState {
 		funkin.backend.scripting.GlobalScript.destroy();
 		#end
 		funkin.backend.scripting.Script.staticVariables.clear();
+		#if (cpp && scriptable)
+		funkin.backend.scripting.cppia.CppiaModule.clearCache();
+		#end
 
 		#if MOD_SUPPORT
 		for (addon in _lowPriorityAddons)

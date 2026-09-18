@@ -17,6 +17,7 @@ import lime.app.Application;
 import sys.thread.Thread;
 #end
 
+@:allow(funkin.backend.utils.DiscordNative)
 final class DiscordUtil
 {
 	public static var currentID(default, set):String = null;
@@ -184,18 +185,6 @@ final class DiscordUtil
 		#end
 	}
 
-	#if cpp
-	@:noCompletion public static function fixString(str:String)
-	{
-		return new cpp.ConstCharStar(cast(str, String));
-	}
-
-	@:noCompletion public static function toString(str:cpp.ConstCharStar)
-	{
-		return cast(str, String);
-	}
-	#end
-
 	public static function changePresenceAdvanced(data:DPresence)
 	{
 		#if DISCORD_RPC
@@ -219,35 +208,7 @@ final class DiscordUtil
 		data = evt.presence;
 		lastPresence = data;
 
-		var dp:DiscordRichPresence = DiscordRichPresence.create();
-		// TODO: make this use a reflection-like macro
-		Utils.safeSetWrapper(dp.state, data.state, fixString);
-		Utils.safeSetWrapper(dp.details, data.details, fixString);
-		Utils.safeSet(dp.startTimestamp, data.startTimestamp);
-		Utils.safeSet(dp.endTimestamp, data.endTimestamp);
-		Utils.safeSetWrapper(dp.largeImageKey, data.largeImageKey, fixString);
-		Utils.safeSetWrapper(dp.largeImageText, data.largeImageText, fixString);
-		Utils.safeSetWrapper(dp.smallImageKey, data.smallImageKey, fixString);
-		Utils.safeSetWrapper(dp.smallImageText, data.smallImageText, fixString);
-		Utils.safeSetWrapper(dp.partyId, data.partyId, fixString);
-		Utils.safeSet(dp.partySize, data.partySize);
-		Utils.safeSet(dp.partyMax, data.partyMax);
-		Utils.safeSet(dp.partyPrivacy, data.partyPrivacy);
-		Utils.safeSetWrapper(dp.matchSecret, data.matchSecret, fixString);
-		Utils.safeSetWrapper(dp.joinSecret, data.joinSecret, fixString);
-		Utils.safeSetWrapper(dp.spectateSecret, data.spectateSecret, fixString);
-		Utils.safeSet(dp.instance, data.instance);
-		Utils.safeSet(dp.activityType, data.activityType);
-		Utils.safeSetWrapper(dp.streamUrl, data.streamUrl, fixString);
-		if (data.matchSecret == null && data.joinSecret == null && data.spectateSecret == null)
-		{
-			Utils.safeSetWrapper(dp.button1Label, data.button1Label, fixString);
-			Utils.safeSetWrapper(dp.button1Url, data.button1Url, fixString);
-			Utils.safeSetWrapper(dp.button2Label, data.button2Label, fixString);
-			Utils.safeSetWrapper(dp.button2Url, data.button2Url, fixString);
-		}
-
-		Discord.UpdatePresence(cpp.RawConstPointer.addressOf(dp));
+		DiscordNative.updatePresence(data);
 		#end
 	}
 
@@ -266,15 +227,7 @@ final class DiscordUtil
 		if (currentID != null)
 			shutdown();
 
-		var handlers:DiscordEventHandlers = DiscordEventHandlers.create();
-		handlers.ready = cpp.Function.fromStaticFunction(onReady);
-		handlers.disconnected = cpp.Function.fromStaticFunction(onDisconnected);
-		handlers.errored = cpp.Function.fromStaticFunction(onError);
-		handlers.joinGame = cpp.Function.fromStaticFunction(onJoin);
-		handlers.joinRequest = cpp.Function.fromStaticFunction(onJoinReq);
-		handlers.spectateGame = cpp.Function.fromStaticFunction(onSpectate);
-		handlers.anyResponse = cpp.Function.fromStaticFunction(onAnyResponse);
-		Discord.Initialize(id, cpp.RawPointer.addressOf(handlers), 1, null);
+		DiscordNative.initHandlers(id);
 		stopThread = false;
 
 		loadScript();
@@ -298,15 +251,15 @@ final class DiscordUtil
 	public static function respond(userId:String, reply:Int)
 	{
 		#if DISCORD_RPC
-		Discord.Respond(fixString(userId), reply);
+		Discord.Respond(DiscordNative.fixString(userId), reply);
 		#end
 	}
 
 	// HANDLERS
 	#if DISCORD_RPC
-	private static function onReady(request:cpp.RawConstPointer<DiscordUser>):Void
+	private static function onReady(discordUser:DUser):Void
 	{
-		user = DUser.initRaw(request);
+		user = discordUser;
 
 		Logs.traceColored([
 			Logs.getPrefix("Discord"),
@@ -320,63 +273,58 @@ final class DiscordUtil
 		call("onReady", [user]);
 	}
 
-	private static function onDisconnected(errorCode:Int, message:cpp.ConstCharStar):Void
+	private static function onDisconnected(errorCode:Int, message:String):Void
 	{
-		var finalMsg:String = cast(message, String);
-
 		Logs.traceColored([
 			Logs.getPrefix("Discord"),
 			Logs.logText("Disconnected ("),
-			Logs.logText('$errorCode: $finalMsg', RED),
+			Logs.logText('$errorCode: $message', RED),
 			Logs.logText(")")
 		], INFO);
 
-		call("onDisconnected", [errorCode, cast(finalMsg, String)]);
+		call("onDisconnected", [errorCode, message]);
 	}
 
-	private static function onError(errorCode:Int, message:cpp.ConstCharStar):Void
+	private static function onError(errorCode:Int, message:String):Void
 	{
-		var finalMsg:String = cast(message, String);
-
 		Logs.traceColored([
 			Logs.getPrefix("Discord"),
-			Logs.logText('Error ($errorCode: $finalMsg)', RED)
+			Logs.logText('Error ($errorCode: $message)', RED)
 		], ERROR);
 
-		call("onError", [errorCode, cast(finalMsg, String)]);
+		call("onError", [errorCode, message]);
 	}
 
-	private static function onJoin(joinSecret:cpp.ConstCharStar):Void
+	private static function onJoin(joinSecret:String):Void
 	{
 		Logs.traceColored([Logs.getPrefix("Discord"), Logs.logText("Someone has just joined", GREEN)], INFO);
 
-		call("onJoinGame", [cast(joinSecret, String)]);
+		call("onJoinGame", [joinSecret]);
 	}
 
-	private static function onSpectate(spectateSecret:cpp.ConstCharStar):Void
+	private static function onSpectate(spectateSecret:String):Void
 	{
 		Logs.traceColored([
 			Logs.getPrefix("Discord"),
 			Logs.logText("Someone started spectating your game", YELLOW)
 		], INFO);
 
-		call("onSpectateGame", [cast(spectateSecret, String)]);
+		call("onSpectateGame", [spectateSecret]);
 	}
 
-	private static function onJoinReq(request:cpp.RawConstPointer<DiscordUser>):Void
+	private static function onJoinReq(req:DUser):Void
 	{
 		Logs.traceColored([
 			Logs.getPrefix("Discord"),
 			Logs.logText("Someone has just requested to join", YELLOW)
 		], INFO);
 
-		var req:DUser = DUser.initRaw(request);
 		call("onJoinRequest", [req]);
 	}
 
 	public static var anyResponse:FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
 
-	private static function onAnyResponse(data:cpp.ConstCharStar):Void
+	private static function onAnyResponse(data:String):Void
 	{
 		call("onAnyResponse", [data]);
 		anyResponse.dispatch(data);
@@ -462,35 +410,10 @@ final class DUser
 	**/
 	public var premiumType:NitroType;
 
+	@:allow(funkin.backend.utils.DiscordNative)
 	private function new()
 	{
 	}
-
-	#if DISCORD_RPC
-	public static function initRaw(req:cpp.RawConstPointer<DiscordUser>)
-	{
-		return init(cpp.ConstPointer.fromRaw(req).ptr);
-	}
-
-	public static function init(userData:cpp.Star<DiscordUser>)
-	{
-		var d = new DUser();
-		d.userId = userData.userId;
-		d.username = userData.username;
-		d.discriminator = Std.parseInt(userData.discriminator);
-		d.avatar = userData.avatar;
-		d.globalName = userData.globalName;
-		d.bot = userData.bot;
-		d.flags = userData.flags;
-		d.premiumType = userData.premiumType;
-
-		if (d.discriminator != 0)
-			d.handle = '${d.username}#${d.discriminator}';
-		else
-			d.handle = '${d.username}';
-		return d;
-	}
-	#end
 
 	/**
 	 * Calling this function gets the BitmapData of the user
@@ -542,3 +465,105 @@ typedef DEvents =
 	var ?spectateGame:String->Void;
 	var ?joinRequest:DUser->Void;
 }
+
+#if DISCORD_RPC
+@:unreflective
+final class DiscordNative
+{
+	public static function fixString(str:String):cpp.ConstCharStar
+		return new cpp.ConstCharStar(cast(str, String));
+
+	public static function toString(str:cpp.ConstCharStar):String
+		return cast(str, String);
+
+	public static function initUser(req:cpp.RawConstPointer<DiscordUser>):DUser
+		return initUserPtr(cpp.ConstPointer.fromRaw(req).ptr);
+
+	static function initUserPtr(userData:cpp.Star<DiscordUser>):DUser
+	{
+		var d = new DUser();
+		d.userId = userData.userId;
+		d.username = userData.username;
+		d.discriminator = Std.parseInt(userData.discriminator);
+		d.avatar = userData.avatar;
+		d.globalName = userData.globalName;
+		d.bot = userData.bot;
+		d.flags = userData.flags;
+		d.premiumType = userData.premiumType;
+
+		if (d.discriminator != 0)
+			d.handle = '${d.username}#${d.discriminator}';
+		else
+			d.handle = '${d.username}';
+		return d;
+	}
+
+	public static function initHandlers(id:String):Void
+	{
+		var handlers:DiscordEventHandlers = DiscordEventHandlers.create();
+		handlers.ready = cpp.Function.fromStaticFunction(onReady);
+		handlers.disconnected = cpp.Function.fromStaticFunction(onDisconnected);
+		handlers.errored = cpp.Function.fromStaticFunction(onError);
+		handlers.joinGame = cpp.Function.fromStaticFunction(onJoin);
+		handlers.joinRequest = cpp.Function.fromStaticFunction(onJoinReq);
+		handlers.spectateGame = cpp.Function.fromStaticFunction(onSpectate);
+		handlers.anyResponse = cpp.Function.fromStaticFunction(onAnyResponse);
+		Discord.Initialize(id, cpp.RawPointer.addressOf(handlers), 1, null);
+	}
+
+	public static function updatePresence(data:DPresence):Void
+	{
+		var dp:DiscordRichPresence = DiscordRichPresence.create();
+		// TODO: make this use a reflection-like macro
+		Utils.safeSetWrapper(dp.state, data.state, fixString);
+		Utils.safeSetWrapper(dp.details, data.details, fixString);
+		Utils.safeSet(dp.startTimestamp, data.startTimestamp);
+		Utils.safeSet(dp.endTimestamp, data.endTimestamp);
+		Utils.safeSetWrapper(dp.largeImageKey, data.largeImageKey, fixString);
+		Utils.safeSetWrapper(dp.largeImageText, data.largeImageText, fixString);
+		Utils.safeSetWrapper(dp.smallImageKey, data.smallImageKey, fixString);
+		Utils.safeSetWrapper(dp.smallImageText, data.smallImageText, fixString);
+		Utils.safeSetWrapper(dp.partyId, data.partyId, fixString);
+		Utils.safeSet(dp.partySize, data.partySize);
+		Utils.safeSet(dp.partyMax, data.partyMax);
+		Utils.safeSet(dp.partyPrivacy, data.partyPrivacy);
+		Utils.safeSetWrapper(dp.matchSecret, data.matchSecret, fixString);
+		Utils.safeSetWrapper(dp.joinSecret, data.joinSecret, fixString);
+		Utils.safeSetWrapper(dp.spectateSecret, data.spectateSecret, fixString);
+		Utils.safeSet(dp.instance, data.instance);
+		Utils.safeSet(dp.activityType, data.activityType);
+		Utils.safeSetWrapper(dp.streamUrl, data.streamUrl, fixString);
+		if (data.matchSecret == null && data.joinSecret == null && data.spectateSecret == null)
+		{
+			Utils.safeSetWrapper(dp.button1Label, data.button1Label, fixString);
+			Utils.safeSetWrapper(dp.button1Url, data.button1Url, fixString);
+			Utils.safeSetWrapper(dp.button2Label, data.button2Label, fixString);
+			Utils.safeSetWrapper(dp.button2Url, data.button2Url, fixString);
+		}
+
+		Discord.UpdatePresence(cpp.RawConstPointer.addressOf(dp));
+	}
+
+	// native callbacks from the C lib, convert to Haxe types and forward to DiscordUtil
+	static function onReady(request:cpp.RawConstPointer<DiscordUser>):Void
+		DiscordUtil.onReady(initUser(request));
+
+	static function onDisconnected(errorCode:Int, message:cpp.ConstCharStar):Void
+		DiscordUtil.onDisconnected(errorCode, toString(message));
+
+	static function onError(errorCode:Int, message:cpp.ConstCharStar):Void
+		DiscordUtil.onError(errorCode, toString(message));
+
+	static function onJoin(joinSecret:cpp.ConstCharStar):Void
+		DiscordUtil.onJoin(toString(joinSecret));
+
+	static function onSpectate(spectateSecret:cpp.ConstCharStar):Void
+		DiscordUtil.onSpectate(toString(spectateSecret));
+
+	static function onJoinReq(request:cpp.RawConstPointer<DiscordUser>):Void
+		DiscordUtil.onJoinReq(initUser(request));
+
+	static function onAnyResponse(data:cpp.ConstCharStar):Void
+		DiscordUtil.onAnyResponse(toString(data));
+}
+#end
