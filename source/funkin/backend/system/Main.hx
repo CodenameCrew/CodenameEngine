@@ -231,9 +231,27 @@ class Main extends Sprite
 		scaleMode.resetSize();
 	}
 	public static function onUpdate() {
-		#if !IMGUI_ENABLED
-		if (PlayerSettings.solo.controls.DEV_CONSOLE)
+		if (#if IMGUI_ENABLED Options.useNativeConsole && #end
+			PlayerSettings.solo.controls.DEV_CONSOLE)
 			NativeAPI.allocConsole();
+
+		#if IMGUI_ENABLED
+		if ((ImGuiIO.configFlags & ImGuiConfigFlags.ViewportsEnable) != 0)
+		{
+			if (ImGui.isAnyWindowMultiViewport()) {
+				if (!imGuiActiveLastFrame) {
+					imGuiActiveLastFrame = true;
+					FlxG.autoPause = false;
+					FlxG.game.focusLostFramerate = FlxG.drawFramerate;
+				}
+			} else {
+				if (imGuiActiveLastFrame) {
+					imGuiActiveLastFrame = false;
+					FlxG.autoPause = Options.autoPause;
+					FlxG.game.focusLostFramerate = 30;
+				}
+			}
+		}
 		#end
 
 		if (PlayerSettings.solo.controls.FPS_COUNTER)
@@ -315,22 +333,6 @@ class Main extends Sprite
 		style.setColor(ImGuiCol.DockingPreview,         new ImVec4(0.56, 0.11, 0.71, 1.00));
 
 		ImGuiHandler.instance.addCallback(function() {
-			if ((ImGuiIO.configFlags & ImGuiConfigFlags.ViewportsEnable) != 0)
-			{
-				if (ImGuiIO.metricsRenderWindows > 2) { //debug window + dockspace
-					if (!imGuiActiveLastFrame) {
-						imGuiActiveLastFrame = true;
-						FlxG.autoPause = false;
-						FlxG.game.focusLostFramerate = FlxG.drawFramerate;
-					}
-				} else {
-					if (imGuiActiveLastFrame) {
-						imGuiActiveLastFrame = false;
-						FlxG.autoPause = Options.autoPause;
-						//FlxG.game.focusLostFramerate = 30; //just keep as draw fps, some timing issues with window focusing that keep it from working correctly
-					}
-				}
-			}
 			ImGui.dockSpaceOverViewport(0, null, ImGuiDockNodeFlags.PassthruCentralNode);
 		});
 		#end

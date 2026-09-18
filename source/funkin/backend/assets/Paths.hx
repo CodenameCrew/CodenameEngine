@@ -290,7 +290,10 @@ class Paths
 
 		if (frameCollections.length == 1 && !unique && (key == null || key == assetKey)) return frameCollections[0];
 
-		if (asset == null) asset = new FlxAtlasFrames(FlxGraphic.fromFrame(FlxG.bitmap.whitePixel, unique, assetKey));
+		if (asset == null) {
+			// couldnt use FlxG.bitmap.whitePixel cus it would crash sometimes ??? (it would be destroyed somehow)
+			asset = new FlxAtlasFrames(FlxGraphic.fromRectangle(10, 10, 0xFFffffff, unique, assetKey));
+		}
 		else {
 			@:privateAccess asset.parent.key = assetKey;
 			asset.parent.unique = unique;
