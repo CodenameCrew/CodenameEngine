@@ -1,7 +1,5 @@
 package funkin.options.categories;
 
-import funkin.backend.system.framerate.Framerate;
-
 class AppearanceOptions extends TreeMenuScreen {
 	var framerateOption:NumOption; // use for changing the text
 	var fpsAdvancedOption:TextOption;
@@ -23,8 +21,6 @@ class AppearanceOptions extends TreeMenuScreen {
 		add(new Separator());
 		add(new TextOption('optionsMenu.advanced', 'optionsTree.appearance.advanced-desc', ' >', () ->
 			parent.addMenu(new AdvancedAppearanceOptions())));
-
-		__changeFPSCounter();
 	}
 
 	private function __changeFPS(value:Float) {
@@ -35,21 +31,6 @@ class AppearanceOptions extends TreeMenuScreen {
 		}
 		if (FlxG.updateFramerate < framerate) FlxG.drawFramerate = FlxG.updateFramerate = framerate;
 		else FlxG.updateFramerate = FlxG.drawFramerate = framerate;
-	}
-
-	private function __changeFPSCounter() {
-		if (Framerate.debugMode != 0 && !Options.fpsCounter) lastFPSDebugMode = Framerate.debugMode;
-		Framerate.debugMode = Options.fpsCounter ? (lastFPSDebugMode ?? 1) : 0;
-		
-		if (Options.fpsCounter) {
-			if (fpsAdvancedOption == null) {
-				insert(2, fpsAdvancedOption = new TextOption(getNameID('fpsAdvanced'), getDescID('fpsAdvanced'), ' >', () -> parent.addMenu(new FramerateAppearanceOptions())));
-			}
-		} else if (fpsAdvancedOption != null) {
-			remove(fpsAdvancedOption, true);
-			fpsAdvancedOption = flixel.util.FlxDestroyUtil.destroy(fpsAdvancedOption);
-			if (curSelected >= length) changeSelection(0, true);
-		}
 	}
 }
 
@@ -105,19 +86,5 @@ class AdvancedAppearanceOptions extends TreeMenuScreen {
 
 	private function __changeAntialiasing() {
 		FlxG.game.stage.quality = (FlxG.enableAntialiasing = Options.antialiasing) ? BEST : LOW;
-	}
-}
-
-class FramerateAppearanceOptions extends TreeMenuScreen {
-	public function new() {
-		super('AppearanceOptions.fpsAdvanced-name', 'AppearanceOptions.fpsAdvanced-desc', 'AppearanceOptions.Advanced.');
-
-		add(new Checkbox(getNameID('fpsCounterConductor'), getDescID('fpsCounterConductor'), 'fpsCounterConductor', () -> Framerate.conductorInfo.visible = Options.fpsCounterConductor));
-		add(new Checkbox(getNameID('fpsCounterFlixel'), getDescID('fpsCounterFlixel'), 'fpsCounterFlixel', () -> Framerate.flixelInfo.visible = Options.fpsCounterFlixel));
-		add(new Checkbox(getNameID('fpsCounterSystem'), getDescID('fpsCounterSystem'), 'fpsCounterSystem', () -> Framerate.systemInfo.visible = Options.fpsCounterSystem));
-		add(new Checkbox(getNameID('fpsCounterAssets'), getDescID('fpsCounterAssets'), 'fpsCounterAssets', () -> Framerate.assetInfo.visible = Options.fpsCounterAssets));
-		#if (gl_stats && !disable_cffi && (!html5 || !canvas))
-		add(new Checkbox(getNameID('fpsCounterStats'), 'optionsMenu.desc-missing', 'fpsCounterStats', () -> Framerate.statsInfo.visible = Options.fpsCounterStats));
-		#end
 	}
 }
