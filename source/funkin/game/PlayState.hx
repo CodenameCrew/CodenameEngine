@@ -1583,7 +1583,7 @@ class PlayState extends MusicBeatState
 			case "HScript Call":
 				var scriptPacks:Array<ScriptPack> = [scripts, stateScripts];
 				for (strLine in strumLines.members) for (char in strLine.characters) scriptPacks.push(char.scripts);
-				var args:Array<String> = event.params[1].split(',');
+				var args:Array<String> = event.params[1].split(',').map(arg -> arg.trim());
 
 				for (pack in scriptPacks) {
 					pack.call(event.params[0], args);
