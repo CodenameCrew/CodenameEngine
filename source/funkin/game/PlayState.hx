@@ -2024,6 +2024,14 @@ class PlayState extends MusicBeatState
 				} else if (event.countAsCombo)
 					combo++;
 
+				if (event.charsComboAnim && event.player && combo > 0) {
+					var comboAnim:String = 'combo$combo';
+					
+					for (sl in strumLines.members) for (c in sl.characters) {
+						if (c.hasAnim(comboAnim)) c.playAnim(comboAnim, true);
+					}
+				}
+
 				if (event.showRating || (event.showRating == null && event.player))
 				{
 					displayCombo(event);
