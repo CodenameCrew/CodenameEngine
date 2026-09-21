@@ -390,7 +390,7 @@ final class AudioAnalyzer {
 
 		if (pos == null) {
 			if (sound == null) return 0;
-			pos = sound.time / 1000 * data.sampleRate - fftN;
+			if ((pos = sound.time / 1000 * data.sampleRate - fftN) < 0) pos = 0;
 			timeUnit = SAMPLE;
 		}
 
