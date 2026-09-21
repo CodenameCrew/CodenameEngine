@@ -303,6 +303,7 @@ final class AudioAnalyzer {
 	var _sampleOutput:Array<Float>;
 	var _freqSamples:Array<Float>;
 	var _frequencies:Array<Float>;
+	var _rmsSamples:Array<Float>;
 
 	public function new(sound:FlxSound, fftN = 4096) {
 		this.sound = sound;
@@ -361,6 +362,67 @@ final class AudioAnalyzer {
 	@:deprecated("Use getSpectrum instead of getLevels.")
 	public function getLevels(?startPos:Float, ?volume:Float, barCount:Int, ?levels:Array<Float>, ?ratio:Float, ?minDb:Float, ?maxDb:Float, ?minFreq:Float, ?maxFreq:Float):Array<Float>
 		return inline getSpectrum(startPos, MILLISECOND, volume, null, barCount, levels, ratio, minDb, maxDb, minFreq, maxFreq);
+
+	/**
+	 * Gets RMS from an attached sound from position, without FFT computation.
+	 * @param	pos			Position to get (Optional).
+	 * @param	timeUnit	TimeUnit to use for positions (Optional).
+	 * @param	gain		How much gain multiplier will it affect the output. (Optional, default 1.0).
+	 * @param	window		Unused, only kept for parameter compatibility with getSpectrum (Optional).
+	 * @param	prev		The previous output for smoothing (Optional).
+	 * @param	ratio		How much ratio for smoothen the value from the previous value (Optional, use FlxMath.getElapsedLerp(1 - ratio) to simulate web AnalyserNode.smoothingTimeConstant, 0.35 of smoothingTime works most of the time).
+	 * @param	minDb		The minimum decibels to cap (Optional, default -63.0, -120 is pure silence).
+	 * @param	maxDb		The maximum decibels to cap (Optional, default -10.0, Above 0 is not recommended).
+	 * @param	minFreq		The minimum frequency to cap (Optional, default 20.0, Below 8.0 is not recommended).
+	 * @param	maxFreq		The maximum frequency to cap (Optional, default 20000.0, Above 23000.0 is not recommended).
+	 * @return	Output energy that ranges from 0 to 1.
+	 */
+	public function getRMS(?pos:Float, ?timeUnit:TimeUnit, ?gain:Float, ?window:WindowFunction, ?prev:Float, ?ratio:Float, ?minDb:Float, ?maxDb:Float, ?minFreq:Float, ?maxFreq:Float):Float {
+		if (gain == null) gain = 1.0;
+		if (ratio == null) ratio = 0.0;
+		if (minDb == null) minDb = -63.0;
+		if (maxDb == null) maxDb = -10.0;
+		if (minFreq == null) minFreq = 20.0;
+		if (maxFreq == null) maxFreq = 20000.0;
+
+		_check();
+		if (data == null) return 0;
+
+		if (pos == null) {
+			if (sound == null) return 0;
+			pos = sound.time / 1000 * data.sampleRate - fftN;
+			timeUnit = SAMPLE;
+		}
+
+		final aLP = Math.min(1, 6.283185307179586 * maxFreq / data.sampleRate);
+		final aHP = 1 / (1 + 6.283185307179586 * minFreq / data.sampleRate);
+
+		_rmsSamples = getSamples(pos, timeUnit, fftN, true, -1, gain, _rmsSamples);
+
+		var sum = 0.0, lp = 0.0, hp = 0.0, x = 0.0, xPrev = 0.0;
+		final hasLP = aLP < 1, hasHP = aHP > 0;
+		for (i in 0...fftN) {
+			x = _rmsSamples[i];
+			if (hasHP) {
+				hp = aHP * (hp + x - xPrev);
+				xPrev = x;
+				x = hp;
+			}
+			if (hasLP) lp += aLP * (x - lp);
+			else lp = x;
+			sum += lp * lp;
+		}
+		final rms = Math.sqrt(sum / fftN);
+
+		final v = FlxMath.bound((Math.log(rms) * 8.685889638065035 - minDb) / (maxDb - minDb), 0, 1);
+
+		if (prev == null) return v;
+
+		if (ratio > 0 && ratio < 1 && v < prev) prev -= (prev - v) * ratio;
+		else prev = v;
+
+		return prev;
+	}
 
 	/**
 	 * Gets frequencies from an attached sound from position.
