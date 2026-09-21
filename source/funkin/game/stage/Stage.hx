@@ -451,15 +451,15 @@ class Stage extends Layer {
 	public function applyCharPos(char:Character, posName:String, id:Float = 0) {
 		var charName:String = char.curCharacter;
 		var charPos:Null<StageCharPos> = characterPosLookup.exists(charName) ? characterPosLookup.get(charName) : characterPosLookup.get(posName);
-		if(charPos != null && charPos.position != -1) {
+		if(charPos != null)
 			charPos.prepareCharacter(char, id);
-			// allows setting characters in different layers
-			// their position (index) is relative to their layer
-			var layerRef:Layer = charPos.layer;
+		// allows setting characters in different layers
+		// their position (index) is relative to their layer
+		var layerRef:Layer = charPos.layer;
+		if(charPos.position != -1) 
 			layerRef.insert(charPos.position, char);
-		}
 		else 
-			this.add(char);
+			layerRef.add(char);
 	}
 
 	override function update(elapsed:Float) {
