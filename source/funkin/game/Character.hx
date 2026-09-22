@@ -498,6 +498,10 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 				xml.set("postStageMatrixApply", postStageMatrixApply ? "true" : "false");
 		}
 
+		for(e in this.xml.elements)
+			if(e.name == "spritesheet" || e.name == "sheet") 
+				xml.addChild(e.x);
+
 		var anims:Array<AnimData> = [];
 		if (animsOrder != null) {
 			for (name in animsOrder)
