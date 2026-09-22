@@ -10,26 +10,32 @@ import lime.utils.Assets as LimeAssets;
 class CppiaModule
 {
 	private static var __modules:Map<String, Module> = [];
-	private static var __failedModules:Map<String, String> = [];
+	private static var __signatures:Map<String, String> = [];
+
+	static function getSignature(bytes:haxe.io.Bytes):String
+		return bytes.length + ":" + haxe.crypto.Md5.make(bytes).toHex();
 
 	public static function load(assetPath:String):Module
 	{
-		if (__modules.exists(assetPath))
-			return __modules.get(assetPath);
-		if (__failedModules.exists(assetPath))
-			return null;
-
 		try {
 			if (!LimeAssets.exists(assetPath))
 				return null;
 
-			var module = Module.fromData(LimeAssets.getBytes(assetPath).getData());
+			var bytes = LimeAssets.getBytes(assetPath);
+			var signature = getSignature(bytes);
+
+			if (__signatures.get(assetPath) == signature)
+				return __modules.get(assetPath);
+
+			var module = Module.fromData(bytes.getData());
 			module.boot();
 			__modules.set(assetPath, module);
+			__signatures.set(assetPath, signature);
 			return module;
 		} catch(e) {
 			var reason = Std.string(e);
-			__failedModules.set(assetPath, reason);
+			// prevent the application from crashing outright
+			try __signatures.set(assetPath, getSignature(LimeAssets.getBytes(assetPath))) catch(_) {}
 			Logs.traceColored([
 				Logs.logText(assetPath, GREEN),
 				Logs.logText('Error while loading cppia module: $reason', RED)
@@ -51,7 +57,7 @@ class CppiaModule
 	public static function clearCache():Void
 	{
 		__modules = [];
-		__failedModules = [];
+		__signatures = [];
 	}
 }
 #end
