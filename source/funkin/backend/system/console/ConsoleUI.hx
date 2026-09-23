@@ -55,6 +55,8 @@ class ConsoleUI {
 
 	public static var instance(default, null):ConsoleUI;
 
+	public var uiVisible(get, never):Bool;
+
 	private var active:Bool = false;
 	private var inspectorActive:Bool = false;
 	#if IMGUI_ENABLED
@@ -152,6 +154,10 @@ class ConsoleUI {
 		consoleInputTextCallback = new ImGuiInputTextCallback(onInputTextCallback);
 		#end
 	};
+
+	inline function get_uiVisible():Bool {
+		return active || inspectorActive;
+	}
 
 	private function addToConsole(text:Array<LogText>) {
 		#if IMGUI_ENABLED

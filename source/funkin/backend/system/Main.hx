@@ -336,6 +336,8 @@ class Main extends Sprite
 		style.setColor(ImGuiCol.DockingPreview,         new ImVec4(0.56, 0.11, 0.71, 1.00));
 
 		ImGuiHandler.instance.addCallback(function() {
+			var ui = ConsoleUI.instance;
+			if (ui == null || !ui.uiVisible) return;
 			ImGui.dockSpaceOverViewport(0, null, ImGuiDockNodeFlags.PassthruCentralNode);
 		});
 		#end
