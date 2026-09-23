@@ -349,11 +349,17 @@ final class XMLUtil {
 		if (animData.name != null) {
 			if (animData.fps <= 0 #if web || animData.fps == null #end) animData.fps = 24;
 
+			var checkForSparrow = true;
+
 			if ((sprite.frames is FlxAnimateFrames) == (animData.isAnimate ?? true)) {
 				if(animData.anim == null)
 					return MISSING_PROPERTY;
 
-				var animateAnim = cast(sprite, FunkinSprite).anim;
+				var funkSpr = cast(sprite, FunkinSprite);
+
+				var animateAnim = funkSpr.anim;
+
+				checkForSparrow = false;
 
 				if (animData.label) {
 					if (animData.indices != null && animData.indices.length > 0)
@@ -361,12 +367,17 @@ final class XMLUtil {
 					else
 						animateAnim.addByFrameLabel(animData.name, animData.anim, animData.fps, animData.loop);
 				} else {
-					if (animData.indices != null && animData.indices.length > 0)
-						animateAnim.addBySymbolIndices(animData.name, animData.anim, animData.indices, animData.fps, animData.loop);
-					else
-						animateAnim.addBySymbol(animData.name, animData.anim, animData.fps, animData.loop);
+					if(funkSpr.library.getSymbol(animData.anim) != null){
+						if (animData.indices != null && animData.indices.length > 0)
+							animateAnim.addBySymbolIndices(animData.name, animData.anim, animData.indices, animData.fps, animData.loop);
+						else
+							animateAnim.addBySymbol(animData.name, animData.anim, animData.fps, animData.loop);
+					} else
+						checkForSparrow = true;
 				}
-			} else {
+			} 
+			
+			if(checkForSparrow){
 				if (animData.indices != null && animData.indices.length > 0) {
 					if (animData.anim == null)
 						sprite.animation.add(animData.name, animData.indices, animData.fps, animData.loop);
