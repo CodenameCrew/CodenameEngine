@@ -42,6 +42,7 @@ class Options
 	public static var volumeMusic:Float = 1;
 	public static var volumeSFX:Float = 1;
 	public static var week6PixelPerfect:Bool = true;
+	public static var discordRPC:Bool = true;
 	public static var gameplayShaders:Bool = true;
 	public static var colorHealthBar:Bool = true;
 	public static var lowMemoryMode:Bool = false;
