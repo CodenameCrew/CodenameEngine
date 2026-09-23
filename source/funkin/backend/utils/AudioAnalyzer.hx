@@ -377,14 +377,7 @@ final class AudioAnalyzer {
 	 * @param	maxFreq		The maximum frequency to cap (Optional, default 20000.0, Above 23000.0 is not recommended).
 	 * @return	Output energy that ranges from 0 to 1.
 	 */
-	public function getRMS(?pos:Float, ?timeUnit:TimeUnit, ?gain:Float, ?window:WindowFunction, ?prev:Float, ?ratio:Float, ?minDb:Float, ?maxDb:Float, ?minFreq:Float, ?maxFreq:Float):Float {
-		if (gain == null) gain = 1.0;
-		if (ratio == null) ratio = 0.0;
-		if (minDb == null) minDb = -63.0;
-		if (maxDb == null) maxDb = -10.0;
-		if (minFreq == null) minFreq = 20.0;
-		if (maxFreq == null) maxFreq = 20000.0;
-
+	public function getRMS(?pos:Float, ?timeUnit:TimeUnit, ?gain:Float = 1.0, ?window:WindowFunction, ?prev:Float, ?ratio:Float = 0.0, ?minDb:Float = -63.0, ?maxDb:Float = -10.0, ?minFreq:Float = 20.0, ?maxFreq:Float = 22000.0):Float {
 		_check();
 		if (data == null) return 0;
 
