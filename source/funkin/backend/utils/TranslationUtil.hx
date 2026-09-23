@@ -8,6 +8,7 @@ import haxe.io.Path;
 import haxe.xml.Access;
 import haxe.Exception;
 import funkin.backend.utils.translations.FormatUtil;
+import funkin.backend.system.modules.FunkinCache;
 
 /**
  * The class used for translations based on the XMLs inside the translations folders.
@@ -112,6 +113,8 @@ final class TranslationUtil
 			if(mod is TranslatedAssetLibrary)
 				cast(mod, TranslatedAssetLibrary).langFolder = name;
 
+		if (FunkinCache.instance != null) FunkinCache.instance.clearAll();
+		Paths.assetsTree.resetAssetPathCache();
 		config = getConfig(name);
 		stringMap = loadLanguage(name);
 		alternativeStringMap = name == Flags.DEFAULT_LANGUAGE || config.get("showMissingIds").getDefault("false") == "true" ? [] : loadLanguage(Flags.DEFAULT_LANGUAGE);

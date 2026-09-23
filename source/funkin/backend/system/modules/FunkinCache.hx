@@ -53,6 +53,24 @@ class FunkinCache extends AssetCache {
 		sound = [];
 	}
 
+	public function clearAll()
+	{
+		for (k in bitmapData.keys())
+		{
+			LimeAssets.cache.image.remove(k);
+			var g = FlxG.bitmap.get(k);
+			if (g != null && g.useCount <= 0)
+				FlxG.bitmap.remove(g);
+		}
+		for (k in font.keys())
+			LimeAssets.cache.font.remove(k);
+		for (k in sound.keys())
+			LimeAssets.cache.audio.remove(k);
+		bitmapData = [];
+		font = [];
+		sound = [];
+	}
+
 	public function clearSecondLayer() {
 		for(k=>b in bitmapData2) {
 			FlxG.bitmap.removeByKey(k);
