@@ -15,6 +15,7 @@ class ModSwitchMenu extends MusicBeatSubstate {
 
 	var title:FunkinText;
 	var desc:FunkinText;
+	var keyInfo:FunkinText;
 
 	var mods:Array<String> = [];
 	var addons:Array<String> = [];
@@ -25,6 +26,7 @@ class ModSwitchMenu extends MusicBeatSubstate {
 	var addonChecks:FlxTypedGroup<FlxSprite>; // NOTE: maybe make a CheckboxObject, it kinda makes some things a mess here
 	var queuedAddonsOff:Array<Bool> = [];
 
+	var timer:Float = 0;
 	var curSelected:Int = 0;
 	var curAddon:Int = 0;
 	var inAddons:Bool = false;
@@ -134,14 +136,23 @@ class ModSwitchMenu extends MusicBeatSubstate {
 		desc = new FunkinText(4, title.y + title.height, FlxG.width - 8, getDescription(modConf[curSelected]), 16);
 		add(desc);
 
+		keyInfo = new FunkinText(FlxG.width - 4, title.y + title.height * 0.5, 0, '[${CoolUtil.keyToString(Options.SOLO_CHANGE_MODE[0])}] >>>', 24);
+		keyInfo.x -= keyInfo.width;
+		keyInfo.y -= keyInfo.height * 0.5;
+		add(keyInfo);
+
 		changeSelection(0, true);
 		changeAddon(0, true);
 	}
 
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
+		timer += elapsed;
 
-		var targetFramerateY:Float = 0;
+		var keyOffset = Math.abs(Math.sin(timer * 1.5 * Math.PI)) * 15;
+		keyInfo.x = inAddons ? 4 + keyOffset : FlxG.width - 4 - keyInfo.width - keyOffset;
+
+		var targetFramerateY:Float = keyInfo.y + keyInfo.height;
 		if (!inAddons)
 			targetFramerateY = ((desc.text != "") ? desc.y + desc.height : title.y + title.height);
 		Framerate.offset.y = CoolUtil.fpsLerp(Framerate.offset.y, targetFramerateY, 0.35);
@@ -256,6 +267,8 @@ class ModSwitchMenu extends MusicBeatSubstate {
 			desc.text = getDescription(modConf[curSelected]);
 		}
 
+		keyInfo.text = '[${CoolUtil.keyToString(Options.SOLO_CHANGE_MODE[0])}]';
+		keyInfo.text = inAddons ? "<<< " + keyInfo.text : keyInfo.text + " >>>";
 		CoolUtil.playMenuSFX(playCancel ? CANCEL : SCROLL, 0.7);
 	}
 
