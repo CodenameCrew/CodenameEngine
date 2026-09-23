@@ -608,12 +608,10 @@
 		<group name="StageElementEditScreen" prefix="stageElementEditScreen.">
 			<str id="win-character-title">Editing Character "{0}"</str>
 			<str id="win-sprite-title">Editing Sprite "{0}"</str>
-			<str id="win-solid-title">Editing Box "{0}"</str>
 			<str id="win-title">Editing XML &lt;{0} /&gt;</str>
 
 			<str id="character-title">Character Data</str>
 			<str id="sprite-title">Sprite Data</str>
-			<str id="solid-title">Box Data</str>
 			<str id="title">XML Data</str>
 
 			<str id="elementName">Element Name</str>
@@ -621,8 +619,6 @@
 			<str id="imageFile">Image File\n(in "{0}")</str>
 			<str id="scroll">Scroll {0}</str>
 			<str id="scale">Scale {0}</str>
-			<str id="width">Width</str>
-			<str id="height">Height</str>
 			<str id="camera">Camera {0}</str>
 			<str id="spacing">Spacing (X, Y)</str>
 			<str id="skew">Skew {0}</str>
@@ -637,7 +633,6 @@
 			<str id="attributes">Attributes</str>
 			<str id="transformPreview">Transform Preview:</str>
 			<str id="animations">Animations</str>
-			<str id="color">Color</str>
 
 			<str id="animType">Animation Type</str>
 			<group name="AnimTypeDropdown" prefix="animType.">
@@ -645,40 +640,6 @@
 				<str id="beat">BEAT</str>
 				<str id="loop">LOOP</str>
 			</group>
-
-			<str id="blendMode">Blend Mode</str>
-			<group name="BlendModeDropdown" prefix="blendMode.">
-				<!--
-					90% of these dont show up yet !!
-					but just future proofing so we don't
-					have to add them later
-				-->
-				<str id="none">NONE</str>
-				<str id="add">ADD</str>
-				<str id="alpha">ALPHA</str>
-				<str id="darken">DARKEN</str>
-				<str id="difference">DIFFERENCE</str>
-				<str id="erase">ERASE</str>
-				<str id="hardlight">HARDLIGHT</str>
-				<str id="invert">INVERT</str>
-				<str id="layer">LAYER</str>
-				<str id="lighten">LIGHTEN</str>
-				<str id="multiply">MULTIPLY</str>
-				<!--<str id="normal">NORMAL</str>-->
-				<str id="overlay">OVERLAY</str>
-				<str id="screen">SCREEN</str>
-				<str id="shader">SHADER</str>
-				<str id="subtract">SUBTRACT</str>
-				<str id="colordodge">COLORDODGE</str>
-				<str id="colorburn">COLORBURN</str>
-				<str id="softlight">SOFTLIGHT</str>
-				<str id="exclusion">EXCLUSION</str>
-				<str id="hue">HUE</str>
-				<str id="saturation">SATURATION</str>
-				<str id="color">COLOR</str>
-				<str id="luminosity">LUMINOSITY</str>
-			</group>
-
 			<str id="tipCustomProperties">Tip: To access custom properties,\nHold Shift when clicking edit</str>
 
 			<str id="defaultAnimPrefix">Name on Anim Data</str>
@@ -748,10 +709,5 @@
 
 		<str id="createdTitle">Created mod config!</str>
 		<str id="createdDesc">Your mod config file has been created at {0}!</str>
-	</group>
-
-	<group name="ModAPIWarning" prefix="modApiWarning.">
-		<str id="warningTitle">Outdated API Version! (v{0} &lt; v{1})</str>
-		<str id="warningDesc">Your mod's config runs on an outdated API Version! This WILL cause compatiblilty and code issues!\n\nIt is recommended that you make changes to your mod and its config file to fit the new version.\n\nMeanwhile, the game will try its best to make your mod compatible, but you should still update your mod.\n\n(PS: If this is not your mod please disable Developer mode, and notify the mod developers if needed.)</str>
 	</group>
 </language>
