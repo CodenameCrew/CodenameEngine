@@ -73,6 +73,7 @@ class Options
 	#end
 
 	public static var lastLoadedMod:String = null;
+	public static var disabledAddons:Array<String> = [];
 
 	/**
 	 * EDITORS SETTINGS

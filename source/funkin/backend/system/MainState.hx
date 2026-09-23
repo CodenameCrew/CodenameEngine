@@ -96,6 +96,7 @@ class MainState extends FlxState {
 					if (Flags.ALLOWED_ZIP_EXTENSIONS.contains(Path.extension(addon))) addon = Path.withoutExtension(addon);
 					else continue;
 				}
+				if (Options.disabledAddons.contains(addon)) continue;
 
 				var data:AddonInfo = {
 					name: addon,
