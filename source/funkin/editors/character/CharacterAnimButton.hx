@@ -9,6 +9,7 @@ import funkin.backend.utils.XMLUtil.AnimData;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import funkin.editors.character.CharacterAnimsWindow;
+import animate.FlxAnimateFrames;
 
 using StringTools;
 
@@ -119,7 +120,7 @@ class CharacterAnimButton extends UIButton {
 
 		loopedCheckbox.x += 8; loopedCheckbox.y += 6;
 
-		if (parent.character.isAnimate) {
+		if (parent.character.frames is FlxAnimateFrames) {
 			animLabelCheckbox = new UICheckbox(loopedCheckbox.x, animTextBox.y + 26, translate("label"), animData.label, 0, true);
 			animLabelCheckbox.onChecked = (newLabel:Bool) -> {this.changeLabel(newLabel);};
 			members.push(animLabelCheckbox);
