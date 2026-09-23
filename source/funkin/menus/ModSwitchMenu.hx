@@ -139,10 +139,12 @@ class ModSwitchMenu extends MusicBeatSubstate {
 		keyInfo = new FunkinText(FlxG.width - 4, title.y + title.height * 0.5, 0, '[${CoolUtil.keyToString(Options.SOLO_CHANGE_MODE[0])}] >>>', 24);
 		keyInfo.x -= keyInfo.width;
 		keyInfo.y -= keyInfo.height * 0.5;
+		keyInfo.visible = addons.length > 0;
 		add(keyInfo);
 
 		changeSelection(0, true);
-		changeAddon(0, true);
+		if (addons.length > 0)
+			changeAddon(0, true);
 	}
 
 	public override function update(elapsed:Float) {
@@ -198,7 +200,7 @@ class ModSwitchMenu extends MusicBeatSubstate {
 		if (controls.BACK) {
 			close();
 			Framerate.offset.y = 0;
-		} else if (controls.CHANGE_MODE)
+		} else if (controls.CHANGE_MODE && addons.length > 0)
 			toggleTab(false);
 	}
 	function addonControls(scrollChange:Int) {
