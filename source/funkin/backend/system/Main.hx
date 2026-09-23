@@ -234,10 +234,11 @@ class Main extends Sprite
 		scaleMode.resetSize();
 	}
 	public static function onUpdate() {
-		#if !IMGUI_ENABLED
-		if (PlayerSettings.solo.controls.DEV_CONSOLE)
+		if (#if IMGUI_ENABLED Options.useNativeConsole && #end
+			PlayerSettings.solo.controls.DEV_CONSOLE)
 			NativeAPI.allocConsole();
-		#else
+
+		#if IMGUI_ENABLED
 		if ((ImGuiIO.configFlags & ImGuiConfigFlags.ViewportsEnable) != 0)
 		{
 			if (ImGui.isAnyWindowMultiViewport()) {

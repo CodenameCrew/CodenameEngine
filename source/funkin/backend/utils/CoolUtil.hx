@@ -665,6 +665,8 @@ final class CoolUtil
 			case EIGHT:				"8";
 			case NINE:				"9";
 			case PERIOD:			".";
+			case COMMA:				",";
+			case SEMICOLON:			";";
 			default:				key.toString();
 		}
 	}

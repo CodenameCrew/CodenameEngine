@@ -143,6 +143,8 @@ class Options
 	public static var consoleScriptsFilter:Bool = true;
 	public static var consoleCountDuplicatedOutput:Bool = true;
 
+	public static var useNativeConsole:Bool = false;
+
 	#if IMGUI_ENABLED
 	/**
 	 * IMGUI
