@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<language>
+	<group name="RPC" prefix="rpc.">
+		<str id="gameOver">Game Over</str>
+
+		<str id="song">{0} ({1})</str>
+		<str id="song-paused">Paused - {0} ({1})</str>
+
+		<str id="discordButton">Codename Engine Discord</str>
+
+		<str id="menus">In the Menus</str>
+
+		<str id="choosingCharacter">Choosing a Character</str>
+		<str id="choosingChart">Choosing a Chart</str>
+		<str id="choosingStage">Choosing a Stage</str>
+
+		<str id="editingCharacter">Editing a Character</str>
+		<str id="editingChart">Editing a Chart</str>
+		<str id="editingStage">Editing a Stage</str>
+	</group>
+</language>
