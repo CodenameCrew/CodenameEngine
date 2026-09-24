@@ -119,6 +119,10 @@ final class NoteHitEvent extends CancellableEvent {
 	 * The attached healthIcon used distinction for icons amongst others
 	 */
 	public var healthIcon:HealthIcon;
+	/**
+	 * Whenever anybody with a combo anim for your combo ought to play it (think GF's "combo50" anim).
+	 */
+	public var charsComboAnim:Null<Bool> = true;
 
 	/**
 	 * Prevents the default sing animation from being played.

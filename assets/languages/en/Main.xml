@@ -66,6 +66,9 @@
 
 	<group name="Mods">
 		<str id="mods.disableMods">Disable Mods</str>
+		<str id="mods.modsTitle">Select a Mod</str>
+		<str id="mods.addonsTitle">Toggle Addons</str>
+		<str id="mods.addonsChanged">To apply addon changes, select a mod.</str>
 	</group>
 
 	<group name="MainMenu">
