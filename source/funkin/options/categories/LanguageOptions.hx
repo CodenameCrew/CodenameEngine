@@ -25,6 +25,7 @@ class LanguageRadio extends RadioButton {
 		if (prev == checked) return;
 
 		TranslationUtil.setLanguage(value);
+		DiscordUtil.call("onMenuLoaded",["Options Menu"]);
 		if (screen.parent == null) screen.reloadStrings();
 		else screen.parent.reloadStrings();
 	}
