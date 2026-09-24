@@ -1,8 +1,9 @@
 package funkin.game.stage;
 
+import flixel.math.FlxPoint;
 import funkin.backend.system.interfaces.IBeatReceiver;
 
-import flixel.group.FlxSpriteGroup;
+import flixel.group.FlxSpriteContainer;
 import flixel.math.FlxRect;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.util.FlxStringUtil; 
@@ -16,7 +17,7 @@ import hscript.IHScriptCustomBehaviour;
  * This is an organizational class that can update and render a bunch of `FlxSprite`s and `Layer`s.
  * @author Jamextreme140 & ItsLJcool
  */
-class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver implements IHScriptCustomBehaviour {
+class Layer extends FlxTypedSpriteContainer<FlxSprite> implements IBeatReceiver implements IHScriptCustomBehaviour {
 	private static final __instanceFields:Map<String, Bool> = [for(f in Type.getInstanceFields(Layer)) f => true];
 
 	/**
@@ -177,6 +178,30 @@ class Layer extends FlxTypedSpriteGroup<FlxSprite> implements IBeatReceiver impl
 		return null;
 	}
 	//endregion
+
+	// TODO: maybe use `bounds` instead of checking it recursively
+	override function overlaps(objectOrGroup:FlxBasic, inScreenSpace:Bool = false, ?camera:FlxCamera):Bool {
+		// check for members, not the group itself
+		for(m in group.members) 
+			if(m.overlaps(objectOrGroup, inScreenSpace, camera)) 
+				return true;
+		
+		return false;
+	}
+
+	override function overlapsAt(x:Float, y:Float, objectOrGroup:FlxBasic, inScreenSpace:Bool = false, ?camera:FlxCamera):Bool {
+		for (m in group.members)
+			if (m.overlapsAt(x, y, objectOrGroup, inScreenSpace, camera))
+				return true;
+		return false;
+	}
+
+	override function overlapsPoint(point:FlxPoint, InScreenSpace:Bool = false, ?Camera:FlxCamera):Bool {
+		for (m in group.members)
+			if (m.overlapsPoint(point, InScreenSpace, Camera))
+				return true;
+		return false;
+	}
 
 	override function draw() {
 		// re-implementing the `onDraw` functionality from `FlxSprite` since `FlxSpriteGroup` didn't have this (it doesn't call `super.draw()`), so we have to add it back in ourselves
