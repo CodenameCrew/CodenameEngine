@@ -1,5 +1,6 @@
 package funkin.backend;
 
+import flixel.FlxBasic;
 import flixel.FlxState;
 import flixel.FlxSubState;
 import funkin.backend.scripting.DummyScript;
@@ -235,21 +236,47 @@ class MusicBeatState extends FlxState implements IBeatCancellableReceiver
 		super.update(elapsed);
 	}
 
+	@:noCompletion private var __beatReceivers:Array<IBeatReceiver> = [];
+	@:noCompletion private var __beatReceiversDirty:Bool = true;
+	@:noCompletion private var __lastMemberLength:Int = -1;
+
+	function __refreshBeatReceivers():Void {
+		__beatReceiversDirty = false;
+		__lastMemberLength = members.length;
+		__beatReceivers.resize(0);
+		for (e in members)
+			if (e != null && e is IBeatReceiver)
+				__beatReceivers.push(cast e);
+	}
+
+	override function onMemberAdd(member:FlxBasic):Void {
+		super.onMemberAdd(member);
+		__beatReceiversDirty = true;
+	}
+
+	override function onMemberRemove(member:FlxBasic):Void {
+		super.onMemberRemove(member);
+		__beatReceiversDirty = true;
+	}
+
 	@:dox(hide) public function stepHit(curStep:Int):Void
 	{
-		for(e in members) if (e != null && e is IBeatReceiver) ({var _:IBeatReceiver=cast e;_;}).stepHit(curStep);
+		if (__beatReceiversDirty || members.length != __lastMemberLength) __refreshBeatReceivers();
+		for(e in __beatReceivers) e.stepHit(curStep);
 		call("stepHit", [curStep]);
 	}
 
 	@:dox(hide) public function beatHit(curBeat:Int):Void
 	{
-		for(e in members) if (e != null && e is IBeatReceiver) ({var _:IBeatReceiver=cast e;_;}).beatHit(curBeat);
+		if (__beatReceiversDirty || members.length != __lastMemberLength) __refreshBeatReceivers();
+		for(e in __beatReceivers) e.beatHit(curBeat);
 		call("beatHit", [curBeat]);
 	}
 
 	@:dox(hide) public function measureHit(curMeasure:Int):Void
 	{
-		for(e in members) if (e != null && e is IBeatReceiver) ({var _:IBeatReceiver=cast e;_;}).measureHit(curMeasure);
+		if (__beatReceiversDirty || members.length != __lastMemberLength) __refreshBeatReceivers();
+		for(e in __beatReceivers) e.measureHit(curMeasure);
 		call("measureHit", [curMeasure]);
 	}
 

@@ -10,6 +10,7 @@ import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import funkin.backend.FunkinSprite;
 import funkin.backend.scripting.DummyScript;
+import funkin.backend.scripting.EventManager;
 import funkin.backend.scripting.Script;
 import funkin.backend.scripting.ScriptPack;
 import funkin.backend.scripting.events.CancellableEvent;
@@ -62,6 +63,8 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	public var scripts:ScriptPack;
 	public var xmlImportedScripts:Array<XMLImportedScriptInfo> = [];
 	public var script(default, set):Script;
+
+	@:noCompletion @:dox(hide) private static var _ONE_ARG:Array<Dynamic> = [null];
 
 	public function prepareInfos(node:Access)
 		return XMLImportedScriptInfo.prepareInfos(node, scripts, (infos) -> xmlImportedScripts.push(infos));
@@ -137,7 +140,8 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	@:noCompletion var isDanceLeftDanceRight:Bool = false;
 
 	override function update(elapsed:Float) {
-		scripts.call("update", [elapsed]);
+		_ONE_ARG[0] = elapsed;
+		scripts.call("update", _ONE_ARG);
 
 		super.update(elapsed);
 
@@ -152,7 +156,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 		__lockAnimThisFrame = false;
 
-		scripts.call("postUpdate", [elapsed]);
+		scripts.call("postUpdate", _ONE_ARG);
 	}
 
 	private var danced:Bool = false;
@@ -171,8 +175,9 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	}
 
 	public function tryDance() {
-		var event = new CancellableEvent();
-		scripts.call("onTryDance", [event]);
+		var event = EventManager.get(CancellableEvent);
+		event.recycleBase();
+		scripts.event("onTryDance", event);
 		if (event.cancelled)
 			return;
 
