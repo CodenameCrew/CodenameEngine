@@ -1,5 +1,6 @@
 package funkin.game;
 
+import haxe.io.Path;
 import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.graphics.FlxGraphic;
@@ -24,6 +25,7 @@ import funkin.backend.scripting.events.gameplay.*;
 import funkin.backend.scripting.events.note.*;
 import funkin.backend.system.Conductor;
 import funkin.backend.system.RotatingSpriteGroup;
+import funkin.backend.week.WeekData;
 import funkin.editors.SaveWarning;
 import funkin.editors.charter.Charter;
 import funkin.editors.charter.CharterSelection;
@@ -32,9 +34,7 @@ import funkin.game.cutscenes.*;
 import funkin.game.scoring.*;
 import funkin.game.scoring.RatingManager.Rating;
 import funkin.menus.*;
-import funkin.backend.week.WeekData;
 import funkin.savedata.FunkinSave;
-import haxe.io.Path;
 
 using StringTools;
 
@@ -1418,7 +1418,7 @@ class PlayState extends MusicBeatState
 			var beat = Conductor.getBeats(camZoomingEvery, camZoomingInterval, camZoomingOffset);
 			if (camZoomingLastBeat != beat) {
 				camZoomingLastBeat = beat;
-				
+
 				doBopZoom();
 			}
 		}
@@ -1671,7 +1671,8 @@ class PlayState extends MusicBeatState
 				if (event.params[7] == true) finalZoom *= cam.zoom;
 
 				if (event.params[0] == false) {
-					cam.zoom = finalZoom;
+					if (event.params[4] != "SET")
+						cam.zoom = finalZoom;
 					if (cam == camHUD) defaultHudZoom = finalZoom;
 					else defaultCamZoom = finalZoom;
 				} else if (event.params[4] == "CLASSIC") {
@@ -2026,7 +2027,7 @@ class PlayState extends MusicBeatState
 
 				if (event.charsComboAnim && event.player && combo > 0) {
 					var comboAnim:String = 'combo$combo';
-					
+
 					for (sl in strumLines.members) for (c in sl.characters) {
 						if (c.hasAnim(comboAnim)) c.playAnim(comboAnim, true);
 					}
@@ -2073,7 +2074,7 @@ class PlayState extends MusicBeatState
 		gameAndCharsEvent("onPostNoteHit", event);
 	}
 
-	public function displayRating(myRating:String, ?evt:NoteHitEvent):Void 
+	public function displayRating(myRating:String, ?evt:NoteHitEvent):Void
 	{
 		var event:RatingsShowEvent = EventManager.get(RatingsShowEvent).recycle(comboGroup.recycleLoop(FlxSprite), null, null, null, null, 0.7, true, "game/score/", "", 550, FlxPoint.get(FlxG.random.int(0, 10), FlxG.random.int(140, 175)), 0.2, (Conductor.crochet * 0.001), true, false, false, true, null, FlxPoint.get(comboGroup.x + -40, comboGroup.y + -60), true, myRating, null);
 		gameAndCharsEvent("onRatingsShown", event);
@@ -2169,7 +2170,7 @@ class PlayState extends MusicBeatState
 				if (event.cancelled || !event.displayNumbers) { // TODO: Find a better way for this?
 					event.numberSprite.kill();
 					continue;
-				}				
+				}
 
 				var hasEvent:Bool = evt != null;
 

@@ -1,11 +1,11 @@
 package funkin.backend.chart;
 
-import funkin.backend.assets.Paths;
 import haxe.Json;
 import haxe.io.Path;
 import hscript.Interp;
 import hscript.Parser;
 import openfl.Assets;
+import funkin.backend.assets.Paths;
 
 using StringTools;
 
