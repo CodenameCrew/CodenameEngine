@@ -44,7 +44,7 @@ class FramerateCategory extends Sprite {
 	}
 
 	public override function __enterFrame(t:Float) {
-		if (alpha <= 0.05) return;
+		if (alpha <= 0.05 || !visible) return;
 		super.__enterFrame(t);
 
 		var width = Math.max(this.title.width, this.text.width) + (Framerate.instance.x * 2);

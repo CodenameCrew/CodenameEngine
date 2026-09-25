@@ -135,10 +135,7 @@ class Framerate extends Sprite {
 
 		var y:Float = height + 4;
 		for(c in categories) {
-			if (!c.visible) {
-				c.alpha = 0;
-				continue;
-			}
+			if (!c.visible) continue;
 			c.title.selectable = c.text.selectable = selectable;
 			c.alpha = debugAlpha;
 			c.x = FlxMath.lerp(-c.width - offset.x, 0, debugAlpha);
