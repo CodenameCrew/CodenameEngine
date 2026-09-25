@@ -2216,7 +2216,7 @@ class PlayState extends MusicBeatState
 	override function stepHit(curStep:Int)
 	{
 		super.stepHit(curStep);
-		_ONE_ARG[0] = elapsed;
+		_ONE_ARG[0] = curStep;
 		scripts.call("stepHit", _ONE_ARG);
 	}
 
@@ -2224,7 +2224,7 @@ class PlayState extends MusicBeatState
 	override function measureHit(curMeasure:Int)
 	{
 		super.measureHit(curMeasure);
-		_ONE_ARG[0] = elapsed;
+		_ONE_ARG[0] = curMeasure;
 		scripts.call("measureHit", _ONE_ARG);
 	}
 
@@ -2238,7 +2238,7 @@ class PlayState extends MusicBeatState
 				if (icon.bump != null)
 					icon.bump();
 
-		_ONE_ARG[0] = elapsed;
+		_ONE_ARG[0] = curBeat;
 		scripts.call("beatHit", _ONE_ARG);
 	}
 	
