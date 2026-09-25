@@ -10,6 +10,7 @@ import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import funkin.backend.FunkinSprite;
 import funkin.backend.scripting.DummyScript;
+import funkin.backend.scripting.EventManager;
 import funkin.backend.scripting.Script;
 import funkin.backend.scripting.ScriptPack;
 import funkin.backend.scripting.events.CancellableEvent;
@@ -62,6 +63,8 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	public var scripts:ScriptPack;
 	public var xmlImportedScripts:Array<XMLImportedScriptInfo> = [];
 	public var script(default, set):Script;
+
+	@:noCompletion @:dox(hide) private static var _ONE_ARG:Array<Dynamic> = [null];
 
 	public function prepareInfos(node:Access)
 		return XMLImportedScriptInfo.prepareInfos(node, scripts, (infos) -> xmlImportedScripts.push(infos));
@@ -137,7 +140,8 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	@:noCompletion var isDanceLeftDanceRight:Bool = false;
 
 	override function update(elapsed:Float) {
-		scripts.call("update", [elapsed]);
+		_ONE_ARG[0] = elapsed;
+		scripts.call("update", _ONE_ARG);
 
 		super.update(elapsed);
 
@@ -152,7 +156,8 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 		__lockAnimThisFrame = false;
 
-		scripts.call("postUpdate", [elapsed]);
+		_ONE_ARG[0] = elapsed;
+		scripts.call("postUpdate", _ONE_ARG);
 	}
 
 	private var danced:Bool = false;
@@ -161,7 +166,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		if(debugMode) return;
 
 		var event = EventManager.get(DanceEvent).recycle(danced);
-		scripts.call("onDance", [event]);
+		scripts.event("onDance", event);
 		if (event.cancelled) return;
 
 		if (isDanceLeftDanceRight)
@@ -171,8 +176,9 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	}
 
 	public function tryDance() {
-		var event = new CancellableEvent();
-		scripts.call("onTryDance", [event]);
+		var event = EventManager.get(CancellableEvent);
+		event.recycleBase();
+		scripts.event("onTryDance", event);
 		if (event.cancelled)
 			return;
 
@@ -196,18 +202,23 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	 */
 	public var danceOnBeat:Bool = true;
 	public override function beatHit(curBeat:Int) {
-		scripts.call("beatHit", [curBeat]);
+		_ONE_ARG[0] = curBeat;
+		scripts.call("beatHit", _ONE_ARG);
 
 		if (skipNegativeBeats && curBeat < 0) return;
 		if (danceOnBeat && (curBeat + beatOffset) % (beatInterval * CoolUtil.maxInt(Math.floor(4 / Conductor.stepsPerBeat), 1)) == 0 && !__lockAnimThisFrame)
 			tryDance();
 	}
 
-	public override function measureHit(curMeasure:Int)
-		scripts.call("measureHit", [curMeasure]);
+	public override function measureHit(curMeasure:Int) {
+		_ONE_ARG[0] = curMeasure;
+		scripts.call("measureHit", _ONE_ARG);
+	}
 
-	public override function stepHit(curStep:Int)
-		scripts.call("stepHit", [curStep]);
+	public override function stepHit(curStep:Int) {
+		_ONE_ARG[0] = curStep;
+		scripts.call("stepHit", _ONE_ARG);
+	}
 
 	@:noCompletion var __reverseDrawProcedure:Bool = false;
 	public override function getScreenBounds(?newRect:FlxRect, ?camera:FlxCamera):FlxRect {
@@ -261,13 +272,13 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	public var ghostDraw:Bool = false;
 	public override function draw() {
 		var e = EventManager.get(DrawEvent).recycle();
-		scripts.call("draw", [e]);
+		scripts.event("draw", e);
 
 		preDraw();
 		super.draw();
 		postDraw();
 
-		scripts.call("postDraw", [e]);
+		scripts.event("postDraw", e);
 	}
 
 	public var singAnims = ["singLEFT", "singDOWN", "singUP", "singRIGHT"];
@@ -280,7 +291,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	public function playSingAnim(direction:Int, suffix:String = "", Context:PlayAnimContext = SING, ?Force:Null<Bool> = null, Reversed:Bool = false, Frame:Int = 0)
 	{
 		var event = EventManager.get(DirectionAnimEvent).recycle(getSingAnim(direction, suffix), direction, suffix, Context, Reversed, Frame, Force);
-		scripts.call("onPlaySingAnim", [event]);
+		scripts.event("onPlaySingAnim", event);
 		if (event.cancelled) return;
 
 		playSingAnimUnsafe(event.direction, hasAnimation(event.animName) ? event.suffix : "", event.context, event.force, event.reversed, event.frame);
@@ -288,7 +299,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 	public function playSingAnimUnsafe(direction:Int, suffix:String = "", Context:PlayAnimContext = SING, Force:Bool = true, Reversed:Bool = false, Frame:Int = 0) {
 		var event = EventManager.get(DirectionAnimEvent).recycle(getSingAnim(direction, suffix), direction, suffix, Context, Reversed, Frame, Force);
-		scripts.call("playSingAnimUnsafe", [event]);
+		scripts.event("playSingAnimUnsafe", event);
 		if (event.cancelled) return;
 
 		playAnim(event.animName, event.force, event.context, event.reversed, event.frame);
@@ -296,7 +307,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 	public override function playAnim(AnimName:String, ?Force:Bool, Context:PlayAnimContext = NONE, Reversed:Bool = false, Frame:Int = 0) {
 		var event = EventManager.get(PlayAnimEvent).recycle(AnimName, Force, Reversed, Frame, Context);
-		scripts.call("onPlayAnim", [event]);
+		scripts.event("onPlayAnim", event);
 		if (event.cancelled) return;
 
 		super.playAnim(event.animName, event.force, event.context, event.reverse, event.startingFrame);
@@ -311,7 +322,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		var event = EventManager.get(PointEvent).recycle(
 			midpoint.x + (isPlayer ? -100 : 150) + globalOffset.x + cameraOffset.x,
 			midpoint.y - 100 + globalOffset.y + cameraOffset.y);
-		scripts.call("onGetCamPos", [event]);
+		scripts.event("onGetCamPos", event);
 
 		midpoint.put();
 		return new FlxPoint(event.x, event.y);
