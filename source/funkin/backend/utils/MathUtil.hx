@@ -3,6 +3,8 @@ package funkin.backend.utils;
 import haxe.macro.Expr;
 
 final class MathUtil {
+	public static inline var EULER:Float = 2.718281828459;
+
 	/**
 	 * Returns the maximum value in the arguments.
 	 * @param args Array of values
@@ -149,6 +151,36 @@ final class MathUtil {
 	**/
 	public static function notEqual(a:Float, b:Float, margin:Float = 0.0000001):Bool {
 		return Math.abs(a - b) > margin;
+	}
+
+	/**
+	 * @param edge0 Float
+	 * @param edge1 Float
+	 * @param x Float
+	 * @return Float
+	**/
+	public static function smoothStep(edge0:Float, edge1:Float, x:Float):Float {
+		var t = (x - edge0) / (edge1 - edge0);
+		var clamped = t < 0.0 ? 0.0 : (t > 1.0 ? 1.0 : t);
+		return clamped * clamped * (3.0 - 2.0 * clamped);
+	}
+
+	/**
+	 * @param a Float
+	 * @param b Float
+	 * @param v Float
+	 * @return Float
+	**/
+	public static function inverseLerp(a:Float, b:Float, v:Float):Float {
+		return (v - a) / (b - a);
+	}
+
+	/**
+	 * @param v Float
+	 * @return Float
+	**/
+	public static function fract(v:Float):Float {
+		return v - Math.floor(v);
 	}
 
 	/**

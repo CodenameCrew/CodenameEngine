@@ -1,6 +1,7 @@
 package funkin.backend.utils;
 
 import flixel.util.FlxColor;
+import openfl.display.BlendMode;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.backend.FunkinSprite.XMLAnimType;
 import funkin.backend.FunkinSprite;
@@ -14,6 +15,9 @@ import funkin.backend.scripting.ScriptPack;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.backend.system.interfaces.IOffsetCompatible;
 import haxe.xml.Access;
+import flixel.graphics.frames.FlxFramesCollection;
+import flixel.graphics.frames.FlxAtlasFrames;
+import animate.FlxAnimateFrames;
 
 using StringTools;
 
@@ -108,6 +112,41 @@ final class XMLUtil {
 	}
 
 	/**
+	 * Loads multiple sheets into 1 sprite,
+	 * for every `<spritesheet>characters/bf</spritesheet>` there is.
+	 * (Can also be spelled as `<sheet/>`, or `<spritesheet path="characters/bf" />`)
+	 * @param spr The sprite
+	 * @param node The XML node
+	 * @param parentFolder The parent folder
+	 */
+	public static function appendSpriteSheetsFromXML(spr:FunkinSprite, node:Access, ?parentFolder:String = ''):FlxFramesCollection {
+		if (spr == null) return null;
+		var defaultPath = '$parentFolder${node.getAtt("sprite").getDefault(spr.name)}';
+		if (!node.hasNode.spritesheet && !node.hasNode.sheet) {
+			spr.loadSprite(Paths.image(defaultPath, null, true));
+			return spr.frames;
+		}
+		var seenSheets:Array<String> = [defaultPath];
+		for (n in node.elements) {
+			if (n.name != 'spritesheet' && n.name != 'sheet') continue;
+			var path = n.x.get('path') ?? n.x.firstChild()?.nodeValue?.trim();
+			if (path == null) {
+				Logs.warn('Spritesheet node is missing text content or the path attribute. Skipping...');
+				continue;
+			}
+			if (seenSheets.contains(path)) {
+				Logs.warn('Spritesheet "${Paths.image(path)}" was already added. Skipping...');
+				continue;
+			}
+			if (!Paths.framesExists(path, true)) {
+				Logs.warn('Could not find a BitmapData asset with ID "${Paths.image(path)}". Skipping...');
+				continue;
+			}
+			seenSheets.push(path);
+		}
+		return spr.frames = Paths.getMultiFrames(seenSheets, false, false, null, false, null, spr.animateSettings);
+	}
+	/**
 	 * Sets the properties of a sprite based on a XML node.
 	 * @param spr The sprite
 	 * @param node The XML node
@@ -119,14 +158,17 @@ final class XMLUtil {
 
 		spr.name = node.getAtt("name");
 		spr.antialiasing = true;
-		if (loadGraphic)
-			spr.loadSprite(Paths.image('$parentFolder${node.getAtt("sprite").getDefault(spr.name)}', null, true));
-
+		if (loadGraphic) {
+			appendSpriteSheetsFromXML(spr, node, parentFolder);
+		}
 		spr.spriteAnimType = defaultAnimType;
 		if (node.has.type) {
 			spr.spriteAnimType = XMLAnimType.fromString(node.att.type, spr.spriteAnimType);
 		}
 
+		if (node.has.applyStageMatrix) spr.applyStageMatrix = node.att.applyStageMatrix == "true";
+		if (node.has.useRenderTexture) spr.useRenderTexture = node.att.useRenderTexture == "true";
+		
 		if(node.has.x) {
 			var x:Null<Float> = Std.parseFloat(node.att.x);
 			if (x.isNotNull()) spr.x = x;
@@ -201,6 +243,10 @@ final class XMLUtil {
 		if(node.has.color)
 			spr.color = FlxColor.fromString(node.getAtt("color")).getDefault(0xFFFFFFFF);
 
+		// no need to getDefault here ? since null blend acts like normal blend
+		@:privateAccess if(node.has.blend)
+			spr.blend = BlendMode.fromString(node.getAtt("blend"));
+
 		if(node.has.angle)
 			spr.angle = Std.parseFloat(node.getAtt("angle")).getDefault(spr.angle);
 
@@ -225,7 +271,8 @@ final class XMLUtil {
 				animType: spr.spriteAnimType,
 				x: 0,
 				y: 0,
-				indices: [for(i in 0...spr.frames.frames.length) i]
+				indices: [for(i in 0...spr.frames.frames.length) i],
+				label: false
 			});
 		}
 
@@ -261,7 +308,8 @@ final class XMLUtil {
 			animType: animType,
 			x: 0,
 			y: 0,
-			indices: []
+			indices: [],
+			label: false
 		};
 
 		if (anim.has.name) animData.name = anim.att.name;
@@ -273,6 +321,8 @@ final class XMLUtil {
 		if (anim.has.loop) animData.loop = anim.att.loop == "true";
 		if (anim.has.forced) animData.forced = anim.att.forced == "true";
 		if (anim.has.indices) animData.indices = CoolUtil.parseNumberRange(anim.att.indices);
+		if (anim.has.label) animData.label = anim.att.label == "true";
+		if (anim.has.isAnimate) animData.isAnimate = anim.att.isAnimate == "true";
 
 		return animData;
 	}
@@ -299,16 +349,35 @@ final class XMLUtil {
 		if (animData.name != null) {
 			if (animData.fps <= 0 #if web || animData.fps == null #end) animData.fps = 24;
 
-			if (sprite is FunkinSprite && cast(sprite, FunkinSprite).animateAtlas != null) {
-				var animateAnim = cast(sprite, FunkinSprite).animateAtlas.anim;
+			var checkForSparrow = true;
+
+			if ((sprite.frames is FlxAnimateFrames) == (animData.isAnimate ?? true)) {
 				if(animData.anim == null)
 					return MISSING_PROPERTY;
 
-				if (animData.indices != null && animData.indices.length > 0)
-					animateAnim.addBySymbolIndices(animData.name, animData.anim, animData.indices, animData.fps, animData.loop);
-				else
-					animateAnim.addBySymbol(animData.name, animData.anim, animData.fps, animData.loop);
-			} else {
+				var funkSpr = cast(sprite, FunkinSprite);
+
+				var animateAnim = funkSpr.anim;
+
+				checkForSparrow = false;
+
+				if (animData.label) {
+					if (animData.indices != null && animData.indices.length > 0)
+						animateAnim.addByFrameLabelIndices(animData.name, animData.anim, animData.indices, animData.fps, animData.loop);
+					else
+						animateAnim.addByFrameLabel(animData.name, animData.anim, animData.fps, animData.loop);
+				} else {
+					if(funkSpr.library.getSymbol(animData.anim) != null){
+						if (animData.indices != null && animData.indices.length > 0)
+							animateAnim.addBySymbolIndices(animData.name, animData.anim, animData.indices, animData.fps, animData.loop);
+						else
+							animateAnim.addBySymbol(animData.name, animData.anim, animData.fps, animData.loop);
+					} else
+						checkForSparrow = true;
+				}
+			} 
+			
+			if(checkForSparrow){
 				if (animData.indices != null && animData.indices.length > 0) {
 					if (animData.anim == null)
 						sprite.animation.add(animData.name, animData.indices, animData.fps, animData.loop);
@@ -463,7 +532,9 @@ typedef AnimData = {
 	var y:Float;
 	var indices:Array<Int>;
 	var animType:XMLAnimType;
+	var label:Bool;
 	var ?forced:Bool;
+	var ?isAnimate:Bool;
 }
 
 typedef BeatAnim = {

@@ -5,7 +5,7 @@ import flixel.sound.FlxSound;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.backend.scripting.*; // lazy
 import funkin.backend.scripting.events.CancellableEvent;
-import funkin.backend.scripting.events.discord.*;
+import funkin.backend.scripting.events.discord.DiscordPresenceUpdateEvent;
 import funkin.backend.system.macros.Utils;
 import haxe.Json;
 import openfl.display.BitmapData;

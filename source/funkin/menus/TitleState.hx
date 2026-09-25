@@ -100,8 +100,6 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.keys.justPressed.F)  FlxG.fullscreen = !FlxG.fullscreen;
-
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
 
 		#if mobile
@@ -245,7 +243,7 @@ class TitleState extends MusicBeatState
 					if (parentFolder != "" && !parentFolder.endsWith("/")) parentFolder += "/";
 					for(sprNode in node.elements) {
 						var spr = XMLUtil.createSpriteFromXML(sprNode, parentFolder);
-						switch(node.name) {
+						switch(sprNode.name) {
 							case "press-enter":
 								titleText = spr;
 							default:
@@ -319,7 +317,7 @@ class IntroText {
 		for(e in lines) {
 			if (e is String) {
 				var text = cast(e, String);
-				for(k=>e in state.curWacky) text = text.replace('{introText${k+1}}', e);
+				for(k=>e in state.curWacky) text = text.replace('{introText${k+1}}', e.trim());
 				state.addMoreText(text);
 			} else if (e is Dynamic) {
 				var image:TitleStateImage = e;

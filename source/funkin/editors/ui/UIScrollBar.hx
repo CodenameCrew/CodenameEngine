@@ -29,6 +29,8 @@ class UIScrollBar extends UISprite {
 
 		thumbIcon = new FlxSprite(0, 0, Paths.image('editors/ui/scrollbar-icon'));
 		members.push(thumbIcon);
+
+		FlxG.stage.window.onFocusOut.add(onWindowFocusOut);
 	}
 
 	public var isScrolling:Bool = false;
@@ -60,5 +62,16 @@ class UIScrollBar extends UISprite {
 			isScrolling = false;
 			thumb.framesOffset = lastHoveredThumb ? 9 : 0;
 		}
+	}
+
+	public override function destroy() {
+		FlxG.stage.window.onFocusOut.remove(onWindowFocusOut);
+		super.destroy();
+	}
+
+	private function onWindowFocusOut():Void {
+		isScrolling = false;
+		hovered = false;
+		thumb.hovered = false;
 	}
 }

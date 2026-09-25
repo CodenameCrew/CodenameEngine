@@ -25,7 +25,7 @@ class VideoCutscene extends Cutscene {
 	var localPath:String;
 
 	#if VIDEO_CUTSCENES
-	var video:FlxVideoSprite;
+	final video:FlxVideoSprite = new FlxVideoSprite();
 	final mutex = new sys.thread.Mutex();
 
 	var cutsceneCamera:FlxCamera;
@@ -58,15 +58,14 @@ class VideoCutscene extends Cutscene {
 
 		parseSubtitles();
 
-		add(video = new FlxVideoSprite());
+		add(video);
 		video.antialiasing = true;
-		video.autoPause = false;  // Imma handle it better inside this class, mainly because of the pause menu  - Nex
 		video.bitmap.onEndReached.add(close);
 		video.bitmap.onFormatSetup.add(function() if (video.bitmap != null && video.bitmap.bitmapData != null) {
 			final width = video.bitmap.bitmapData.width;
 			final height = video.bitmap.bitmapData.height;
 			final scale:Float = Math.min(FlxG.width / width, FlxG.height / height);
-			video.setGraphicSize(Std.int(width * scale), Std.int(height * scale));
+			video.setGraphicSize(width * scale, height * scale);
 			video.updateHitbox();
 			video.screenCenter();
 		});
@@ -101,14 +100,9 @@ class VideoCutscene extends Cutscene {
 		FlxTween.tween(loadingBackdrop, {alpha: 1}, 0.5, {ease: FlxEase.sineInOut});
 
 		Main.execAsync(function() {
-			if (localPath.startsWith("[ZIP]")) {
-				// ZIP PATH: EXPORT
-				// TODO: this but better and more ram friendly
-				localPath = './.temp/video-${curVideo++}.mp4';
-				File.saveBytes(localPath, Assets.getBytes(path));
-			}
-
-			if (video.load(localPath)) new FlxTimer().start(0.001, function(_) { mutex.acquire(); onReady(); mutex.release(); });
+			if (video.load(localPath)) FlxTimer.wait(0.001, function() {
+				mutex.acquire(); onReady(); mutex.release();
+			});
 			else { mutex.acquire(); close(); mutex.release(); }
 		});
 
@@ -180,6 +174,7 @@ class VideoCutscene extends Cutscene {
 	}
 
 	public inline function onReady() {
+		trace("VideoCutscene: Ready");
 		FlxTween.cancelTweensOf(loadingBackdrop);
 		FlxTween.tween(loadingBackdrop, {alpha: 0}, 0.7, {ease: FlxEase.sineInOut, onComplete: function(_) {
 			loadingBackdrop.destroy();
@@ -203,16 +198,6 @@ class VideoCutscene extends Cutscene {
 			setSubtitle(subtitles[curSubtitle]);
 			curSubtitle++;
 		}
-	}
-
-	@:dox(hide) override public function onFocus() {
-		if(FlxG.autoPause && !paused) video.resume();
-		super.onFocus();
-	}
-
-	@:dox(hide) override public function onFocusLost() {
-		if(FlxG.autoPause && !paused) video.pause();
-		super.onFocusLost();
 	}
 
 	public override function pauseCutscene() {

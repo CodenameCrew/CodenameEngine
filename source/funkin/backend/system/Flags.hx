@@ -15,14 +15,20 @@ import lime.utils.AssetType;
  */
 @:build(funkin.backend.system.macros.FlagMacro.build())
 class Flags {
+	public static var overridenFlags:Map<String, Bool> = [];
+
 	// -- Codename's Addon Config --
 	@:bypass public static var addonFlags:Map<String, Dynamic> = [];
+	public static var CURRENT_API_VERSION:Int = 3;
+
+	// -- Codename's ZipFolderLibrary Config --
+	public static var ALLOWED_ZIP_EXTENSIONS:Array<String> = ["zip"];
 
 	// -- Codename's Mod Config --
 	public static var MOD_NAME:String = "";
 	public static var MOD_DESCRIPTION:String = "";
 	public static var MOD_AUTHOR:String = "";
-	public static var MOD_API_VERSION:Int = 1;
+	@:lazy public static var MOD_API_VERSION:Null<Int> = null;
 	public static var MOD_DOWNLOAD_LINK:String  = "";
 	public static var MOD_DEPENDENCIES:Array<String> = [];
 
@@ -41,12 +47,11 @@ class Flags {
 	@:lazy public static var SAVE_PATH:String = haxe.macro.Compiler.getDefine("SAVE_PATH");
 	@:lazy public static var SAVE_NAME:String = haxe.macro.Compiler.getDefine("SAVE_NAME");
 
-	public static var CURRENT_API_VERSION:Int = 1;
 	public static var COMMIT_NUMBER:Int = GitCommitMacro.commitNumber;
 	public static var COMMIT_HASH:String = GitCommitMacro.commitHash;
 	public static var COMMIT_MESSAGE:String = 'Commit $COMMIT_NUMBER ($COMMIT_HASH)';
 
-	@:bypass public static var WINDOW_TITLE_USE_MOD_NAME:Bool = false;
+	@:lazy public static var WINDOW_TITLE_USE_MOD_NAME:Null<Bool> = null;
 	@:lazy public static var TITLE:String = Application.current.meta.get('name');
 	@:lazy public static var VERSION:String = Application.current.meta.get('version');
 
@@ -56,13 +61,21 @@ class Flags {
 	public static var REPO_OWNER:String = "CodenameCrew";
 	public static var REPO_URL:String = 'https://github.com/$REPO_OWNER/$REPO_NAME';
 
+	@:lazy public static var PATHS_CACHE_LIFETIME:Null<Int> = null;
+	public static var PATHS_CACHE_RESET_ON_SWITCH_STATE:Bool = true;
+	public static var PATHS_UNIX_FIX:Bool = true;
+
 	/**
-	 * Preferred sound extension for the game's audio files.
-	 * Currently is set to `mp3` for web targets, and `ogg` for other targets.
+	 * Preferred file extensions for the game's audio files.
 	 */
-	public static var SOUND_EXT:String = #if web "mp3" #else "ogg" #end; // we also support wav
-	public static var VIDEO_EXT:String = "mp4";
-	public static var IMAGE_EXT:String = "png"; // we also support jpg
+	public static var SOUND_EXTS:Array<String> = [#if web "mp3", "ogg", #else "ogg", "mp3", #end "flac", "opus", "wav"];
+	public static var VIDEO_EXTS:Array<String> = ["mp4", "webm", "mkv", "mov"]; // is there any more? // yes frakits
+	public static var IMAGE_EXTS:Array<String> = ["png", "jpg", "jpeg"]; // TODO: Add more after another lime rebases for SDLImage
+
+	// DEPRECATED
+	@:lazy public static var SOUND_EXT:Null<String> = null;
+	@:lazy public static var VIDEO_EXT:Null<String> = null;
+	@:lazy public static var IMAGE_EXT:Null<String> = null;
 
 	public static var DEFAULT_DISCORD_LOGO_KEY:String = "icon";
 	public static var DEFAULT_DISCORD_CLIENT_ID:String = "1383853614589673472";
@@ -101,6 +114,11 @@ class Flags {
 	public static var DEFAULT_BEATS_PER_MEASURE:Int = 4;
 	public static var DEFAULT_STEPS_PER_BEAT:Int = 4;
 	public static var DEFAULT_LOOP_TIME:Float = 0.0;
+	public static var ICONS_AUTOPOSITION:Bool = true;
+
+	@:lazy public static var DEFAULT_SOUND_TIME_SCALED_PITCH:Null<Bool> = null;
+	@:lazy public static var USE_SOUND_VOLUME_CURVE:Null<Bool> = null;
+	@:lazy public static var USE_FLXTRAIL_FRAMES:Null<Bool> = null;
 
 	public static var SUPPORTED_CHART_RUNTIME_FORMATS:Array<String> = ["Legacy", "Psych Engine"];
 	public static var SUPPORTED_CHART_FORMATS:Array<String> = ["BaseGame"];
@@ -125,11 +143,23 @@ class Flags {
 	@:also(funkin.game.PlayState.opponentMode)
 	public static var DEFAULT_OPPONENT_MODE:Bool = false;
 
+	public static var EARLY_HIT_WINDOW_RANGE:Float = 1.0; // was 0.5 for easier early hitting, but now 1 to demotivate mashing and getting away with it.
+	public static var LATE_HIT_WINDOW_RANGE:Float = 1.0;
+	public static var SHITS_BREAK_COMBO:Bool = true;
+	public static var USE_LEGACY_TIMING:Null<Bool> = null;
+
 	public static var DEFAULT_NOTE_MS_LIMIT:Float = 1500;
 	public static var DEFAULT_NOTE_SCALE:Float = 0.7;
 	#if MODCHARTING_FEATURES
 	public static var DEFAULT_MODCHART_HOLD_SUBDIVISIONS:Int = 4;
 	#end
+
+	public static var SUSTAINS_AS_ONE_NOTE:Null<Bool> = null;
+
+	public static var USE_LEGACY_CENTER_CAM:Null<Bool> = null;
+	public static var USE_LEGACY_FLXANIMATE_STAGE_MATRIX:Null<Bool> = null;
+
+	public static var CHANGE_WINDOW_TITLE_PLAYSTATE:Bool = true;
 
 	@:also(funkin.game.Character.FALLBACK_DEAD_CHARACTER)
 	public static var DEFAULT_GAMEOVER_CHARACTER:String = "bf-dead";
@@ -148,10 +178,12 @@ class Flags {
 	public static var DEFAULT_HUD_ZOOM_MULT:Float = 0.03;
 	public static var DEFAULT_CAM_ZOOM_LERP:Float = 0.05;
 	public static var DEFAULT_HUD_ZOOM_LERP:Float = 0.05;
-	
+
 	// Font configuration
 	public static var DEFAULT_FONT:String = "vcr.ttf";
 	public static var DEFAULT_FONT_SIZE:Int = 16;
+	
+	public static var DEFAULT_ALT_ANIM_SUFFIX:String = "-alt";
 
 	// to translate these you need to convert them into ids
 	// Resume -> pause.resume
@@ -266,7 +298,7 @@ class Flags {
 	public static var DEFAULT_CHARACTER_GHOSTDISABLE_SOUND:String = "editors/character/ghostDisable";
 	public static var DEFAULT_CHARACTER_GHOSTENABLE_SOUND:String = "editors/character/ghostEnable";
 
-	public static var DEFAULT_GLSL_VERSION:String = "120";
+	@:lazy public static var DEFAULT_GLSL_VERSION:String = null;
 	@:also(funkin.backend.utils.HttpUtil.userAgent)
 	public static var USER_AGENT:String = 'request';
 	// -- End of Codename's Default Flags --
@@ -277,8 +309,6 @@ class Flags {
 	@:bypass public static var customFlags:Map<String, String> = [];
 
 	public static function loadFromData(flags:Map<String, String>, data:String) {
-		WINDOW_TITLE_USE_MOD_NAME = false;
-
 		if (!(data.length > 0)) return;
 		var res = IniUtil.parseString(data);
 
@@ -295,28 +325,60 @@ class Flags {
 					else trace('Invalid section $name');
 			}
 		}
-
-		if (!flags.exists("WINDOW_TITLE_USE_MOD_NAME")) WINDOW_TITLE_USE_MOD_NAME = !flags.exists('TITLE') && flags.exists('MOD_NAME');
-		else WINDOW_TITLE_USE_MOD_NAME = parseBool(flags.get("WINDOW_TITLE_USE_MOD_NAME"));
-
-		flags.remove("WINDOW_TITLE_USE_MOD_NAME");
 	}
 
-	public static function loadFromDatas(datas:Array<String>) {
+	private static function loadPost() {
+		if (MOD_API_VERSION == null) MOD_API_VERSION = CURRENT_API_VERSION;
+		if (WINDOW_TITLE_USE_MOD_NAME == null) WINDOW_TITLE_USE_MOD_NAME = !overridenFlags.exists('TITLE') && overridenFlags.exists('MOD_NAME');
+		if (USE_LEGACY_TIMING == null) USE_LEGACY_TIMING = MOD_API_VERSION < 2;
+		if (SUSTAINS_AS_ONE_NOTE == null) SUSTAINS_AS_ONE_NOTE = MOD_API_VERSION >= 2;
+		if (DEFAULT_GLSL_VERSION == null) {
+			if (MOD_API_VERSION < 2) {
+				DEFAULT_GLSL_VERSION = #if (android || mac || web) "100" #else "120" #end;
+				Logs.warn("Blend Mode Extensions won't work in MOD_API_VERSION below than 2");
+			}
+			else {
+				DEFAULT_GLSL_VERSION = openfl.utils.GLSLSourceAssembler.getDefaultVersion();
+			}
+		}
+		if (DEFAULT_SOUND_TIME_SCALED_PITCH == null) DEFAULT_SOUND_TIME_SCALED_PITCH = MOD_API_VERSION >= 2;
+		if (USE_SOUND_VOLUME_CURVE == null) USE_SOUND_VOLUME_CURVE = MOD_API_VERSION >= 2;
+		if (USE_FLXTRAIL_FRAMES == null) USE_FLXTRAIL_FRAMES = MOD_API_VERSION < 2;
+
+		flixel.sound.FlxSound.defaultTimeScaledPitch = cast DEFAULT_SOUND_TIME_SCALED_PITCH;
+		flixel.addons.effects.FlxTrail.defaultDelayBackwardCompatibility = cast USE_FLXTRAIL_FRAMES;
+
+		if (USE_LEGACY_CENTER_CAM == null) USE_LEGACY_CENTER_CAM = MOD_API_VERSION < 3;
+		if (USE_LEGACY_FLXANIMATE_STAGE_MATRIX == null) USE_LEGACY_FLXANIMATE_STAGE_MATRIX = MOD_API_VERSION < 3;
+
+		if (SOUND_EXT == null) SOUND_EXT = SOUND_EXTS[0]; else SOUND_EXTS = [SOUND_EXT];
+		if (VIDEO_EXT == null) VIDEO_EXT = VIDEO_EXTS[0]; else VIDEO_EXTS = [VIDEO_EXT];
+		if (IMAGE_EXT == null) IMAGE_EXT = IMAGE_EXTS[0]; else IMAGE_EXTS = [IMAGE_EXT];
+	}
+
+	public static function loadFromDatas(datas:Array<String>):Map<String, String> {
 		var flags:Map<String, String> = [];
-		for(data in datas) {
-			if(data != null)
+		for (data in datas) {
+			if (data != null)
 				loadFromData(flags, data);
 		}
+		loadPost();
 		return flags;
 	}
 
 	public static function parseFlags(flags:Map<String, String>) {
-		for(name=>value in flags)
-			if(!parse(name, value))
-				customFlags.set(name, value);
-
+		var parsed:Bool;
+		for (name => value in flags) switch (name) {
+			case "MOD_API_VERSION":
+				var version = Std.parseInt(value) ?? CURRENT_API_VERSION;
+				if (version > MOD_API_VERSION || MOD_API_VERSION == null) MOD_API_VERSION = version;
+			default:
+				if (!(parsed = parse(name, value))) customFlags.set(name, value);
+				if (!overridenFlags.exists(name)) overridenFlags.set(name, parsed);
+		}
+		#if MODCHARTING_FEATURES
 		Options.modchartingHoldSubdivisions = DEFAULT_MODCHART_HOLD_SUBDIVISIONS;
+		#end
 	}
 
 	/**
@@ -365,5 +427,6 @@ class Flags {
 				parseFlags(flags);
 			}
 		}
+		loadPost();
 	}
 }

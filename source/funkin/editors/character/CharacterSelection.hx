@@ -6,6 +6,7 @@ import funkin.editors.ui.UIImageExplorer.ImageSaveData;
 import funkin.editors.EditorTreeMenu;
 import funkin.options.type.IconOption;
 import funkin.options.type.NewOption;
+import funkin.options.type.FolderOption;
 import funkin.options.type.TextOption;
 import funkin.options.type.OptionType;
 
@@ -40,10 +41,10 @@ class CharacterSelectionScreen extends EditorTreeMenuScreen {
 				if (char.endsWith("/")) {
 					var folderName = CoolUtil.getFilename(char.substr(0, char.length-1));
 
-					list.push(new TextOption(folderName, getID('acceptFolder'), ' >', () -> {
+					list.push(new FolderOption(folderName + ' >', getID('acceptFolder'), () -> {
 						var newModsList = Character.getList(isMods, true, char);
 						var newList:Array<FlxSprite> = generateList(newModsList, isMods, folderPath + folderName + "/");
-						parent.addMenu(new EditorTreeMenuScreen(folderPath + folderName, translate('desc-folder', [folderPath + folderName + "/"]), newList));
+						parent.addMenu(new EditorTreeMenuScreen(folderName, translate('desc-folder', [folderPath + folderName + "/"]), newList));
 					}));
 				}
 				else {

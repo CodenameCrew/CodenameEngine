@@ -199,5 +199,8 @@
 
 		<str id="songOffsetAffectEditors-name">Offset Editor Chart</str>
 		<str id="songOffsetAffectEditors-desc">Se abilitato, questo attiverà l'opzione Offset Canzone anche nel Editor Chart.</str>
+
+		<str id="legacyMemoryCounter-name">Contatore Memoria Classico</str>
+		<str id="legacyMemoryCounter-desc">Se attivato, il contatore di memoria mostrerà l'uso di memoria del GC di Haxe e il suo picco (il comportamento originale) invece della memoria di lavoro vista nel Task Manager.</str>
 	</group>
 </language>

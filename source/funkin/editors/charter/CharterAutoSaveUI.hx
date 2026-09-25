@@ -82,7 +82,7 @@ class CharterAutoSaveUI extends UISliceSprite {
 			icon.animation.curAnim.curFrame = 1;
 			for (member in [this, progressBar, progressBarBack, autosavingText]) member.color = 0xFFA3EC95;
 
-			FlxG.sound.play(Paths.sound(Flags.DEFAULT_EDITOR_AUTOSAVE_SOUND));
+			UIState.playEditorSound(Flags.DEFAULT_EDITOR_AUTOSAVE_SOUND);
 
 			(new FlxTimer()).start(1, (_) -> {disappearAnimation();});
 		});

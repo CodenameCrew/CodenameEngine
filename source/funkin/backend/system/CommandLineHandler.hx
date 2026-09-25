@@ -10,16 +10,18 @@ final class CommandLineHandler {
 				case null:
 					break;
 				case "-h" | "-help" | "help":
-					Sys.println("-- Codename Engine Command Line help --");
-					Sys.println("-help                | Show this help");
+					Sys.println("------------------------ Codename Engine Command Line help ------------------------");
+					Sys.println("-help                                  | Show this help");
 					#if MOD_SUPPORT
-					Sys.println("-mod [mod name]      | Load a specific mod");
-					Sys.println("-modfolder [path]    | Sets the mod folder path");
-					Sys.println("-addonsfolder [path] | Sets the addons folder path");
+					Sys.println("-mod [mod name]                        | Load a specific mod");
+					Sys.println("-modfolder [path]                      | Sets the mod folder path");
+					Sys.println("-addonsfolder [path]                   | Sets the addons folder path");
 					#end
-					Sys.println("-nocolor             | Disables colors in the terminal");
-					Sys.println("-nogpubitmap         | Forces GPU only bitmaps off");
-					Sys.println("-nocwdfix            | Turns off automatic working directory fix");
+					Sys.println("-song [song] [difficulty] [variation]  | Go to PlayState with that song");
+					Sys.println("-chart [song] [difficulty] [variation] | Go to Charter with that song");
+					Sys.println("-nocolor                               | Disables colors in the terminal");
+					Sys.println("-nogpubitmap                           | Forces GPU only bitmaps off");
+					Sys.println("-nocwdfix                              | Turns off automatic working directory fix");
 					Sys.exit(0);
 				#if MOD_SUPPORT
 				case "-m" | "-mod" | "-currentmod":
@@ -56,6 +58,41 @@ final class CommandLineHandler {
 						Sys.exit(1);
 					}
 				#end
+				case "-song":
+					i++;
+					var arg = cmd[i];
+					if (arg == null) {
+						Sys.println("[ERROR] You need to specify the song name");
+						Sys.exit(1);
+					} else {
+						Main.goToSong = arg;
+						if ((arg = cmd[i + 1]).charAt(0) != "-") {
+							i++;
+							Main.goToDifficulty = arg;
+							if ((arg = cmd[i + 1]).charAt(0) != "-") {
+								i++;
+								Main.goToVariation = arg;
+							}
+						}
+					}
+				case "-chart":
+					i++;
+					var arg = cmd[i];
+					if (arg == null) {
+						Sys.println("[ERROR] You need to specify the song name");
+						Sys.exit(1);
+					} else {
+						Main.goToSong = arg;
+						Main.goToCharter = true;
+						if ((arg = cmd[i + 1]).charAt(0) != "-") {
+							i++;
+							Main.goToDifficulty = arg;
+							if ((arg = cmd[i + 1]).charAt(0) != "-") {
+								i++;
+								Main.goToVariation = arg;
+							}
+						}
+					}
 				case "-nocolor":
 					Main.noTerminalColor = true;
 				case "-nogpubitmap":
@@ -67,7 +104,7 @@ final class CommandLineHandler {
 				case "-v" | "-verbose" | "--verbose":
 					Main.verbose = true;
 				default:
-					Sys.println("Unknown command");
+					Sys.println('Unknown command "${cmd[i]}"');
 			}
 			i++;
 		}

@@ -6,6 +6,8 @@ import flixel.effects.FlxFlicker;
  * Option type that has text.
 **/
 class TextOption extends OptionType {
+	public static var OPTION_VALUE_PREFIX:String = ': ';
+
 	public var suffix(default, set):String;
 	public var selectCallback:Void->Void;
 

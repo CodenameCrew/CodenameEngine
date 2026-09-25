@@ -60,7 +60,7 @@ class PsychParser {
 						note.time, // TIME
 						note.id, // DATA
 						note.sLen, // SUSTAIN LENGTH
-						chart.noteTypes.getDefault([""])[note.type] // NOTE TYPE
+						chart.noteTypes.getDefault([""])[note.type - 1] // NOTE TYPE
 					];
 
 					if ((swagSection.mustHitSection && strumLine.type == OPPONENT) ||

@@ -47,7 +47,7 @@ The engine uses [HaxeFlixel](https://haxeflixel.com/) and it mainly features:
 ---
 
 > [!NOTE]
-> Codename Engine as for now supports **Windows x64**, **Mac OS x64** and **Linux x64**.<br>
+> Codename Engine as for now supports **Windows x64**, **Mac OS Universal** and **Linux x64**.<br>
 > More platforms will soon come, stay tuned!<br>
 > - [ ] **Web (HTML5) Support**
 > - [ ] **Mobile Support**
@@ -68,7 +68,7 @@ The engine uses [HaxeFlixel](https://haxeflixel.com/) and it mainly features:
 </details>
 
 <details>
-  <summary><h2>How to setup and build</h2></summary>
+  <summary><h2>How to setup and build the engine and its documentation</h2></summary>
 
   Check out our guide [HERE](building/README.md)
 </details>
@@ -89,7 +89,7 @@ The engine uses [HaxeFlixel](https://haxeflixel.com/) and it mainly features:
   - Steal code from Codename Engine for another different project that is not Codename Engine related (Codename Engine mods excluded) without properly crediting
   - Release the entirety of Codename Engine on platforms (mods that use Codename Engine as source are fine)
 
-  #### *If you need more info or feel like asking to do something which is not listed here, ask us directly on our [discord server](https://discord.com/servers/codename-engine-860561967383445535)!*
+  #### *If you need more info or feel like asking to do something which is not listed here, ask us directly on our [discord server](https://discord.gg/codename-crew)!*
 </details>
 
 <details>

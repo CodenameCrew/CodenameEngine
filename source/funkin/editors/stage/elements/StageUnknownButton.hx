@@ -8,12 +8,13 @@ class StageUnknownButton extends StageElementButton {
 	public var lowMemory:Bool = false;
 	public var highMemory:Bool = false;
 	public var basic:FlxBasic;
+	var dummy:FunkinSprite; // to allow it to be saved
 
 	public function new(x:Float,y:Float, basic:FlxBasic, xml:Access) {
 		this.basic = basic;
-		super(x,y, xml);
+		super(x, y, xml);
 
-		if(xml.x.parent != null) {
+		if (xml.x.parent != null) {
 			lowMemory = xml.x.parent.nodeName == "low-memory";
 			highMemory = xml.x.parent.nodeName == "high-memory";
 		}
@@ -27,8 +28,12 @@ class StageUnknownButton extends StageElementButton {
 		members.remove(visibilityIcon);
 
 		setEditAdvanced();
-
 		updateInfo();
+
+		dummy = new FunkinSprite();
+		dummy.extra.set(StageEditor.exID("lowMemory"), lowMemory);
+		dummy.extra.set(StageEditor.exID("highMemory"), highMemory);
+		dummy.extra.set(StageEditor.exID("button"), this);
 	}
 
 	public override function update(elapsed:Float) {
@@ -40,11 +45,7 @@ class StageUnknownButton extends StageElementButton {
 	}
 
 	public override function getSprite():FunkinSprite {
-		var sprite = new FunkinSprite(); // to allow it to be saved
-		sprite.extra.set(StageEditor.exID("lowMemory"), lowMemory);
-		sprite.extra.set(StageEditor.exID("highMemory"), highMemory);
-		sprite.extra.set(StageEditor.exID("button"), this);
-		return sprite;
+		return dummy;
 	}
 
 	public override function canRender() {
@@ -58,10 +59,12 @@ class StageUnknownButton extends StageElementButton {
 		FlxG.state.openSubState(new StageUnknownEditScreen(this));
 	}
 
-	//public override function onEdit() {
-	//	UIState.state.displayNotification(new UIBaseNotification("Editing a character isnt implemented yet!", 2, BOTTOM_LEFT));
-	//	CoolUtil.playMenuSFX(WARNING, 0.45);
-	//}
+	public override function onDelete() {
+		basic.destroy();
+		dummy.destroy();
+		xml.x.parent.removeChild(xml.x);
+		StageEditor.instance.stageSpritesWindow.remove(this);
+	}
 
 	public override function onVisiblityToggle() {
 	}

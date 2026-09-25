@@ -1,5 +1,6 @@
 package commands;
 
+import haxe.crypto.Sha256;
 import haxe.xml.Access;
 import haxe.Json;
 import sys.io.File;
@@ -36,12 +37,15 @@ class Setup {
 		var args = ArgParser.parse(args, [
 			"s" => "silent-progress",
 			"S" => "silent-progress",
+			"all" => "reinstall",
 			"silent" => "silent-progress",
 			"f" => "fast",
-			"F" => "fast"
+			"F" => "fast",
+			"i" => "ignore-sum"
 		]);
 		var CHECK_VSTUDIO = !args.existsOption("no-vscheck");
 		var REINSTALL_ALL = args.existsOption("reinstall");
+		var IGNORE_SUM = REINSTALL_ALL || args.existsOption("ignore-sum");
 		var SILENT = args.existsOption("silent-progress");
 		var FAST = args.existsOption("fast");
 		// TODO: add only install missing libs
@@ -68,8 +72,28 @@ class Setup {
 			return;
 		}
 
+		var libFileContents = File.getContent(libFile);
+		var libSum = Sha256.encode(libFileContents);
+
+		var libSumFile = libFile + ".sum";
+		var libSumToCompare = "";
+		try {
+		    var libSumFileContents = File.getContent(libSumFile);
+			if (!IGNORE_SUM && libSum == libSumFileContents) {
+			    // Multiline strings are already awkward as-is in Haxe, so this just uses a buffer to emulate them.
+			    var multiline = new StringBuf();
+				multiline.add('libs.xml has remained unchanged since the last time the setup subcommand was run.\n');
+				multiline.add('If you want to force a reinstall of the currently installed libraries, then please pass the --ignore-sum flag,\n');
+				multiline.add('or delete the generated ');
+				multiline.add(libSumFile);
+				multiline.add(' file.');
+			    Sys.println(multiline);
+				return;
+			}
+		} catch (_) {}
+
 		final events:Array<Event> = [];
-		final libsXML:Access = new Access(Xml.parse(File.getContent(libFile)).firstElement());
+		final libsXML:Access = new Access(Xml.parse(libFileContents).firstElement());
 
 		function handleLib(libNode:Access) {
 			switch(libNode.name) {
@@ -267,6 +291,8 @@ class Setup {
 				}
 			}
 		}
+		
+		try File.saveContent(libSumFile, libSum) catch (_) {}
 
 		// vswhere.exe is used to find any visual studio related installations on the system, including full visual studio ide installations, visual studio build tools installations, and other related components  - Nex
 		if (CHECK_VSTUDIO && Compiler.getBuildTarget().toLowerCase() == "windows" && new Process('"C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -requires Microsoft.VisualStudio.Component.Windows10SDK.19041 -property installationPath').exitCode(true) != 0) {

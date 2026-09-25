@@ -37,10 +37,10 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 		curSong = s;
 
 		var isVariant = s.variant != null && s.variant != '';
-		var screen = new EditorTreeMenuScreen((first || !isVariant) ? (s.name + (isVariant ? ' (${s.variant})' : '')) : s.variant, getID('selectDifficulty'));
+		var screen = new EditorTreeMenuScreen((first || !isVariant) ? (~/(.*[\/])/g.map(s.name, _->'') + (isVariant ? ' (${s.variant})' : '')) : s.variant, getID('selectDifficulty'));
 
 		for (d in s.difficulties) if (d != '') screen.add(makeChartOption(d, isVariant ? s.variant : null, s.name));
-		screen.add(new Separator());
+		if (s.difficulties.length > 0 && s.variants.length > 0) screen.add(new Separator()); // Create a separator only when there are both difficulty and variant options available.
 		for (v in s.variants) if (s.metas.get(v) != null) screen.add(makeVariationOption(s.metas.get(v)));
 
 		#if sys
@@ -48,13 +48,13 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 			parent.openSubState(new ChartCreationScreen(saveChart));
 		}));
 
-		if (!first) screen.curSelected = 1;
+		if (!first) screen.curSelected = (s.difficulties.length + s.variants.length) > 0 ? 1 : 0;
 		else {
 			cast(screen.members[0], NewOption).itemHeight = 120;
 			screen.insert(1, new NewOption(getID('newVariation'), getID('newVariationDesc'), () -> {
 				parent.openSubState(new VariationCreationScreen(s, saveSong));
 			}));
-			screen.curSelected = 2;
+			screen.curSelected = (s.difficulties.length + s.variants.length) > 0 ? 2 : 1;
 		}
 		#end
 
@@ -64,7 +64,7 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 	public function makeSongOption(s:ChartMetaData):IconOption {
 		songList.push(s.name.toLowerCase());
 
-		var opt = new IconOption(s.name, getID('acceptSong'), s.icon, () -> openSongOption(s, true));
+		var opt = new IconOption(~/(.*[\/])/g.map(s.name, _->''), getID('acceptSong'), s.icon, () -> openSongOption(s, true));
 		opt.suffix = " >";
 		opt.editorFlashColor = s.color.getDefault(FlxColor.WHITE);
 
@@ -75,9 +75,30 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 		super('editor.chart.name', 'charterSelection.desc', 'charterSelection.', 'newSong', 'newSongDesc', #if sys () -> {
 			parent.openSubState(new SongCreationScreen(saveSong));
 		} #end);
-		freeplayList = FreeplaySonglist.get(false);
+		freeplayList = FreeplaySonglist.get(false, 'songs/', false);
 
-		for (i => s in freeplayList.songs) add(makeSongOption(s));
+		function generateList(modsList:Array<ChartMetaData>, folderPath:String = ""):Array<FlxSprite> {
+			var list:Array<FlxSprite> = [];
+
+			for (char in modsList) {
+				if (char.name.endsWith("/")) {
+					var folderName = CoolUtil.getFilename(char.name.substr(0, char.name.length-1));
+
+					list.push(new FolderOption(folderName + ' >', getID('acceptFolder'), () -> {
+						var newModsList = FreeplaySonglist.get(false, 'songs/' + folderPath + folderName + '/', false).songs;
+						var newList:Array<FlxSprite> = generateList(newModsList, folderPath + folderName + "/");
+						parent.addMenu(new EditorTreeMenuScreen(folderName, translate('desc-folder', [folderPath + folderName + "/"]), newList));
+					}));
+				}
+				else {
+					list.push(makeSongOption(char));
+				}
+			}
+
+			return list;
+		}
+
+		for (o in generateList(freeplayList.songs)) add(o);
 	}
 
 	#if sys
@@ -101,11 +122,11 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 		// Save Files
 		var instSuffix = creation.meta.instSuffix != null ? creation.meta.instSuffix : '', vocalsSuffix = creation.meta.vocalsSuffix != null ? creation.meta.vocalsSuffix : '';
 		CoolUtil.safeSaveFile('$songFolder/meta${variant != null ? "-" + variant : ""}.json', Json.stringify(Chart.filterMetaForSaving(creation.meta), null, Flags.JSON_PRETTY_PRINT));
-		if (creation.instBytes != null) sys.io.File.saveBytes('$songFolder/song/Inst$instSuffix.${Flags.SOUND_EXT}', creation.instBytes);
-		if (creation.voicesBytes != null) sys.io.File.saveBytes('$songFolder/song/Voices$vocalsSuffix.${Flags.SOUND_EXT}', creation.voicesBytes);
+		if (creation.instBytes != null) sys.io.File.saveBytes('$songFolder/song/Inst$instSuffix.${creation.instExt}', creation.instBytes);
+		if (creation.voicesBytes != null) sys.io.File.saveBytes('$songFolder/song/Voices$vocalsSuffix.${creation.voicesExt}', creation.voicesBytes);
 
-		if (creation.playerVocals != null) sys.io.File.saveBytes('$songFolder/song/Voices-Player$vocalsSuffix.${Flags.SOUND_EXT}', creation.playerVocals);
-		if (creation.oppVocals != null) sys.io.File.saveBytes('$songFolder/song/Voices-Opponent$vocalsSuffix.${Flags.SOUND_EXT}', creation.oppVocals);
+		if (creation.playerVocals != null) sys.io.File.saveBytes('$songFolder/song/Voices-Player$vocalsSuffix.${creation.playerExt}', creation.playerVocals);
+		if (creation.oppVocals != null) sys.io.File.saveBytes('$songFolder/song/Voices-Opponent$vocalsSuffix.${creation.oppExt}', creation.oppVocals);
 		#end
 
 		if (callback != null) callback(songFolder);
@@ -146,11 +167,10 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 
 		var screen = parent.tree.last();
 		var idx = 0;
-		while (!(screen.members[idx] is Separator)) idx++;
+		while (!(screen.members[idx] is Separator || idx >= screen.members.length)) idx++;
 		screen.insert(idx, makeChartOption(name, curSong.variant != null && curSong.variant != "" ? curSong.variant : null, curSong.name));
-
 		// Add to Meta
-		var metaPath = '$songFolder/meta${curSong.variant != null && curSong.variant == "" ? "-" + curSong.variant : ""}.json';
+		var metaPath = '$songFolder/meta${curSong.variant != null && curSong.variant != "" ? "-" + curSong.variant : ""}.json';
 		CoolUtil.safeSaveFile(metaPath, Chart.makeMetaSaveable(curSong));
 	}
 	#end

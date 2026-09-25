@@ -108,6 +108,8 @@ class TranslatedAssetLibrary extends AssetLibrary implements IModsAssetLibrary {
 		return null;
 	}
 
+	// TODO: list support for TranslatedAssetLibrary (idk how it works)
+
 	#if MOD_SUPPORT
 	public var _parsedAsset:String = null;  // Theres no need to actually make this work  - Nex
 

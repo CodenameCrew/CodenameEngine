@@ -7,6 +7,9 @@ class Config {
 		"flixel",
 
 		"funkin",
+		#if foxlite 
+		"foxlite", 
+		#end
 		#if MODCHARTING_FEATURES
 		"modchart.engine",
 		"modchart.backend.standalone",
@@ -23,6 +26,12 @@ class Config {
 		"haxe.xml",
 		"haxe.CallStack",
 		"funkin",
+		#if IMGUI_ENABLED
+		"lime.tools.imgui",
+		#end
+		#if foxlite 
+		"foxlite" 
+		#end
 		#end
 	];
 
@@ -34,5 +43,10 @@ class Config {
 
 	public static final DISALLOW_ABSTRACT_AND_ENUM = [
 		"funkin.backend.scripting.events.sprite.PlayAnimContext", // Error: expected member name or ';' after declaration specifiers, Due to define macro from math.h
+	];
+
+	@:unreflective
+	public static final IMPORT_BLACKLIST:Array<String> = [
+		
 	];
 }

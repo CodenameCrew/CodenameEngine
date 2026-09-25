@@ -203,6 +203,7 @@
 					<str id="paste">Colar</str>
 					<str id="cut">Cortar</str>
 					<str id="delete">Apagar</str>
+					<str id="deletestacked">Apagar Notas Empilhadas</str>
 				</group>
 
 				<str id="topBar.chart">Mapa</str>
@@ -587,7 +588,7 @@
 			<str id="title">Info. do Cenário</str>
 			<str id="stageName">Nome do Cenário</str>
 			<str id="spritePath">Caminho do Sprite\n(Requer Recarregamento)</str>
-			<str id="startCamPos">Posição inicial da Câmara (X, Y)</str>
+			<str id="startCamPos">Posição inicial da Câmara\n(X, Y)</str>
 			<str id="zoom">Zoom</str>
 			<str id="customAttributes">Atributos Especiais</str>
 		</group>
@@ -603,7 +604,7 @@
 
 			<str id="elementName">Nome do Elemento</str>
 			<str id="nameID">Nome Identificador</str>
-			<str id="imageFile">Imagem (WIP: precisa recarregar)\nEm (${stage.spritesParentFolder})</str>
+			<str id="imageFile">Imagem\n(em "{0}")</str>
 			<str id="scroll">Scroll {0}</str> <!-- it's "scroll" here because "deslocamento" is too big -->
 			<str id="scale">Tamanho {0}</str>
 			<str id="camera">Câmara {0}</str>
@@ -628,6 +629,8 @@
 				<str id="loop">REPETIR</str>
 			</group>
 			<str id="tipCustomProperties">Dica: Para aceder a mais dados,\nSegure em Shift quando Editar</str>
+
+			<str id="defaultAnimPrefix">Nome em Dados de Animação</str>
 		</group>
 
 		<group name="StageXMLEditScreen" prefix="stageXMLEditScreen.">
@@ -642,6 +645,7 @@
 		<group name="StageElement" prefix="stageElement.">
 			<str id="scale">Tamanho: {0}, {1}</str>
 			<str id="scroll">Deslocamento: {0}, {1}</str>
+			<str id="unknown">Sprite Desconhecido:\n{0}</str>
 		</group>
 
 		<group name="StageSprites" prefix="stageSprites.">
@@ -650,6 +654,14 @@
 			<str id="box">Caixa</str>
 			<str id="character">Personagem</str>
 			<str id="warnings.not-implemented">Criar caixas ainda não foi implementado!</str>
+		</group>
+
+		<group name="StageAnimEdit" prefix="stageSpriteAnimEditScreen.">
+			<str id="win-title">A Editar a Animação "{0}"</str>
+			<str id="anim-title">Dados da Animação</str>
+			<str id="label">Usar Rótulos\nde Quadro?</str>
+			<str id="offsets">Posições (X, Y)</str>
+			<str id="forcePlay">Reprodução Forçada?</str>
 		</group>
 	</group>
 
@@ -682,5 +694,10 @@
 
 		<str id="createdTitle">Config. de mod criada!</str>
 		<str id="createdDesc">As configurações do seu mod foram criadas em {0}!</str>
+	</group>
+
+	<group name="ModAPIWarning" prefix="modApiWarning.">
+		<str id="warningTitle">Versão de API desatualizada! (v{0} &lt; v{1})</str>
+		<str id="warningDesc">A configuração do seu mod está a usar uma versão do API velha! Isto IRÁ causar problemas de compatibilidade e código!\n\nÉ recomendado que faça mudanças ao seu mod e o seu ficheiro de configuração para ajustar à versão mais recente.\n\nPor enquanto, o jogo irá tentar o seu melhor para fazer o seu mod compatível, mas deverá na mesma atualizá-lo.\n\n(PS: Se este mod não for seu, por favor desative o modo de desenvolvedor, e notifique os desenvolvedores deste mod se necessário.)</str>
 	</group>
 </language>

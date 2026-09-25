@@ -13,7 +13,8 @@ class CharterEventAdd extends UISliceSprite {
 	public function new(global:Bool) {
 		super(0, 0, 100, 34, 'editors/charter/event-spr-add');
 
-		this.global = flipX = global;
+		this.global = global;
+		flipX = (global != Options.charterSwapEventSides);
 
 		sideText = new UIText(0, -40, 0, TU.translate("charter.eventType-" + (global ? "global" : "local")), 12);
 		sideText.alignment = "center"; sideText.alpha = 0.75;
@@ -49,7 +50,7 @@ class CharterEventAdd extends UISliceSprite {
 		super.update(elapsed);
 
 		if (FlxG.state.subState != null) return;
-		text.follow(this, global ? bWidth - text.width - (text.text == TU.translate("charter.addEvent") ? 15 : 20) : 20, (bHeight - text.height) / 2);
+		text.follow(this, (global != Options.charterSwapEventSides) ? bWidth - text.width - (text.text == TU.translate("charter.addEvent") ? 15 : 20) : 20, (bHeight - text.height) / 2);
 		sideText.follow(this, (bWidth/2) - (sideText.fieldWidth/2), -(sideText.height + 2));
 		alpha = sprAlpha * 0.75;
 		text.alpha = sprAlpha;
@@ -62,17 +63,29 @@ class CharterEventAdd extends UISliceSprite {
 		curCharterEvent = null;
 		this.step = step;
 		this.y = (step * 40) - (bHeight / 2);
-		text.text = TU.translate("charter.addEvent");
 		framesOffset = 0; bWidth = 37 + Math.ceil(text.width);
-		x = global ? Charter.instance.strumLines.members[Charter.instance.strumLines.members.length-1].x + (40*Charter.instance.strumLines.members[Charter.instance.strumLines.members.length-1].keyCount) : -(bWidth);
+		updateStuff(global, false);
 	}
 
 	public function updateEdit(event:CharterEvent) {
 		if (FlxG.state.subState != null) return;
 		curCharterEvent = event;
 		this.y = event.y;
-		text.text = TU.translate("charter.editEvent");
 		framesOffset = 9; bWidth = 27 + Math.ceil(text.width) + event.bWidth;
-		x = global ? Charter.instance.strumLines.members[Charter.instance.strumLines.members.length-1].x + (40*Charter.instance.strumLines.members[Charter.instance.strumLines.members.length-1].keyCount) : -(bWidth);
+		updateStuff(event.global, true);
+	}
+
+	private function updateStuff(global:Bool = false, edit:Bool = false) {
+		final lastStrumline = Charter.instance.strumLines.members[Charter.instance.strumLines.members.length-1];
+		if (lastStrumline != null)
+			x = (global != Options.charterSwapEventSides) ? lastStrumline.x + (40*lastStrumline.keyCount) : -(bWidth);
+		else
+			x = (global != Options.charterSwapEventSides) ? 0 : -(bWidth);
+
+		final target = TU.translate("charter.eventType-" + (global ? "global" : "local"));
+		if (sideText.text != target) sideText.text = target;
+
+		final targetButtonText = TU.translate("charter." + (edit ? "edit" : "add") + "Event");
+		if (text.text != targetButtonText) text.text = targetButtonText;
 	}
 }

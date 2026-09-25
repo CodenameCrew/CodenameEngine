@@ -161,7 +161,6 @@ class HealthIcon extends FunkinSprite
 		var iconSize:Int = 0;
 		var iconIsPlayer = xmlValid ? xmlData.get("facing").getDefault("right").toLowerCase() == "left" : false;
 
-		animateAtlas = null; // reset
 		if (this.animated)
 			loadSprite(Paths.image(newIconPath));
 		else {
@@ -184,8 +183,6 @@ class HealthIcon extends FunkinSprite
 
 		if(!animation.onFinishEnd.has(animFinishCallback))
 			animation.onFinishEnd.add(animFinishCallback);
-		if(animateAtlas != null && !animateAtlas.anim.onFinishEnd.has(animFinishCallback))
-			animateAtlas.anim.onFinishEnd.add(animFinishCallback);
 
 		var parsedSteps:Map<Int, String> = [];
 
@@ -233,10 +230,10 @@ class HealthIcon extends FunkinSprite
 							offsetY = Std.parseFloat(node.get("offsety")).getDefault(0);
 
 						addAnim(animName, node.get("anim"), Std.parseInt(node.get("fps")).getDefault(24), false, null, null, offsetX, offsetY); // don't allow looping for transitions
-						if (animateAtlas == null && animation.exists(animName))
+						if (animation.exists(animName))
 							animation.getByName(animName).flipX = isPlayer != iconIsPlayer;
 					case "anim":
-						if (this.animated == false) {
+						if (!this.animated) {
 							Logs.trace('Icon ${char} data <anim> is not allowed when not animated', WARNING);
 							continue;
 						}
@@ -270,7 +267,7 @@ class HealthIcon extends FunkinSprite
 							looped = node.get("loop").toLowerCase() == "true";
 
 						addAnim(animName, node.get("anim"), Std.parseInt(node.get("fps")).getDefault(24), looped, null, null, offsetX, offsetY);
-						if (animateAtlas == null && animation.exists(animName))
+						if (animation.exists(animName))
 							animation.getByName(animName).flipX = isPlayer != iconIsPlayer;
 					case "step":
 						if (!node.exists("percent")) {
@@ -314,18 +311,8 @@ class HealthIcon extends FunkinSprite
 			curAnimState = data.animState;
 		}
 
-		if (animateAtlas != null) {
-			@:bypassAccessor
-			frameWidth = 150;
-			@:bypassAccessor
-			frameHeight = 150;
-			extraOffsets.x -= frameWidth / 2;
-			extraOffsets.y -= frameHeight / 2;
-			updateHitbox();
-		} else {
-			setGraphicSize(150);
-			updateHitbox();
-		}
+		setGraphicSize(150);
+		updateHitbox();
 
 		defaultScale = (xmlValid && xmlData.exists("scale")) ? Std.parseFloat(xmlData.get("scale")).getDefault(scale.x) : scale.x;
 		scale.set(defaultScale, defaultScale);
