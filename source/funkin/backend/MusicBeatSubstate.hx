@@ -107,6 +107,8 @@ class MusicBeatSubstate extends FlxSubState implements IBeatCancellableReceiver
 		return PlayerSettings.player2.controls;
 
 
+	@:noCompletion @:dox(hide) private static var _ONE_ARG:Array<Dynamic> = [null];
+
 	public function new(scriptsAllowed:Bool = true, ?scriptName:String) {
 		super();
 		this.scriptsAllowed = #if SOFTCODED_STATES scriptsAllowed #else false #end;
@@ -138,9 +140,10 @@ class MusicBeatSubstate extends FlxSubState implements IBeatCancellableReceiver
 	public override function tryUpdate(elapsed:Float):Void
 	{
 		if (persistentUpdate || subState == null) {
-			call("preUpdate", [elapsed]);
+			_ONE_ARG[0] = elapsed;
+			call("preUpdate", _ONE_ARG);
 			update(elapsed);
-			call("postUpdate", [elapsed]);
+			call("postUpdate", _ONE_ARG);
 		}
 
 		// if (subState == null && (MusicBeatState.ALLOW_DEV_RELOAD && controls.DEV_RELOAD)) {
@@ -186,13 +189,14 @@ class MusicBeatSubstate extends FlxSubState implements IBeatCancellableReceiver
 
 	public function event<T:CancellableEvent>(name:String, event:T):T {
 		if(stateScripts != null)
-			stateScripts.call(name, [event]);
+			stateScripts.event(name, event);
 		return event;
 	}
 
 	override function update(elapsed:Float)
 	{
-		call("update", [elapsed]);
+		_ONE_ARG[0] = elapsed;
+		call("update", _ONE_ARG);
 		super.update(elapsed);
 	}
 
@@ -223,21 +227,24 @@ class MusicBeatSubstate extends FlxSubState implements IBeatCancellableReceiver
 	{
 		if (__beatReceiversDirty || members.length != __lastMemberLength) __refreshBeatReceivers();
 		for(e in __beatReceivers) e.stepHit(curStep);
-		call("stepHit", [curStep]);
+		_ONE_ARG[0] = curStep;
+		call("stepHit", _ONE_ARG);
 	}
 
 	@:dox(hide) public function beatHit(curBeat:Int):Void
 	{
 		if (__beatReceiversDirty || members.length != __lastMemberLength) __refreshBeatReceivers();
 		for(e in __beatReceivers) e.beatHit(curBeat);
-		call("beatHit", [curBeat]);
+		_ONE_ARG[0] = curBeat;
+		call("beatHit", _ONE_ARG);
 	}
 
 	@:dox(hide) public function measureHit(curMeasure:Int):Void
 	{
 		if (__beatReceiversDirty || members.length != __lastMemberLength) __refreshBeatReceivers();
 		for(e in __beatReceivers) e.measureHit(curMeasure);
-		call("measureHit", [curMeasure]);
+		_ONE_ARG[0] = curMeasure;
+		call("measureHit", _ONE_ARG);
 	}
 
 	/**

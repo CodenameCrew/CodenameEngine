@@ -1489,6 +1489,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
+		_ONE_ARG[0] = elapsed;
 		scripts.call("postUpdate", _ONE_ARG);
 	}
 
@@ -2215,14 +2216,16 @@ class PlayState extends MusicBeatState
 	override function stepHit(curStep:Int)
 	{
 		super.stepHit(curStep);
-		scripts.call("stepHit", [curStep]);
+		_ONE_ARG[0] = elapsed;
+		scripts.call("stepHit", _ONE_ARG);
 	}
 
 	@:dox(hide)
 	override function measureHit(curMeasure:Int)
 	{
 		super.measureHit(curMeasure);
-		scripts.call("measureHit", [curMeasure]);
+		_ONE_ARG[0] = elapsed;
+		scripts.call("measureHit", _ONE_ARG);
 	}
 
 	@:dox(hide)
@@ -2235,9 +2238,10 @@ class PlayState extends MusicBeatState
 				if (icon.bump != null)
 					icon.bump();
 
-		scripts.call("beatHit", [curBeat]);
+		_ONE_ARG[0] = elapsed;
+		scripts.call("beatHit", _ONE_ARG);
 	}
-
+	
 	public function addScript(file:String) {
 		var ext = Path.extension(file).toLowerCase();
 		if (Script.scriptExtensions.contains(ext))
