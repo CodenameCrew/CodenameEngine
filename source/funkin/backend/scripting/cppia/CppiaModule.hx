@@ -3,7 +3,6 @@ package funkin.backend.scripting.cppia;
 #if (cpp && scriptable)
 import cpp.cppia.Module;
 import funkin.backend.system.Logs;
-import funkin.backend.utils.NativeAPI.ConsoleColor;
 import lime.utils.Assets as LimeAssets;
 
 @:headerCode('#include <hx/Scriptable.h>')
@@ -14,6 +13,13 @@ class CppiaModule
 
 	static function getSignature(bytes:haxe.io.Bytes):String
 		return bytes.length + ":" + haxe.crypto.Md5.make(bytes).toHex();
+
+	/**
+	 * Enables the CPPIA JIT compiler.
+	 * Not enabled by default, since the current hxcpp JIT silently swallows thrown errors and crashes on generated code.
+	 */
+	@:functionCode('hx::gEnableJit = inEnable;')
+	public static function enableJit(inEnable:Bool):Void {}
 
 	public static function load(assetPath:String):Module
 	{
@@ -36,10 +42,7 @@ class CppiaModule
 			var reason = Std.string(e);
 			// prevent the application from crashing outright
 			try __signatures.set(assetPath, getSignature(LimeAssets.getBytes(assetPath))) catch(_) {}
-			Logs.traceColored([
-				Logs.logText(assetPath, GREEN),
-				Logs.logText('Error while loading cppia module: $reason', RED)
-			], ERROR);
+			Logs.error('Error while loading cppia module $assetPath: $reason');
 			return null;
 		}
 	}
