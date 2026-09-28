@@ -370,7 +370,7 @@ class Charter extends UIState {
 						onSelect: _playback_play
 					},
 					{
-						label: "Align time to grid", // TODO: add translation key
+						label: translate("playback.snap"), // TODO: add translation key
 						onSelect: _playback_snap,
 						icon: Options.chaterQuantizisePositionAfterPause ? 1 : 0
 					},
