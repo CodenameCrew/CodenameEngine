@@ -370,10 +370,10 @@ class Charter extends UIState {
 						onSelect: _playback_play
 					},
 					{
-						label: "Align time to grid" // TODO: add translation key
+						label: "Align time to grid", // TODO: add translation key
 						onSelect: _playback_snap,
 						icon: Options.chaterQuantizisePositionAfterPause ? 1 : 0
-					}
+					},
 					null,
 					{
 						label: translate("playback.speedRaise", ["25"]),
@@ -1949,7 +1949,7 @@ class Charter extends UIState {
 			FlxG.sound.music.pause();
 			vocals.pause();
 			for (strumLine in strumLines.members) strumLine.vocals.pause();
-			if (Options.chaterQuantizisePositionAfterPause) Conductor.songPosition = quantStep(Conductor.songPosition);
+			if (Options.chaterQuantizisePositionAfterPause) Conductor.songPosition = Conductor.getTimeForStep(quantStep(Conductor.curStepFloat));
 		} else {
 			FlxG.sound.music.play(true, Conductor.songPosition + Conductor.songOffset);
 			vocals.play(true, FlxG.sound.music.getActualTime());
