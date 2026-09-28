@@ -105,6 +105,9 @@
 		<str id="ghostTapping-name">Toques Fantasma</str>
 		<str id="ghostTapping-desc">Se desmarcado, bater em teclas que não tem uma nota conta como erro.</str>
 
+		<str id="centeredFields-name">Pistas Centradas</str>
+		<str id="centeredFields-desc">Se marcado, apenas as pistas jogáveis serão visiveis, sendo alinhadas horizontalmente no ecrã (também conhecido por "Middlescroll").</str>
+
 		<str id="naughtyness-name">Indecência</str>
 		<str id="naughtyness-desc">Se desmarcado, irá censurar as cenas da Semana 7, ou mais.</str>
 
