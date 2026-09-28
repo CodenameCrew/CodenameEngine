@@ -12,6 +12,8 @@ class GameplayOptions extends TreeMenuScreen {
 
 		add(new Checkbox(getNameID('downscroll'), getDescID('downscroll'), 'downscroll'));
 		add(new Checkbox(getNameID('ghostTapping'), getDescID('ghostTapping'), 'ghostTapping'));
+		if (Flags.ALLOW_CENTERED_FIELDS)
+			add(new Checkbox(getNameID('centeredFields'), getDescID('centeredFields'), 'centeredFields'));
 		add(new Checkbox(getNameID('naughtyness'), getDescID('naughtyness'), 'naughtyness'));
 		add(new Checkbox(getNameID('camZoomOnBeat'), getDescID('camZoomOnBeat'), 'camZoomOnBeat'));
 		add(new Checkbox(getNameID('autoPause'), getDescID('autoPause'), 'autoPause', __changeAutoPause));

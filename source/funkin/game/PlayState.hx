@@ -808,6 +808,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		var canCenter:Bool = Options.centeredFields && Flags.ALLOW_CENTERED_FIELDS && !coopMode;
 		for(i=>strumLine in SONG.strumLines) {
 			if (strumLine == null) continue;
 
@@ -823,7 +824,7 @@ class PlayState extends MusicBeatState
 				chars.push(char);
 			}
 
-			var strOffset:Float = strumLine.strumLinePos != null ? strumLine.strumLinePos : (strumLine.type == 1 ? 0.75 : 0.25);
+			var strOffset:Float = canCenter || strumLine.strumLinePos != null ? (canCenter ? 0.5 : strumLine.strumLinePos) : (strumLine.type == 1 ? 0.75 : 0.25);
 			var strScale:Float = strumLine.strumScale != null ? strumLine.strumScale : 1;
 			var strSpacing:Float = strumLine.strumSpacing == null ? 1 : strumLine.strumSpacing;
 			var keyCount:Int = strumLine.keyCount == null ? 4 : strumLine.keyCount;
@@ -840,7 +841,7 @@ class PlayState extends MusicBeatState
 			);
 			strLine.cameras = [camHUD];
 			strLine.data = strumLine;
-			strLine.visible = (strumLine.visible != false);
+			strLine.visible = (strumLine.visible != false && (!canCenter || !strLine.cpu));
 			strLine.vocals.group = FlxG.sound.defaultMusicGroup;
 			strLine.ID = i;
 			strumLines.add(strLine);
@@ -1200,6 +1201,33 @@ class PlayState extends MusicBeatState
 
 	@:dox(hide) function sortByShit(Obj1:Note, Obj2:Note):Int {
 		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime, Obj2.strumTime);
+	}
+
+	/**
+	 * Resets the positioning and visibility of all the strumlines.
+	 * @param canCenter Whether or not the strumlines will be centered when resetting, similar to starting a song with `Options.centeredFields` on.
+	 */
+	public function resetStrumlinePositions(?canCenter:Bool = false):Void {
+		// NOTE TO ANY CONTRIBUTORS: DO NOT FORCE `canCenter`! THIS IS A MODDING UTILITY IN CASE THE POSITIONING OF THE STRUMLINES FULLY MATTER TO A SCRIPT/SONG!
+
+		strumLine.setPosition(0, 50); // just in case.
+
+		for (strLine in strumLines.members) {
+			var strumLine = strLine.data;
+
+			var strOffset:Float = canCenter || strumLine.strumLinePos != null ? (canCenter ? 0.5 : strumLine.strumLinePos) : (strumLine.type == 1 ? 0.75 : 0.25);
+			var strScale:Float = strumLine.strumScale != null ? strumLine.strumScale : 1;
+			var strSpacing:Float = strumLine.strumSpacing == null ? 1 : strumLine.strumSpacing;
+			var keyCount:Int = strumLine.keyCount == null ? 4 : strumLine.keyCount;
+			var strXPos:Float = StrumLine.calculateStartingXPos(strOffset, strScale, strSpacing, keyCount);
+
+			strLine.startingPos.set(
+				(strumLine.strumPos != null && strumLine.strumPos[0] != 0) ? strumLine.strumPos[0] : strXPos,
+				strumLine.strumPos != null ? strumLine.strumPos[1] : this.strumLine.y
+			);
+			strLine.resetStrumPositions();
+			strLine.visible = (strumLine.visible != false && (!canCenter || !strLine.cpu));
+		}
 	}
 
 	@:dox(hide)
