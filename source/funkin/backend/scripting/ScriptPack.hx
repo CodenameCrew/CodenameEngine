@@ -181,6 +181,7 @@ class ScriptPack extends Script {
 	 * @param script Script to configure
 	**/
 	private function __configureNewScript(script:Script) {
+		script.pack = this;
 		if (parent != null) script.setParent(parent);
 		script.setPublicMap(publicVariables);
 		for(k=>e in additionalDefaultVariables) script.set(k, e);

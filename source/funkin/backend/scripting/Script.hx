@@ -248,6 +248,11 @@ class Script extends FlxBasic implements IFlxDestroyable
 	 */
 	public var path:String = null;
 
+	/**
+	 * The parent `ScriptPack` containing this script.
+	**/
+	public var pack:ScriptPack = null;
+
 	private var rawPath:String = null;
 
 	private var didLoad:Bool = false;

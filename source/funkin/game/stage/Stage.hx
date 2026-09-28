@@ -58,6 +58,7 @@ using funkin.backend.utils.XMLUtil.XMLImportedScriptInfo;
  * @author Jamextreme140 & ItsLJcool
 **/
 class Stage extends Layer {
+	// @:noCompletion @:dox(hide) private static final _ONE_ARG:Array<Dynamic> = [null];
 	private static final __instanceFields:Map<String, Bool> = [for(f in Type.getInstanceFields(Stage)) f => true];
 
 	private static final DEFAULT_ATTRIBUTES:Array<String> = ["name", "startCamPosX", "startCamPosY", "zoom", "folder"];
@@ -162,7 +163,7 @@ class Stage extends Layer {
 			if (onStageScriptLoad != null) onStageScriptLoad(script);
 			script.setParent(this);
 			script.load();
-			script.call("create");
+			if(script.pack == null) script.call("create"); // most likely the "create" will be called from a ScriptPack
 			script.call("onStageLoad");
 		}
 
@@ -201,7 +202,7 @@ class Stage extends Layer {
 		loadLayer(this, data);
 
 		postLoadStage(data);
-		script?.call("postCreate");
+		if(script != null && script.pack == null) script.call("postCreate");
 		script?.call("onPostStageLoad");
 		hasLoaded = true;
 		data = null;
@@ -226,7 +227,8 @@ class Stage extends Layer {
 						continue;
 					}
 				case 'layer':
-					checkMemoryMode(node, loadAll); // recursive filter in layers
+					if (node.has.name)
+						checkMemoryMode(node, loadAll); // recursive filter in layers
 					continue;
 			}
 
@@ -462,16 +464,19 @@ class Stage extends Layer {
 			layerRef.add(char);
 	}
 
+	// calling "update" (or other updating functions) is unnecessary since it's called from the ScriptPack
+	// if it has been added - Jamextreme140
 	override function update(elapsed:Float) {
-		script?.call("update", [elapsed]);
+		//_ONE_ARG[0] = elapsed;
+		//script?.call("update", _ONE_ARG);
 		super.update(elapsed);
-		script?.call("postUpdate", [elapsed]);
+		//script?.call("postUpdate", _ONE_ARG);
 	}
 
 	override function draw() {
-		script?.call("draw");
+		//script?.call("draw");
 		super.draw();
-		script?.call("postDraw");
+		//script?.call("postDraw");
 	}
 
 	/**

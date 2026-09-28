@@ -2368,7 +2368,7 @@ class PlayState extends MusicBeatState
 		};
 		stage.onPostStageCreation = (event) -> gameAndCharsEvent("onPostStageCreation", event);
 		stage.removeInfo = (scriptInfo) -> scripts.remove(scriptInfo);
-		stage.onStageDestroy = (_) -> gameAndCharsCall("onStageDestroy", [_]);
+		//stage.onStageDestroy = (_) -> gameAndCharsCall("onStageDestroy", [_]);
 		stage.onSilentDestroy = (stageScript) -> scripts.remove(stageScript);
 		return true;
 	}
