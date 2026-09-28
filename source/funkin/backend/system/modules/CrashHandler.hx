@@ -209,17 +209,15 @@ final class CrashHandler {
 			case Module(name):
 				'Module $name';
 			case FilePos(parent, file, line, col):
-				var at = col != null && col > 0 ? '$file:$line:$col' : '$file:$line';
-				var who = if (parent == null) "" else switch (parent) {
-					case Method(cls, fn): '${shortClass(cls)}.$fn()';
-					case LocalFunction(v): 'local function $v';
-					default: "";
+				if (parent == null) '$file:$line' else switch (parent) {
+					case Method(cls, fn): '$cls.$fn():$line';
+					case LocalFunction(v): 'local function $v:$line';
+					default: '$file:$line';
 				}
-				who == "" ? at : '$who\n$at';
 			case LocalFunction(v):
 				'Local function $v';
 			case Method(cls, fn):
-				'${shortClass(cls)}.$fn()';
+				'$cls.$fn()';
 		}
 	}
 
