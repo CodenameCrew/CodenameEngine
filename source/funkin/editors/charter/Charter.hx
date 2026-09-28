@@ -370,9 +370,10 @@ class Charter extends UIState {
 						onSelect: _playback_play
 					},
 					{
-						label: "Position snap", // TODO: translate
-						onSelect: _playback_snap
-					},
+						label: "Align time to grid" // TODO: add translation key
+						onSelect: _playback_snap,
+						icon: Options.chaterQuantizisePositionAfterPause ? 1 : 0
+					}
 					null,
 					{
 						label: translate("playback.speedRaise", ["25"]),
@@ -1948,6 +1949,7 @@ class Charter extends UIState {
 			FlxG.sound.music.pause();
 			vocals.pause();
 			for (strumLine in strumLines.members) strumLine.vocals.pause();
+			if (Options.chaterQuantizisePositionAfterPause) Conductor.songPosition = quantStep(Conductor.songPosition);
 		} else {
 			FlxG.sound.music.play(true, Conductor.songPosition + Conductor.songOffset);
 			vocals.play(true, FlxG.sound.music.getActualTime());
@@ -1956,7 +1958,9 @@ class Charter extends UIState {
 			}
 		}
 	}
-	function _playback_snap(_) Conductor.songPosition = quantStep(Conductor.songPosition);
+	function _playback_snap(t) {
+		t.icon = (Options.chaterQuantizisePositionAfterPause = !Options.chaterQuantizisePositionAfterPause) ? 1 : 0;
+	}
 
 	function _playback_speed_raise(_) playBackSlider.value += .25;
 	function _playback_speed_reset(_) playBackSlider.value = 1;
