@@ -11,6 +11,7 @@ import openfl.display.BitmapData;
 import sys.FileSystem;
 import sys.io.File;
 import animate.FlxAnimateJson;
+import funkin.backend.assets.ModsFolder;
 
 using StringTools;
 using funkin.backend.utils.BitmapUtil;
@@ -38,11 +39,14 @@ class UIImageExplorer extends UIFileExplorer {
 	inline function translate(id:String, ?args:Array<Dynamic>)
 		return TU.translate("uiImageExplorer." + id, args);
 
-	public function new(x:Float, y:Float, image:String, ?w:Int, ?h:Int, ?onFile:(String, Bytes)->Void, ?directory:String = "images") {
+	public function new(x:Float, y:Float, image:String, ?w:Int, ?h:Int, ?onFile:(String, Bytes)->Void, ?directory:String = "images", ?maxSize:FlxPoint) {
 		super(x, y, w, h, Flags.IMAGE_EXTS, function (filePath, file) {
 			if (filePath != null && file != null) uploadImage(filePath, file);
 			if (onFile != null) onFile(filePath, file);
 		});
+
+		if(maxSize != null)
+			this.maxSize = maxSize;
 		
 		deleteButton.bWidth = 26;
 		deleteButton.bHeight = 26;
@@ -60,13 +64,15 @@ class UIImageExplorer extends UIFileExplorer {
 		directoryBG.members.push(directoryTextBox);
 
 		if (image != null) {
-			var fullImagePath:String = '${Path.normalize(Sys.getCwd())}/${Paths.image(image)}'.replace('/', '\\');
-			var noExt = Path.withoutExtension(fullImagePath);
-			if (FileSystem.exists('$noExt\\spritemap1.png'))
-				fullImagePath = '$noExt\\spritemap1.png';
-	
+			var imagePath:String = Paths.image(image);
+			var noExt = Path.withoutExtension(imagePath);
+			if (Paths.assetsTree.getPath('$noExt\\spritemap1.png') != null)
+				imagePath = '$noExt\\spritemap1.png';
+			
+			var fullImagePath:String = '${Path.normalize(Sys.getCwd())}/${Paths.assetsTree.getPath(imagePath)}'.replace('/', '\\');
 			if (FileSystem.exists(fullImagePath))
 				loadFile(fullImagePath);
+				
 		}
 
 		allowDirectories = CoolUtil.isMapEmpty(imageFiles); __firstLoad = false;
@@ -207,6 +213,16 @@ class UIImageExplorer extends UIFileExplorer {
 				imageFiles.set(Path.withoutDirectory(spritemapPath), sys.io.File.getBytes(spritemapPath));
 			}
 
+			for (spritemap in spritemaps) {
+				var spritemapPath:String = Path.join([directoryPath, spritemap]);
+
+				var info = FileSystem.stat(spritemapPath);
+				size += info.size;
+
+				spritemapPath = spritemapPath.replace('/', '\\');
+				imageFiles.set(Path.withoutDirectory(spritemapPath), sys.io.File.getBytes(spritemapPath));
+			}
+
 			file = cast sys.io.File.getBytes(filePath = spritemapPath);
 			image = BitmapData.fromBytes(file).crop();
 
@@ -293,6 +309,26 @@ class UIImageExplorer extends UIFileExplorer {
 		if (directoryButton.visible) fileText.fieldWidth -= directoryButton.bWidth + 12;
 
 		members.push(directoryBG); __firstLoad = false;
+	}
+
+	override function updateButtonsPos(){
+		super.updateButtonsPos();
+		directoryBG.follow(this,0,0);
+		directoryTextBox.follow(this, 0, 8+12+4);
+		directoryTextBoxLabel.follow(directoryBG, 8,6);
+		
+		if(uiElement != null && uiElement.exists){
+			uiElement.follow(this, 16, 16+deleteButton.bHeight+4);
+			fileText.follow(this, 20, 16);
+		}
+
+		deleteButton.follow(this, bWidth - deleteButton.bWidth - 16, 12);
+		deleteIcon.follow(deleteButton, deleteButton.bWidth/2 - 8, deleteButton.bHeight/2 - 8);
+
+		directoryButton.x = deleteButton.x - deleteButton.bWidth - 12;
+		directoryButton.y = y + 12;
+
+		directoryIcon.follow(directoryButton, directoryButton.bWidth/2 - (directoryIcon.width/2), directoryButton.bHeight/2 - (directoryIcon.height/2));
 	}
 
 	public var saveData:ImageSaveData = null;

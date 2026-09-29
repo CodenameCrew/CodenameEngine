@@ -1296,6 +1296,7 @@ final class CoolUtil
 		var animsList:Array<String> = [];
 
 		@:privateAccess var collections = cast (animate.frames, FlxAnimateFrames).addedCollections;
+		collections.push(cast animate.frames);
 		for(col in collections){
 			for(l in col.timeline.layers)
 				for(f in l.frames){
@@ -1305,7 +1306,8 @@ final class CoolUtil
 					 for(e in f.elements){
 						var element = e.toSymbolInstance();
 
-						animsList.push(element.symbolName);
+						if(element != null && element.symbolName != null)
+							animsList.push(element.symbolName);
 					 }
 				}
 		}

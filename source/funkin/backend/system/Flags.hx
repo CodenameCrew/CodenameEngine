@@ -143,6 +143,8 @@ class Flags {
 	@:also(funkin.game.PlayState.opponentMode)
 	public static var DEFAULT_OPPONENT_MODE:Bool = false;
 
+	public static var ALLOW_CENTERED_FIELDS:Bool = true; // Whether or not, `Options.centeredFields` (AKA "Middlescroll") will have an effect.
+
 	public static var EARLY_HIT_WINDOW_RANGE:Float = 1.0; // was 0.5 for easier early hitting, but now 1 to demotivate mashing and getting away with it.
 	public static var LATE_HIT_WINDOW_RANGE:Float = 1.0;
 	public static var SHITS_BREAK_COMBO:Bool = true;
