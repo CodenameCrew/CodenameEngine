@@ -155,10 +155,10 @@ class GameOverSubstate extends MusicBeatSubstate
     	var sound:FlxSound = FlxG.sound.play(Paths.sound(retrySFX));
     	var sndLength:Float = (event.sndLength ?? (sound.length * 0.001));
 
-    	var delay:Float = (event.delay ?? 0.7);
+    	var delay:Float = (event.delayTime ?? 0.7);
     	var fade:Float = (sndLength - delay);
 
-    	if (fade < (event.cap ?? 0.5)) {
+    	if (fade < (event.timeCap ?? 0.5)) {
         	fade = sndLength;
         	delay = 0;
     	}
