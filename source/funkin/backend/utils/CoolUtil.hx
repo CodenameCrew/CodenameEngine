@@ -1296,6 +1296,7 @@ final class CoolUtil
 		var animsList:Array<String> = [];
 
 		@:privateAccess var collections = cast (animate.frames, FlxAnimateFrames).addedCollections;
+		collections.push(cast animate.frames);
 		for(col in collections){
 			for(l in col.timeline.layers)
 				for(f in l.frames){
