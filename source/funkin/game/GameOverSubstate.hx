@@ -89,6 +89,8 @@ class GameOverSubstate extends MusicBeatSubstate
 		Conductor.changeBPM(gameOverSongBPM);
 		cancelConductorUpdate = true;
 
+		FlxG.sound.cache(Paths.sound(retrySFX));
+
 		DiscordUtil.call("onGameOver", []);
 		gameoverScript.call("postCreate");
 	}
@@ -134,41 +136,51 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	var isEnding:Bool = false;
 
-	function endBullshit():Void
-	{
-		if (isEnding)
-			return;
+	function endBullshit():Void {
+		if (isEnding) return;
+		
 		isEnding = true;
 
-		var event = new CancellableEvent();
-		gameoverScript.call('onEnd', [event]);
+		var event:GameOverEndEvent = EventManager.get(GameOverEndEvent).recycle();
+		gameoverScript.call("onEnd", [event]);
 
-		if (event.cancelled)
-			return;
+		if (event.cancelled) return;
 
-		character.playAnim('deathConfirm', true);
-		if (FlxG.sound.music != null)
+    	if (FlxG.sound.music != null) {
 			FlxG.sound.music.stop();
-		FlxG.sound.music = null;
+    	}
 
-		var sound = FlxG.sound.play(Paths.sound(retrySFX));
+		character.playAnim("deathConfirm", true);
 
-		var secsLength:Float = sound.length / 1000;
-		var waitTime = 0.7;
-		var fadeOutTime = secsLength - 0.7;
+    	var sound:FlxSound = FlxG.sound.play(Paths.sound(retrySFX));
+    	var sndLength:Float = (event.sndLength ?? (sound.length * 0.001));
 
-		if (fadeOutTime < 0.5)
-		{
-			fadeOutTime = secsLength;
-			waitTime = 0;
-		}
+    	var delay:Float = (event.delay ?? 0.7);
+    	var fade:Float = (sndLength - delay);
 
-		new FlxTimer().start(waitTime, function(tmr:FlxTimer)
-		{
-			FlxG.camera.fade(FlxColor.BLACK, fadeOutTime, false, function()
-			{
-				MusicBeatState.skipTransOut = true;
-				FlxG.switchState(new PlayState());
+    	if (fade < (event.cap ?? 0.5)) {
+        	fade = sndLength;
+        	delay = 0;
+    	}
+
+    	new FlxTimer(delay, function(timer:FlxTimer):Void {
+        	if (event.onTimerEnd != null) {
+            	event.onTimerEnd();
+            	return;
+        	}
+
+			var color:FlxColor = (event.fadeColor ?? FlxColor.BLACK);
+
+        	FlxG.camera.fade(color, fade, false, function():Void {
+            	if (event.onFadeEnd != null) {
+                	event.onFadeEnd();
+                	return;
+            	}
+				
+				var state:FlxState = (event.state ?? new PlayState());
+				
+				MusicBeatState.skipTransIn = true;
+				FlxG.switchState(state);
 			});
 		});
 	}
