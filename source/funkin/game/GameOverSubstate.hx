@@ -155,10 +155,10 @@ class GameOverSubstate extends MusicBeatSubstate
     	var sound:FlxSound = FlxG.sound.play(Paths.sound(retrySFX));
     	var sndLength:Float = (event.sndLength ?? (sound.length * 0.001));
 
-    	var delay:Float = (event.delayTime ?? 0.7);
+    	var delay:Float = event.delayTime;
     	var fade:Float = (sndLength - delay);
 
-    	if (fade < (event.timeCap ?? 0.5)) {
+    	if (fade < event.timeCap) {
         	fade = sndLength;
         	delay = 0;
     	}
@@ -169,18 +169,14 @@ class GameOverSubstate extends MusicBeatSubstate
             	return;
         	}
 
-			var color:FlxColor = (event.fadeColor ?? FlxColor.BLACK);
-
-        	FlxG.camera.fade(color, fade, false, function():Void {
+        	FlxG.camera.fade(event.fadeColor, fade, false, function():Void {
             	if (event.onFadeEnd != null) {
                 	event.onFadeEnd();
                 	return;
             	}
 				
-				var state:FlxState = (event.state ?? new PlayState());
-				
-				MusicBeatState.skipTransIn = true;
-				FlxG.switchState(state);
+				MusicBeatState.skipTransIn = event.skipTrans;
+				FlxG.switchState(event.state);
 			});
 		});
 	}
