@@ -6,6 +6,7 @@ class GameOverEndEvent extends CancellableEvent {
   public var sndLength:Null<Float>; // There is little reason for you to change this.
   
   public var delayTime:Float = 0.7;
+  public var fadeTime:Null<Float>;
   public var timeCap:Float = 0.5;
 
   public var fadeColor:FlxColor = 0xFF000000;
