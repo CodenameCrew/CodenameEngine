@@ -156,7 +156,7 @@ class GameOverSubstate extends MusicBeatSubstate
     	var sndLength:Float = (event.sndLength ?? (sound.length * 0.001));
 
     	var delay:Float = event.delayTime;
-    	var fade:Float = (sndLength - delay);
+    	var fade:Float = (event.fadeTime ?? (sndLength - delay));
 
     	if (fade < event.timeCap) {
         	fade = sndLength;
