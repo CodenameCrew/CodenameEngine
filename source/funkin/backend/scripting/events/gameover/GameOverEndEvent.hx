@@ -5,13 +5,13 @@ class GameOverEndEvent extends CancellableEvent {
   
   public var sndLength:Null<Float>; // There is little reason for you to change this.
   
-  public var delayTime:Null<Float>;
-  public var timeCap:Null<Float>;
+  public var delayTime:Float = 0.7;
+  public var timeCap:Float = 0.5;
 
-  public var fadeColor:Null<FlxColor>;
+  public var fadeColor:FlxColor = 0xFF000000;
 
   public var onTimerEnd:Void -> Void;
   public var onFadeEnd:Void -> Void;
   
-  public var state:FlxState;
+  public var state:FlxState = new PlayState();
 }
