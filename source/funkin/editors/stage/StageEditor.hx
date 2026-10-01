@@ -410,7 +410,22 @@ class StageEditor extends UIState {
 
 	override function destroy() {
 		super.destroy();
-		nextScroll = FlxDestroyUtil.destroy(nextScroll);
+		mousePoint = FlxDestroyUtil.put(mousePoint);
+		clickPoint = FlxDestroyUtil.put(clickPoint);
+		storedPos = FlxDestroyUtil.put(storedPos);
+		storedScale = FlxDestroyUtil.put(storedScale);
+		storedSkew = FlxDestroyUtil.put(storedSkew);
+
+		movedTillRel = FlxDestroyUtil.put(movedTillRel);
+		nextScroll = FlxDestroyUtil.put(nextScroll);
+
+		skewInfo = FlxDestroyUtil.put(skewInfo);
+		skewSize = FlxDestroyUtil.put(skewSize);
+		skewPoint1 = FlxDestroyUtil.put(skewPoint1);
+		skewPoint2 = FlxDestroyUtil.put(skewPoint2);
+
+		oldSpritePos = FlxDestroyUtil.put(oldSpritePos);
+
 		if(Framerate.isLoaded) {
 			Framerate.fpsCounter.alpha = 1;
 			Framerate.memoryCounter.alpha = 1;
@@ -427,10 +442,8 @@ class StageEditor extends UIState {
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
 
-		if (true) {
-			if(FlxG.keys.justPressed.ANY)
-				UIUtil.processShortcuts(topMenu);
-		}
+		if(FlxG.keys.justPressed.ANY)
+			UIUtil.processShortcuts(topMenu);
 
 		//if (character != null)
 		//	characterPropertiresWindow.characterInfo.text = '${character.getNameList().length} Animations\nFlipped: ${character.flipX}\nSprite: ${character.sprite}\nAnim: ${character.getAnimName()}\nOffset: (${character.frameOffset.x}, ${character.frameOffset.y})';
@@ -462,8 +475,8 @@ class StageEditor extends UIState {
 
 			if (mouseMode == NONE && prevMode == NONE) {
 				if (FlxG.mouse.pressed) {
-					var x = FlxG.mouse.deltaScreenX;
-					var y = FlxG.mouse.deltaScreenY;
+					final x = FlxG.mouse.deltaViewX;
+					final y = FlxG.mouse.deltaViewY;
 					movedTillRel.x += x; movedTillRel.y += y;
 					nextScroll.set(nextScroll.x - x, nextScroll.y - y);
 					currentCursor = HAND;
@@ -1049,8 +1062,18 @@ class StageEditor extends UIState {
 		ROTATE_CORNER
 	];
 
-	function tryUpdateHitbox(sprite:FunkinSprite) {
-		call("tryUpdateHitbox", [sprite]);
+	function tryUpdateHitbox(sprite:FunkinSprite):Bool {
+		var spriteNode = sprite.extra.get(exID("node"));
+		if (spriteNode.exists("updateHitbox") && spriteNode.get("updateHitbox") == "true") {
+			sprite.updateHitbox();
+			return true;
+		}
+
+		if (!FlxG.keys.pressed.ALT) {
+			sprite.x = storedPos.x - (sprite.frameWidth * (storedScale.x - sprite.scale.x) * 0.5);
+			sprite.y = storedPos.y - (sprite.frameHeight * (storedScale.y - sprite.scale.y) * 0.5);
+		}
+		return false;
 	}
 
 	function handleSelection(sprite:FunkinSprite) {
@@ -1096,7 +1119,6 @@ class StageEditor extends UIState {
 							ROTATE;
 						default: NONE;
 					}
-					Logs.trace("Clicked Dot: " + mouseMode.toString());
 					mousePoint.copyTo(clickPoint);
 					storedPos.set(sprite.x, sprite.y);
 					storedSkew.set(sprite.skew.x, sprite.skew.y);
@@ -1104,10 +1126,8 @@ class StageEditor extends UIState {
 					storedAngle = sprite.angle;
 				}
 				
-				if(mouseMode == MOVE_CENTER){
-					trace(mouseMode);
+				if(mouseMode == MOVE_CENTER)
 					storedPos.set(sprite.x, sprite.y);
-				}
 			}
 		}
 		for(i=>edge in edges) {
@@ -1142,7 +1162,7 @@ class StageEditor extends UIState {
 
 		mouseMode = (FlxG.mouse.justReleased) ? NONE : mouseMode;
 		if (prevMode != mouseMode)
-			call("mouseModeChanged", [sprite]);
+			mouseModeChanged(sprite);
 		
 		if (prevMode == NONE && mouseMode == NONE) return;
 
@@ -1170,10 +1190,293 @@ class StageEditor extends UIState {
 		if(mouseMode == NONE) return;
 
 		var relative = clickPoint.subtractNew(mousePoint);
-		call(mouseMode.toString(), [sprite, relative]);
+		handleControl(mouseMode, sprite, relative);
 		cast(sprite.extra.get(exID("button")), StageElementButton).updateInfo();
 		relative.put();
 	}
+
+	//region Mouse Control
+	private function handleControl(mode:StageEditorMouseMode, sprite:FunkinSprite, relative:FlxPoint) {
+		switch(mode) {
+			case MOVE_CENTER: __MOVE_CENTER(sprite, relative);
+
+			case SCALE_TOP_RIGHT: __SCALE_TOP_RIGHT(sprite, relative);
+			case SCALE_TOP_LEFT: __SCALE_TOP_LEFT(sprite, relative);
+			case SCALE_BOTTOM_RIGHT: __SCALE_BOTTOM_RIGHT(sprite, relative);
+			case SCALE_BOTTOM_LEFT: __SCALE_BOTTOM_LEFT(sprite, relative);
+			case SCALE_LEFT: __SCALE_LEFT(sprite, relative);
+			case SCALE_RIGHT: __SCALE_RIGHT(sprite, relative);
+			case SCALE_TOP: __SCALE_TOP(sprite, relative);
+			case SCALE_BOTTOM: __SCALE_BOTTOM(sprite, relative);
+
+			case SKEW_LEFT: __SCALE_LEFT(sprite, relative);
+			case SKEW_BOTTOM: __SKEW_BOTTOM(sprite, relative);
+			case SKEW_TOP: __SKEW_TOP(sprite, relative);
+			case SKEW_RIGHT: __SKEW_RIGHT(sprite, relative);
+			case ROTATE: __ROTATE(sprite, relative);
+			
+			default:
+		}
+	}
+	//endregion
+
+	//region Pivot
+	function __MOVE_CENTER(sprite:FunkinSprite, relative:FlxPoint) {
+		sprite.x = storedPos.x-relative.x;
+		sprite.y = storedPos.y-relative.y;
+	}
+	//endregion
+
+	//region Scale
+	function __SCALE_TOP_RIGHT(sprite:FunkinSprite, relative:FlxPoint) {
+		preRotation(sprite, relative);
+		genericOppositeScale(sprite, relative, true, true, false, true);
+		postRotation(sprite, relative);
+	}
+	function __SCALE_TOP_LEFT(sprite:FunkinSprite, relative:FlxPoint) {
+		preRotation(sprite, relative);
+		genericOppositeScale(sprite, relative, true, true, true, true);
+		postRotation(sprite, relative);
+	}
+	function __SCALE_BOTTOM_RIGHT(sprite:FunkinSprite, relative:FlxPoint) {
+		preRotation(sprite, relative);
+		genericScale(sprite, relative, true, true);
+		postRotation(sprite, relative);
+	}
+	function __SCALE_BOTTOM_LEFT(sprite:FunkinSprite, relative:FlxPoint) {
+		preRotation(sprite, relative);
+		genericOppositeScale(sprite, relative, true, true, true, false);
+		postRotation(sprite, relative);
+	}
+	function __SCALE_LEFT(sprite:FunkinSprite, relative:FlxPoint) {
+		preRotation(sprite, relative);
+		genericOppositeScale(sprite, relative, true, false, true, false);
+		postRotation(sprite, relative);
+	}
+	function __SCALE_RIGHT(sprite:FunkinSprite, relative:FlxPoint) {
+		preRotation(sprite, relative);
+		genericScale(sprite, relative, true, false);
+		postRotation(sprite, relative);
+	}
+	function __SCALE_TOP(sprite:FunkinSprite, relative:FlxPoint) {
+		preRotation(sprite, relative);
+		genericOppositeScale(sprite, relative, false, true, false, true);
+		postRotation(sprite, relative);
+	}
+	function __SCALE_BOTTOM(sprite:FunkinSprite, relative:FlxPoint) {
+		preRotation(sprite, relative);
+		genericScale(sprite, relative, false, true);
+		postRotation(sprite, relative);
+	}
+
+	function genericScale(sprite:FunkinSprite, relative:FlxPoint, doX:Bool, doY:Bool) {
+		var relativeMult = 1 / (FlxMath.lerp(1, stageCamera.zoom, sprite.zoomFactor) / stageCamera.zoom) * (FlxG.keys.pressed.ALT ? 2 : 1);
+		relative.x *= relativeMult;
+		relative.y *= relativeMult;
+
+		var width = sprite.frameWidth * storedScale.x;
+		var height = sprite.frameHeight * storedScale.y;
+		if (doX) width -= relative.x;
+		if (doY) height -= relative.y;
+		CoolUtil.setGraphicSizeFloat(sprite, width, height);
+
+		if (FlxG.keys.pressed.SHIFT) {
+			final nscale = Math.max(sprite.scale.x, sprite.scale.y);
+			sprite.scale.set(nscale, nscale);
+		}
+
+		final updatedHitbox:Bool = tryUpdateHitbox(sprite);
+		if (FlxG.keys.pressed.ALT) {
+			sprite.x = storedPos.x;
+			sprite.y = storedPos.y;
+			if (updatedHitbox) {
+				sprite.x += (sprite.frameWidth * (storedScale.x - sprite.scale.x) * 0.5);
+				sprite.y += (sprite.frameHeight * (storedScale.y - sprite.scale.y) * 0.5);
+			}
+			return true;
+		}
+		return !updatedHitbox;
+	}
+
+	function genericOppositeScale(sprite:FunkinSprite, relative:FlxPoint, scaleX:Bool, scaleY:Bool, repositionX:Bool, repositionY:Bool) {
+		if(repositionX) relative.x *= -1;
+		if(repositionY) relative.y *= -1;
+		final repositioned = genericScale(sprite, relative, scaleX, scaleY);
+		if (!repositioned) {
+			if(repositionX) sprite.x = storedPos.x + (sprite.frameWidth * (storedScale.x - sprite.scale.x));
+			if(repositionY) sprite.y = storedPos.y + (sprite.frameHeight * (storedScale.y - sprite.scale.y));
+		} else if (!FlxG.keys.pressed.ALT) {
+			if(repositionX) sprite.x += (sprite.frameWidth * (storedScale.x - sprite.scale.x));
+			if(repositionY) sprite.y += (sprite.frameHeight * (storedScale.y - sprite.scale.y));
+		}
+	}
+	//endregion
+
+	//region Skew
+
+	function __SKEW_LEFT(sprite:FunkinSprite, relative:FlxPoint) {
+		if (!FlxG.keys.pressed.SHIFT) {
+			var lastX = relative.x;
+			var lastY = relative.y;
+			preRotation(sprite, relative);
+			genericOppositeScale(sprite, relative, true, false, true, false);
+			postRotation(sprite, relative);
+			relative.set(lastX, lastY);
+		}
+
+		sprite.skew.y = CoolUtil.bound(Math.atan2(skewPoint2.y - (skewPoint1.y - relative.y),
+			skewPoint2.x - (skewPoint1.x - (FlxG.keys.pressed.SHIFT ? 0 : relative.x))) * FlxAngle.TO_DEG, -89,
+			89);
+		setSkewBounds(sprite);
+		sprite.y = storedPos.y - (skewSize.y - lastSkewSize) * 0.5;
+	}
+
+	function __SKEW_BOTTOM(sprite:FunkinSprite, relative:FlxPoint) {
+		if (!FlxG.keys.pressed.SHIFT) {
+			var lastX = relative.x;
+			var lastY = relative.y;
+			preRotation(sprite, relative);
+			genericScale(sprite, relative, false, true);
+			postRotation(sprite, relative);
+			relative.set(lastX, lastY);
+		}
+
+		sprite.skew.x = CoolUtil.bound(Math.atan2((skewPoint2.x - relative.x) - skewPoint1.x,
+			(skewPoint2.y - (FlxG.keys.pressed.SHIFT ? 0 : relative.y)) - skewPoint1.y) * FlxAngle.TO_DEG, -89,
+			89);
+		setSkewBounds(sprite);
+		sprite.x = storedPos.x + (skewSize.x - lastSkewSize) * 0.5;
+	}
+
+	function __SKEW_TOP(sprite:FunkinSprite, relative:FlxPoint) {
+		if (!FlxG.keys.pressed.SHIFT) {
+			var lastX = relative.x;
+			var lastY = relative.y;
+			preRotation(sprite, relative);
+			genericOppositeScale(sprite, relative, false, true, false, true);
+			postRotation(sprite, relative);
+			relative.set(lastX, lastY);
+		}
+
+		sprite.skew.x = CoolUtil.bound(Math.atan2(skewPoint2.x - (skewPoint1.x - relative.x),
+			skewPoint2.y - (skewPoint1.y - (FlxG.keys.pressed.SHIFT ? 0 : relative.y))) * FlxAngle.TO_DEG, -89,
+			89);
+		setSkewBounds(sprite);
+		sprite.x = storedPos.x - (skewSize.x - lastSkewSize) * 0.5;
+	}
+
+	function __SKEW_RIGHT(sprite:FunkinSprite, relative:FlxPoint) {
+		if (!FlxG.keys.pressed.SHIFT) {
+			var lastX = relative.x;
+			var lastY = relative.y;
+			preRotation(sprite, relative);
+			genericScale(sprite, relative, true, false);
+			postRotation(sprite, relative);
+			relative.set(lastX, lastY);
+		}
+
+		sprite.skew.y = CoolUtil.bound(Math.atan2((skewPoint2.y - relative.y) - skewPoint1.y,
+			(skewPoint2.x - (FlxG.keys.pressed.SHIFT ? 0 : relative.x)) - skewPoint1.x) * FlxAngle.TO_DEG, -89,
+			89);
+		setSkewBounds(sprite);
+		sprite.y = storedPos.y + (skewSize.y - lastSkewSize) * 0.5;
+	}
+
+	function __ROTATE(sprite:FunkinSprite, relative:FlxPoint) {
+		var buttonBoxes:Array<FlxPoint> = sprite.extra.get(exID("buttonBoxes"));
+		var p:FlxPoint = buttonBoxes[8];
+
+		FlxG.mouse.getWorldPosition(stageCamera, _point);
+
+		var dx:Float = _point.x - p.x;
+		var dy:Float = _point.y - p.y;
+		var angle = FlxAngle.angleFromOrigin(dx, dy, true) + angleOffset;
+		if (FlxG.keys.pressed.SHIFT)
+			angle = Std.int(angle / 45) * 45;
+		sprite.angle = angle;
+	}
+
+
+	var skewInfo:FlxRect = FlxRect.get();
+	var skewSize:FlxPoint = FlxPoint.get();
+	var skewPoint1:FlxPoint = FlxPoint.get();
+	var skewPoint2:FlxPoint = FlxPoint.get();
+	var lastSkewSize:Float = 0.0;
+	private function mouseModeChanged(sprite:FunkinSprite) {
+		// SKEW_TOP = 10, LEFT = 11, RIGHT = 12, BOTTOM = 13
+		if (mouseMode == 10 || mouseMode == 13){
+			skewPoint1.set(0, 0);
+			skewPoint2.set(0, 1);
+			setSkewBounds(sprite);
+			applySkewPoints(sprite);
+			lastSkewSize = skewSize.x;
+		}
+		else if (mouseMode == 11 || mouseMode == 12){
+			skewPoint1.set(0, 0);
+			skewPoint2.set(1, 0);
+			setSkewBounds(sprite);
+			applySkewPoints(sprite);
+			lastSkewSize = skewSize.y;
+		}
+	}
+
+	private function setSkewBounds(sprite:FunkinSprite) {
+		skewInfo.set(
+			sprite.x + sprite.offset.x + sprite.frameWidth * 0.5,
+			sprite.y + sprite.offset.y + sprite.frameHeight * 0.5,
+			sprite.frameWidth * sprite.scale.x * sprite._cosAngle + sprite.frameHeight * sprite.scale.y * sprite._sinAngle,
+			sprite.frameWidth * sprite.scale.x * sprite._sinAngle + sprite.frameHeight * sprite.scale.y * sprite._cosAngle
+		);
+		skewSize.set(
+			skewInfo.height * Math.tan(sprite.skew.x * FlxAngle.TO_RAD),
+			skewInfo.width * Math.tan(sprite.skew.y * FlxAngle.TO_RAD)
+		);
+	}
+
+	private function applySkewPoints(sprite:FunkinSprite) {
+		skewPoint1.set(
+			(skewInfo.x + skewSize.x * (skewPoint1.y - 0.5)) + skewInfo.width * skewPoint1.x,
+			(skewInfo.y + skewSize.y * (skewPoint1.x - 0.5)) + skewInfo.height * skewPoint1.y
+		);
+		skewPoint2.set(
+			(skewInfo.x + skewSize.x * (skewPoint2.y - 0.5)) + skewInfo.width * skewPoint2.x,
+			(skewInfo.y + skewSize.y * (skewPoint2.x - 0.5)) + skewInfo.height * skewPoint2.y
+		);
+	}
+	//endregion
+
+	//region Rotation
+	var oldSpritePos = FlxPoint.get();
+
+	function preRotation(sprite:FunkinSprite, relative:FlxPoint) {
+		if (sprite.angle != 0)
+			relative.rotateByDegrees(-sprite.angle);//relative = rotateByDegrees(relative, -sprite.angle);
+
+		if (FlxG.mouse.justPressed) {
+			oldSpritePos.x = sprite.x;
+			oldSpritePos.y = sprite.y;
+		}
+	}
+
+	function postRotation(sprite:FunkinSprite, relative:FlxPoint) {
+		if (sprite.angle != 0) {
+			var p = rotateAround(FlxPoint.get(sprite.x, sprite.y), oldSpritePos, sprite.angle);
+			sprite.x = p.x;
+			sprite.y = p.y;
+			p.put();
+		}
+	}
+
+	private static inline function rotateAround(p:FlxPoint, origin:FlxPoint, angle:Float):FlxPoint {
+		/*
+		var rel = FlxPoint.get(p.x - origin.x, p.y - origin.y);
+		rel.rotateByDegrees(angle);
+		p.set(origin.x + rel.x, origin.y + rel.y);
+		rel.put();
+		*/
+		return p.pivotDegrees(origin, angle);
+	}
+	//endregion
 
 	public static var dotCheckSize:Float = 53;
 
