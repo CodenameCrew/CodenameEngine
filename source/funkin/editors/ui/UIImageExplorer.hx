@@ -69,7 +69,7 @@ class UIImageExplorer extends UIFileExplorer {
 			if (Paths.assetsTree.getPath('$noExt\\spritemap1.png') != null)
 				imagePath = '$noExt\\spritemap1.png';
 			
-			var fullImagePath:String = '${Path.normalize(Sys.getCwd())}/${Paths.assetsTree.getPath(imagePath)}'.replace('/', '\\');
+			var fullImagePath:String = '${Path.normalize(Sys.getCwd())}/${Paths.assetsTree.getPath(imagePath)}'.replace('\\', '/');
 			if (FileSystem.exists(fullImagePath))
 				loadFile(fullImagePath);
 				
@@ -209,7 +209,7 @@ class UIImageExplorer extends UIFileExplorer {
 				var info = FileSystem.stat(spritemapPath);
 				size += info.size;
 
-				spritemapPath = spritemapPath.replace('/', '\\');
+				spritemapPath = spritemapPath.replace('\\', '/');
 				imageFiles.set(Path.withoutDirectory(spritemapPath), sys.io.File.getBytes(spritemapPath));
 			}
 
@@ -219,7 +219,7 @@ class UIImageExplorer extends UIFileExplorer {
 				var info = FileSystem.stat(spritemapPath);
 				size += info.size;
 
-				spritemapPath = spritemapPath.replace('/', '\\');
+				spritemapPath = spritemapPath.replace('\\', '/');
 				imageFiles.set(Path.withoutDirectory(spritemapPath), sys.io.File.getBytes(spritemapPath));
 			}
 
