@@ -171,7 +171,7 @@ jobs:
           lipo -create "$INTEL/CodenameEngine" "$ARM/CodenameEngine" -output "$BIN/CodenameEngine"
           lipo -create "$INTEL/lime.ndll" "$ARM/lime.ndll" -output "$BIN/lime.ndll"
       - name: Tar files
-        run:  tar -zcvf CodenameEngine.tar.gz CodenameEngine.app
+        run:  tar -zcvf CodenameEngine.tar.gz -C CodenameEngine.app .
       - name: Uploading Universal Mac OS bundle (executable)
         uses: actions/upload-artifact@v7
         with:
@@ -344,7 +344,7 @@ jobs:
           lipo -create "$INTEL/CodenameEngine" "$ARM/CodenameEngine" -output "$BIN/CodenameEngine"
           lipo -create "$INTEL/lime.ndll" "$ARM/lime.ndll" -output "$BIN/lime.ndll"
       - name: Tar files
-        run:  tar -zcvf CodenameEngine.tar.gz CodenameEngine.app
+        run:  tar -zcvf CodenameEngine.tar.gz -C CodenameEngine.app .
       - name: Uploading Universal Mac OS bundle (entire build)
         uses: actions/upload-artifact@v7
         with:
