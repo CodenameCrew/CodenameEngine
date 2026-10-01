@@ -372,7 +372,7 @@ class Charter extends UIState {
 					{
 						label: translate("playback.snap"), // TODO: add translation key
 						onSelect: _playback_snap,
-						icon: Options.charterQuantizisePositionAfterPause ? 1 : 0
+						icon: Options.charterPauseQuant ? 1 : 0
 					},
 					null,
 					{
@@ -1949,7 +1949,7 @@ class Charter extends UIState {
 			FlxG.sound.music.pause();
 			vocals.pause();
 			for (strumLine in strumLines.members) strumLine.vocals.pause();
-			if (Options.charterQuantizisePositionAfterPause) Conductor.songPosition = Conductor.getTimeForStep(quantStep(Conductor.curStepFloat));
+			if (Options.charterPauseQuant) Conductor.songPosition = Conductor.getTimeForStep(quantStep(Conductor.curStepFloat));
 		} else {
 			FlxG.sound.music.play(true, Conductor.songPosition + Conductor.songOffset);
 			vocals.play(true, FlxG.sound.music.getActualTime());
@@ -1959,7 +1959,7 @@ class Charter extends UIState {
 		}
 	}
 	function _playback_snap(t) {
-		t.icon = (Options.charterQuantizisePositionAfterPause = !Options.chaterQuantizisePositionAfterPause) ? 1 : 0;
+		t.icon = (Options.charterPauseQuant = !Options.charterPauseQuant) ? 1 : 0;
 	}
 
 	function _playback_speed_raise(_) playBackSlider.value += .25;
