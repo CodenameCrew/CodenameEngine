@@ -13,6 +13,8 @@ class GameOverEndEvent extends CancellableEvent {
 
   public var onTimerEnd:Void -> Void;
   public var onFadeEnd:Void -> Void;
+
+  public var skipTrans:Bool = true;
   
   public var state:FlxState = new PlayState();
 }
