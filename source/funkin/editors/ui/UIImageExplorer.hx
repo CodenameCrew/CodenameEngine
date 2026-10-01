@@ -172,7 +172,7 @@ class UIImageExplorer extends UIFileExplorer {
 		// GATHER ANIMATIONS/DATA FILES!!!
 		var frames:FlxFramesCollection = null;
 		if (isAtlas) {
-			var dataPath:String = '$directoryPath/Animation.json'.replace('/', '\\');
+			var dataPath:String = '$directoryPath/Animation.json'.replace('\\', '/');
 
 			if (FileSystem.exists(dataPath)) {
 				var dataPathFile:String = File.getContent(dataPath);
