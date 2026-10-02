@@ -1815,6 +1815,9 @@ class Charter extends UIState {
 				deleteSelection(selection, false);
 			case CDeleteSelection(selection):
 				createSelection(selection, false);
+			case CCreateDeleteSelection(created, deleted):
+				createSelection(deleted, false);
+				deleteSelection(created, false);
 			case CSelectionDrag(selectionDrags):
 				for (s in selectionDrags)
 					if (s.selectable.draggable) s.selectable.handleDrag(s.change * -1);
@@ -1824,6 +1827,9 @@ class Charter extends UIState {
 			case CEditSustains(changes):
 				for(n in changes)
 					n.note.updatePos(n.note.step, n.note.id, n.before, n.note.type);
+			case CEditIds(changes):
+				for(n in changes)
+					n.note.updatePos(n.note.step, n.before, n.note.susLength, n.note.type);
 			case CEditEvent(event, oldEvents, newEvents):
 				event.events = oldEvents.copy();
 				event.refreshEventIcons();
@@ -1880,6 +1886,9 @@ class Charter extends UIState {
 				createSelection(selection, false);
 			case CDeleteSelection(selection):
 				deleteSelection(selection, false);
+			case CCreateDeleteSelection(created, deleted):
+				createSelection(created, false);
+				deleteSelection(deleted, false);
 			case CSelectionDrag(selectionDrags):
 				for (s in selectionDrags)
 					if (s.selectable.draggable) s.selectable.handleDrag(s.change);
@@ -1888,6 +1897,9 @@ class Charter extends UIState {
 			case CEditSustains(changes):
 				for(n in changes)
 					n.note.updatePos(n.note.step, n.note.id, n.after, n.note.type);
+			case CEditIds(changes):
+				for(n in changes)
+					n.note.updatePos(n.note.step, n.after, n.note.susLength, n.note.type);
 			case CEditEvent(event, oldEvents, newEvents):
 				event.events = newEvents.copy();
 				event.refreshEventIcons();
@@ -2323,6 +2335,63 @@ class Charter extends UIState {
 		changeNoteSustain(-16/quant);
 	}
 
+	function _note_duet(_){
+		var duetNotes:Selection = [];
+		selection.loop((n:CharterNote)->{
+			for	(strumLine in strumLines.members) {
+				var id = strumLines.members.indexOf(strumLine);
+				if (id != n.strumLineID) {
+					var c:CharterNote = new CharterNote();
+					c.updatePos(n.step, n.id, n.susLength, n.type, strumLine);
+					duetNotes.push(c);
+				}
+			}		
+		});
+
+		createSelection(duetNotes);
+		
+		duetNotes.loop((n:CharterNote)->{
+			selection.push(n);
+		});
+	}
+
+	function _note_swap(_){
+		var createNotes:Selection = [];
+		var deleteNotes:Selection = [];
+
+		selection.loop((n:CharterNote)->{
+			for	(strumLine in strumLines.members) {
+				var id = strumLines.members.indexOf(strumLine);
+				if (id != n.strumLineID) {
+					var c:CharterNote = new CharterNote();
+					c.updatePos(n.step, n.id, n.susLength, n.type, strumLine);
+					createNotes.push(c);
+				}
+			}
+
+			deleteNotes.push(n);
+		});
+
+		createSelection(createNotes, false);
+		deleteSelection(deleteNotes, false);
+		undos.addToUndo(CCreateDeleteSelection(createNotes, deleteNotes));
+		selection = createNotes;
+	}
+
+	function _note_mirror(_){
+		var undoChanges:Array<NoteIdChange> = [];
+		selection.loop((n:CharterNote)->{
+			var old = n.id;
+			var kc = (n.strumLine != null ? Flags.DEFAULT_STRUM_AMOUNT : n.strumLine.keyCount) - 1;
+
+			n.updatePos(n.step, (kc - n.id), n.susLength, n.type, n.strumLine);
+			undoChanges.push({note: n, before: old, after: n.id });
+		});
+		
+		undos.addToUndo(CEditIds(undoChanges));
+		selection = [for(change in undoChanges) change.note];
+	}
+
 	function _note_selectall(_) {
 		selection = cast notesGroup.members.copy();
 	}
@@ -2392,6 +2461,22 @@ class Charter extends UIState {
 				label: translate("note.subtractSustainLength"),
 				keybind: [Q],
 				onSelect: _note_subtractsustain
+			},
+			null,
+			{
+				label: translate("note.duet"),
+				keybind: [CONTROL, ALT, SHIFT, D],
+				onSelect: _note_duet
+			},
+			{
+				label: translate("note.swap"),
+				keybind: [CONTROL, ALT, SHIFT, S],
+				onSelect: _note_swap
+			},
+			{
+				label: translate("note.mirror"),
+				keybind: [CONTROL, ALT, SHIFT, M],
+				onSelect: _note_mirror
 			},
 			null,
 			{
@@ -2658,8 +2743,10 @@ enum CharterChange {
 	CDeleteStrumLine(strumLineID:Int, strumLine:ChartStrumLine);
 	CCreateSelection(selection:Selection);
 	CDeleteSelection(selection:Selection);
+	CCreateDeleteSelection(create:Selection, delete:Selection);
 	CSelectionDrag(selectionDrags:Array<SelectionDragChange>);
 	CEditSustains(notes:Array<NoteSustainChange>);
+	CEditIds(notes:Array<NoteIdChange>);
 	CEditEvent(event:CharterEvent, oldEvents:Array<ChartEvent>, newEvents:Array<ChartEvent>);
 	CEditEventGroups(events:Array<CharterEvent>);
 	CEditChartData(oldData:{stage:String, speed:Float}, newData:{stage:String, speed:Float});
@@ -2679,6 +2766,12 @@ typedef NoteSustainChange = {
 	var note:CharterNote;
 	var before:Float;
 	var after:Float;
+}
+
+typedef NoteIdChange = {
+	var note:CharterNote;
+	var before:Int;
+	var after:Int;
 }
 
 typedef SelectionDragChange = {

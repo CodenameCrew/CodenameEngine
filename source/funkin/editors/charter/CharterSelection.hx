@@ -75,7 +75,7 @@ class CharterSelectionScreen extends EditorTreeMenuScreen {
 		super('editor.chart.name', 'charterSelection.desc', 'charterSelection.', 'newSong', 'newSongDesc', #if sys () -> {
 			parent.openSubState(new SongCreationScreen(saveSong));
 		} #end);
-		freeplayList = FreeplaySonglist.get(false, 'songs/', false);
+		freeplayList = FreeplaySonglist.get(true, 'songs/', false);
 
 		function generateList(modsList:Array<ChartMetaData>, folderPath:String = ""):Array<FlxSprite> {
 			var list:Array<FlxSprite> = [];
