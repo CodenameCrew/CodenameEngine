@@ -19,6 +19,7 @@ class AppearanceOptions extends TreeMenuScreen {
 		add(new Checkbox(getNameID('flashingMenu'), getDescID('flashingMenu'), 'flashingMenu'));
 		add(new Checkbox(getNameID('colorHealthBar'), getDescID('colorHealthBar'), 'colorHealthBar'));
 		add(new Checkbox(getNameID('week6PixelPerfect'), getDescID('week6PixelPerfect'), 'week6PixelPerfect'));
+		#if DISCORD_RPC add(new Checkbox(getNameID('discordRPC'), getDescID('discordRPC'), 'discordRPC')); #end
 
 		add(new Separator());
 		add(new TextOption('optionsMenu.advanced', 'optionsTree.appearance.advanced-desc', ' >', () ->
