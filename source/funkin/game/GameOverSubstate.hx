@@ -89,7 +89,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		Conductor.changeBPM(gameOverSongBPM);
 		cancelConductorUpdate = true;
 
-		FlxG.sound.cache(Paths.sound(retrySFX));
+		FlxG.sound.cache(Paths.sound(retrySFX)); // Caching the sound early to prevent a possible spike later.
 
 		DiscordUtil.call("onGameOver", []);
 		gameoverScript.call("postCreate");
@@ -149,6 +149,8 @@ class GameOverSubstate extends MusicBeatSubstate
     	if (FlxG.sound.music != null) {
 			FlxG.sound.music.stop();
     	}
+
+		FlxG.sound.music = null;
 
 		character.playAnim("deathConfirm", true);
 
