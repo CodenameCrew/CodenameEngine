@@ -334,15 +334,7 @@ class Flags {
 		if (WINDOW_TITLE_USE_MOD_NAME == null) WINDOW_TITLE_USE_MOD_NAME = !overridenFlags.exists('TITLE') && overridenFlags.exists('MOD_NAME');
 		if (USE_LEGACY_TIMING == null) USE_LEGACY_TIMING = MOD_API_VERSION < 2;
 		if (SUSTAINS_AS_ONE_NOTE == null) SUSTAINS_AS_ONE_NOTE = MOD_API_VERSION >= 2;
-		if (DEFAULT_GLSL_VERSION == null) {
-			if (MOD_API_VERSION < 2) {
-				DEFAULT_GLSL_VERSION = #if (android || mac || web) "100" #else "120" #end;
-				Logs.warn("Blend Mode Extensions won't work in MOD_API_VERSION below than 2");
-			}
-			else {
-				DEFAULT_GLSL_VERSION = openfl.utils.GLSLSourceAssembler.getDefaultVersion();
-			}
-		}
+		if (DEFAULT_GLSL_VERSION == null) DEFAULT_GLSL_VERSION = openfl.utils.GLSLSourceAssembler.getDefaultVersion();
 		if (DEFAULT_SOUND_TIME_SCALED_PITCH == null) DEFAULT_SOUND_TIME_SCALED_PITCH = MOD_API_VERSION >= 2;
 		if (USE_SOUND_VOLUME_CURVE == null) USE_SOUND_VOLUME_CURVE = MOD_API_VERSION >= 2;
 		if (USE_FLXTRAIL_FRAMES == null) USE_FLXTRAIL_FRAMES = MOD_API_VERSION < 2;

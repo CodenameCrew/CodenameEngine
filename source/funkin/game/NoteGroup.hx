@@ -69,21 +69,25 @@ class NoteGroup extends FlxTypedGroup<Note> {
 		var renderingSustains = true;
 		var oldCur = __currentlyLooping;
 		__currentlyLooping = true;
+		__time = __getSongPos() + limit;
 
+		// only draw sustain notes first
 		i = length - 1;
 		__loopSprite = null;
-		__time = __getSongPos() + limit;
 		while(i >= 0) {
 			__loopSprite = members[i--];
-			if (__loopSprite == null || (__loopSprite.isSustainNote != renderingSustains) || !__loopSprite.exists || !__loopSprite.visible) continue;
-			if (__loopSprite.strumTime > __time) {
-				if (renderingSustains) {
-					renderingSustains = false;
-					i = length - 1; // loop again
-					continue;
-				}
-				else break;
-			}
+			if (__loopSprite == null || !__loopSprite.isSustainNote || !__loopSprite.exists || !__loopSprite.visible) continue;
+			if (__loopSprite.strumTime > __time) break;
+			__loopSprite.draw();
+		}
+
+		// now do it again but regular notes instead
+		i = length - 1;
+		__loopSprite = null;
+		while(i >= 0) {
+			__loopSprite = members[i--]; // this below is the only change
+			if (__loopSprite == null || __loopSprite.isSustainNote || !__loopSprite.exists || !__loopSprite.visible) continue;
+			if (__loopSprite.strumTime > __time) break;
 			__loopSprite.draw();
 		}
 		__currentlyLooping = oldCur;

@@ -41,13 +41,11 @@ jobs:
           haxelib run lime rebuild tools
           arch -x86_64 haxelib run lime rebuild mac -nocolor -release
           arch -x86_64 haxelib run lime build mac -DCOMPILE_EXPERIMENTAL
-      - name: Tar files
-        run: tar -zcvf CodenameEngine.tar.gz -C export/release/macos/bin .
       - name: Uploading artifact (entire build)
         uses: actions/upload-artifact@v7
         with:
           name: Codename Engine-x64
-          path: CodenameEngine.tar.gz
+          path: export/release/macos/bin/
       # - name: Clearing already existing cache
       #   uses: actions/github-script@v9
       #   with:
@@ -108,13 +106,11 @@ jobs:
           haxelib run lime rebuild tools
           haxelib run lime rebuild mac -nocolor -release
           haxelib run lime build mac -DCOMPILE_EXPERIMENTAL
-      - name: Tar files
-        run: tar -zcvf CodenameEngine.tar.gz -C export/release/macos/bin .
       - name: Uploading artifact (entire build)
         uses: actions/upload-artifact@v7
         with:
           name: Codename Engine-ARM64
-          path: CodenameEngine.tar.gz
+          path: export/release/macos/bin/
       # - name: Clearing already existing cache
       #   uses: actions/github-script@v9
       #   with:
@@ -161,10 +157,6 @@ jobs:
         with:
           name: Codename Engine-ARM64
           path: arm
-      - name: Tar files (x64)
-        run: tar -xvf intel/CodenameEngine.tar.gz -C intel
-      - name: Tar files (ARM64)
-        run: tar -xvf arm/CodenameEngine.tar.gz -C arm
       - name: Removing ARM64 and x64 artifacts
         uses: geekyeggo/delete-artifact@v6
         with:
@@ -179,7 +171,7 @@ jobs:
           lipo -create "$INTEL/CodenameEngine" "$ARM/CodenameEngine" -output "$BIN/CodenameEngine"
           lipo -create "$INTEL/lime.ndll" "$ARM/lime.ndll" -output "$BIN/lime.ndll"
       - name: Tar files
-        run:  tar -zcvf CodenameEngine.tar.gz CodenameEngine.app
+        run:  tar -zcvf CodenameEngine.tar.gz -C CodenameEngine.app .
       - name: Uploading Universal Mac OS bundle (executable)
         uses: actions/upload-artifact@v7
         with:
@@ -223,13 +215,11 @@ jobs:
           haxelib run lime rebuild tools
           arch -x86_64 haxelib run lime rebuild mac -nocolor -release
           arch -x86_64 haxelib run lime build mac -debug -DCOMPILE_EXPERIMENTAL
-      - name: Tar files
-        run: tar -zcvf CodenameEngine.tar.gz -C export/debug/macos/bin .
       - name: Uploading artifact (entire build)
         uses: actions/upload-artifact@v7
         with:
           name: Codename Engine-x64 Debug
-          path: CodenameEngine.tar.gz
+          path: export/debug/macos/bin/
       # - name: Clearing already existing cache
       #   uses: actions/github-script@v9
       #   with:
@@ -289,13 +279,11 @@ jobs:
           haxelib run lime rebuild tools
           haxelib run lime rebuild mac -nocolor -release
           haxelib run lime build mac -debug -DCOMPILE_EXPERIMENTAL
-      - name: Tar files
-        run: tar -zcvf CodenameEngine.tar.gz -C export/debug/macos/bin .
       - name: Uploading artifact (entire build)
         uses: actions/upload-artifact@v7
         with:
           name: Codename Engine-ARM64 Debug
-          path: CodenameEngine.tar.gz
+          path: export/debug/macos/bin/
       # - name: Clearing already existing cache
       #   uses: actions/github-script@v9
       #   with:
@@ -342,10 +330,6 @@ jobs:
         with:
           name: Codename Engine-ARM64 Debug
           path: arm
-      - name: Tar files (x64)
-        run: tar -xvf intel/CodenameEngine.tar.gz -C intel
-      - name: Tar files (ARM64)
-        run: tar -xvf arm/CodenameEngine.tar.gz -C arm
       - name: Removing ARM64 and x64 artifacts
         uses: geekyeggo/delete-artifact@v6
         with:
@@ -360,7 +344,7 @@ jobs:
           lipo -create "$INTEL/CodenameEngine" "$ARM/CodenameEngine" -output "$BIN/CodenameEngine"
           lipo -create "$INTEL/lime.ndll" "$ARM/lime.ndll" -output "$BIN/lime.ndll"
       - name: Tar files
-        run:  tar -zcvf CodenameEngine.tar.gz CodenameEngine.app
+        run:  tar -zcvf CodenameEngine.tar.gz -C CodenameEngine.app .
       - name: Uploading Universal Mac OS bundle (entire build)
         uses: actions/upload-artifact@v7
         with:

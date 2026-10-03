@@ -186,6 +186,20 @@ class Main extends Sprite
 
 	static var persistShaderKeys:Map<String, Bool>;
 
+	public static function refreshShaders() @:privateAccess {
+		if (persistShaderKeys == null) {
+			persistShaderKeys = [for (k in Lib.current.stage.context3D.__programs.keys()) k => true];
+		}
+		else {
+			for (key => program in Lib.current.stage.context3D.__programs) {
+				if (persistShaderKeys.get(key) || Type.resolveClass(key) != null) continue;
+
+				program.dispose();
+				Lib.current.stage.context3D.__programs.remove(key);
+			}
+		}
+	}
+
 	public static function refreshAssets() @:privateAccess {
 		FunkinCache.instance.clearSecondLayer();
 
@@ -203,17 +217,7 @@ class Main extends Sprite
 
 		game.addChildAt(game.soundTray = daSndTray, index);
 
-		if (persistShaderKeys == null) {
-			persistShaderKeys = [for (k in @:privateAccess Lib.current.stage.context3D.__programs.keys()) k => true];
-		}
-		else {
-			for (key => program in @:privateAccess Lib.current.stage.context3D.__programs) {
-				if (persistShaderKeys.get(key) || Type.resolveClass(key) != null) continue;
-
-				program.dispose();
-				@:privateAccess Lib.current.stage.context3D.__programs.remove(key);
-			}
-		}
+		refreshShaders();
 	}
 
 	public static function initTransition() {
