@@ -370,7 +370,7 @@ class Charter extends UIState {
 						onSelect: _playback_play
 					},
 					{
-						label: translate("playback.snap"), // TODO: add translation key
+						label: translate("playback.snap"),
 						onSelect: _playback_snap,
 						icon: Options.charterPauseQuant ? 1 : 0
 					},
