@@ -4,6 +4,9 @@ import hscript.*;
 import hscript.Expr.Error;
 import hscript.Parser;
 import openfl.Assets;
+#if (cpp && scriptable)
+import funkin.backend.scripting.cppia.CppiaModule;
+#end
 
 class HScript extends Script {
 	public var interp:Interp;
@@ -113,6 +116,31 @@ class HScript extends Script {
 				return true;
 			}
 		}
+
+		#if (cpp && scriptable)
+		// path: mods/<mod>/source/Class.cppia
+		// scripts: import Class;
+		var p = '$assetsPath.cppia';
+		if (__importedPaths.exists(p))
+			return true;
+		if (Assets.exists(p)) {
+			var cls = CppiaModule.resolve(p, cl.join("."));
+			if (cls == null && cl.length > 1)
+				cls = CppiaModule.resolve(p, cl[cl.length - 1]);
+
+			if (cls != null) {
+				var varName = cl[cl.length - 1];
+				if (cl.length > 1)
+					interp.variables.set(cl.join("."), cls);
+				if (varName != cl.join("."))
+					interp.variables.set(varName, cls);
+				__importedPaths.set(p, true);
+				return true;
+			}
+			return false;
+		}
+		#end
+
 		return false;
 	}
 
