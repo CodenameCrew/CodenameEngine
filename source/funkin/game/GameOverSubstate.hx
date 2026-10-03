@@ -37,6 +37,8 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	public var lossSFX:FlxSound;
 
+	@:noCompletion @:dox(hide) private static var _ONE_ARG:Array<Dynamic> = [null];
+
 	public function new(x:Float, y:Float, ?character:String, player:Bool = true, ?gameOverSong:String, ?lossSFX:String, ?retrySFX:String)
 	{
 		super();
