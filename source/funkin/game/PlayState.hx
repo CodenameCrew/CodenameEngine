@@ -2113,8 +2113,8 @@ class PlayState extends MusicBeatState
 
 		var hasEvent:Bool = evt != null;
 
-		var pre:String = hasEvent && (evt.ratingPrefix != null || evt.ratingPrefix == "game/score/") ? evt.ratingPrefix : event.ratingPrefix;
-		var suf:String = hasEvent && (evt.ratingSuffix != null || evt.ratingSuffix == "") ? evt.ratingSuffix : event.ratingSuffix;
+		var pre:String = hasEvent && (event.ratingPrefix == null || event.ratingPrefix == "game/score/") ? evt.ratingPrefix : event.ratingPrefix;
+		var suf:String = hasEvent && (event.ratingSuffix == null || event.ratingSuffix == "") ? evt.ratingSuffix : event.ratingSuffix;
 
 		var ratingScale:Float = hasEvent && evt.ratingScale != null ? evt.ratingScale : event.ratingScale;
 
@@ -2155,8 +2155,8 @@ class PlayState extends MusicBeatState
 
 			var hasEvent:Bool = evt != null;
 
-			var pre:String = hasEvent && (evt.ratingPrefix != null || evt.ratingPrefix == "game/score/") ? evt.ratingPrefix : event.ratingPrefix;
-			var suf:String = hasEvent && (evt.ratingSuffix != null || evt.ratingSuffix == "") ? evt.ratingSuffix : event.ratingSuffix;
+			var pre:String = hasEvent && (event.ratingPrefix == null || event.ratingPrefix == "game/score/") ? evt.ratingPrefix : event.ratingPrefix;
+			var suf:String = hasEvent && (event.ratingSuffix == null || event.ratingSuffix == "") ? evt.ratingSuffix : event.ratingSuffix;
 
 			var ratingScale:Float = hasEvent && evt.ratingScale != null ? evt.ratingScale : event.ratingScale;
 
@@ -2201,8 +2201,8 @@ class PlayState extends MusicBeatState
 
 				var hasEvent:Bool = evt != null;
 
-				var pre:String = hasEvent && (evt.ratingPrefix != null || evt.ratingPrefix == "game/score/") ? evt.ratingPrefix : event.ratingPrefix;
-				var suf:String = hasEvent && (evt.ratingSuffix != null || evt.ratingSuffix == "") ? evt.ratingSuffix : event.ratingSuffix;
+				var pre:String = hasEvent && (event.ratingPrefix == null || event.ratingPrefix == "game/score/") ? evt.ratingPrefix : event.ratingPrefix;
+				var suf:String = hasEvent && (event.ratingSuffix == null || event.ratingSuffix == "") ? evt.ratingSuffix : event.ratingSuffix;
 
 				var numScale:Float = hasEvent && evt.numScale != null ? evt.numScale : event.numScale;
 
