@@ -141,7 +141,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		
 		isEnding = true;
 
-		var event:GameOverEndEvent = EventManager.get(GameOverEndEvent).recycle();
+		var event:GameOverEndEvent = EventManager.get(GameOverEndEvent).recycle(null, 0.7, null, 0.5, FlxColor.BLACK, null, null, true, new PlayState());
 		gameoverScript.call("onEnd", [event]);
 
 		if (event.cancelled) return;
