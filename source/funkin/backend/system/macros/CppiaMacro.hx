@@ -68,6 +68,7 @@ class CppiaMacro {
 				pos: pos,
 				doc: "Parent object injected by the engine via Script.setParent (CppiaScript)."
 			});
+			existing.set("__parent", true);
 		}
 
 		if (!existing.exists("__parentType")) {
@@ -78,6 +79,7 @@ class CppiaMacro {
 				pos: pos,
 				doc: "Expected parent type (from @:scriptParent), used by CppiaScript for runtime validation."
 			});
+			existing.set("__parentType", true);
 		}
 
 		for (f in parentCl.fields.get()) {
@@ -93,12 +95,18 @@ class CppiaMacro {
 				var complexT = Context.toComplexType(t);
 				if (complexT == null) continue;
 				fields.push(mkProperty(f.name, complexT, pos, writable));
+				existing.set(f.name, true);
 				fields.push(mkGetter(f.name, pos));
-				if (writable)
+				existing.set('get_${f.name}', true);
+				if (writable) {
 					fields.push(mkSetter(f.name, complexT, pos));
+					existing.set('set_${f.name}', true);
+				}
 			} else {
 				fields.push(mkReflectProperty(f.name, pos));
+				existing.set(f.name, true);
 				fields.push(mkReflectGetter(f.name, pos));
+				existing.set('get_${f.name}', true);
 			}
 		}
 
@@ -117,6 +125,7 @@ class CppiaMacro {
 				access: [APrivate, AStatic],
 				pos: pos
 			});
+			existing.set(f.name, true);
 			fields.push({
 				name: 'get_${f.name}',
 				kind: FFun({
@@ -128,6 +137,7 @@ class CppiaMacro {
 				access: [APrivate, AStatic],
 				pos: pos
 			});
+			existing.set('get_${f.name}', true);
 		}
 
 		return fields;

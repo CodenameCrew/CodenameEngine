@@ -220,6 +220,9 @@ class Script extends FlxBasic implements IFlxDestroyable
 		"hscript",
 		"hsc",
 		"hxs",
+		#if (cpp && scriptable)
+		"cppia", // pre-compiled bytecode (CppiaScript)
+		#end
 		"pack", // combined file
 		"lua" /** ACTUALLY NOT SUPPORTED, ONLY FOR THE MESSAGE **/];
 
@@ -270,6 +273,10 @@ class Script extends FlxBasic implements IFlxDestroyable
 			{
 				case "hx" | "hscript" | "hsc" | "hxs":
 					new HScript(path);
+				#if (cpp && scriptable)
+				case "cppia":
+					new CppiaScript(path);
+				#end
 				case "pack":
 					var arr = Assets.getText(path).split("________PACKSEP________");
 					fromString(arr[1], arr[0]);

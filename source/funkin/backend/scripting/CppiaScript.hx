@@ -88,8 +88,10 @@ class CppiaScript extends Script
 		super.setParent(variable);
 		__lastParent = variable;
 		if (instance != null && __fields != null && __fields.get("__parent") == true) {
-			// validates against the macro-generated type tag
-			var expected = Reflect.field(Type.getClass(instance), "__parentType");
+			// validates against the macro-generated type tag; Reflect on a cppia class
+			// THROWS for missing statics (unlike native classes), so guard it
+			var expected = null;
+			try expected = Reflect.field(Type.getClass(instance), "__parentType") catch(_) {}
 			if (expected != null && variable != null && !Std.isOfType(variable, expected)) {
 				Logs.warn('Parent type mismatch: expected ${Type.getClassName(expected)} but got ${Type.getClassName(Type.getClass(variable))}, parent forwarders are disabled', fileName);
 				return;
