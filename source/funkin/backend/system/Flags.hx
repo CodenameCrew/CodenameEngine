@@ -352,6 +352,12 @@ class Flags {
 		if (SOUND_EXT == null) SOUND_EXT = SOUND_EXTS[0]; else SOUND_EXTS = [SOUND_EXT];
 		if (VIDEO_EXT == null) VIDEO_EXT = VIDEO_EXTS[0]; else VIDEO_EXTS = [VIDEO_EXT];
 		if (IMAGE_EXT == null) IMAGE_EXT = IMAGE_EXTS[0]; else IMAGE_EXTS = [IMAGE_EXT];
+
+		var temp:String;
+		if (!Assets.exists(MOD_ICON) && Assets.exists(temp = Paths.image(MOD_ICON))) MOD_ICON = temp;
+		if (!Assets.exists(MOD_ICON16) && Assets.exists(temp = Paths.image(MOD_ICON16))) MOD_ICON16 = temp;
+		if (!Assets.exists(MOD_ICON24) && Assets.exists(temp = Paths.image(MOD_ICON24))) MOD_ICON24 = temp;
+		if (!Assets.exists(MOD_ICON32) && Assets.exists(temp = Paths.image(MOD_ICON32))) MOD_ICON32 = temp;
 	}
 
 	public static function loadFromDatas(datas:Array<String>):Map<String, String> {

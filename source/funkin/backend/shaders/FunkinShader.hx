@@ -53,11 +53,10 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 
 	#if REGION /* IHScriptCustomBehaviour */
 	public function hget(name:String):Dynamic {
-		if (__glSourceDirty) __init();
-
 		if (__thisHasField(name) || __thisHasField('get_${name}')) return Reflect.getProperty(this, name);
 		else if (!Reflect.hasField(__data, name)) return null;
 
+		if (__glSourceDirty) __init();
 		final field:Dynamic = Reflect.field(__data, name);
 
 		var cl:String = Type.getClassName(Type.getClass(field));
@@ -78,17 +77,18 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 	}
 
 	public function hset(name:String, val:Dynamic):Dynamic {
-		if (__glSourceDirty) __init();
-
 		if (__thisHasField(name) || __thisHasField('set_${name}')) {
 			Reflect.setProperty(this, name, val);
 			return val;
 		}
 		else if (!Reflect.hasField(__data, name)) {
+			if (__glSourceDirty) __init();
 			// ??? huh
 			Reflect.setField(__data, name, val);
 			return val;
 		}
+
+		if (__glSourceDirty) __init();
 
 		var field = Reflect.field(__data, name);
 		var cl = Type.getClassName(Type.getClass(field));
@@ -141,6 +141,24 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 
 	override function __createAssembler():Void {
 		__glSourceAssembler = new FunkinShaderSourceAssembler(this);
+	}
+
+	override function __getParameterDefault(assign:Null<String>, type:ShaderParameterType, isSampler:Bool):Dynamic
+	{
+		if (isSampler && assign != null)
+		{
+			var p = assign.charAt(0);
+			if ((p == "'" || p == '"') && assign.charAt(assign.length - 1) == p) assign = assign.substring(1, assign.length - 1);
+
+			var path = Paths.image(assign);
+			if (FlxG.assets.exists(path))
+			{
+				var graphic = FlxG.bitmap.add(path);
+				if (graphic != null) return graphic.bitmap;
+			}
+		}
+
+		return super.__getParameterDefault(assign, type, isSampler);
 	}
 
 	override function toString():String {
@@ -205,6 +223,8 @@ class FunkinShaderSourceAssembler extends FlxRuntimeShader.FlxShaderSourceAssemb
 
 	override function __appendIncludes(source:String, isVertex:Bool, ?includedKeys:Map<String, Bool>):String
 	{
+		if (includedKeys == null) includedKeys = [];
+
 		var includeCommentFinder:EReg = __getIncludeCommentFinder(), lastMatch = 0, position;
 		while (includeCommentFinder.matchSub(source, lastMatch))
 		{
