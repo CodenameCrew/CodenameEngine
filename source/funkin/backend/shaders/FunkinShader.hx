@@ -147,16 +147,16 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 		return __cacheProgramId != null ? 'FunkinShader(${__cacheProgramId})' : 'FunkinShader';
 	}
 
-	#if REGION /* Deprecated */
-	public var shaderPrefix:String = "";
-	public var fragmentPrefix:String = "";
-	public var vertexPrefix:String = "";
-	#end
-
 	#if REGION /* Backward Compatibility */
 	private static var __instanceFields = Type.getInstanceFields(FunkinShader);
 	private static var FRAGMENT_SHADER = 0;
 	private static var VERTEX_SHADER = 1;
+
+	// These not triggering shader resets is intended, or it'll cause lag spikes
+	// It's recommended to use Flags
+	public var shaderPrefix:String = Flags.FUNKIN_SHADER_CODE_PREFIX;
+	public var fragmentPrefix:String = Flags.FUNKIN_SHADER_CODE_FRAGMENT_PREFIX;
+	public var vertexPrefix:String = Flags.FUNKIN_SHADER_CODE_VERTEX_PREFIX;
 
 	public var fileName(get, set):String;
 	inline function get_fileName():String return _fragmentFilePath ?? _vertexFilePath ?? "FunkinShader";
@@ -187,7 +187,9 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 	function registerParameter(name:String, type:String, isUniform:Bool) {
 		__registerParameter(name, Shader.getParameterTypeFromGLSL(type, false), StringTools.startsWith(type, "sampler"), 1, null, isUniform, null);
 	}
+	#end
 
+	#if REGION /* Deprecated */
 	// Unused... cne-openfl uses a different system
 	var __cancelNextProcessGLData:Bool = false;
 	public var onProcessGLData:FlxTypedSignal<(String, String)->Void> = new FlxTypedSignal<(String, String)->Void>();

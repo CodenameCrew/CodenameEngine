@@ -301,6 +301,10 @@ class Flags {
 	public static var DEFAULT_CHARACTER_GHOSTENABLE_SOUND:String = "editors/character/ghostEnable";
 
 	@:lazy public static var DEFAULT_GLSL_VERSION:String = null;
+	public static var FUNKIN_SHADER_CODE_PREFIX:String = "";
+	public static var FUNKIN_SHADER_CODE_FRAGMENT_PREFIX:String = "";
+	public static var FUNKIN_SHADER_CODE_VERTEX_PREFIX:String = "";
+
 	@:also(funkin.backend.utils.HttpUtil.userAgent)
 	public static var USER_AGENT:String = 'request';
 	// -- End of Codename's Default Flags --
