@@ -280,6 +280,7 @@
 				<str id="topBar.playback">Playback</str>
 				<group name="PlaybackMenu" prefix="playback.">
 					<str id="play">Play/Pause</str>
+					<str id="snap">Align time to grid</str>
 					<str id="speedRaise">↑ Speed {0}%</str>
 					<str id="speedReset">Reset Speed</str>
 					<str id="speedLower">↓ Speed {0}%</str>

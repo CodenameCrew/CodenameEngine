@@ -301,6 +301,10 @@ class Flags {
 	public static var DEFAULT_CHARACTER_GHOSTENABLE_SOUND:String = "editors/character/ghostEnable";
 
 	@:lazy public static var DEFAULT_GLSL_VERSION:String = null;
+	public static var FUNKIN_SHADER_CODE_PREFIX:String = "";
+	public static var FUNKIN_SHADER_CODE_FRAGMENT_PREFIX:String = "";
+	public static var FUNKIN_SHADER_CODE_VERTEX_PREFIX:String = "";
+
 	@:also(funkin.backend.utils.HttpUtil.userAgent)
 	public static var USER_AGENT:String = 'request';
 	// -- End of Codename's Default Flags --
@@ -334,15 +338,7 @@ class Flags {
 		if (WINDOW_TITLE_USE_MOD_NAME == null) WINDOW_TITLE_USE_MOD_NAME = !overridenFlags.exists('TITLE') && overridenFlags.exists('MOD_NAME');
 		if (USE_LEGACY_TIMING == null) USE_LEGACY_TIMING = MOD_API_VERSION < 2;
 		if (SUSTAINS_AS_ONE_NOTE == null) SUSTAINS_AS_ONE_NOTE = MOD_API_VERSION >= 2;
-		if (DEFAULT_GLSL_VERSION == null) {
-			if (MOD_API_VERSION < 2) {
-				DEFAULT_GLSL_VERSION = #if (android || mac || web) "100" #else "120" #end;
-				Logs.warn("Blend Mode Extensions won't work in MOD_API_VERSION below than 2");
-			}
-			else {
-				DEFAULT_GLSL_VERSION = openfl.utils.GLSLSourceAssembler.getDefaultVersion();
-			}
-		}
+		if (DEFAULT_GLSL_VERSION == null) DEFAULT_GLSL_VERSION = openfl.utils.GLSLSourceAssembler.getDefaultVersion();
 		if (DEFAULT_SOUND_TIME_SCALED_PITCH == null) DEFAULT_SOUND_TIME_SCALED_PITCH = MOD_API_VERSION >= 2;
 		if (USE_SOUND_VOLUME_CURVE == null) USE_SOUND_VOLUME_CURVE = MOD_API_VERSION >= 2;
 		if (USE_FLXTRAIL_FRAMES == null) USE_FLXTRAIL_FRAMES = MOD_API_VERSION < 2;
@@ -356,6 +352,12 @@ class Flags {
 		if (SOUND_EXT == null) SOUND_EXT = SOUND_EXTS[0]; else SOUND_EXTS = [SOUND_EXT];
 		if (VIDEO_EXT == null) VIDEO_EXT = VIDEO_EXTS[0]; else VIDEO_EXTS = [VIDEO_EXT];
 		if (IMAGE_EXT == null) IMAGE_EXT = IMAGE_EXTS[0]; else IMAGE_EXTS = [IMAGE_EXT];
+
+		var temp:String;
+		if (!Assets.exists(MOD_ICON) && Assets.exists(temp = Paths.image(MOD_ICON))) MOD_ICON = temp;
+		if (!Assets.exists(MOD_ICON16) && Assets.exists(temp = Paths.image(MOD_ICON16))) MOD_ICON16 = temp;
+		if (!Assets.exists(MOD_ICON24) && Assets.exists(temp = Paths.image(MOD_ICON24))) MOD_ICON24 = temp;
+		if (!Assets.exists(MOD_ICON32) && Assets.exists(temp = Paths.image(MOD_ICON32))) MOD_ICON32 = temp;
 	}
 
 	public static function loadFromDatas(datas:Array<String>):Map<String, String> {
