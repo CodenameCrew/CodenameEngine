@@ -22,7 +22,6 @@
 		<git name="hxvlc" url="https://github.com/CodenameCrew/cne-hxvlc" skipDeps="true"/>
 		<git name="foxlite" url="https://github.com/dwdvIl/foxlite" skipDeps="true"/>
 		<lib name="hxcpp-debug-server"/>
-		<lib name="format"/>
 		<lib name="markdown"/>
 		<lib name="nape-haxe4"/>
 
@@ -38,7 +37,6 @@
 
 		<!-- Build hxcpp -->
 		<cmd inLib="hxcpp" dir="tools/hxcpp" cmd="haxe compile.hxml" />
-		<cmd inLib="lime" cmd="haxelib run lime rebuild hxcpp"/>
 	</if>
 
 	<!-- Lime Building -->
