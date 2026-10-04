@@ -53,11 +53,10 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 
 	#if REGION /* IHScriptCustomBehaviour */
 	public function hget(name:String):Dynamic {
-		if (__glSourceDirty) __init();
-
 		if (__thisHasField(name) || __thisHasField('get_${name}')) return Reflect.getProperty(this, name);
 		else if (!Reflect.hasField(__data, name)) return null;
 
+		if (__glSourceDirty) __init();
 		final field:Dynamic = Reflect.field(__data, name);
 
 		var cl:String = Type.getClassName(Type.getClass(field));
@@ -78,17 +77,18 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 	}
 
 	public function hset(name:String, val:Dynamic):Dynamic {
-		if (__glSourceDirty) __init();
-
 		if (__thisHasField(name) || __thisHasField('set_${name}')) {
 			Reflect.setProperty(this, name, val);
 			return val;
 		}
 		else if (!Reflect.hasField(__data, name)) {
+			if (__glSourceDirty) __init();
 			// ??? huh
 			Reflect.setField(__data, name, val);
 			return val;
 		}
+
+		if (__glSourceDirty) __init();
 
 		var field = Reflect.field(__data, name);
 		var cl = Type.getClassName(Type.getClass(field));
@@ -143,20 +143,38 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 		__glSourceAssembler = new FunkinShaderSourceAssembler(this);
 	}
 
+	override function __getParameterDefault(assign:Null<String>, type:ShaderParameterType, isSampler:Bool):Dynamic
+	{
+		if (isSampler && assign != null)
+		{
+			var p = assign.charAt(0);
+			if ((p == "'" || p == '"') && assign.charAt(assign.length - 1) == p) assign = assign.substring(1, assign.length - 1);
+
+			var path = Paths.image(assign);
+			if (FlxG.assets.exists(path))
+			{
+				var graphic = FlxG.bitmap.add(path);
+				if (graphic != null) return graphic.bitmap;
+			}
+		}
+
+		return super.__getParameterDefault(assign, type, isSampler);
+	}
+
 	override function toString():String {
 		return __cacheProgramId != null ? 'FunkinShader(${__cacheProgramId})' : 'FunkinShader';
 	}
-
-	#if REGION /* Deprecated */
-	public var shaderPrefix:String = "";
-	public var fragmentPrefix:String = "";
-	public var vertexPrefix:String = "";
-	#end
 
 	#if REGION /* Backward Compatibility */
 	private static var __instanceFields = Type.getInstanceFields(FunkinShader);
 	private static var FRAGMENT_SHADER = 0;
 	private static var VERTEX_SHADER = 1;
+
+	// These not triggering shader resets is intended, or it'll cause lag spikes
+	// It's recommended to use Flags
+	public var shaderPrefix:String = Flags.FUNKIN_SHADER_CODE_PREFIX;
+	public var fragmentPrefix:String = Flags.FUNKIN_SHADER_CODE_FRAGMENT_PREFIX;
+	public var vertexPrefix:String = Flags.FUNKIN_SHADER_CODE_VERTEX_PREFIX;
 
 	public var fileName(get, set):String;
 	inline function get_fileName():String return _fragmentFilePath ?? _vertexFilePath ?? "FunkinShader";
@@ -187,7 +205,9 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 	function registerParameter(name:String, type:String, isUniform:Bool) {
 		__registerParameter(name, Shader.getParameterTypeFromGLSL(type, false), StringTools.startsWith(type, "sampler"), 1, null, isUniform, null);
 	}
+	#end
 
+	#if REGION /* Deprecated */
 	// Unused... cne-openfl uses a different system
 	var __cancelNextProcessGLData:Bool = false;
 	public var onProcessGLData:FlxTypedSignal<(String, String)->Void> = new FlxTypedSignal<(String, String)->Void>();
@@ -205,25 +225,34 @@ class FunkinShaderSourceAssembler extends FlxRuntimeShader.FlxShaderSourceAssemb
 	{
 		if (includedKeys == null) includedKeys = [];
 
+		var includeCommentFinder:EReg = __getIncludeCommentFinder(), lastMatch = 0, position;
+		while (includeCommentFinder.matchSub(source, lastMatch))
+		{
+			includedKeys.set(includeCommentFinder.matched(1), true);
+
+			position = includeCommentFinder.matchedPos();
+			lastMatch = position.pos + position.len;
+		}
+
 		source = GLSLSourceAssembler.__getIncludeFinder().map(source, (regex:EReg) ->
 		{
 			var key = regex.matched(1);
-			if (includedKeys.get(key)) return '/*Recursive include $key*/\n';
+			if (includedKeys.get(key)) return '/*Recursive include $key*/';
 
 			var include = __getIncludeSource(key, isVertex);
-			if (include == null) return '/*Unknown include $key*/\n';
+			if (include == null) return '/*Unknown include $key*/';
 
 			includedKeys.set(key, true);
-			return '/*include $key*/\n' + __appendIncludes(include, isVertex, includedKeys);
+			return '/*#include $key*/\n' + __appendIncludes(include, isVertex, includedKeys);
 		});
-
-		return __getImportCompatibilityFinder().map(source, (regex:EReg) ->
+		
+		return __getImportFinder().map(source, (regex:EReg) ->
 		{
 			var key = regex.matched(1);
-			if (includedKeys.get(key)) return '/*Recursive import $key*/\n';
+			if (includedKeys.get(key)) return '/*Recursive import $key*/';
 
 			var include = __getIncludeSource(key, isVertex);
-			if (include == null) return '/*Unknown import $key*/\n';
+			if (include == null) return '/*Unknown import $key*/';
 
 			includedKeys.set(key, true);
 			return '/*import $key*/\n' + __appendIncludes(include, isVertex, includedKeys);
@@ -247,22 +276,18 @@ class FunkinShaderSourceAssembler extends FlxRuntimeShader.FlxShaderSourceAssemb
 	override function __appendPrefix(source:String, versionNumber:Int, versionProfile:String, extensions:Map<String, String>, isVertex:Bool,
 			precisionHint:Null<ShaderPrecision>):String
 	{
-		var result = super.__appendPrefix(null, versionNumber, versionProfile, extensions, isVertex, precisionHint) + "\n";
-
-		result += funkinParent.shaderPrefix + "\n" + (isVertex ? funkinParent.vertexPrefix : funkinParent.fragmentPrefix) + "\n";
-
-		if (source != null) {
-			if (!isVertex && versionNumber >= 300 && versionProfile != "compatibility" && !StringTools.contains(source, "out vec4")) {
-				result += "out vec4 openfl_FragColor;\n";
-			}
-			result += source;
-		}
-
-		return result;
+		source = funkinParent.shaderPrefix + '\n' + (isVertex ? funkinParent.vertexPrefix : funkinParent.fragmentPrefix) + '\n' + source;
+		return super.__appendPrefix(source, versionNumber, versionProfile, extensions, isVertex, precisionHint);
 	}
 
-	private static inline function __getImportCompatibilityFinder():EReg {
-		return ~/#import\s+(?|"([^"]+)"|'([^']+)'|<(.*)>|([^\s]+))/g;
+	private static inline function __getImportFinder():EReg
+	{
+		return ~/(?:^|\s)#import\s+(?|"([^"]+)"|'([^']+)'|([^\s]+))/g;
+	}
+
+	private static inline function __getIncludeCommentFinder():EReg
+	{
+		return ~/(?:^|\s)\/\*#(import|include)\s+(?|"([^"]+)"|'([^']+)'|([^\s]+))\*\//g;
 	}
 }
 

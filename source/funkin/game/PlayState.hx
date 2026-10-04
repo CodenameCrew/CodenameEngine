@@ -2031,9 +2031,9 @@ class PlayState extends MusicBeatState
 
 		var event:NoteHitEvent;
 		if (strumLine != null && !strumLine.cpu)
-			event = EventManager.get(NoteHitEvent).recycle(rating.breaksCombo, !note.isSustainNote, !note.isSustainNote, null, null, null, note, strumLine.characters, true, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), null, null, note.strumID, rating.score, note.isSustainNote ? null : rating.accuracy, rating.health, rating.name, Options.splashesEnabled && !note.isSustainNote && rating.splash, null, null, null, null, null, iconP1, true);
+			event = EventManager.get(NoteHitEvent).recycle(rating.breaksCombo, !note.isSustainNote, !note.isSustainNote, null, null, null, note, strumLine.characters, true, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), "game/score/", "", note.strumID, rating.score, note.isSustainNote ? null : rating.accuracy, rating.health, rating.name, Options.splashesEnabled && !note.isSustainNote && rating.splash, null, null, null, null, null, iconP1, true);
 		else
-			event = EventManager.get(NoteHitEvent).recycle(rating.breaksCombo, false, false, null, null, null, note, strumLine.characters, false, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), null, null, note.strumID, 0, null, 0, rating.name, false, null, null, null, null, true, iconP2, false);
+			event = EventManager.get(NoteHitEvent).recycle(rating.breaksCombo, false, false, null, null, null, note, strumLine.characters, false, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), "game/score/", "", note.strumID, 0, null, 0, rating.name, false, null, null, null, null, true, iconP2, false);
 		event.deleteNote = !note.isSustainNote; // work around, to allow sustain notes to be deleted
 		event = scripts.event(strumLine != null && !strumLine.cpu ? "onPlayerHit" : "onDadHit", event);
 		strumLine.onHit.dispatch(event);
@@ -2116,8 +2116,8 @@ class PlayState extends MusicBeatState
 
 		var hasEvent:Bool = evt != null;
 
-		var pre:String = hasEvent && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
-		var suf:String = hasEvent && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
+		var pre:String = hasEvent && (event.ratingPrefix == null || event.ratingPrefix == "game/score/") ? evt.ratingPrefix : event.ratingPrefix;
+		var suf:String = hasEvent && (event.ratingSuffix == null || event.ratingSuffix == "") ? evt.ratingSuffix : event.ratingSuffix;
 
 		var ratingScale:Float = hasEvent && evt.ratingScale != null ? evt.ratingScale : event.ratingScale;
 
@@ -2158,8 +2158,8 @@ class PlayState extends MusicBeatState
 
 			var hasEvent:Bool = evt != null;
 
-			var pre:String = hasEvent && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
-			var suf:String = hasEvent && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
+			var pre:String = hasEvent && (event.ratingPrefix == null || event.ratingPrefix == "game/score/") ? evt.ratingPrefix : event.ratingPrefix;
+			var suf:String = hasEvent && (event.ratingSuffix == null || event.ratingSuffix == "") ? evt.ratingSuffix : event.ratingSuffix;
 
 			var ratingScale:Float = hasEvent && evt.ratingScale != null ? evt.ratingScale : event.ratingScale;
 
@@ -2204,8 +2204,8 @@ class PlayState extends MusicBeatState
 
 				var hasEvent:Bool = evt != null;
 
-				var pre:String = hasEvent && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
-				var suf:String = hasEvent && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
+				var pre:String = hasEvent && (event.ratingPrefix == null || event.ratingPrefix == "game/score/") ? evt.ratingPrefix : event.ratingPrefix;
+				var suf:String = hasEvent && (event.ratingSuffix == null || event.ratingSuffix == "") ? evt.ratingSuffix : event.ratingSuffix;
 
 				var numScale:Float = hasEvent && evt.numScale != null ? evt.numScale : event.numScale;
 

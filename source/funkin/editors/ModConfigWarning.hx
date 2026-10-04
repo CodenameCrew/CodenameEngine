@@ -24,12 +24,11 @@ API_VERSION=${Flags.CURRENT_API_VERSION}
 
 DOWNLOAD_LINK="YOUR MOD PAGE LINK HERE"
 
-# Not supported yet
-;MOD_ICON64="path/to/icon64"
-;MOD_ICON32="path/to/icon32"
-;MOD_ICON16="path/to/icon16"
 # The path starts in "your-mod/images/", do not add image extension.
 ICON="path/to/icon"
+ICON64="path/to/icon64"
+ICON32="path/to/icon32"
+ICON16="path/to/icon16"
 
 [Flags] # This section doesn\'t apply any prefix.
 DISABLE_WARNING_SCREEN=true

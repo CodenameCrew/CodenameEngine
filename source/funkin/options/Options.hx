@@ -116,6 +116,7 @@ class Options
 	public static var charterAutoSaveTime:Float = 60*5;
 	public static var charterAutoSaveWarningTime:Float = 5;
 	public static var charterAutoSavesSeparateFolder:Bool = false;
+	public static var charterPauseQuant:Bool = false;
 
 	/**
 	 * CHARACTER EDITOR

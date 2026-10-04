@@ -3,6 +3,8 @@ package funkin.backend.utils.native;
 #if windows
 import funkin.backend.utils.NativeAPI.FileAttribute;
 import funkin.backend.utils.NativeAPI.MessageBoxIcon;
+import lime.graphics.Image;
+import lime.utils.Bytes;
 @:buildXml('
 <target id="haxe">
 	<lib name="dwmapi.lib" if="windows" />
@@ -28,6 +30,16 @@ import funkin.backend.utils.NativeAPI.MessageBoxIcon;
 #include <shellapi.h>
 #include <uxtheme.h>
 #include <psapi.h>
+
+static HWND findTargetWindow(const char* title) {
+	HWND window = FindWindowA(NULL, title);
+	// Look for child windows if top level is not found
+	if (window == NULL) window = FindWindowExA(GetActiveWindow(), NULL, NULL, title);
+	// If still not found, try to get the active window
+	if (window == NULL) window = GetActiveWindow();
+
+	return window;
+}
 ')
 @:dox(hide)
 final class Windows {
@@ -35,11 +47,7 @@ final class Windows {
 	@:functionCode('
 		int darkMode = enable ? 1 : 0;
 
-		HWND window = FindWindowA(NULL, title.c_str());
-		// Look for child windows if top level is not found
-		if (window == NULL) window = FindWindowExA(GetActiveWindow(), NULL, NULL, title.c_str());
-		// If still not found, try to get the active window
-		if (window == NULL) window = GetActiveWindow();
+		HWND window = findTargetWindow(title.c_str());
 		if (window == NULL) return;
 
 		if (S_OK != DwmSetWindowAttribute(window, 19, &darkMode, sizeof(darkMode))) {
@@ -50,9 +58,7 @@ final class Windows {
 	public static function setDarkMode(title:String, enable:Bool) {}
 
 	@:functionCode('
-	HWND window = FindWindowA(NULL, title.c_str());
-	if (window == NULL) window = FindWindowExA(GetActiveWindow(), NULL, NULL, title.c_str());
-	if (window == NULL) window = GetActiveWindow();
+	HWND window = findTargetWindow(title.c_str());
 	if (window == NULL) return;
 
 	COLORREF finalColor;
@@ -72,9 +78,7 @@ final class Windows {
 	public static function setWindowBorderColor(title:String, color:Array<Int>, setHeader:Bool = true, setBorder:Bool = true) {}
 
 	@:functionCode('
-	HWND window = FindWindowA(NULL, title.c_str());
-	if (window == NULL) window = FindWindowExA(GetActiveWindow(), NULL, NULL, title.c_str());
-	if (window == NULL) window = GetActiveWindow();
+	HWND window = findTargetWindow(title.c_str());
 	if (window == NULL) return;
 
 	COLORREF finalColor;
@@ -90,14 +94,97 @@ final class Windows {
 	public static function setWindowTitleColor(title:String, color:Array<Int>) {}
 
 	@:functionCode('
-	HWND window = GetConsoleWindow();
-	HICON smallIcon = (HICON) LoadImage(NULL, path, IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
-	HICON icon = (HICON) LoadImage(NULL, path, IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE);
-	SendMessage(window, WM_SETICON, ICON_SMALL, (LPARAM)smallIcon);
-	SendMessage(window, WM_SETICON, ICON_BIG, (LPARAM)icon);    
-	')
-	public static function setWindowIcon(path:String) {}
+	HWND window = findTargetWindow(title.c_str());
+	if (window == NULL) return;
 
+	HICON smallIcon = (HICON) LoadImage(NULL, path.c_str(), IMAGE_ICON, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), LR_LOADFROMFILE);
+	HICON icon = (HICON) LoadImage(NULL, path.c_str(), IMAGE_ICON, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON), LR_LOADFROMFILE | LR_DEFAULTSIZE);
+
+	if (icon) {
+		HICON iconOld = (HICON) SendMessage(window, WM_GETICON, ICON_BIG, 0);
+		SendMessage(window, WM_SETICON, ICON_BIG, (LPARAM) icon);
+		if (iconOld) DestroyIcon(iconOld);
+	}
+
+	if (smallIcon) {
+		HICON smallIconOld = (HICON) SendMessage(window, WM_GETICON, ICON_SMALL, 0);
+		SendMessage(window, WM_SETICON, ICON_SMALL, (LPARAM) smallIcon);
+		if (smallIconOld) DestroyIcon(smallIconOld);
+	}
+	')
+	public static function setWindowIcon(title:String, path:String) {}
+
+	@:functionCode('
+	HWND window = findTargetWindow(title.c_str());
+	if (window == NULL) return;
+
+	const void* data = (const void*)bytes->b->getBase();
+	size_t size = (size_t)bytes->length;
+
+	BITMAPINFO bi;
+	ZeroMemory(&bi, sizeof(bi));
+	bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bi.bmiHeader.biWidth = width;
+	bi.bmiHeader.biHeight = -height;
+	bi.bmiHeader.biPlanes = 1;
+	bi.bmiHeader.biBitCount = 32;
+	bi.bmiHeader.biCompression = BI_RGB;
+
+	void* pixels = NULL;
+	HDC hdc = GetDC(NULL);
+	HBITMAP color = CreateDIBSection(hdc, &bi, DIB_RGB_COLORS, &pixels, NULL, 0);
+	ReleaseDC(NULL, hdc);
+	if (!color || !pixels) {
+		if (color) DeleteObject(color);
+		return;
+	}
+	memcpy(pixels, data, width * height * 4);
+
+	HBITMAP mask = CreateBitmap(width, height, 1, 1, NULL);
+    if (!mask) {
+        DeleteObject(color);
+        return;
+    }
+
+    ICONINFO ii;
+	ZeroMemory(&ii, sizeof(ii));
+	ii.fIcon = TRUE;
+	ii.hbmMask = mask;
+	ii.hbmColor = color;
+	HICON icon = CreateIconIndirect(&ii);
+
+	DeleteObject(color);
+	DeleteObject(mask);
+
+	if (big) {
+		HICON iconOld = (HICON) SendMessage(window, WM_GETICON, ICON_BIG, 0);
+		SendMessage(window, WM_SETICON, ICON_BIG, (LPARAM) icon);
+		if (iconOld) DestroyIcon(iconOld);
+	}
+	else {
+		HICON iconOld = (HICON) SendMessage(window, WM_GETICON, ICON_SMALL, 0);
+		SendMessage(window, WM_SETICON, ICON_SMALL, (LPARAM) icon);
+		if (iconOld) DestroyIcon(iconOld);
+	}
+	')
+	public static function setWindowIconBytes(big:Bool, title:String, bytes:Bytes, width:Int, height:Int) {}
+
+	public static function setWindowIconImage(big:Bool, title:String, image:Image, dontClone:Bool = false)
+	{
+		if (image.format != BGRA32 || image.premultiplied)
+		{
+			if (!dontClone) image = image.clone();
+			image.format = BGRA32;
+			image.premultiplied = false;
+		}
+
+		setWindowIconBytes(big, title, image.data.buffer, image.width, image.height);
+	}
+
+	public static function getWindowIconMetrics(big:Bool = true):Int
+	{
+		return untyped __cpp__("GetSystemMetrics(big ? SM_CXICON : SM_CXSMICON)");
+	}
 
 	@:functionCode('
 	// https://stackoverflow.com/questions/15543571/allocconsole-not-displaying-cout

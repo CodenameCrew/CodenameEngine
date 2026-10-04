@@ -183,8 +183,10 @@ class Chart {
 		};
 
 		var valid:Bool = true, namePrint = '$songName $difficulty' + ((variant != null && variant != '') ? ' ($variant)' : '');
-		if (!Assets.exists(chartPath))
-			throw 'Chart file was not found for "$namePrint".\nPath: $chartPath';
+		if (!Assets.exists(chartPath)) {
+			Logs.warn('Chart file was not found for "$namePrint" in path: $chartPath');
+			valid = false;
+		}
 		var data:Dynamic = null;
 		if (valid) {
 			try data = Json.parse(Assets.getText(chartPath))

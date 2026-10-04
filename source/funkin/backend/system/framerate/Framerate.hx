@@ -27,7 +27,9 @@ class Framerate extends Sprite {
 	public static var statsInfo:StatsInfo;
 	#end
 
-	public static var fontName:String = #if windows '${Sys.getEnv("windir")}\\Fonts\\consola.ttf' #else "_typewriter" #end;
+	public static var defaultFontName(default, never):String = #if windows '${Sys.getEnv("windir")}\\Fonts\\consola.ttf' #else "_typewriter" #end;
+
+	public static var fontName:String = defaultFontName;
 
 	/**
 	 * 0: FPS INVISIBLE
@@ -86,6 +88,7 @@ class Framerate extends Sprite {
 		textFormat = new TextFormat(fontName, 12, -1);
 		for(c in categories)
 			c.reload();
+		
 		#if SHOW_BUILD_ON_FPS
 		codenameBuildField.reload();
 		#end
