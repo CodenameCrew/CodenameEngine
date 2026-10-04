@@ -1,38 +1,52 @@
 # Compiling Codename Engine
-Do you want to turn your source code into a playable build to play? Then you want to **compile the source code**, follow this guide.
-> **Open the instructions for your platform.**
-<details>
-    <summary>Windows</summary>
 
-1. Install [version 4.3.7 of Haxe](https://haxe.org/download/version/4.3.7/).
-2. Download and install [`git-scm`](https://git-scm.com/download/win).
-    - Leave all installation options as default.
-3. Run `setup-windows.bat` using cmd or double-clicking it and wait for the libraries to install.
-4. Once the libraries are installed, run `haxelib run lime test windows` to compile and launch the game (may take a long time)
-    - ℹ You can run `haxelib run lime setup` to make the lime command global, allowing you to execute `lime test windows` directly.
-</details>
-<details>
-    <summary>Linux</summary>
+Do note that compiling is ***NOT*** the intended manner of modding with Codename Engine, as the softcoding system is designed in your favor. The exception to this is if you want to contribute to CNE's development by making a pull request.
 
-1. Install [version 4.3.7 of Haxe](https://haxe.org/download/version/4.3.7/).
-2. Install `libvlc` if not present already.
-    - ℹ On certain Arch based distros installing `vlc-plugins-all` might solve if `libvlc` alone doesn't work.
-3. Install `g++`, if not present already.
-4. Download and install [`git-scm`](https://git-scm.com/download/linux) if not present already.
-5. Run `setup-unix.sh` using the terminal or double-clicking it and wait for the libraries to install.
-6. Once the libraries are installed, run `haxelib run lime test linux` to compile and launch the game (may take a long time)
-    - ℹ You can run `haxelib run lime setup` to make the lime command global, allowing you to execute `lime test linux` directly.
-</details>
 <details>
-    <summary>MacOS</summary>
+	<summary>"Why not?"</summary>
 
-1. Install [version 4.3.7 of Haxe](https://haxe.org/download/version/4.3.7/).
-2. Install `Xcode` to allow C++ app building.
-3. Download and install [`git-scm`](https://git-scm.com/download/mac).
-4. Run `setup-unix.sh` using the terminal and wait for the libraries to install.
-5. Once the libraries are installed, run `haxelib run lime test mac` to compile and launch the game (may take a long time)
-    - ℹ You can run `haxelib run lime setup` to make the lime command global, allowing you to execute `lime test mac` directly.
+- The version you downloaded is yours to keep forever. If a new release of CNE goes live, you bear the responsibility of merging by hand and testing it.
+- You lose compatibility with other mods. Softcoded mods stack on top of each other. Source mods cannot.
+- Changed something? In softcoding, it takes two seconds. In hardcoding, it now requires a rebuild, up to a few minutes to an hour if you have not compiled the engine beforehand.
+- Bugs caused by your changes will now be your reponsibility to fix.
+- HScript has a safety net that catches errors and (mostly) prevents crashes. Source modding does not have this. This means that if something goes wrong, HScript with catch it, but your source mod would not and it'll take the entire game down.
+
 </details>
+
+<details>
+	<summary>Pros of source modding</summary>
+
+- Full access. Literally.
+- Code is compiled to bytecode, which is magnitudes faster than HScript's interpreter.
+- The engine now becomes your template.
+
+</details>
+
+<details>
+	<summary>Cons of source modding</summary>
+
+- Syncs with the original repo usually causes conflicts. This means that you'll be stuck on whatever version you forked from.
+- Modpacks made for your fork are only compatible with your forks and not any releases of Codename.
+- Testing is *VERY* slow compared to softcoding.
+- Crashes are your responsibilty. A fork needs someone willing to maintain it.
+
+</details>
+
+</br>
+
+## Initialization
+
+Here is what you'll need:
+- [Haxe v4.3.7](https://haxe.org/download/version/4.3.7/). You shouldn't grab the latest version just because it's newer.
+- [Git](https://git-scm.com/), more specifically `git-scm`.
+  - When installing, make sure to **leave the installation options at its defaults**.
+- A C++ compiler. Depending on your platform, it could be any of the following:
+  - For Windows, that's **Visual Studio Build Tools 2019** with the component *MSVC v143 C++ x64/x86 build tools* as well the *Windows SDK*.
+  - For Mac, you will need `Xcode` as it provides the compiler.
+  - For Linux, that's `gcc` and `g++`. `libvlc` must also be installed for video playback functionality.
+- The engine's libaries.
+  - You can run `setup-windows.bat` to set these up in Windows, or `setup-unix.sh` for both Mac and Linux. Ensure that your `haxelib` is up to date.
+  - After running either of this, you might be given a warning similar to `warning: repository requires reformatting`. Ignore these warnings and do not run the command listed as it will break the structure of the libraries installed.
 
 > [!TIP]
 > You can also run `./cne-windows.bat -help` or `./cne-unix.sh -help` (depending on your platform) to check out more useful commands!<br>
