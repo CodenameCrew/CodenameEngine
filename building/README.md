@@ -37,7 +37,7 @@ Here is what you'll need:
 - [Git](https://git-scm.com/), more specifically `git-scm`.
   - When installing, make sure to **leave the installation options at its defaults**.
 - A C++ compiler. Depending on your platform, it could be any of the following:
-  - For Windows, that's **Visual Studio Build Tools 2019** with the component *MSVC v143 C++ x64/x86 build tools* as well the *Windows SDK*.
+  - For Windows, that's **Visual Studio Build Tools 2022** with the component *MSVC v143 C++ x64/x86 build tools* as well the *Windows SDK*.
   - For Mac, you will need `Xcode` as it provides the compiler.
   - For Linux, that's `gcc` and `g++`. `libvlc` must also be installed for video playback functionality.
 - The engine's libaries.
