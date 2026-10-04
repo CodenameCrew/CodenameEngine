@@ -47,26 +47,38 @@ Here is what you'll need:
 - The engine's libaries.
   - You can run `setup-windows.bat` to set these up in Windows, or `setup-unix.sh` for both Mac and Linux. Ensure that your `haxelib` is up to date.
   - After running either of this, you might be given a warning similar to `warning: repository requires reformatting`. Ignore these warnings and do not run the command listed as it will break the structure of the libraries installed.
+- Any code editor. Yes, Notepad or `vim` is usable, but for the sake of readability, you should use Visual Studio Code with the [Haxe](https://marketplace.visualstudio.com/items?itemName=nadako.vshaxe) and [Lime](https://marketplace.visualstudio.com/items?itemName=openfl.lime-vscode-extension) extensions. You may optionally set up your `hxcpp` debugger at this stage.
 
-> [!TIP]
-> You can also run `./cne-windows.bat -help` or `./cne-unix.sh -help` (depending on your platform) to check out more useful commands!<br>
-> For example `./cne-windows test` or `./cne-unix.sh test` builds the game and uses the source assets folder instead of the export one for easier development (although you can still use `lime test` normally).
-> - If you're running the terminal from the project's main folder, use instead `./building/cne-windows.bat -COMMAND HERE` or `./building/cne-unix.sh -COMMAND HERE` depending on your platform.
+The entire setup with one platform will cost you the following:
+- 10 to 20 minutes installing the required libraries.
+- 10 to 40 minutes when compiling for the first time, sometimes up to an hour.
+- Up to around 10 GB worth of cache.
+
+Compiling to another platform is going to be another full build and rounds of testing.
+
+## Setup
+1. Fork the repo on GitHub, then clone your fork. **Do not make changes yet.**
+2. Run the required setup script.
+3. Rebuild Lime by running `haxelib run lime rebuild cpp`.
+4. Compile the *unmodified* build of Codename by doing any of the following:
+    1. Manually compile by running `haxelib run lime build <platform> -nocffi` / `haxelib run lime test <platform> -nocffi`. You can run `haxelib run lime setup` to make your install of Lime global, which allows you to omit `haxelib run` every time you want to build or test. 
+	2. Using the helper script for your platform in `/building`. This would be `cne-windows.bat` in Windows, and `cne-unix.sh` on Mac and Linux. You may run `cne-windows.bat -help` or `cne-unix.sh -help` for commands you can use.
+
+If it compiles, you're all set up! You may now begin editing.
+
+## Contributing to Codename
+With your fork, you can make pull requests if you want to fix a bug or add a feature to the game. To do this, once the changes you have are pushed to your repository in GitHub, do the following:
+
+1. On the main page of your repository, click the contribute button. This will open the page for making pull requests.
+2. Enter a name and a description for your PR. By default, the title will be the first line of the most recent commit message, and an empty description.
+3. Click the green button on the bottom that says "Open pull request". If this is a work in progress, then click the chevron next to it and select "Draft pull request". That way, the PR you have opened cannot be merged until it is ready for review.
+
+Once opened, you are taken to the page of the origin's repository (which is the repository you forked from) where the pull request you just made will keep track of any future commits you make on your fork until it is closed (with or without it getting merged).
 
 # Generating Codename Engine's API documentation
 **Mainly recommended if you intend to fork the engine and make your own custom version to publish.**<br>Do you want to generate an API documentation so people can understand and mod your playable build? This documentation can be uploaded to your website.<br>If you just want to compile the engine normally for your hardcoded mod or for yourself you can skip this step.
-> **Select your platform to continue.**
-<details>
-    <summary>Windows</summary>
 
-1. Run `generate-docs-windows.bat` using cmd or double-clicking it and wait for the `doc.xml` to be generated inside the `docs` folder.
-</details>
-<details>
-    <summary>MacOS/Linux</summary>
-
-1. Run `generate-docs-unix.sh` using the terminal or double-clicking it and wait for the `doc.xml` to be generated inside the `docs` folder.
-</details>
-
+1. Generate the docs by running `generate-docs-windows.bat` for Windows or `generate-docs-unix.sh` for Mac or Linux. The output `doc.xml` will be placed in the `docs` folder.
 2. You can use this `doc.xml` file to generate a full HTML documentation (that you can open in your browser for example) using Haxe's [dox](https://github.com/HaxeFoundation/dox) generator; check [Codename Engine's webiste](https://github.com/CodenameCrew/codename-website/tree/main/api-generator) for example.
 
 > [!CAUTION]
