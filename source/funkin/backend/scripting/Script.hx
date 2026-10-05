@@ -388,6 +388,18 @@ class Script extends FlxBasic implements IFlxDestroyable
 	}
 
 	/**
+	 * Calls the function `func` defined in the script with a single argument, reusing an internal array to avoid allocations.
+	 * @param func Name of the function
+	 * @param arg Argument of the function
+	 * @return Result (if void, then null)
+	 */
+	public function callOne(func:String, arg:Dynamic):Dynamic
+	{
+		_EMPTY_ARGS[0] = arg;
+		return call(func, _EMPTY_ARGS);
+	}
+
+	/**
 	 * Loads the code from a string, doesn't really work after the script has been loaded
 	 * @param code The code.
 	 */

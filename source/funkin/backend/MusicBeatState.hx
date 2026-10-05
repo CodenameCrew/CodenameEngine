@@ -149,15 +149,12 @@ class MusicBeatState extends FlxState implements IBeatCancellableReceiver
 		}
 	}
 
-	@:noCompletion @:dox(hide) private static var _ONE_ARG:Array<Dynamic> = [null];
-
 	public override function tryUpdate(elapsed:Float):Void
 	{
 		if (persistentUpdate || subState == null) {
-			_ONE_ARG[0] = elapsed;
-			call("preUpdate", _ONE_ARG);
+			callOne("preUpdate", elapsed);
 			update(elapsed);
-			call("postUpdate", _ONE_ARG);
+			callOne("postUpdate", elapsed);
 		}
 
 		if (_requestSubStateReset) {
@@ -226,6 +223,13 @@ class MusicBeatState extends FlxState implements IBeatCancellableReceiver
 		return defaultVal;
 	}
 
+	public function callOne(name:String, arg:Dynamic, ?defaultVal:Dynamic):Dynamic {
+		// calls the function on the assigned script with a single argument
+		if(stateScripts != null)
+			return stateScripts.callOne(name, arg);
+		return defaultVal;
+	}
+
 	public function event<T:CancellableEvent>(name:String, event:T):T {
 		if(stateScripts != null)
 			stateScripts.event(name, event);
@@ -234,8 +238,7 @@ class MusicBeatState extends FlxState implements IBeatCancellableReceiver
 
 	override function update(elapsed:Float)
 	{
-		_ONE_ARG[0] = elapsed;
-		call("update", _ONE_ARG);
+		callOne("update", elapsed);
 
 		super.update(elapsed);
 	}
@@ -267,24 +270,21 @@ class MusicBeatState extends FlxState implements IBeatCancellableReceiver
 	{
 		if (__beatReceiversDirty || members.length != __lastMemberLength) __refreshBeatReceivers();
 		for(e in __beatReceivers) e.stepHit(curStep);
-		_ONE_ARG[0] = curStep;
-		call("stepHit", _ONE_ARG);
+		callOne("stepHit", curStep);
 	}
 
 	@:dox(hide) public function beatHit(curBeat:Int):Void
 	{
 		if (__beatReceiversDirty || members.length != __lastMemberLength) __refreshBeatReceivers();
 		for(e in __beatReceivers) e.beatHit(curBeat);
-		_ONE_ARG[0] = curBeat;
-		call("beatHit", _ONE_ARG);
+		callOne("beatHit", curBeat);
 	}
 
 	@:dox(hide) public function measureHit(curMeasure:Int):Void
 	{
 		if (__beatReceiversDirty || members.length != __lastMemberLength) __refreshBeatReceivers();
 		for(e in __beatReceivers) e.measureHit(curMeasure);
-		_ONE_ARG[0] = curMeasure;
-		call("measureHit", _ONE_ARG);
+		callOne("measureHit", curMeasure);
 	}
 
 	/**

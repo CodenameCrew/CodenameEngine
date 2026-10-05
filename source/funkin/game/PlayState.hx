@@ -581,8 +581,6 @@ class PlayState extends MusicBeatState
 	@:noCompletion @:dox(hide) private var _startCountdownCalled:Bool = false;
 	@:noCompletion @:dox(hide) private var _endSongCalled:Bool = false;
 
-	@:noCompletion @:dox(hide) private static var _ONE_ARG:Array<Dynamic> = [null];
-
 	@:dox(hide)
 	var __vocalSyncTimer:Float = 1;
 
@@ -1399,12 +1397,11 @@ class PlayState extends MusicBeatState
 	@:dox(hide)
 	override public function update(elapsed:Float)
 	{
-		_ONE_ARG[0] = elapsed;
-		scripts.call("update", _ONE_ARG);
+		scripts.callOne("update", elapsed);
 
 		if (inCutscene) {
 			super.update(elapsed);
-			scripts.call("postUpdate", _ONE_ARG);
+			scripts.callOne("postUpdate", elapsed);
 			return;
 		}
 
@@ -1489,8 +1486,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		_ONE_ARG[0] = elapsed;
-		scripts.call("postUpdate", _ONE_ARG);
+		scripts.callOne("postUpdate", elapsed);
 	}
 
 	override function draw() {
@@ -2216,16 +2212,14 @@ class PlayState extends MusicBeatState
 	override function stepHit(curStep:Int)
 	{
 		super.stepHit(curStep);
-		_ONE_ARG[0] = curStep;
-		scripts.call("stepHit", _ONE_ARG);
+		scripts.callOne("stepHit", curStep);
 	}
 
 	@:dox(hide)
 	override function measureHit(curMeasure:Int)
 	{
 		super.measureHit(curMeasure);
-		_ONE_ARG[0] = curMeasure;
-		scripts.call("measureHit", _ONE_ARG);
+		scripts.callOne("measureHit", curMeasure);
 	}
 
 	@:dox(hide)
@@ -2238,8 +2232,7 @@ class PlayState extends MusicBeatState
 				if (icon.bump != null)
 					icon.bump();
 
-		_ONE_ARG[0] = curBeat;
-		scripts.call("beatHit", _ONE_ARG);
+		scripts.callOne("beatHit", curBeat);
 	}
 	
 	public function addScript(file:String) {

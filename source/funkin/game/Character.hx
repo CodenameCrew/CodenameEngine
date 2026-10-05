@@ -64,8 +64,6 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	public var xmlImportedScripts:Array<XMLImportedScriptInfo> = [];
 	public var script(default, set):Script;
 
-	@:noCompletion @:dox(hide) private static var _ONE_ARG:Array<Dynamic> = [null];
-
 	public function prepareInfos(node:Access)
 		return XMLImportedScriptInfo.prepareInfos(node, scripts, (infos) -> xmlImportedScripts.push(infos));
 
@@ -140,8 +138,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	@:noCompletion var isDanceLeftDanceRight:Bool = false;
 
 	override function update(elapsed:Float) {
-		_ONE_ARG[0] = elapsed;
-		scripts.call("update", _ONE_ARG);
+		scripts.callOne("update", elapsed);
 
 		super.update(elapsed);
 
@@ -156,8 +153,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 		__lockAnimThisFrame = false;
 
-		_ONE_ARG[0] = elapsed;
-		scripts.call("postUpdate", _ONE_ARG);
+		scripts.callOne("postUpdate", elapsed);
 	}
 
 	private var danced:Bool = false;
@@ -202,8 +198,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	 */
 	public var danceOnBeat:Bool = true;
 	public override function beatHit(curBeat:Int) {
-		_ONE_ARG[0] = curBeat;
-		scripts.call("beatHit", _ONE_ARG);
+		scripts.callOne("beatHit", curBeat);
 
 		if (skipNegativeBeats && curBeat < 0) return;
 		if (danceOnBeat && (curBeat + beatOffset) % (beatInterval * CoolUtil.maxInt(Math.floor(4 / Conductor.stepsPerBeat), 1)) == 0 && !__lockAnimThisFrame)
@@ -211,13 +206,11 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	}
 
 	public override function measureHit(curMeasure:Int) {
-		_ONE_ARG[0] = curMeasure;
-		scripts.call("measureHit", _ONE_ARG);
+		scripts.callOne("measureHit", curMeasure);
 	}
 
 	public override function stepHit(curStep:Int) {
-		_ONE_ARG[0] = curStep;
-		scripts.call("stepHit", _ONE_ARG);
+		scripts.callOne("stepHit", curStep);
 	}
 
 	@:noCompletion var __reverseDrawProcedure:Bool = false;

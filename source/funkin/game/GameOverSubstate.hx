@@ -37,8 +37,6 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	public var lossSFX:FlxSound;
 
-	@:noCompletion @:dox(hide) private static var _ONE_ARG:Array<Dynamic> = [null];
-
 	public function new(x:Float, y:Float, ?character:String, player:Bool = true, ?gameOverSong:String, ?lossSFX:String, ?retrySFX:String)
 	{
 		super();
@@ -63,7 +61,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		gameoverScript.load();
 
 		var event = EventManager.get(GameOverCreationEvent).recycle(x, y, characterName, player, gameOverSong, gameOverSongBPM, lossSFXName, retrySFX);
-		gameoverScript.call('create', [event]);
+		gameoverScript.callOne('create', event);
 
 		x = event.x;
 		y = event.y;
@@ -99,7 +97,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		super.update(elapsed);
 
-		gameoverScript.call("update", [elapsed]);
+		gameoverScript.callOne("update", elapsed);
 
 		if (__cancelDefault)
 			return;
@@ -110,7 +108,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		if (!isEnding && ((!lossSFX.playing) || (character.getAnimName() == "firstDeath" && character.isAnimFinished())) && (FlxG.sound.music == null || !FlxG.sound.music.playing))
 		{
 			var event = new CancellableEvent();
-			gameoverScript.call("deathStart", [event]);
+			gameoverScript.callOne("deathStart", event);
 
 			if (event.cancelled) return;
 
@@ -125,13 +123,13 @@ class GameOverSubstate extends MusicBeatSubstate
 	override function beatHit(curBeat:Int)
 	{
 		super.beatHit(curBeat);
-		gameoverScript.call("beatHit", [curBeat]);
+		gameoverScript.callOne("beatHit", curBeat);
 	}
 
 	override function stepHit(curStep:Int)
 	{
 		super.stepHit(curStep);
-		gameoverScript.call("stepHit", [curStep]);
+		gameoverScript.callOne("stepHit", curStep);
 	}
 
 	var isEnding:Bool = false;
@@ -143,7 +141,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		isEnding = true;
 
 		var event = new CancellableEvent();
-		gameoverScript.call('onEnd', [event]);
+		gameoverScript.callOne('onEnd', event);
 
 		if (event.cancelled)
 			return;
@@ -178,7 +176,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	function exit()
 	{
 		var event = new CancellableEvent();
-		gameoverScript.call('onReturnToMenu', [event]);
+		gameoverScript.callOne('onReturnToMenu', event);
 
 		if (event.cancelled)
 			return;
