@@ -8,9 +8,9 @@ import flixel.util.FlxColor;
   */
 class GameOverEndEvent extends CancellableEvent {
   /**
-    * This is a helper variable that gets the retry sound's length in seconds.
-    * It may be used for the timeCap to cancel the delay.
-    * (This is calculated; there is little reason for you to change this).
+    * A helper variable that gets the retry sound's length in seconds.
+    * May be used for the timeCap to cancel the delay.
+    * This is calculated, so there is little reason for you to change this.
     */
   public var sndLength:Null<Float>;
 
@@ -27,7 +27,7 @@ class GameOverEndEvent extends CancellableEvent {
   public var fadeTime:Null<Float>;
 
   /**
-    * The time cap before the delay before the fade is reverted.
+    * The minimum limit the sound's length can be before skipping the delay.
     */
   public var timeCap:Float;
 
@@ -52,6 +52,12 @@ class GameOverEndEvent extends CancellableEvent {
     * Whether or not the next MusicBeatTransition should be skipped.
     */
   public var skipTrans:Bool;
+ 
+  /**
+    * The delay timer.
+    * Warning, this is null by default before onPostEnd.
+    */
+  public var timer:FlxTimer;
 
   /**
     * The redirect state after the camera fade is complete
