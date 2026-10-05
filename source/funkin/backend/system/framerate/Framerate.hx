@@ -119,8 +119,9 @@ class Framerate extends Sprite {
 		super.__enterFrame(t);
 		bgSprite.alpha = debugAlpha * 0.5;
 
-		x = 10 + offset.x;
-		y = 2 + offset.y;
+		// offset is set in game units but we're not scaled by the scale mode, so convert to stage px
+		x = 10 + offset.x * FlxG.scaleMode.scale.x;
+		y = 2 + offset.y * FlxG.scaleMode.scale.y;
 
 		var width = MathUtil.maxSmart(fpsCounter.width, memoryCounter.width #if SHOW_BUILD_ON_FPS , codenameBuildField.width #end) + (x*2);
 		var height = #if SHOW_BUILD_ON_FPS codenameBuildField.y + codenameBuildField.height #else memoryCounter.y + memoryCounter.height #end;
