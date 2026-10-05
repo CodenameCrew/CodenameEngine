@@ -141,7 +141,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		
 		isEnding = true;
 
-		var event:GameOverEndEvent = EventManager.get(GameOverEndEvent).recycle(null, 0.7, null, 0.5, FlxColor.BLACK, null, null, true, new PlayState());
+		var event:GameOverEndEvent = EventManager.get(GameOverEndEvent).recycle(null, 0.7, null, 0.5, FlxColor.BLACK, null, null, true, null, new PlayState());
 		gameoverScript.call("onEnd", [event]);
 
 		if (event.cancelled) return;
@@ -165,7 +165,9 @@ class GameOverSubstate extends MusicBeatSubstate
         	delay = 0;
     	}
 
-    	new FlxTimer().start(delay, function(timer:FlxTimer):Void {
+		var timer:FlxTimer = new FlxTimer();
+
+    	timer.start(delay, function(timer:FlxTimer):Void {
         	if (event.onTimerEnd != null) {
             	event.onTimerEnd();
             	return;
@@ -181,6 +183,10 @@ class GameOverSubstate extends MusicBeatSubstate
 				FlxG.switchState(event.state);
 			});
 		});
+
+		event.timer = timer;
+
+		gameoverScript.call("onPostEnd", [event]);
 	}
 
 	function exit()
