@@ -32,10 +32,10 @@ class Flags {
 	public static var MOD_DOWNLOAD_LINK:String  = "";
 	public static var MOD_DEPENDENCIES:Array<String> = [];
 
-	@:noCompletion public static var MOD_ICON32:String = "";
-	@:noCompletion public static var MOD_ICON24:String = "";
-	@:noCompletion public static var MOD_ICON16:String = "";
-	public static var MOD_ICON:String = "";
+	@:noCompletion public static var MOD_ICON32:Null<String> = null;
+	@:noCompletion public static var MOD_ICON24:Null<String> = null;
+	@:noCompletion public static var MOD_ICON16:Null<String> = null;
+	public static var MOD_ICON:Null<String> = null;
 
 	public static var MOD_DISCORD_CLIENT_ID:String = "";
 	public static var MOD_DISCORD_LOGO_KEY:String = "";
@@ -64,6 +64,9 @@ class Flags {
 	@:lazy public static var PATHS_CACHE_LIFETIME:Null<Int> = null;
 	public static var PATHS_CACHE_RESET_ON_SWITCH_STATE:Bool = true;
 	public static var PATHS_UNIX_FIX:Bool = true;
+
+	public static var GAME_WIDTH:Int = 1280;
+	public static var GAME_HEIGHT:Int = 720;
 
 	/**
 	 * Preferred file extensions for the game's audio files.
@@ -142,6 +145,8 @@ class Flags {
 	public static var DEFAULT_COOP_MODE:Bool = false; // used in playstate if it doesn't find it
 	@:also(funkin.game.PlayState.opponentMode)
 	public static var DEFAULT_OPPONENT_MODE:Bool = false;
+
+	public static var ALLOW_CENTERED_FIELDS:Bool = true; // Whether or not, `Options.centeredFields` (AKA "Middlescroll") will have an effect.
 
 	public static var EARLY_HIT_WINDOW_RANGE:Float = 1.0; // was 0.5 for easier early hitting, but now 1 to demotivate mashing and getting away with it.
 	public static var LATE_HIT_WINDOW_RANGE:Float = 1.0;
@@ -299,6 +304,10 @@ class Flags {
 	public static var DEFAULT_CHARACTER_GHOSTENABLE_SOUND:String = "editors/character/ghostEnable";
 
 	@:lazy public static var DEFAULT_GLSL_VERSION:String = null;
+	public static var FUNKIN_SHADER_CODE_PREFIX:String = "";
+	public static var FUNKIN_SHADER_CODE_FRAGMENT_PREFIX:String = "";
+	public static var FUNKIN_SHADER_CODE_VERTEX_PREFIX:String = "";
+
 	@:also(funkin.backend.utils.HttpUtil.userAgent)
 	public static var USER_AGENT:String = 'request';
 	// -- End of Codename's Default Flags --
@@ -332,15 +341,7 @@ class Flags {
 		if (WINDOW_TITLE_USE_MOD_NAME == null) WINDOW_TITLE_USE_MOD_NAME = !overridenFlags.exists('TITLE') && overridenFlags.exists('MOD_NAME');
 		if (USE_LEGACY_TIMING == null) USE_LEGACY_TIMING = MOD_API_VERSION < 2;
 		if (SUSTAINS_AS_ONE_NOTE == null) SUSTAINS_AS_ONE_NOTE = MOD_API_VERSION >= 2;
-		if (DEFAULT_GLSL_VERSION == null) {
-			if (MOD_API_VERSION < 2) {
-				DEFAULT_GLSL_VERSION = #if (android || mac || web) "100" #else "120" #end;
-				Logs.warn("Blend Mode Extensions won't work in MOD_API_VERSION below than 2");
-			}
-			else {
-				DEFAULT_GLSL_VERSION = openfl.utils.GLSLSourceAssembler.getDefaultVersion();
-			}
-		}
+		if (DEFAULT_GLSL_VERSION == null) DEFAULT_GLSL_VERSION = openfl.utils.GLSLSourceAssembler.getDefaultVersion();
 		if (DEFAULT_SOUND_TIME_SCALED_PITCH == null) DEFAULT_SOUND_TIME_SCALED_PITCH = MOD_API_VERSION >= 2;
 		if (USE_SOUND_VOLUME_CURVE == null) USE_SOUND_VOLUME_CURVE = MOD_API_VERSION >= 2;
 		if (USE_FLXTRAIL_FRAMES == null) USE_FLXTRAIL_FRAMES = MOD_API_VERSION < 2;
@@ -354,6 +355,19 @@ class Flags {
 		if (SOUND_EXT == null) SOUND_EXT = SOUND_EXTS[0]; else SOUND_EXTS = [SOUND_EXT];
 		if (VIDEO_EXT == null) VIDEO_EXT = VIDEO_EXTS[0]; else VIDEO_EXTS = [VIDEO_EXT];
 		if (IMAGE_EXT == null) IMAGE_EXT = IMAGE_EXTS[0]; else IMAGE_EXTS = [IMAGE_EXT];
+
+		if (MOD_ICON == null && MOD_ICON16 == null && MOD_ICON24 == null && MOD_ICON32 == null) {
+			MOD_ICON = "iconOG";
+			MOD_ICON16 = "icon16";
+			MOD_ICON24 = "icon16";
+			MOD_ICON32 = "icon32";
+		}
+
+		var temp:String;
+		if (!Assets.exists(MOD_ICON) && Assets.exists(temp = Paths.image(MOD_ICON))) MOD_ICON = temp;
+		if (!Assets.exists(MOD_ICON16) && Assets.exists(temp = Paths.image(MOD_ICON16))) MOD_ICON16 = temp;
+		if (!Assets.exists(MOD_ICON24) && Assets.exists(temp = Paths.image(MOD_ICON24))) MOD_ICON24 = temp;
+		if (!Assets.exists(MOD_ICON32) && Assets.exists(temp = Paths.image(MOD_ICON32))) MOD_ICON32 = temp;
 	}
 
 	public static function loadFromDatas(datas:Array<String>):Map<String, String> {

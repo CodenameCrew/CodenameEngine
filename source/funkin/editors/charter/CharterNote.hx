@@ -173,7 +173,7 @@ class CharterNote extends UISprite implements ICharterSelectable {
 		super.update(elapsed);
 
 		if(susLength != 0) {
-			var sprLength:Float = (40 * (susLength+tempSusLength)) + ((susLength+tempSusLength) != 0 ? (height/2) : 0);
+			var sprLength:Float = (40 * (susLength-1+tempSusLength)) + ((susLength+tempSusLength) != 0 ? (height/2) : 0);
 			sustainSpr.scale.set(10, __susInstaLerp ? sprLength : CoolUtil.fpsLerp(sustainSpr.scale.y, sprLength, 1/2));
 			sustainSpr.updateHitbox();
 			sustainSpr.follow(this, 15, 20);
@@ -205,6 +205,7 @@ class CharterNote extends UISprite implements ICharterSelectable {
 			callScriptOnNote('onCharterNoteSelect', this);
 		}
 
+		alpha = susLength == 1 ? 0.6 : alpha;
 		__doAnim = true;
 	}
 
