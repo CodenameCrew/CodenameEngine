@@ -140,6 +140,11 @@ final class DiscordUtil
 	public static function changePresence(details:String, state:String, ?smallImageKey:String)
 	{
 		#if DISCORD_RPC
+		if (!Options.discordRPC) {
+			clearPresence();
+			return;
+		}
+
 		changePresenceAdvanced({
 			state: state,
 			details: details,
@@ -151,6 +156,11 @@ final class DiscordUtil
 	public static function changeSongPresence(details:String, state:String, audio:FlxSound, ?smallImageKey:String)
 	{
 		#if DISCORD_RPC
+		if (!Options.discordRPC) {
+			clearPresence();
+			return;
+		}
+
 		var start:Float = 0;
 		var end:Float = 0;
 
@@ -173,6 +183,11 @@ final class DiscordUtil
 	public static function changePresenceSince(details:String, state:String, ?smallImageKey:String, ?time:Float)
 	{
 		#if DISCORD_RPC
+		if (!Options.discordRPC) {
+			clearPresence();
+			return;
+		}
+
 		if (time == null)
 			time = Date.now().getTime();
 
@@ -188,6 +203,10 @@ final class DiscordUtil
 	public static function changePresenceAdvanced(data:DPresence)
 	{
 		#if DISCORD_RPC
+		if (!Options.discordRPC) {
+			clearPresence();
+			return;
+		}
 		if (data == null)
 			return;
 

@@ -2,6 +2,7 @@ package funkin.backend.utils;
 
 import lime.graphics.Image;
 import openfl.Lib;
+import openfl.system.Capabilities;
 #if windows
 import funkin.backend.utils.native.Windows;
 #end
@@ -64,6 +65,7 @@ final class WindowUtils {
 			if (metric <= 16) path = Flags.MOD_ICON16;
 			else if (metric <= 24) path = Flags.MOD_ICON24;
 			else if (metric <= 32) path = Flags.MOD_ICON32;
+			else if (metric <= 64) path = Flags.MOD_ICON64;
 			else {
 				//path = Flags.MOD_ICON;
 				path = null;
@@ -78,6 +80,31 @@ final class WindowUtils {
 		doIcon(false);
 		doIcon(true);
 		#end
+	}
+
+	/**
+	 * Changes the window resolution.
+	 * @param width The window's resolution width (Defaults to 1280).
+	 * @param height The window's resolution height (Defaults to 720).
+	 * @param changeSize Should it also update the window size.
+	**/
+	public static inline function setResolution(?width:Int, ?height:Int, changeSize = true) {
+
+		var w = width == null ? Flags.GAME_WIDTH : width;
+		var h = height == null ? Flags.GAME_HEIGHT : height;
+
+		var win = Lib.application.window;
+
+		@:privateAccess {
+			if(changeSize){
+				win.resize(w, h);
+
+				win.x = Std.int((Capabilities.screenResolutionX / 2) - (w / 2));
+				win.y = Std.int((Capabilities.screenResolutionY / 2) - (h / 2));
+			}
+			
+			FlxG.width = FlxG.initialWidth = w; FlxG.height = FlxG.initialHeight = h;
+		}
 	}
 
 	/**
