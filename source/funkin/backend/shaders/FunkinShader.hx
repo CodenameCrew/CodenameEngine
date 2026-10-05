@@ -52,85 +52,111 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 	}
 
 	#if REGION /* IHScriptCustomBehaviour */
+	// 0 = other, 1 = ShaderParameter, 2 = ShaderInput
+	#if cpp
+	static final __paramTypeCache:haxe.ds.ObjectMap<Dynamic, Int> = new haxe.ds.ObjectMap();
+	#else
+	static final __paramTypeCache:Map<String, Int> = [];
+	#end
+
+	static function __paramTypeOf(?cls:Class<Dynamic>):Int {
+		if (cls == null) return 0;
+
+		#if !cpp
+		final name = Type.getClassName(cls);
+		#end
+
+		var paramType = __paramTypeCache.get(cls);
+		if (paramType == null) {
+			#if cpp
+			final name = Type.getClassName(cls);
+			#end
+			__paramTypeCache.set(#if cpp cls #else name #end,
+				paramType = name.startsWith("openfl.display.ShaderParameter") ? 1 : (name.startsWith("openfl.display.ShaderInput") ? 2 : 0));
+		}
+
+		return paramType;
+	}
+
 	public function hget(name:String):Dynamic {
-		if (__thisHasField(name) || __thisHasField('get_${name}')) return Reflect.getProperty(this, name);
-		else if (!Reflect.hasField(__data, name)) return null;
+		if (__thisHasField(name) || __instanceHasField('get_$name')) return Reflect.getProperty(this, name);
 
 		if (__glSourceDirty) __init();
-		final field:Dynamic = Reflect.field(__data, name);
 
-		var cl:String = Type.getClassName(Type.getClass(field));
+		final field = Reflect.field(__data, name);
+		if (field == null) return null;
 
-		// little problem we are facing boys...
-
-		// cant do "field is ShaderInput" because ShaderInput has the @:generic metadata
-		// aka instead of ShaderInput<Float> it gets built as ShaderInput_Float
-		// this should be fine tho because we check the class, and the fields don't vary based on the type
-
-		// thanks for looking in the code cne fans :D!! -lunar
-
-		if (cl.startsWith("openfl.display.ShaderParameter"))
-			return (field.__length > 1) ? field.value : field.value[0];
-		else if (cl.startsWith("openfl.display.ShaderInput"))
-			return field.input;
-		return field;
+		switch (__paramTypeOf(Type.getClass(field)))
+		{
+			case 1: return (field.__length > 1) ? field.value : field.value[0];
+			case 2: return field.input;
+			default: return field;
+		}
 	}
 
 	public function hset(name:String, val:Dynamic):Dynamic {
-		if (__thisHasField(name) || __thisHasField('set_${name}')) {
+		final setFuncName = 'set_$name';
+		if (__instanceHasField(setFuncName)) {
+			return Reflect.callMethod(this, Reflect.field(this, setFuncName), [val]);
+		}
+		else if (__thisHasField(name)) {
 			Reflect.setProperty(this, name, val);
 			return val;
 		}
-		else if (!Reflect.hasField(__data, name)) {
-			if (__glSourceDirty) __init();
-			// ??? huh
+
+		if (__glSourceDirty) __init();
+
+		final field = Reflect.field(__data, name);
+		if (field == null) {
 			Reflect.setField(__data, name, val);
 			return val;
 		}
 
-		if (__glSourceDirty) __init();
+		final isNotNull = val != null;
 
-		var field = Reflect.field(__data, name);
-		var cl = Type.getClassName(Type.getClass(field));
-		var isNotNull = val != null;
-		// cant do "field is ShaderInput" for some reason
-		if (cl.startsWith("openfl.display.ShaderParameter")) {
-			if (field.__length <= 1) {
-				// that means we wait for a single number, instead of an array
-				if (field.__isInt && isNotNull && !(val is Int)) {
-					throw new ShaderTypeException(name, Type.getClass(val), 'Int');
-					return null;
-				} else
-				if (field.__isBool && isNotNull && !(val is Bool)) {
-					throw new ShaderTypeException(name, Type.getClass(val), 'Bool');
-					return null;
-				} else
-				if (field.__isFloat && isNotNull && !(val is Float)) {
-					throw new ShaderTypeException(name, Type.getClass(val), 'Float');
+		switch (__paramTypeOf(Type.getClass(field))) {
+			case 1:
+				if (field.__length > 1) {
+					if (isNotNull && !(val is Array)) {
+						throw new ShaderTypeException(name, Type.getClass(val), Array);
+						return null;
+					}
+					return field.value = val;
+				}
+				else {
+					// that means we wait for a single number, instead of an array
+					if (field.__isInt && isNotNull && !(val is Int)) {
+						throw new ShaderTypeException(name, Type.getClass(val), 'Int');
+						return null;
+					} else
+					if (field.__isBool && isNotNull && !(val is Bool)) {
+						throw new ShaderTypeException(name, Type.getClass(val), 'Bool');
+						return null;
+					} else
+					if (field.__isFloat && isNotNull && !(val is Float)) {
+						throw new ShaderTypeException(name, Type.getClass(val), 'Float');
+						return null;
+					}
+					return field.value = isNotNull ? [val] : null;
+				}
+
+			case 2:
+				// shader input!!
+				var bitmap:BitmapData;
+				if (!isNotNull) bitmap = null;
+				else if (val is BitmapData) bitmap = val;
+				else if (val is FlxGraphic) bitmap = val.bitmap;
+				else {
+					throw new ShaderTypeException(name, Type.getClass(val), BitmapData);
 					return null;
 				}
-				return field.value = isNotNull ? [val] : null;
-			} else {
-				if (isNotNull && !(val is Array)) {
-					throw new ShaderTypeException(name, Type.getClass(val), Array);
-					return null;
-				}
-				return field.value = val;
-			}
-		} else if (cl.startsWith("openfl.display.ShaderInput")) {
-			// shader input!!
-			var bitmap:BitmapData;
-			if (!isNotNull) bitmap = null;
-			else if (val is BitmapData) bitmap = val;
-			else if (val is FlxGraphic) bitmap = val.bitmap;
-			else {
-				throw new ShaderTypeException(name, Type.getClass(val), BitmapData);
-				return null;
-			}
-			field.input = bitmap;
+				field.input = bitmap;
+				return val;
+
+			default:
+				Reflect.setField(__data, name, val);
+				return val;
 		}
-
-		return val;
 	}
 	#end
 

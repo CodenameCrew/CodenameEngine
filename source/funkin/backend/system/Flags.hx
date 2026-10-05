@@ -356,12 +356,11 @@ class Flags {
 		if (VIDEO_EXT == null) VIDEO_EXT = VIDEO_EXTS[0]; else VIDEO_EXTS = [VIDEO_EXT];
 		if (IMAGE_EXT == null) IMAGE_EXT = IMAGE_EXTS[0]; else IMAGE_EXTS = [IMAGE_EXT];
 
-
-		if(MOD_ICON == null && MOD_ICON16 == null && MOD_ICON24 == null && MOD_ICON32 == null){ //theres probably a better way to do this
-			MOD_ICON = "art/iconOG";
-			MOD_ICON16 = "art/icon16";
-			MOD_ICON24 = "art/icon16";
-			MOD_ICON32 = "art/icon32";
+		if (MOD_ICON == null && MOD_ICON16 == null && MOD_ICON24 == null && MOD_ICON32 == null) {
+			MOD_ICON = "iconOG";
+			MOD_ICON16 = "icon16";
+			MOD_ICON24 = "icon16";
+			MOD_ICON32 = "icon32";
 		}
 
 		var temp:String;
