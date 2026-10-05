@@ -231,7 +231,9 @@ class Script extends FlxBasic implements IFlxDestroyable
 	/**
 	 * Shared empty argument array, used when calling scripts without parameters (avoids allocations).
 	 */
-	private var _EMPTY_ARGS:Array<Dynamic> = [];
+	private static var _EMPTY_ARGS:Array<Dynamic> = [];
+
+	private var _ONE_ARG:Array<Dynamic> = [];
 
 	/**
 	 * Script name (with extension)
@@ -395,8 +397,8 @@ class Script extends FlxBasic implements IFlxDestroyable
 	 */
 	public function callOne(func:String, arg:Dynamic):Dynamic
 	{
-		_EMPTY_ARGS[0] = arg;
-		return call(func, _EMPTY_ARGS);
+		_ONE_ARG[0] = arg;
+		return call(func, _ONE_ARG);
 	}
 
 	/**

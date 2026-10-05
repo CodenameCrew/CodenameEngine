@@ -100,8 +100,8 @@ class ScriptPack extends Script {
 	public override function callOne(func:String, arg:Dynamic):Dynamic {
 		for(e in scripts) {
 			if (!e.active) continue;
-			_EMPTY_ARGS[0] = arg;
-			e.call(func, _EMPTY_ARGS);
+			_ONE_ARG[0] = arg;
+			e.call(func, _ONE_ARG);
 		}
 		return null;
 	}
