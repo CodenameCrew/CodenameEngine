@@ -165,7 +165,7 @@ class GameOverSubstate extends MusicBeatSubstate
         	delay = 0;
     	}
 
-    	new FlxTimer(delay, function(timer:FlxTimer):Void {
+    	new FlxTimer().start(delay, function(timer:FlxTimer):Void {
         	if (event.onTimerEnd != null) {
             	event.onTimerEnd();
             	return;
