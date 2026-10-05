@@ -114,6 +114,7 @@ final class Windows {
 	')
 	public static function setWindowIcon(title:String, path:String) {}
 
+	// Expects a fixed BGRA non-premultiplied
 	@:functionCode('
 	HWND window = findTargetWindow(title.c_str());
 	if (window == NULL) return;
@@ -169,11 +170,11 @@ final class Windows {
 	')
 	public static function setWindowIconBytes(big:Bool, title:String, bytes:Bytes, width:Int, height:Int) {}
 
-	public static function setWindowIconImage(big:Bool, title:String, image:Image, dontClone:Bool = false)
+	public static function setWindowIconImage(big:Bool, title:String, image:Image)
 	{
 		if (image.format != BGRA32 || image.premultiplied)
 		{
-			if (!dontClone) image = image.clone();
+			image = image.clone();
 			image.format = BGRA32;
 			image.premultiplied = false;
 		}
