@@ -75,7 +75,27 @@ With your fork, you can make pull requests if you want to fix a bug or add a fea
 
 Once opened, you are taken to the page of the origin's repository (which is the repository you forked from) where the pull request you just made will keep track of any future commits you make on your fork until it is closed (with or without it getting merged).
 
-### Managing your fork
+### Ensuring your fork is up to date
+<details>
+	<summary>The TL;DR</summary>
+
+Assuming your remotes are configured, follow one of the following:
+
+For GitHub Desktop:
+1. Click `Branch` > `Rebase current branch...` / Hit `CTRL`+`SHIFT`+`E`
+2. Select which branch you want to use to pull commits from. This is usually in your upstream's main.
+
+For Git CLI:
+```bash
+git fetch upstream
+git checkout primary
+git rebase upstream/main
+git push --force-with-lease
+``` 
+
+</details>
+</br>
+
 You may have seen a modal on the main page of your fork that says something along the lines of
 > This branch is N commits ahead of and M commits behind `CodenameEngine/main`.
 
@@ -98,15 +118,7 @@ Rebasing in GitHub Desktop involves a two step process:
 1. Click `Branch` > `Rebase current branch...` / Hit `CTRL`+`SHIFT`+`E`
 2. Select which branch you want to use to pull commits from. This is usually in your upstream's main.
 
-#### Method 2: GitHub CLI
-The GitHub CLI (not the Git CLI, that's different) allows for this to be done in the command line, as well as other features such as testing other people's PRs locally.
-
-To update the remote fork from its parent, use the `gh repo sync -b BRANCH-NAME` subcommand and supply your fork and branch name as arguments.
-```
-gh repo sync owner/fork -b BRANCH-NAME
-```
-
-#### Method 3: Git CLI
+#### Method 2: Git CLI
 
 Assuming you've named the original repository as `upstream` and your fork's branch is named `primary`, here are the steps:
 1. Fetch the branches and their commits with `git fetch upstream`.
