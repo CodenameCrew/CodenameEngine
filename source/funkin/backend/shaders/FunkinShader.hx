@@ -247,44 +247,6 @@ class FunkinShaderSourceAssembler extends FlxRuntimeShader.FlxShaderSourceAssemb
 		super(funkinParent = parent);
 	}
 
-	override function __appendIncludes(source:String, isVertex:Bool, ?includedKeys:Map<String, Bool>):String
-	{
-		if (includedKeys == null) includedKeys = [];
-
-		var includeCommentFinder:EReg = __getIncludeCommentFinder(), lastMatch = 0, position;
-		while (includeCommentFinder.matchSub(source, lastMatch))
-		{
-			includedKeys.set(includeCommentFinder.matched(1), true);
-
-			position = includeCommentFinder.matchedPos();
-			lastMatch = position.pos + position.len;
-		}
-
-		source = GLSLSourceAssembler.__getIncludeFinder().map(source, (regex:EReg) ->
-		{
-			var key = regex.matched(1);
-			if (includedKeys.get(key)) return '/*Recursive include $key*/';
-
-			var include = __getIncludeSource(key, isVertex);
-			if (include == null) return '/*Unknown include $key*/';
-
-			includedKeys.set(key, true);
-			return '/*#include $key*/\n' + __appendIncludes(include, isVertex, includedKeys);
-		});
-		
-		return __getImportFinder().map(source, (regex:EReg) ->
-		{
-			var key = regex.matched(1);
-			if (includedKeys.get(key)) return '/*Recursive import $key*/';
-
-			var include = __getIncludeSource(key, isVertex);
-			if (include == null) return '/*Unknown import $key*/';
-
-			includedKeys.set(key, true);
-			return '/*import $key*/\n' + __appendIncludes(include, isVertex, includedKeys);
-		});
-	}
-
 	override function __getIncludeSource(include:String, fromVertex:Bool):Null<String> {
 		final path = Paths.getPath('shaders/' + include);
 		if (Assets.exists(path)) return Assets.getText(path);
@@ -304,16 +266,6 @@ class FunkinShaderSourceAssembler extends FlxRuntimeShader.FlxShaderSourceAssemb
 	{
 		source = funkinParent.shaderPrefix + '\n' + (isVertex ? funkinParent.vertexPrefix : funkinParent.fragmentPrefix) + '\n' + source;
 		return super.__appendPrefix(source, versionNumber, versionProfile, extensions, isVertex, precisionHint);
-	}
-
-	private static inline function __getImportFinder():EReg
-	{
-		return ~/(?:^|\s)#import\s+(?|"([^"]+)"|'([^']+)'|([^\s]+))/g;
-	}
-
-	private static inline function __getIncludeCommentFinder():EReg
-	{
-		return ~/(?:^|\s)\/\*#(import|include)\s+(?|"([^"]+)"|'([^']+)'|([^\s]+))\*\//g;
 	}
 }
 
