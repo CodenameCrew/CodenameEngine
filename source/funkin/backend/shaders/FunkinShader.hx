@@ -44,9 +44,10 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 			else vertexPath = fragmentPath.substr(0, idx);
 		}
 
-		fragmentPath = FlxRuntimeShader._getPath(fragmentPath, false);
-		vertexPath = FlxRuntimeShader._getPath(vertexPath, true);
-		_fromFile(fragmentPath, vertexPath, version ?? (fragmentPath != null || vertexPath != null ? Flags.DEFAULT_GLSL_VERSION : null));
+		var frag = FlxRuntimeShader._getPath(fragmentPath, false), vert = FlxRuntimeShader._getPath(vertexPath, true);
+		if (frag == null) frag = FlxRuntimeShader._getPath(Paths.fragShader(fragmentPath), false);
+		if (vert == null) vert = FlxRuntimeShader._getPath(Paths.vertShader(vertexPath), true);
+		_fromFile(frag, vert, version ?? (frag != null || vert != null ? Flags.DEFAULT_GLSL_VERSION : null));
 
 		return this;
 	}
