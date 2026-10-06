@@ -11,6 +11,7 @@ import openfl.display.BitmapData;
 import sys.FileSystem;
 import sys.io.File;
 import animate.FlxAnimateJson;
+import funkin.backend.assets.ModsFolder;
 
 using StringTools;
 using funkin.backend.utils.BitmapUtil;
@@ -63,11 +64,12 @@ class UIImageExplorer extends UIFileExplorer {
 		directoryBG.members.push(directoryTextBox);
 
 		if (image != null) {
-			var fullImagePath:String = '${Path.normalize(Sys.getCwd())}/${Paths.image(image)}'.replace('/', '\\');
-			var noExt = Path.withoutExtension(fullImagePath);
-			if (FileSystem.exists('$noExt\\spritemap1.png'))
-				fullImagePath = '$noExt\\spritemap1.png';
-	
+			var imagePath:String = Paths.image(image);
+			var noExt = Path.withoutExtension(imagePath);
+			if (Paths.assetsTree.getPath('$noExt\\spritemap1.png') != null)
+				imagePath = '$noExt\\spritemap1.png';
+			
+			var fullImagePath:String = '${Path.normalize(Sys.getCwd())}/${Paths.assetsTree.getPath(imagePath)}'.replace('\\', '/');
 			if (FileSystem.exists(fullImagePath))
 				loadFile(fullImagePath);
 				
@@ -170,7 +172,7 @@ class UIImageExplorer extends UIFileExplorer {
 		// GATHER ANIMATIONS/DATA FILES!!!
 		var frames:FlxFramesCollection = null;
 		if (isAtlas) {
-			var dataPath:String = '$directoryPath/Animation.json'.replace('/', '\\');
+			var dataPath:String = '$directoryPath/Animation.json'.replace('\\', '/');
 
 			if (FileSystem.exists(dataPath)) {
 				var dataPathFile:String = File.getContent(dataPath);
@@ -207,7 +209,7 @@ class UIImageExplorer extends UIFileExplorer {
 				var info = FileSystem.stat(spritemapPath);
 				size += info.size;
 
-				spritemapPath = spritemapPath.replace('/', '\\');
+				spritemapPath = spritemapPath.replace('\\', '/');
 				imageFiles.set(Path.withoutDirectory(spritemapPath), sys.io.File.getBytes(spritemapPath));
 			}
 
@@ -217,7 +219,7 @@ class UIImageExplorer extends UIFileExplorer {
 				var info = FileSystem.stat(spritemapPath);
 				size += info.size;
 
-				spritemapPath = spritemapPath.replace('/', '\\');
+				spritemapPath = spritemapPath.replace('\\', '/');
 				imageFiles.set(Path.withoutDirectory(spritemapPath), sys.io.File.getBytes(spritemapPath));
 			}
 

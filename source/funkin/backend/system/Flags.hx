@@ -7,6 +7,7 @@ import funkin.backend.assets.ScriptedAssetLibrary;
 import funkin.backend.system.macros.GitCommitMacro;
 import funkin.backend.utils.IniUtil;
 import lime.app.Application;
+import lime.graphics.Image;
 import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.AssetType;
 
@@ -15,8 +16,6 @@ import lime.utils.AssetType;
  */
 @:build(funkin.backend.system.macros.FlagMacro.build())
 class Flags {
-	public static var overridenFlags:Map<String, Bool> = [];
-
 	// -- Codename's Addon Config --
 	@:bypass public static var addonFlags:Map<String, Dynamic> = [];
 	public static var CURRENT_API_VERSION:Int = 3;
@@ -32,10 +31,14 @@ class Flags {
 	public static var MOD_DOWNLOAD_LINK:String  = "";
 	public static var MOD_DEPENDENCIES:Array<String> = [];
 
-	@:noCompletion public static var MOD_ICON32:String = "";
-	@:noCompletion public static var MOD_ICON24:String = "";
-	@:noCompletion public static var MOD_ICON16:String = "";
-	public static var MOD_ICON:String = "";
+	public static var MOD_ICONS:Array<String> = ["icon16", "icon24", "icon32", "icon"];
+
+	// DEPRECATED (Remove these later probably 8 API VERSION)
+	@:lazy public static var MOD_ICON64:Null<String> = null;
+	@:lazy public static var MOD_ICON32:Null<String> = null;
+	@:lazy public static var MOD_ICON24:Null<String> = null;
+	@:lazy public static var MOD_ICON16:Null<String> = null;
+	@:lazy public static var MOD_ICON:Null<String> = null;
 
 	public static var MOD_DISCORD_CLIENT_ID:String = "";
 	public static var MOD_DISCORD_LOGO_KEY:String = "";
@@ -65,6 +68,9 @@ class Flags {
 	public static var PATHS_CACHE_RESET_ON_SWITCH_STATE:Bool = true;
 	public static var PATHS_UNIX_FIX:Bool = true;
 
+	public static var GAME_WIDTH:Int = 1280;
+	public static var GAME_HEIGHT:Int = 720;
+
 	/**
 	 * Preferred file extensions for the game's audio files.
 	 */
@@ -72,7 +78,7 @@ class Flags {
 	public static var VIDEO_EXTS:Array<String> = ["mp4", "webm", "mkv", "mov"]; // is there any more? // yes frakits
 	public static var IMAGE_EXTS:Array<String> = ["png", "jpg", "jpeg"]; // TODO: Add more after another lime rebases for SDLImage
 
-	// DEPRECATED
+	// DEPRECATED (Remove these later probably 5 API VERSION)
 	@:lazy public static var SOUND_EXT:Null<String> = null;
 	@:lazy public static var VIDEO_EXT:Null<String> = null;
 	@:lazy public static var IMAGE_EXT:Null<String> = null;
@@ -301,9 +307,16 @@ class Flags {
 	public static var DEFAULT_CHARACTER_GHOSTENABLE_SOUND:String = "editors/character/ghostEnable";
 
 	@:lazy public static var DEFAULT_GLSL_VERSION:String = null;
+	public static var FUNKIN_SHADER_CODE_PREFIX:String = "";
+	public static var FUNKIN_SHADER_CODE_FRAGMENT_PREFIX:String = "";
+	public static var FUNKIN_SHADER_CODE_VERTEX_PREFIX:String = "";
+
 	@:also(funkin.backend.utils.HttpUtil.userAgent)
 	public static var USER_AGENT:String = 'request';
 	// -- End of Codename's Default Flags --
+
+	@:bypass public static var modIconImages:Array<Image> = [];
+	@:bypass public static var overridenFlags:Map<String, Bool> = [];
 
 	/**
 	 * Flags that Codename couldn't recognize as it's own defaults (they can only be `string`! due to them being unparsed).
@@ -334,15 +347,7 @@ class Flags {
 		if (WINDOW_TITLE_USE_MOD_NAME == null) WINDOW_TITLE_USE_MOD_NAME = !overridenFlags.exists('TITLE') && overridenFlags.exists('MOD_NAME');
 		if (USE_LEGACY_TIMING == null) USE_LEGACY_TIMING = MOD_API_VERSION < 2;
 		if (SUSTAINS_AS_ONE_NOTE == null) SUSTAINS_AS_ONE_NOTE = MOD_API_VERSION >= 2;
-		if (DEFAULT_GLSL_VERSION == null) {
-			if (MOD_API_VERSION < 2) {
-				DEFAULT_GLSL_VERSION = #if (android || mac || web) "100" #else "120" #end;
-				Logs.warn("Blend Mode Extensions won't work in MOD_API_VERSION below than 2");
-			}
-			else {
-				DEFAULT_GLSL_VERSION = openfl.utils.GLSLSourceAssembler.getDefaultVersion();
-			}
-		}
+		if (DEFAULT_GLSL_VERSION == null) DEFAULT_GLSL_VERSION = openfl.utils.GLSLSourceAssembler.getDefaultVersion();
 		if (DEFAULT_SOUND_TIME_SCALED_PITCH == null) DEFAULT_SOUND_TIME_SCALED_PITCH = MOD_API_VERSION >= 2;
 		if (USE_SOUND_VOLUME_CURVE == null) USE_SOUND_VOLUME_CURVE = MOD_API_VERSION >= 2;
 		if (USE_FLXTRAIL_FRAMES == null) USE_FLXTRAIL_FRAMES = MOD_API_VERSION < 2;
@@ -356,6 +361,26 @@ class Flags {
 		if (SOUND_EXT == null) SOUND_EXT = SOUND_EXTS[0]; else SOUND_EXTS = [SOUND_EXT];
 		if (VIDEO_EXT == null) VIDEO_EXT = VIDEO_EXTS[0]; else VIDEO_EXTS = [VIDEO_EXT];
 		if (IMAGE_EXT == null) IMAGE_EXT = IMAGE_EXTS[0]; else IMAGE_EXTS = [IMAGE_EXT];
+
+		final compIcons = [];
+		if (MOD_ICON != null) compIcons.push(MOD_ICON);
+		if (MOD_ICON16 != null) compIcons.push(MOD_ICON16);
+		if (MOD_ICON24 != null) compIcons.push(MOD_ICON24);
+		if (MOD_ICON32 != null) compIcons.push(MOD_ICON32);
+		if (MOD_ICON64 != null) compIcons.push(MOD_ICON64);
+
+		if (compIcons.length > 0) MOD_ICONS = compIcons;
+
+		modIconImages = [];
+		var path:String;
+		for (icon in MOD_ICONS) {
+			if (Assets.exists(icon)) path = icon;
+			else if (!Assets.exists(path = Paths.image(icon))) continue;
+
+			modIconImages.push(Image.fromBytes(Assets.getBytes(path)));
+		}
+
+		modIconImages.sort((a:Image, b:Image) -> Math.max(a.width, a.height) < Math.max(b.width, b.height) ? 1 : -1);
 	}
 
 	public static function loadFromDatas(datas:Array<String>):Map<String, String> {

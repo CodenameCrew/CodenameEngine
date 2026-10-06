@@ -99,7 +99,7 @@ class CharacterAnimsWindow extends UIButtonList<CharacterAnimButton> {
 	
 			displayAnimsFramesList.set(name, {
 				frame: character.frames.frames[anim.frames.getDefault([0])[0]],
-				scale: 104/Math.max(animBounds.width, animBounds.height),
+				scale: 104/Math.max(animBounds.width, animBounds.height) * -1,
 				renderTexture: null
 			});
 		}
