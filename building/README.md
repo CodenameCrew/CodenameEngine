@@ -75,6 +75,46 @@ With your fork, you can make pull requests if you want to fix a bug or add a fea
 
 Once opened, you are taken to the page of the origin's repository (which is the repository you forked from) where the pull request you just made will keep track of any future commits you make on your fork until it is closed (with or without it getting merged).
 
+### Managing your fork
+You may have seen a modal on the main page of your fork that says something along the lines of
+> This branch is N commits ahead of and M commits behind `CodenameEngine/main`.
+
+as well as a button that says `Sync fork`. **You should not sync just yet**.
+
+`N commits ahead of` are commits that are present in your fork that the origin doesn't have. `M commits behind` is the other way around, those being commits in the origin your fork lacks.
+
+As much as possible, you need to have your fork to be up to date with the origin, and the recommended way is via **rebase**.
+
+Rebasing sets your commits aside, pulls the commits from the origin your fork doesn't have, then reapplies your commits. This results in a cleaner history and prevents your pull request from getting flooded with commits like
+> Merge branch `CodenameCrew:main` into primary
+
+which are results when you're syncing your fork. The reason syncs make commits is because it creates a **merge commit** every time. Rebasing doesn't do this.
+
+To begin rebasing, you need to configure your remotes. See [this](https://docs.github.com/en/pull-requests/how-tos/work-with-forks/configuring-a-remote-repository-for-a-fork) guide for instructions on this.
+
+#### Method 1: GitHub Desktop
+Rebasing in GitHub Desktop involves a two step process:
+
+1. Click `Branch` > `Rebase current branch...` / Hit `CTRL`+`SHIFT`+`E`
+2. Select which branch you want to use to pull commits from. This is usually in your upstream's main.
+
+#### Method 2: GitHub CLI
+The GitHub CLI (not the Git CLI, that's different) allows for this to be done in the command line, as well as other features such as testing other people's PRs locally.
+
+To update the remote fork from its parent, use the `gh repo sync -b BRANCH-NAME` subcommand and supply your fork and branch name as arguments.
+```
+gh repo sync owner/fork -b BRANCH-NAME
+```
+
+#### Method 3: Git CLI
+
+Assuming you've named the original repository as `upstream` and your fork's branch is named `primary`, here are the steps:
+1. Fetch the branches and their commits with `git fetch upstream`.
+2. Checkout your fork's branch with `git checkout primary`.
+3. Rebase with `git rebase upstream/main`.
+4. Push with `git push --force-with-lease`. Since rebasing changes history, the push must be forced.
+
+
 # Generating Codename Engine's API documentation
 
 **Mainly recommended if you intend to fork the engine and make your own custom version to publish.**<br>Do you want to generate an API documentation so people can understand and mod your playable build? This documentation can be uploaded to your website.<br>If you just want to compile the engine normally for your hardcoded mod or for yourself you can skip this step.
