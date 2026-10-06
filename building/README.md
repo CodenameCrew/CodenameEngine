@@ -94,6 +94,11 @@ git rebase upstream/main
 git push --force-with-lease
 ``` 
 
+For GitHub CLI:
+```bash
+gh pr update-branch --rebase
+```
+
 </details>
 </br>
 
@@ -127,6 +132,13 @@ Assuming you've named the original repository as `upstream` and your fork's bran
 3. Rebase with `git rebase upstream/main`.
 4. Push with `git push --force-with-lease`. Since rebasing changes history, the push must be forced.
 
+#### Method 3: GitHub CLI
+The GitHub CLI (nope, this one is different from Git) allows you to update a branch from its base branch.
+
+You can do this by running the below command:
+```bash
+gh pr update-branch --rebase
+```
 
 # Generating Codename Engine's API documentation
 
