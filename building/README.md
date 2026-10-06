@@ -40,7 +40,8 @@ Here is what you'll need:
   - For Windows, that's **Visual Studio Build Tools 2022** with the component *MSVC v143 C++ x64/x86 build tools* as well the *Windows SDK*.
   - For Mac, you will need `Xcode` as it provides the compiler.
   - For Linux, that's `gcc` and `g++`. `libvlc` must also be installed for video playback functionality.
-	- Do note that you'll need to install extra libraries to get Lime and HashLink to compile. See [this](https://github.com/CodenameCrew/cne-lime/tree/develop/project#prerequisites) for what you'd need.
+	- Do note that you'll need to install extra libraries to get Lime to compile. See [this](https://github.com/CodenameCrew/cne-lime/tree/develop/project#prerequisites) for what you'd need. 
+	- The prerequisites listed extra libraries required for HashLink; ignore these as support for HashLink has been dropped.
 - The engine's libaries.
   - You can run `setup-windows.bat` to set these up in Windows, or `setup-unix.sh` for both Mac and Linux. Ensure that your `haxelib` is up to date.
   - After running either of this, you might be given a warning similar to `warning: repository requires reformatting`. Ignore these warnings and do not run the command listed as it will break the structure of the libraries installed.
