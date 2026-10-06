@@ -71,7 +71,7 @@ With your fork, you can make pull requests if you want to fix a bug or add a fea
 
 1. On the main page of your repository, click the contribute button. This will open the page for making pull requests.
 2. Enter a name and a description for your PR. By default, the title will be the first line of the most recent commit message, and an empty description.
-3. Click the green button on the bottom that says "Open pull request". If this is a work in progress, then click the chevron next to it and select "Draft pull request". That way, the PR you have opened cannot be merged until it is ready for review.
+3. Click the green button on the bottom that says `Create pull request`. If this is a work in progress, then click the chevron next to it and select `Draft pull request`. That way, the PR you have opened cannot be merged until it is ready for review.
 
 Once opened, you are taken to the page of the origin's repository (which is the repository you forked from) where the pull request you just made will keep track of any future commits you make on your fork until it is closed (with or without it getting merged).
 
@@ -83,7 +83,7 @@ Assuming your remotes are configured, follow one of the following:
 
 For GitHub Desktop:
 1. Click `Branch` > `Rebase current branch...` / Hit `CTRL`+`SHIFT`+`E`
-2. Select which branch you want to use to pull commits from. This is usually in your upstream's main.
+2. Pick the original repo's branch and click `Rebase`
 
 For Git CLI:
 ```bash
@@ -116,7 +116,7 @@ To begin rebasing, you need to configure your remotes. See [this](https://docs.g
 Rebasing in GitHub Desktop involves a two step process:
 
 1. Click `Branch` > `Rebase current branch...` / Hit `CTRL`+`SHIFT`+`E`
-2. Select which branch you want to use to pull commits from. This is usually in your upstream's main.
+2. Select which branch you want to use to pull commits from. This is usually in your upstream's default branch.
 
 #### Method 2: Git CLI
 
