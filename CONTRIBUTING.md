@@ -80,3 +80,10 @@ You can do this by running the below command:
 ```bash
 gh pr update-branch --rebase
 ```
+
+### Dealing with merge conflicts
+If you've noticed that you're unable to sync your fork, this means that a merge conflict has appeared.
+
+This happens if two people edit the same lines in the same file at the same time. Git cannot differentiate whose edits would be merged and aborts.
+
+The GitHub docs provides [an article](https://docs.github.com/en/pull-requests/reference/merge-conflicts) on how to reconcile these.
