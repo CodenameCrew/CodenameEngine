@@ -50,6 +50,7 @@ class AssetsLibraryList extends AssetLibrary {
 				}
 			}
 			#end
+			resetAssetPathCache();
 		}
 		return lib;
 	}
@@ -57,17 +58,50 @@ class AssetsLibraryList extends AssetLibrary {
 	var existsSpecificCacheLibrary:Map<AssetSource, Map<Null<String>, Map<String, AssetLibrary>>> = [];
 	var existsSpecificCacheTime:Map<AssetSource, Map<Null<String>, Map<String, Float>>> = [];
 
-	public function existsSpecific(id:String, type:String, source:AssetSource = BOTH) {
-		if (!id.startsWith("assets/") && existsSpecific('assets/$id', type, source))
-			return true;
+	public function getAssetPathLibrary(id:String, type:Null<String>, source:AssetSource = BOTH):Null<AssetLibrary> {
+		var cacheLibraryPaths:Map<String, AssetLibrary> = null;
 
-		// Prevent massive lags on repetitive usage, primarily with getting note sprite sheets in mania charts (usually 2k+ notes)
-		final time = haxe.Timer.stamp();
+		if (Flags.PATHS_CACHE_LIFETIME != 0) {
+			// Prevent massive lags on repetitive usage, primarily with getting note sprite sheets in mania charts (usually 2k+ notes)
+			final time = lime.system.System.getTimer() * 0.001;
 
-		var cacheLibraryTypes = existsSpecificCacheLibrary.get(source), cacheTimeTypes = existsSpecificCacheTime.get(source);
-		if (cacheLibraryTypes == null) {
-			existsSpecificCacheLibrary.set(source, cacheLibraryTypes = []);
-			existsSpecificCacheTime.set(source, cacheTimeTypes = []);
+			var cacheLibraryTypes = assetPathCacheLibrary.get(source), cacheTimeTypes = assetPathCacheTime.get(source);
+			if (cacheLibraryTypes == null) {
+				assetPathCacheLibrary.set(source, cacheLibraryTypes = []);
+				assetPathCacheTime.set(source, cacheTimeTypes = []);
+			}
+
+			cacheLibraryPaths = cacheLibraryTypes.get(type);
+			var cacheTimePaths = cacheTimeTypes.get(type);
+			if (cacheLibraryPaths == null) {
+				cacheLibraryTypes.set(type, cacheLibraryPaths = []);
+				cacheTimeTypes.set(type, cacheTimePaths = []);
+			}
+			else if (cacheTimePaths.exists(id)) {
+				if (Flags.PATHS_CACHE_LIFETIME != null) {
+					final cacheSafeTime = cacheTimePaths.get(id) + Flags.PATHS_CACHE_LIFETIME;
+
+					if (cacheLibraryPaths.exists(id)) {
+						final library = cacheLibraryPaths.get(id);
+
+						if (time < cacheSafeTime) return library;
+						else if (!shouldSkipLib(library, source)
+							&& (type == null ? library.exists(id, @:privateAccess library.types.get(id)) : library.exists(id, type))
+						) {
+							cacheTimePaths.set(id, time);
+							return library;
+						}
+
+						cacheLibraryPaths.remove(id);
+					}
+					else if (time < cacheSafeTime)
+						return null;
+				}
+				else
+					return cacheLibraryPaths.get(id);
+			}
+
+			cacheTimePaths.set(id, time);
 		}
 
 		var cacheLibraryPaths = cacheLibraryTypes.get(type), cacheTimePaths = cacheTimeTypes.get(type);
@@ -104,6 +138,10 @@ class AssetsLibraryList extends AssetLibrary {
 
 		return false;
 	}
+
+	public function existsSpecific(id:String, type:String, source:AssetSource = BOTH)
+		return (!id.startsWith("assets/") && existsSpecific('assets/$id', type, source)) || getAssetPathLibrary(id, type, source) != null;
+	
 	public override inline function exists(id:String, type:String):Bool
 		return existsSpecific(id, type, BOTH);
 

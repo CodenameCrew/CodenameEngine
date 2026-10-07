@@ -236,6 +236,9 @@ final class XMLUtil {
 		if (node.has.zoomfactor)
 			spr.zoomFactor = Std.parseFloat(node.getAtt("zoomfactor")).getDefaultFloat(spr.zoomFactor);
 
+		if (node.has.anglefactor)
+			spr.angleFactor = Std.parseFloat(node.getAtt("anglefactor")).getDefaultFloat(spr.angleFactor);
+
 		if (node.has.alpha)
 			spr.alpha = Std.parseFloat(node.getAtt("alpha")).getDefaultFloat(spr.alpha);
 
