@@ -245,10 +245,13 @@
 	<!--<haxedef name="HXCPP_CPP20"/>-->
 	<!--<haxedef name="HXCPP_CLANG"/>-->
 	<!--<haxedef name="HXCPP_MSVC"/>-->
+	<!-- This doesn't seem very useful, and it also increases GC cleanup time -->
+	<!-- Unless you're placing more than ~300k notes in the game, I can't think of anywhere you'd need it -->
+	<!--<haxedef name="HXCPP_GC_BIG_BLOCKS"/>-->
+	<!-- Due to a design flaw, generational GC is not actually enabled; only its nursery bump is -->
+	<haxedef name="HXCPP_GC_GENERATIONAL"/>
 	<!-- This seems to causes more harm, but to be fair, its mostly because of text rendering -->
 	<!-- This is really important to fix honestly, try to get cairo text rendering not memory leak in the future -->
-	<!--<haxedef name="HXCPP_GC_BIG_BLOCKS"/>-->
-	<!--<haxedef name="HXCPP_GC_GENERATIONAL"/>-->
 	<!--<haxedef name="HXCPP_GC_DYNAMIC_SIZE"/>-->
 	<haxedef name="HXCPP_CHECK_POINTER"/>
 	<haxedef name="HXCPP_STACK_LINE"/>
