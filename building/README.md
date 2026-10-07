@@ -1,6 +1,6 @@
 # Compiling Codename Engine
 
-Do note that compiling is ***NOT*** the intended manner of modding with Codename Engine, as the softcoding system is designed in your favor. The exception to this is if you want to contribute to CNE's development by making a pull request.
+Do note that compiling is ***NOT*** the intended manner of modding with Codename Engine, as the softcoding system is designed in your favor. The exception to this is if you want to contribute to CNE's development by making a pull request, instructions on how to do so are shown [here](../CONTRIBUTING.md).
 
 <details>
 	<summary>"Why not?"</summary>
@@ -66,79 +66,6 @@ Compiling to another platform is going to be another full build and rounds of te
 
 If it compiles, you're all set up! You may now begin editing.
 
-## Contributing to Codename
-
-With your fork, you can make pull requests if you want to fix a bug or add a feature to the game. To do this, once the changes you have are pushed to your repository in GitHub, do the following:
-
-1. On the main page of your repository, click the contribute button. This will open the page for making pull requests.
-2. Enter a name and a description for your PR. By default, the title will be the first line of the most recent commit message, and an empty description.
-3. Click the green button on the bottom that says `Create pull request`. If this is a work in progress, then click the chevron next to it and select `Draft pull request`. That way, the PR you have opened cannot be merged until it is ready for review.
-
-Once opened, you are taken to the page of the origin's repository (which is the repository you forked from) where the pull request you just made will keep track of any future commits you make on your fork until it is closed (with or without it getting merged).
-
-### Ensuring your fork is up to date
-<details>
-	<summary>The TL;DR</summary>
-
-Assuming your remotes are configured, follow one of the following:
-
-For GitHub Desktop:
-1. Click `Branch` > `Rebase current branch...` / Hit `CTRL`+`SHIFT`+`E`
-2. Pick the original repo's branch and click `Rebase`
-
-For Git CLI:
-```bash
-git fetch upstream
-git checkout primary
-git rebase upstream/main
-git push --force-with-lease
-``` 
-
-For GitHub CLI:
-```bash
-gh pr update-branch --rebase
-```
-
-</details>
-</br>
-
-You may have seen a modal on the main page of your fork that says something along the lines of
-> This branch is N commits ahead of and M commits behind `CodenameEngine/main`.
-
-as well as a button that says `Sync fork`. **You should not sync just yet**.
-
-`N commits ahead of` are commits that are present in your fork that the origin doesn't have. `M commits behind` is the other way around, those being commits in the origin your fork lacks.
-
-As much as possible, you need to have your fork to be up to date with the origin, and the recommended way is via **rebase**.
-
-Rebasing sets your commits aside, pulls the commits from the origin your fork doesn't have, then reapplies your commits. This results in a cleaner history and prevents your pull request from getting flooded with commits like
-> Merge branch `CodenameCrew:main` into primary
-
-which are results when you're syncing your fork. The reason syncs make commits is because it creates a **merge commit** every time. Rebasing doesn't do this.
-
-To begin rebasing, you need to configure your remotes. See [this](https://docs.github.com/en/pull-requests/how-tos/work-with-forks/configuring-a-remote-repository-for-a-fork) guide for instructions on this.
-
-#### Method 1: GitHub Desktop
-Rebasing in GitHub Desktop involves a two step process:
-
-1. Click `Branch` > `Rebase current branch...` / Hit `CTRL`+`SHIFT`+`E`
-2. Select which branch you want to use to pull commits from. This is usually in your upstream's default branch.
-
-#### Method 2: Git CLI
-
-Assuming you've named the original repository as `upstream` and your fork's branch is named `primary`, here are the steps:
-1. Fetch the branches and their commits with `git fetch upstream`.
-2. Checkout your fork's branch with `git checkout primary`.
-3. Rebase with `git rebase upstream/main`.
-4. Push with `git push --force-with-lease`. Since rebasing changes history, the push must be forced.
-
-#### Method 3: GitHub CLI
-The GitHub CLI (nope, this one is different from Git) allows you to update a branch from its base branch.
-
-You can do this by running the below command:
-```bash
-gh pr update-branch --rebase
-```
 
 # Generating Codename Engine's API documentation
 
