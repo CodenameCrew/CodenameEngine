@@ -66,9 +66,7 @@ class CharterBackdropGroup extends FlxTypedGroup<CharterBackdrop> {
 
 		super.update(elapsed);
 
-		var i = 0;
-		while (i < strumLineGroup.members.length) {
-			final strumLine = strumLineGroup.members[i];
+		for (i => strumLine in strumLineGroup.members) {
 			if (strumLine == null) continue;
 
 			if (members[i] == null)
@@ -93,7 +91,6 @@ class CharterBackdropGroup extends FlxTypedGroup<CharterBackdrop> {
 
 			grid.active = grid.visible = true;
 			grid.updateSprites();
-			i++;
 		}
 	}
 
@@ -142,15 +139,21 @@ class NotesDrawGroup extends FlxFastTypedGroup<CharterNote> {
 			if (note != null && note.exists && note.visible) {
 				if (note.snappedToGrid) note.x = (note.strumLine != null ? note.strumLine.x : 0) + (note.id % (note.strumLine != null ? note.strumLine.keyCount : 4)) * 40;
 				note.drawMembers();
-				note.drawSuper();
 			}
 		}
+
 		i = 0; note = null;
 		while (i < length) {
 			note = members[i++];
-			if (note != null && note.exists && note.visible) {
+			if (note != null && note.exists && note.visible)
+				note.drawSuper();
+		}
+
+		i = 0; note = null;
+		while (i < length) {
+			note = members[i++];
+			if (note != null && note.exists && note.visible)
 				note.drawNoteTypeText();
-			}
 		}
 
 		FlxCamera._defaultCameras = oldDefaultCameras;
@@ -176,9 +179,6 @@ class CharterBackdrop extends FlxTypedGroup<FlxBasic> {
 	var __lastKeyCount:Int = 4;
 
 	public var cameraHighlight:CameraHighlight;
-
-	private var __spriteMembers:Array<FlxSprite>;
-	private var __separatorBars:Array<FlxSprite>;
 
 	public function new() {
 		super();
@@ -242,14 +242,7 @@ class CharterBackdrop extends FlxTypedGroup<FlxBasic> {
 		conductorFollowerSpr.scale.set(4 * 40, 4);
 		conductorFollowerSpr.updateHitbox();
 		add(conductorFollowerSpr);
-
-		__spriteMembers = [gridBackDrop, beatSeparator, topLimit, bottomLimit, topSeparator, bottomSeparator, conductorFollowerSpr, waveformSprite, cameraHighlight];
-		__separatorBars = [conductorFollowerSpr, beatSeparator, topSeparator, bottomSeparator];
 	}
-
-	private final __shader_pixelOffset:Array<Float> = [0];
-	private final __shader_textureRes:Array<Float> = [0, 0];
-	private final __shader_playerPosition:Array<Float> = [0];
 
 	public function updateSprites() {
 		var x:Float = 0; // fuck you
@@ -263,7 +256,8 @@ class CharterBackdrop extends FlxTypedGroup<FlxBasic> {
 			cameraHighlight.color = strumLine.highlightColor;
 		} else alpha = 0.9;
 
-		for (spr in __spriteMembers) {
+		for (spr in [gridBackDrop, beatSeparator, topLimit, bottomLimit, 
+				topSeparator, bottomSeparator, conductorFollowerSpr, waveformSprite, cameraHighlight]) {
 			spr.x = x; if (spr != waveformSprite) spr.alpha = alpha;
 			spr.cameras = this.cameras;
 		}
@@ -280,7 +274,7 @@ class CharterBackdrop extends FlxTypedGroup<FlxBasic> {
 		bottomLimit.scale.set(keyCount * 40, Math.ceil(FlxG.height / cameras[0].zoom));
 		bottomLimit.updateHitbox();
 
-		for (spr in __separatorBars) {
+		for (spr in [conductorFollowerSpr, beatSeparator, topSeparator, bottomSeparator]) {
 			spr.scale.x = keyCount * 40;
 			spr.updateHitbox();
 		}
@@ -303,14 +297,9 @@ class CharterBackdrop extends FlxTypedGroup<FlxBasic> {
 		}
 		waveformSprite.updateHitbox();
 
-		__shader_pixelOffset[0] = Math.max(conductorFollowerSpr.y - ((FlxG.height * (1/cameras[0].zoom)) * 0.5), 0);
-		__shader_textureRes[0] = waveformSprite.width;
-		__shader_textureRes[1] = waveformSprite.height;
-		__shader_playerPosition[0] = conductorFollowerSpr.y;
-
-		waveformSprite.shader.data.pixelOffset.value = __shader_pixelOffset;
-		waveformSprite.shader.data.textureRes.value = __shader_textureRes;
-		waveformSprite.shader.data.playerPosition.value = __shader_playerPosition;
+		waveformSprite.shader.data.pixelOffset.value = [Math.max(conductorFollowerSpr.y - ((FlxG.height * (1/cameras[0].zoom)) * 0.5), 0)];
+		waveformSprite.shader.data.textureRes.value = [waveformSprite.width, waveformSprite.height];
+		waveformSprite.shader.data.playerPosition.value = [conductorFollowerSpr.y];
 	}
 }
 

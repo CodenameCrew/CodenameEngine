@@ -1,6 +1,5 @@
 package funkin.backend;
 
-import animate.FlxAnimate;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.math.FlxMath;
@@ -10,11 +9,8 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import flixel.graphics.frames.FlxFrame;
-
 import funkin.backend.system.Flags;
 
-@:access(animate.FlxAnimate)
 class FunkinText extends FlxText
 {
 	public var zoomFactor:Float = 1;

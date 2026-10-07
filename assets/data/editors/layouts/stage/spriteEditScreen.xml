@@ -182,7 +182,6 @@
 
 			if(previewSprite == null) return;
 			previewSprite.color = 0xFFFFFFFF; // TODO: Color Wheel
-			previewSprite.blend = BlendMode.fromString(blendMode.value);
 			previewSprite.skew.x = skewXStepper.value;
 			previewSprite.skew.y = skewYStepper.value;
 			previewSprite.angle = angleStepper.value;
@@ -207,7 +206,6 @@
 			sprite.spriteAnimType = animTypeToString(animType.value);
 			sprite.angle = angleStepper.value;
 			sprite.alpha = alphaStepper.value;
-			sprite.blend = BlendMode.fromString(blendMode.value);
 
 			function saveXY(obj:Dynamic, name:String, x:UINumericStepper, y:UINumericStepper) {
 				button.xml.remove(name + "");
@@ -229,18 +227,18 @@
 				button.xml.set(name, value);
 			}
 
+			// TODO: remove old attributes to prevent possible errors
+			// button.xml.remove();
+
 			button.xml.set("name", nameTextBox.label.text);
 			button.xml.set("sprite", spriteTextBox.label.text);
 			button.xml.set("x", xStepper.value);
 			button.xml.set("y", yStepper.value);
-			button.xml.set("zoomfactor", zoomFactorStepper.value);
+			button.xml.set("zoom", zoomFactorStepper.value);
 			button.xml.set("type", animTypeToString(animType.value));
 			button.xml.set("antialiasing", antialiasingCheckbox.checked);
 			button.xml.set("angle", angleStepper.value);
 			button.xml.set("alpha", alphaStepper.value);
-			button.xml.remove("blend");
-			if (sprite.blend != null)
-				button.xml.set("blend", blendMode.value);
 
 			getEx('anims').clear();
 			var allowedAnims:Array&lt;String&gt; = [for (b in animations.buttons.members) b.animData.name];

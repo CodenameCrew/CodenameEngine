@@ -27,6 +27,7 @@ class Flags {
 	public static var MOD_NAME:String = "";
 	public static var MOD_DESCRIPTION:String = "";
 	public static var MOD_AUTHOR:String = "";
+	public static var MOD_VERSION:String = "";
 	@:lazy public static var MOD_API_VERSION:Null<Int> = null;
 	public static var MOD_DOWNLOAD_LINK:String  = "";
 	public static var MOD_DEPENDENCIES:Array<String> = [];
@@ -45,6 +46,11 @@ class Flags {
 	public static var MOD_DISCORD_LOGO_TEXT:String = "";
 
 	public static var MOD_REDIRECT_STATES:Map<String, String> = [];
+
+	@:also(funkin.backend.system.gamejolt.GameJoltSecurity.gameId)
+	public static var MOD_GAMEJOLT_GAME_ID:String = '';
+	@:also(funkin.backend.system.gamejolt.GameJoltSecurity.encryptedGameToken)
+	public static var MOD_GAMEJOLT_ENCRYPTED_TOKEN:String = '';
 
 	// -- Codename's Default Flags --
 	@:lazy public static var SAVE_PATH:String = haxe.macro.Compiler.getDefine("SAVE_PATH");
@@ -167,8 +173,6 @@ class Flags {
 	public static var USE_LEGACY_CENTER_CAM:Null<Bool> = null;
 	public static var USE_LEGACY_FLXANIMATE_STAGE_MATRIX:Null<Bool> = null;
 
-	public static var CHANGE_WINDOW_TITLE_PLAYSTATE:Bool = true;
-
 	@:also(funkin.game.Character.FALLBACK_DEAD_CHARACTER)
 	public static var DEFAULT_GAMEOVER_CHARACTER:String = "bf-dead";
 
@@ -187,6 +191,8 @@ class Flags {
 	public static var DEFAULT_CAM_ZOOM_LERP:Float = 0.05;
 	public static var DEFAULT_HUD_ZOOM_LERP:Float = 0.05;
 
+	public static var USE_LEGACY_ZOOM_FACTOR:Null<Bool> = null;
+	
 	// Font configuration
 	public static var DEFAULT_FONT:String = "vcr.ttf";
 	public static var DEFAULT_FONT_SIZE:Int = 16;
@@ -346,6 +352,7 @@ class Flags {
 		if (MOD_API_VERSION == null) MOD_API_VERSION = CURRENT_API_VERSION;
 		if (WINDOW_TITLE_USE_MOD_NAME == null) WINDOW_TITLE_USE_MOD_NAME = !overridenFlags.exists('TITLE') && overridenFlags.exists('MOD_NAME');
 		if (USE_LEGACY_TIMING == null) USE_LEGACY_TIMING = MOD_API_VERSION < 2;
+		if (USE_LEGACY_ZOOM_FACTOR == null) USE_LEGACY_ZOOM_FACTOR = MOD_API_VERSION < 2;
 		if (SUSTAINS_AS_ONE_NOTE == null) SUSTAINS_AS_ONE_NOTE = MOD_API_VERSION >= 2;
 		if (DEFAULT_GLSL_VERSION == null) DEFAULT_GLSL_VERSION = openfl.utils.GLSLSourceAssembler.getDefaultVersion();
 		if (DEFAULT_SOUND_TIME_SCALED_PITCH == null) DEFAULT_SOUND_TIME_SCALED_PITCH = MOD_API_VERSION >= 2;

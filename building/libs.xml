@@ -26,6 +26,7 @@
 		<lib name="format"/>
 		<lib name="markdown"/>
 		<lib name="nape-haxe4"/>
+		<git name="crypto" url="https://github.com/HaxeFoundation/crypto" ref="9959143" />
 
 		<!-- For building lime -->
 		<lib global="true" name="hxp"/> <lib name="hxp"/>

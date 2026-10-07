@@ -37,9 +37,7 @@ class UINumericStepper extends UITextBox {
 		} else if (max != null) {
 			v = Math.min(v, max);
 		}
-		// charter leak fix
-		final targetText = Std.string(FlxMath.roundDecimal(v, precision));
-		if (label.text != targetText) label.text = targetText;
+		label.text = Std.string(FlxMath.roundDecimal(v, precision));
 		return value = v;
 	}
 }
