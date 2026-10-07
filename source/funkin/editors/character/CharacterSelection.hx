@@ -60,7 +60,7 @@ class CharacterSelectionScreen extends EditorTreeMenuScreen {
 		for (o in generateList(modsList, isMods)) add(o);
 	}
 
-	public function createCharacter(name:String, imageSaveData:ImageSaveData, xml:Xml) {
+	public function createCharacter(name:String, imageSaveDatas:Array<ImageSaveData>, xml:Xml) {
 		var characterAlreadyExists:Bool = modsList.contains(name);
 		if (characterAlreadyExists) {
 			parent.openSubState(new UIWarningSubstate(TU.translate('characterCreationScreen.warning.char-exists-title'), TU.translate('characterCreationScreen.warning.char-exists-body'), [
@@ -74,7 +74,8 @@ class CharacterSelectionScreen extends EditorTreeMenuScreen {
 		CoolUtil.safeSaveFile(characterPath, "<!DOCTYPE codename-engine-character>\n" + Printer.print(xml, true));
 
 		// Save Image files 
-		UIImageExplorer.saveFilesGlobal(imageSaveData, '${Paths.getAssetsRoot()}/images/characters');
+		for(data in imageSaveDatas)
+			UIImageExplorer.saveFilesGlobal(data, '${Paths.getAssetsRoot()}/images/characters');
 
 		// Add to Menu >:D
 		var option:IconOption = new IconOption(name, getID('acceptCharacter'), Character.getIconFromCharName(name), () -> {

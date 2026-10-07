@@ -105,6 +105,9 @@
 		<str id="ghostTapping-name">Toques Fantasma</str>
 		<str id="ghostTapping-desc">Se desmarcado, bater em teclas que não tem uma nota conta como erro.</str>
 
+		<str id="centeredFields-name">Pistas Centradas</str>
+		<str id="centeredFields-desc">Se marcado, apenas as pistas jogáveis serão visiveis, sendo alinhadas horizontalmente no ecrã (também conhecido por "Middlescroll").</str>
+
 		<str id="naughtyness-name">Indecência</str>
 		<str id="naughtyness-desc">Se desmarcado, irá censurar as cenas da Semana 7, ou mais.</str>
 
@@ -206,6 +209,9 @@
 
 		<str id="songOffsetAffectEditors-name">Atraso no Mapeador</str>
 		<str id="songOffsetAffectEditors-desc">Se marcado, irá ativar o Atraso da Música no Editor de Mapas, também.</str>
+
+		<str id="legacyMemoryCounter-name">Contador de Memória Clássico</str>
+		<str id="legacyMemoryCounter-desc">Se marcado, o contador de memória mostrará o uso de memória do GC de Haxe e o seu máximo (o comportamento original) em vez da memória de trabalho vista no Gestor de Tarefas.</str>
 	</group>
 
 </language>

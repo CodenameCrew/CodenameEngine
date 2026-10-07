@@ -52,85 +52,111 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 	}
 
 	#if REGION /* IHScriptCustomBehaviour */
+	// 0 = other, 1 = ShaderParameter, 2 = ShaderInput
+	#if cpp
+	static final __paramTypeCache:haxe.ds.ObjectMap<Dynamic, Int> = new haxe.ds.ObjectMap();
+	#else
+	static final __paramTypeCache:Map<String, Int> = [];
+	#end
+
+	static function __paramTypeOf(?cls:Class<Dynamic>):Int {
+		if (cls == null) return 0;
+
+		#if !cpp
+		final name = Type.getClassName(cls);
+		#end
+
+		var paramType = __paramTypeCache.get(cls);
+		if (paramType == null) {
+			#if cpp
+			final name = Type.getClassName(cls);
+			#end
+			__paramTypeCache.set(#if cpp cls #else name #end,
+				paramType = name.startsWith("openfl.display.ShaderParameter") ? 1 : (name.startsWith("openfl.display.ShaderInput") ? 2 : 0));
+		}
+
+		return paramType;
+	}
+
 	public function hget(name:String):Dynamic {
+		if (__thisHasField(name) || __instanceHasField('get_$name')) return Reflect.getProperty(this, name);
+
 		if (__glSourceDirty) __init();
 
-		if (__thisHasField(name) || __thisHasField('get_${name}')) return Reflect.getProperty(this, name);
-		else if (!Reflect.hasField(__data, name)) return null;
+		final field = Reflect.field(__data, name);
+		if (field == null) return null;
 
-		final field:Dynamic = Reflect.field(__data, name);
-
-		var cl:String = Type.getClassName(Type.getClass(field));
-
-		// little problem we are facing boys...
-
-		// cant do "field is ShaderInput" because ShaderInput has the @:generic metadata
-		// aka instead of ShaderInput<Float> it gets built as ShaderInput_Float
-		// this should be fine tho because we check the class, and the fields don't vary based on the type
-
-		// thanks for looking in the code cne fans :D!! -lunar
-
-		if (cl.startsWith("openfl.display.ShaderParameter"))
-			return (field.__length > 1) ? field.value : field.value[0];
-		else if (cl.startsWith("openfl.display.ShaderInput"))
-			return field.input;
-		return field;
+		switch (__paramTypeOf(Type.getClass(field)))
+		{
+			case 1: return (field.__length > 1) ? field.value : field.value[0];
+			case 2: return field.input;
+			default: return field;
+		}
 	}
 
 	public function hset(name:String, val:Dynamic):Dynamic {
-		if (__glSourceDirty) __init();
-
-		if (__thisHasField(name) || __thisHasField('set_${name}')) {
+		final setFuncName = 'set_$name';
+		if (__instanceHasField(setFuncName)) {
+			return Reflect.callMethod(this, Reflect.field(this, setFuncName), [val]);
+		}
+		else if (__thisHasField(name)) {
 			Reflect.setProperty(this, name, val);
 			return val;
 		}
-		else if (!Reflect.hasField(__data, name)) {
-			// ??? huh
+
+		if (__glSourceDirty) __init();
+
+		final field = Reflect.field(__data, name);
+		if (field == null) {
 			Reflect.setField(__data, name, val);
 			return val;
 		}
 
-		var field = Reflect.field(__data, name);
-		var cl = Type.getClassName(Type.getClass(field));
-		var isNotNull = val != null;
-		// cant do "field is ShaderInput" for some reason
-		if (cl.startsWith("openfl.display.ShaderParameter")) {
-			if (field.__length <= 1) {
-				// that means we wait for a single number, instead of an array
-				if (field.__isInt && isNotNull && !(val is Int)) {
-					throw new ShaderTypeException(name, Type.getClass(val), 'Int');
-					return null;
-				} else
-				if (field.__isBool && isNotNull && !(val is Bool)) {
-					throw new ShaderTypeException(name, Type.getClass(val), 'Bool');
-					return null;
-				} else
-				if (field.__isFloat && isNotNull && !(val is Float)) {
-					throw new ShaderTypeException(name, Type.getClass(val), 'Float');
-					return null;
-				}
-				return field.value = isNotNull ? [val] : null;
-			} else {
-				if (isNotNull && !(val is Array)) {
-					throw new ShaderTypeException(name, Type.getClass(val), Array);
-					return null;
-				}
-				return field.value = val;
-			}
-		} else if (cl.startsWith("openfl.display.ShaderInput")) {
-			// shader input!!
-			var bitmap:BitmapData;
-			if (!isNotNull) bitmap = null;
-			else if (val is BitmapData) bitmap = val;
-			else if (val is FlxGraphic) bitmap = val.bitmap;
-			else {
-				throw new ShaderTypeException(name, Type.getClass(val), BitmapData);
-				return null;
-			}
-			field.input = bitmap;
-		}
+		final isNotNull = val != null;
 
-		return val;
+		switch (__paramTypeOf(Type.getClass(field))) {
+			case 1:
+				if (field.__length > 1) {
+					if (isNotNull && !(val is Array)) {
+						throw new ShaderTypeException(name, Type.getClass(val), Array);
+						return null;
+					}
+					return field.value = val;
+				}
+				else {
+					// that means we wait for a single number, instead of an array
+					if (field.__isInt && isNotNull && !(val is Int)) {
+						throw new ShaderTypeException(name, Type.getClass(val), 'Int');
+						return null;
+					} else
+					if (field.__isBool && isNotNull && !(val is Bool)) {
+						throw new ShaderTypeException(name, Type.getClass(val), 'Bool');
+						return null;
+					} else
+					if (field.__isFloat && isNotNull && !(val is Float)) {
+						throw new ShaderTypeException(name, Type.getClass(val), 'Float');
+						return null;
+					}
+					return field.value = isNotNull ? [val] : null;
+				}
+
+			case 2:
+				// shader input!!
+				var bitmap:BitmapData;
+				if (!isNotNull) bitmap = null;
+				else if (val is BitmapData) bitmap = val;
+				else if (val is FlxGraphic) bitmap = val.bitmap;
+				else {
+					throw new ShaderTypeException(name, Type.getClass(val), BitmapData);
+					return null;
+				}
+				field.input = bitmap;
+				return val;
+
+			default:
+				Reflect.setField(__data, name, val);
+				return val;
+		}
 	}
 	#end
 
@@ -143,20 +169,38 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 		__glSourceAssembler = new FunkinShaderSourceAssembler(this);
 	}
 
+	override function __getParameterDefault(assign:Null<String>, type:ShaderParameterType, isSampler:Bool):Dynamic
+	{
+		if (isSampler && assign != null)
+		{
+			var p = assign.charAt(0);
+			if ((p == "'" || p == '"') && assign.charAt(assign.length - 1) == p) assign = assign.substring(1, assign.length - 1);
+
+			var path = Paths.image(assign);
+			if (FlxG.assets.exists(path))
+			{
+				var graphic = FlxG.bitmap.add(path);
+				if (graphic != null) return graphic.bitmap;
+			}
+		}
+
+		return super.__getParameterDefault(assign, type, isSampler);
+	}
+
 	override function toString():String {
 		return __cacheProgramId != null ? 'FunkinShader(${__cacheProgramId})' : 'FunkinShader';
 	}
-
-	#if REGION /* Deprecated */
-	public var shaderPrefix:String = "";
-	public var fragmentPrefix:String = "";
-	public var vertexPrefix:String = "";
-	#end
 
 	#if REGION /* Backward Compatibility */
 	private static var __instanceFields = Type.getInstanceFields(FunkinShader);
 	private static var FRAGMENT_SHADER = 0;
 	private static var VERTEX_SHADER = 1;
+
+	// These not triggering shader resets is intended, or it'll cause lag spikes
+	// It's recommended to use Flags
+	public var shaderPrefix:String = Flags.FUNKIN_SHADER_CODE_PREFIX;
+	public var fragmentPrefix:String = Flags.FUNKIN_SHADER_CODE_FRAGMENT_PREFIX;
+	public var vertexPrefix:String = Flags.FUNKIN_SHADER_CODE_VERTEX_PREFIX;
 
 	public var fileName(get, set):String;
 	inline function get_fileName():String return _fragmentFilePath ?? _vertexFilePath ?? "FunkinShader";
@@ -187,7 +231,9 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 	function registerParameter(name:String, type:String, isUniform:Bool) {
 		__registerParameter(name, Shader.getParameterTypeFromGLSL(type, false), StringTools.startsWith(type, "sampler"), 1, null, isUniform, null);
 	}
+	#end
 
+	#if REGION /* Deprecated */
 	// Unused... cne-openfl uses a different system
 	var __cancelNextProcessGLData:Bool = false;
 	public var onProcessGLData:FlxTypedSignal<(String, String)->Void> = new FlxTypedSignal<(String, String)->Void>();
@@ -205,25 +251,34 @@ class FunkinShaderSourceAssembler extends FlxRuntimeShader.FlxShaderSourceAssemb
 	{
 		if (includedKeys == null) includedKeys = [];
 
+		var includeCommentFinder:EReg = __getIncludeCommentFinder(), lastMatch = 0, position;
+		while (includeCommentFinder.matchSub(source, lastMatch))
+		{
+			includedKeys.set(includeCommentFinder.matched(1), true);
+
+			position = includeCommentFinder.matchedPos();
+			lastMatch = position.pos + position.len;
+		}
+
 		source = GLSLSourceAssembler.__getIncludeFinder().map(source, (regex:EReg) ->
 		{
 			var key = regex.matched(1);
-			if (includedKeys.get(key)) return '/*Recursive include $key*/\n';
+			if (includedKeys.get(key)) return '/*Recursive include $key*/';
 
 			var include = __getIncludeSource(key, isVertex);
-			if (include == null) return '/*Unknown include $key*/\n';
+			if (include == null) return '/*Unknown include $key*/';
 
 			includedKeys.set(key, true);
-			return '/*include $key*/\n' + __appendIncludes(include, isVertex, includedKeys);
+			return '/*#include $key*/\n' + __appendIncludes(include, isVertex, includedKeys);
 		});
-
-		return __getImportCompatibilityFinder().map(source, (regex:EReg) ->
+		
+		return __getImportFinder().map(source, (regex:EReg) ->
 		{
 			var key = regex.matched(1);
-			if (includedKeys.get(key)) return '/*Recursive import $key*/\n';
+			if (includedKeys.get(key)) return '/*Recursive import $key*/';
 
 			var include = __getIncludeSource(key, isVertex);
-			if (include == null) return '/*Unknown import $key*/\n';
+			if (include == null) return '/*Unknown import $key*/';
 
 			includedKeys.set(key, true);
 			return '/*import $key*/\n' + __appendIncludes(include, isVertex, includedKeys);
@@ -247,22 +302,18 @@ class FunkinShaderSourceAssembler extends FlxRuntimeShader.FlxShaderSourceAssemb
 	override function __appendPrefix(source:String, versionNumber:Int, versionProfile:String, extensions:Map<String, String>, isVertex:Bool,
 			precisionHint:Null<ShaderPrecision>):String
 	{
-		var result = super.__appendPrefix(null, versionNumber, versionProfile, extensions, isVertex, precisionHint) + "\n";
-
-		result += funkinParent.shaderPrefix + "\n" + (isVertex ? funkinParent.vertexPrefix : funkinParent.fragmentPrefix) + "\n";
-
-		if (source != null) {
-			if (!isVertex && versionNumber >= 300 && versionProfile != "compatibility" && !StringTools.contains(source, "out vec4")) {
-				result += "out vec4 openfl_FragColor;\n";
-			}
-			result += source;
-		}
-
-		return result;
+		source = funkinParent.shaderPrefix + '\n' + (isVertex ? funkinParent.vertexPrefix : funkinParent.fragmentPrefix) + '\n' + source;
+		return super.__appendPrefix(source, versionNumber, versionProfile, extensions, isVertex, precisionHint);
 	}
 
-	private static inline function __getImportCompatibilityFinder():EReg {
-		return ~/#import\s+(?|"([^"]+)"|'([^']+)'|<(.*)>|([^\s]+))/g;
+	private static inline function __getImportFinder():EReg
+	{
+		return ~/(?:^|\s)#import\s+(?|"([^"]+)"|'([^']+)'|([^\s]+))/g;
+	}
+
+	private static inline function __getIncludeCommentFinder():EReg
+	{
+		return ~/(?:^|\s)\/\*#(import|include)\s+(?|"([^"]+)"|'([^']+)'|([^\s]+))\*\//g;
 	}
 }
 

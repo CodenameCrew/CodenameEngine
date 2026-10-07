@@ -27,6 +27,7 @@ class Options
 	 */
 	public static var naughtyness:Bool = true;
 	public static var downscroll:Bool = false;
+	public static var centeredFields:Bool = false;
 	public static var ghostTapping:Bool = true;
 	public static var flashingMenu:Bool = true;
 	public static var camZoomOnBeat:Bool = true;
@@ -37,6 +38,7 @@ class Options
 	public static var volumeMusic:Float = 1;
 	public static var volumeSFX:Float = 1;
 	public static var week6PixelPerfect:Bool = true;
+	public static var discordRPC:Bool = true;
 	public static var gameplayShaders:Bool = true;
 	public static var colorHealthBar:Bool = true;
 	public static var lowMemoryMode:Bool = false;
@@ -68,6 +70,7 @@ class Options
 	#end
 
 	public static var lastLoadedMod:String = null;
+	public static var disabledAddons:Array<String> = [];
 
 	/**
 	 * EDITORS SETTINGS
@@ -109,6 +112,7 @@ class Options
 	public static var charterAutoSaveTime:Float = 60*5;
 	public static var charterAutoSaveWarningTime:Float = 5;
 	public static var charterAutoSavesSeparateFolder:Bool = false;
+	public static var charterPauseQuant:Bool = false;
 
 	/**
 	 * CHARACTER EDITOR

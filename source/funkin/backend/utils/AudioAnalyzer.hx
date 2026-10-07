@@ -79,16 +79,24 @@ final class AudioAnalyzer {
 	 * @param	maxDb		The maximum decibels to cap (Optional, default -10.0, Above 0 is not recommended).
 	 * @param	minFreq		The minimum frequency to cap (Optional, default 20.0, Below 8.0 is not recommended).
 	 * @param	maxFreq		The maximum frequency to cap (Optional, default 20000.0, Above 23000.0 is not recommended).
+	 * @param	logScale	Whether to map the frequencies logarithmically (Optional, default true, set false for linear frequency display).
 	 * @return	Output of spectrum/bars that ranges from 0 to 1.
 	 */
-	public static function getSpectrumFromFrequencies(frequencies:Array<Float>, sampleRate:Int, barCount:Int, ?spectrum:Array<Float>, ratio = 0.0, minDb = -63.0, maxDb = -10.0, minFreq = 20.0, maxFreq = 20000.0):Array<Float> {
+	public static function getSpectrumFromFrequencies(frequencies:Array<Float>, sampleRate:Int, barCount:Int, ?spectrum:Array<Float>, ratio = 0.0, minDb = -63.0, maxDb = -10.0, minFreq = 20.0, maxFreq = 20000.0, logScale = true):Array<Float> {
 		if (spectrum == null) spectrum = [];
 		if (spectrum.length != barCount) spectrum.resize(barCount);
 
-		var logMin = Math.log(minFreq), n = frequencies.length - 1;
-		var logRange = Math.log(maxFreq) - logMin, dbRangeRate = 1 / (maxDb - minDb), rate = frequencies.length * 2 / sampleRate;
-		inline function calculateScale(i:Int)
-			return FlxMath.bound(Math.exp(logMin + (logRange * i / (barCount + 1))) * rate, 0, n);
+		var n = frequencies.length - 1;
+
+		var base = logScale ? Math.log(minFreq) : minFreq;
+		var span = (logScale ? Math.log(maxFreq) : maxFreq) - base;
+
+		var dbRangeRate = 1 / (maxDb - minDb), rate = frequencies.length * 2 / sampleRate;
+
+		inline function calculateScale(i:Int) {
+			var t = base + span * i / (barCount + 1);
+			return FlxMath.bound((logScale ? Math.exp(t) : t) * rate, 0, n);
+		}
 
 		var s1 = calculateScale(0), s2;
 		var i1 = Math.floor(s1), i2;
@@ -328,10 +336,11 @@ final class AudioAnalyzer {
 	 * @param	maxDb		The maximum decibels to cap (Optional, default -10.0, Above 0 is not recommended).
 	 * @param	minFreq		The minimum frequency to cap (Optional, default 20.0, Below 8.0 is not recommended).
 	 * @param	maxFreq		The maximum frequency to cap (Optional, default 20000.0, Above 23000.0 is not recommended).
+	 * @param	logScale	Whether to map the frequencies logarithmically (Optional, default true, set false for linear frequency display).
 	 * @return	Output of spectrum/bars that ranges from 0 to 1.
 	 */
-	public function getSpectrum(?pos:Float, ?timeUnit:TimeUnit, ?gain:Float, ?window:WindowFunction, barCount:Int, ?spectrum:Array<Float>, ?ratio:Float, ?minDb:Float, ?maxDb:Float, ?minFreq:Float, ?maxFreq:Float):Array<Float> {
-		return getSpectrumFromFrequencies(_frequencies = getFrequencies(pos, timeUnit, gain, window, _frequencies), data.sampleRate, barCount, spectrum, ratio, minDb, maxDb, minFreq, maxFreq);
+	public function getSpectrum(?pos:Float, ?timeUnit:TimeUnit, ?gain:Float, ?window:WindowFunction, barCount:Int, ?spectrum:Array<Float>, ?ratio:Float, ?minDb:Float, ?maxDb:Float, ?minFreq:Float, ?maxFreq:Float, ?logScale:Bool):Array<Float> {
+		return getSpectrumFromFrequencies(_frequencies = getFrequencies(pos, timeUnit, gain, window, _frequencies), data.sampleRate, barCount, spectrum, ratio, minDb, maxDb, minFreq, maxFreq, logScale != false);
 	}
 
 	/**

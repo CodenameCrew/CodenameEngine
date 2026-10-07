@@ -7,6 +7,7 @@ function create() {
 }
 
 function postCreate() {
+	if(stage.stageName != 'tank') return;
 	for(i in 0...6) {
 		var name = "tank" + Std.string(i);
 		stage.getSprite(name).visible = false;

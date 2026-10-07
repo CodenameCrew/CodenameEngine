@@ -106,6 +106,22 @@ class GlobalScript {
 	public static function onModSwitch(newMod:String) {
 		destroy();
 		scripts = new ScriptPack("GlobalScript");
+
+		// global folder shit -HeroEyad
+		var folders = ["data/globals"];
+		while (folders.length > 0) {
+			var folder = folders.shift();
+			for (file in Paths.getFolderContent(folder, true)) {
+				if (!Script.scriptExtensions.contains(haxe.io.Path.extension(file)) || haxe.io.Path.withoutDirectory(file).startsWith("LIB_")) continue;
+				var script = Script.create(Paths.script(file));
+				if (script is DummyScript) continue;
+				scripts.add(script);
+				script.load();
+			}
+			for (dir in Paths.getFolderDirectories(folder, true))
+				folders.push(dir);
+		}
+
 		for (lib in funkin.backend.assets.ModsFolder.getLoadedModsLibs()) {
 			var modName = lib.modName;
 			var path = Paths.script('data/global/LIB_$modName');

@@ -20,7 +20,9 @@ class Framerate extends Sprite {
 	public static var codenameBuildField:CodenameBuildField;
 	#end
 
-	public static var fontName:String = #if windows '${Sys.getEnv("windir")}\\Fonts\\consola.ttf' #else "_typewriter" #end;
+	public static var defaultFontName(default, never):String = #if windows '${Sys.getEnv("windir")}\\Fonts\\consola.ttf' #else "_typewriter" #end;
+
+	public static var fontName:String = defaultFontName;
 
 	/**
 	 * 0: FPS INVISIBLE
@@ -79,6 +81,7 @@ class Framerate extends Sprite {
 		textFormat = new TextFormat(fontName, 12, -1);
 		for(c in categories)
 			c.reload();
+		
 		#if SHOW_BUILD_ON_FPS
 		codenameBuildField.reload();
 		#end
@@ -109,8 +112,8 @@ class Framerate extends Sprite {
 		super.__enterFrame(t);
 		bgSprite.alpha = debugAlpha * 0.5;
 
-		x = 10 + offset.x;
-		y = 2 + offset.y;
+		x = 10 + offset.x * FlxG.scaleMode.scale.x;
+		y = 2 + offset.y * FlxG.scaleMode.scale.y;
 
 		var width = MathUtil.maxSmart(fpsCounter.width, memoryCounter.width #if SHOW_BUILD_ON_FPS , codenameBuildField.width #end) + (x*2);
 		var height = #if SHOW_BUILD_ON_FPS codenameBuildField.y + codenameBuildField.height #else memoryCounter.y + memoryCounter.height #end;

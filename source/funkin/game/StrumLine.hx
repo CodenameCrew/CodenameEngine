@@ -429,6 +429,17 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		return babyArrow;
 	}
 
+	public function resetStrumPositions() {
+		var spacing = (data.strumSpacing != null ? data.strumSpacing : 1);
+
+		for (i in 0...members.length) {
+			members[i].setPosition(
+				startingPos.x + (Note.swagWidth * strumScale * spacing * i),
+				startingPos.y + (Note.swagWidth * 0.5) - (Note.swagWidth * strumScale * 0.5)
+			);
+		}
+	}
+
 	/**
 	 * Deletes a note from this strumline.
 	 * @param note Note to delete
