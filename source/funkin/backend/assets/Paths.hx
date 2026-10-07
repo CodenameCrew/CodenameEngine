@@ -320,7 +320,7 @@ class Paths
 			frameCollections.push(frames);
 		}
 
-		if (frameCollections.length == 1 && !unique && (key == null || key == assetKey)) return frameCollections[0];
+		if (frameCollections.length == 1 && (key == null || key == assetKey)) return frameCollections[0];
 
 		if (asset == null) {
 			asset = new FlxAtlasFrames(FlxGraphic.fromRectangle(1, 1, 0, unique, assetKey));
