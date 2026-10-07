@@ -50,6 +50,7 @@ class AssetsLibraryList extends AssetLibrary {
 				}
 			}
 			#end
+			resetAssetPathCache();
 		}
 		return lib;
 	}
@@ -84,10 +85,7 @@ class AssetsLibraryList extends AssetLibrary {
 			if (cacheTimePaths.exists(id)) {
 				final library = cacheLibraryPaths.get(id);
 
-				if (!libraries.contains(library)) {
-					cacheLibraryPaths.remove(id);
-				}
-				else if (Flags.PATHS_CACHE_LIFETIME != null) {
+				if (Flags.PATHS_CACHE_LIFETIME != null) {
 					final cacheSafeTime = cacheTimePaths.get(id) + Flags.PATHS_CACHE_LIFETIME;
 
 					if (library != null) {
