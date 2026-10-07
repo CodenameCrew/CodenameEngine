@@ -191,6 +191,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 	public override function draw() {
 		super.draw();
+		funkin.mobile.TouchControls.drawPadsUnder(this);
 		notes.cameras = cameras;
 		notes.draw();
 	}
@@ -413,6 +414,11 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		babyArrow.cpu = cpu;
 		babyArrow.updateHitbox();
 		babyArrow.scrollFactor.set();
+
+		if (PlayState.instance != null && Options.touchControls && Options.touchSongLayout == "buttons" && !PlayState.coopMode) {
+			event.__doAnimation = false;
+			babyArrow.alpha = 0;
+		}
 
 		if (event.__doAnimation)
 		{

@@ -26,13 +26,10 @@
 	<boyfriend x="810"/>
 
 	<!-- FOREGROUND TANKMENs -->
-
-	<high-memory>
-		<sprite name="tank0" x="-500" y="650" sprite="tank0" scrollx="1.7" scrolly="1.5" type="onbeat" zoomfactor="1.25"/>
-		<sprite name="tank1" x="-300" y="750" sprite="tank1" scrollx="2" scrolly="0.2" type="onbeat" zoomfactor="1.25"/>
-		<sprite name="tank2" x="450" y="940" sprite="tank2" scroll="1.5" type="onbeat" zoomfactor="1.25"/>
-		<sprite name="tank4" x="1300" y="900" sprite="tank4" scroll="1.5" type="onbeat" zoomfactor="1.25"/>
-		<sprite name="tank5" x="1620" y="700" sprite="tank5" scroll="1.5" type="onbeat" zoomfactor="1.25"/>
-		<sprite name="tank3" x="1300" y="1200" sprite="tank3" scrollx="3.5" scrolly="2.5" type="onbeat" zoomfactor="1.25"/>
-	</high-memory>
+	<sprite name="tank0" x="-500" y="650" sprite="tank0" scrollx="1.7" scrolly="1.5" type="onbeat" zoomfactor="1.25"/>
+	<sprite name="tank1" x="-300" y="750" sprite="tank1" scrollx="2" scrolly="0.2" type="onbeat" zoomfactor="1.25"/>
+	<sprite name="tank2" x="450" y="940" sprite="tank2" scroll="1.5" type="onbeat" zoomfactor="1.25"/>
+	<sprite name="tank4" x="1300" y="900" sprite="tank4" scroll="1.5" type="onbeat" zoomfactor="1.25"/>
+	<sprite name="tank5" x="1620" y="700" sprite="tank5" scroll="1.5" type="onbeat" zoomfactor="1.25"/>
+	<sprite name="tank3" x="1300" y="1200" sprite="tank3" scrollx="3.5" scrolly="2.5" type="onbeat" zoomfactor="1.25"/>
 </stage>

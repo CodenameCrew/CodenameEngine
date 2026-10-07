@@ -30,10 +30,12 @@ class ModsFolder {
 	 * Path to the `mods` folder.
 	 */
 	public static var modsPath:String = "./mods/";
+	public static var extraModsPaths:Array<String> = [];
 	/**
 	 * Path to the `addons` folder.
 	 */
 	public static var addonsPath:String = "./addons/";
+	public static var extraAddonsPaths:Array<String> = [];
 
 	/**
 	 * If accessing a file as assets/data/global/LIB_mymod.hx should redirect to mymod:assets/data/global.hx
@@ -98,9 +100,27 @@ class ModsFolder {
 		#end
 	}
 
+	public static function getModBasePath(mod:String):String {
+		#if MOD_SUPPORT
+		if (mod == null) return modsPath;
+		for (base in modsFolders()) {
+			if (FileSystem.exists(base + mod) && FileSystem.isDirectory(base + mod)) return base;
+			for (ext in Flags.ALLOWED_ZIP_EXTENSIONS) {
+				if (FileSystem.exists(base + mod + "." + ext)) return base;
+			}
+		}
+		#end
+		return modsPath;
+	}
+
+	public static function getModPath(mod:String):String {
+		return getModBasePath(mod) + mod;
+	}
+
 	public static function getModConfig(mod:String):Map<String, Map<String, String>> {
+		var base = getModBasePath(mod);
 		for (ext in Flags.ALLOWED_ZIP_EXTENSIONS) {
-			var path = modsPath + mod + "." + ext;
+			var path = base + mod + "." + ext;
 			if (!FileSystem.exists(path))
 				continue;
 
@@ -114,7 +134,7 @@ class ModsFolder {
 			break; // theoretically once it finds a zip mod, it'll stop even if there's no config
 		}
 
-		var filePath = modsPath + mod + "/data/config/modpack.ini";
+		var filePath = base + mod + "/data/config/modpack.ini";
 		if (FileSystem.exists(filePath))
 			return IniUtil.parseString(sys.io.File.getContent(filePath));
 
@@ -124,17 +144,9 @@ class ModsFolder {
 	public static function getModsList(?sortingOptions:ModSortingOptions):Array<String> {
 		var mods:Array<String> = [];
 		#if MOD_SUPPORT
-		// Mods directory does not exist yet, create it
 		if (!FileSystem.exists(modsPath)) FileSystem.createDirectory(modsPath);
-		
-		final modsList:Array<String> = FileSystem.readDirectory(modsPath);
 
-		if (modsList == null || modsList.length <= 0) return mods;
-
-		for (modFolder in modsList) {
-			if (FileSystem.isDirectory(modsPath + modFolder)) mods.push(modFolder);
-			else if (Flags.ALLOWED_ZIP_EXTENSIONS.contains(Path.extension(modFolder))) mods.push(Path.withoutExtension(modFolder));
-		}
+		for (base in modsFolders()) collectMods(base, mods);
 		
 		if (sortingOptions != null) {
 		    var sortForge:StringBuf = new StringBuf();
@@ -160,6 +172,33 @@ class ModsFolder {
 		#end
 		return mods;
 	}
+
+	#if MOD_SUPPORT
+	static function modsFolders():Array<String> {
+		var folders = [modsPath];
+		for (path in extraModsPaths) {
+			if (path == null || path.length == 0 || folders.contains(path)) continue;
+			folders.push(path);
+		}
+		return folders;
+	}
+
+	static function collectMods(base:String, mods:Array<String>) {
+		if (base == null || base.length == 0 || !FileSystem.exists(base) || !FileSystem.isDirectory(base)) return;
+		var list:Array<String> = null;
+		try list = FileSystem.readDirectory(base) catch (_:Dynamic) return;
+		if (list == null) return;
+		for (modFolder in list) {
+			var isZip = Flags.ALLOWED_ZIP_EXTENSIONS.contains(Path.extension(modFolder));
+			var name = isZip ? Path.withoutExtension(modFolder) : modFolder;
+			var lower = name.toLowerCase();
+			// android leaves these next to the mods
+			if (lower == "mods" || lower == "addons" || lower == "saves" || lower == "obb" || lower == "files" || lower == "cache" || lower == "assets" || lower == "songs" || lower == "data" || lower == "images") continue;
+			if (mods.contains(name)) continue;
+			if (isZip || FileSystem.isDirectory(base + modFolder)) mods.push(name);
+		}
+	}
+	#end
 	public static function getLoadedModsLibs(skipTranslated:Bool = false):Array<IModsAssetLibrary> {
 		var libs = [];
 		for (i in Paths.assetsTree.libraries) {

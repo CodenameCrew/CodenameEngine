@@ -91,8 +91,9 @@ class DialogueBox extends FunkinSprite {
 			dialogueBoxScript.call("loadingError", [message]);
 		}
 
-		defaultTextTypeSFX = [FlxG.sound.load(textTypeSFX)];
-		FlxG.sound.cache(nextSFX);
+		var typing = Assets.exists(textTypeSFX) ? FlxG.sound.load(textTypeSFX) : null;
+		defaultTextTypeSFX = (typing != null && typing.loaded) ? [typing] : null;
+		if (Assets.exists(nextSFX)) FlxG.sound.cache(nextSFX);
 		dialogueBoxScript.call("postCreate");
 	}
 

@@ -26,7 +26,12 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		curWacky = FlxG.random.getObject(getIntroTextShit());
+		try {
+			curWacky = FlxG.random.getObject(getIntroTextShit());
+		} catch (e:Dynamic) {
+			Logs.error(e);
+			curWacky = ["Codename", "Engine"];
+		}
 
 		MusicBeatState.skipTransIn = true;
 
@@ -42,8 +47,12 @@ class TitleState extends MusicBeatState
 
 	function startIntro()
 	{
-		if (!initialized)
-			CoolUtil.playMenuSong(true);
+		try {
+			if (!initialized)
+				CoolUtil.playMenuSong(true);
+		} catch (e:Dynamic) {
+			Logs.error(e);
+		}
 
 		persistentUpdate = true;
 
@@ -57,12 +66,14 @@ class TitleState extends MusicBeatState
 		if (titleText == null) {
 			titleText = new FlxSprite(0, FlxG.height * 0.8);
 			titleText.frames = Paths.getFrames('menus/titlescreen/titleEnter');
-			titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
-			titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
+			if (titleText.frames != null) {
+				titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
+				titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
+				titleText.animation.play('idle');
+				titleText.updateHitbox();
+				titleText.screenCenter(X);
+			}
 			titleText.antialiasing = true;
-			titleText.animation.play('idle');
-			titleText.updateHitbox();
-			titleText.screenCenter(X);
 		}
 		add(titleText);
 
@@ -79,6 +90,15 @@ class TitleState extends MusicBeatState
 			initialized = true;
 
 		add(textGroup);
+	}
+
+	function titleArtShown():Bool {
+		if (titleText != null && titleText.frames != null) return true;
+		if (titleScreenSprites != null) {
+			for (member in titleScreenSprites.members)
+				if (member != null && member.width > 1) return true;
+		}
+		return false;
 	}
 
 	public function getIntroTextShit():Array<Array<String>>
@@ -98,18 +118,31 @@ class TitleState extends MusicBeatState
 
 	var transitioning:Bool = false;
 
+	#if mobile
+	var bootReportTime:Float = 0;
+	var bootReported:Bool = false;
+	#end
+
 	override function update(elapsed:Float)
 	{
-		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
+		#if mobile
+		if (!bootReported && (bootReportTime += elapsed) >= 0.5) {
+			bootReported = true;
+			funkin.mobile.BootStatus.report(titleArtShown());
+		}
+		#end
+
+		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER || controls.ACCEPT;
 
 		#if mobile
 		for (touch in FlxG.touches.list)
 		{
-			if (touch.justPressed)
-			{
+			if (touch.justPressed && !funkin.mobile.TouchControls.isCaptured(touch.touchPointID))
 				pressedEnter = true;
-			}
 		}
+
+		if (FlxG.gamepads.anyJustPressed(flixel.input.gamepad.FlxGamepadInputID.START) || FlxG.gamepads.anyJustPressed(flixel.input.gamepad.FlxGamepadInputID.A))
+			pressedEnter = true;
 		#end
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
@@ -142,7 +175,8 @@ class TitleState extends MusicBeatState
 	}
 
 	public function pressEnter() {
-		titleText.animation.play('press');
+		if (titleText != null && titleText.animation != null)
+			titleText.animation.play('press');
 
 		FlxG.camera.flash(FlxColor.WHITE, 1);
 		CoolUtil.playMenuSFX(CONFIRM, 0.7);

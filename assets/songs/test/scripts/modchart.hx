@@ -8,8 +8,8 @@ function create() {
 
 function postCreate() {
 	for(i in 0...6) {
-		var name = "tank" + Std.string(i);
-		stage.getSprite(name).visible = false;
+		var spr = stage.getSprite("tank" + i);
+		if (spr != null) spr.visible = false;
 	}
 }
 
@@ -17,6 +17,7 @@ function postUpdate(elapsed) {
 	for(s in strumLines) {
 		for(i in 0...4) {
 			var n = s.members[i];
+			if (n == null) continue;
 			n.angle = Math.sin(curBeatFloat + (i * 0.45)) * 35;
 		}
 	}

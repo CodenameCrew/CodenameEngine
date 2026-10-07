@@ -10,6 +10,9 @@
 		<str id="optionsTree.controls-name">Controls</str>
 		<str id="optionsTree.controls-desc">Change Controls for Player 1 and Player 2!</str>
 
+		<str id="optionsTree.mobile-name">Mobile</str>
+		<str id="optionsTree.mobile-desc">Change mobile options such as Touch Controls, Haptics...</str>
+
 		<str id="optionsTree.gameplay-name">Gameplay</str>
 		<str id="optionsTree.gameplay-desc">Change Gameplay options such as Downscroll, Scroll Speed, Naughtyness...</str>
 		<str id="optionsTree.gameplay.advanced-desc">Change more advanced options such as Streaming Audio...</str>
@@ -158,6 +161,62 @@
 			<str id="streamedVocals-name">Streamed Vocals</str>
 			<str id="streamedVocals-desc">If checked, vocals will also be streamed if Streamed Music is checked, will impact the performance if the song uses alot of vocals (EXPERIMENTAL). If you aren't sure, leave this off.</str>
 		</group>
+	</group>
+
+	<group name="MobileOptions" prefix="MobileOptions.">
+		<str id="controls-name">On-Screen Controls</str>
+		<str id="controls-desc">If checked, shows touch controls on screen. Hidden while a controller is connected.</str>
+
+		<str id="layout-name">Song Controls</str>
+		<str id="layout-desc">How notes get hit during a song. Buttons hides both strumlines.</str>
+		<str id="layout-hitbox">Hitbox</str>
+		<str id="layout-buttons">Buttons</str>
+		<str id="layout-arrows">Arrows</str>
+		<str id="layout-dpad">D-Pad</str>
+
+		<str id="buttonScroll-name">Button Scroll</str>
+		<str id="buttonScroll-desc">For the Buttons layout. Downscroll keeps your notes at the bottom, Upscroll puts them at the top.</str>
+		<str id="buttonScroll-down">Downscroll</str>
+		<str id="buttonScroll-up">Upscroll</str>
+
+		<str id="middlescroll-name">Middlescroll</str>
+		<str id="middlescroll-desc">If checked, centers your notes and hides the other strumline.</str>
+
+		<str id="controlsInMenus-name">Pad In Menus</str>
+		<str id="controlsInMenus-desc">If checked, shows a d-pad in menus.</str>
+
+		<str id="gestures-name">Swipe Menus</str>
+		<str id="gestures-desc">If checked, swiping scrolls menus. Does nothing in songs.</str>
+
+		<str id="haptics-name">Button Vibration</str>
+		<str id="haptics-desc">If checked, the phone vibrates when a touch button is pressed.</str>
+
+		<str id="movePad-name">Drag To Move</str>
+		<str id="movePad-desc">If checked, you can drag the pad around.</str>
+
+		<str id="hitboxOpacity-name">Hitbox Opacity</str>
+		<str id="hitboxOpacity-desc">Changes how visible the hitbox lanes are.</str>
+
+		<str id="opacity-name">Button Opacity</str>
+		<str id="opacity-desc">Changes how visible the buttons and pads are.</str>
+
+		<str id="scale-name">Button Size</str>
+		<str id="scale-desc">Changes the size of the buttons and pads.</str>
+
+		<str id="padX-name">Pad Horizontal Position</str>
+		<str id="padX-desc">Changes where the pad sits horizontally.</str>
+
+		<str id="padY-name">Pad Vertical Position</str>
+		<str id="padY-desc">Changes where the pad sits vertically.</str>
+
+		<str id="safeInset-name">Safe Margin</str>
+		<str id="safeInset-desc">Extra space from the edges of the screen.</str>
+
+		<str id="fillScreen-name">Fill The Screen</str>
+		<str id="fillScreen-desc">If checked, the game fills the phone screen. Can crop the top and bottom.</str>
+
+		<str id="optimize-name">Low Memory Profile</str>
+		<str id="optimize-desc">If checked, lowers quality to use less memory.</str>
 	</group>
 
 	<group name="LanguageOptions" prefix="LanguageOptions.">

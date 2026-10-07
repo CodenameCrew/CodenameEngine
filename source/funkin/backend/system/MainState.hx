@@ -10,6 +10,7 @@ import funkin.backend.assets.ModsFolder;
 import funkin.backend.assets.ModsFolderLibrary;
 import funkin.backend.assets.ZipFolderLibrary;
 import funkin.backend.chart.EventsData;
+import funkin.backend.system.Logs;
 import funkin.backend.system.framerate.Framerate;
 import funkin.editors.ModConfigWarning;
 import funkin.menus.TitleState;
@@ -29,6 +30,7 @@ class MainState extends FlxState {
 	public static var initiated:Bool = false;
 	public override function create() {
 		super.create();
+		try {
 		if (!initiated) Main.loadGameSettings();
 
 		#if sys
@@ -58,7 +60,7 @@ class MainState extends FlxState {
 		var _highPriorityAddons:Array<AddonInfo> = [];
 		var _noPriorityAddons:Array<AddonInfo> = [];
 
-		var quick_modsPath = ModsFolder.modsPath + ModsFolder.currentModFolder;
+		var quick_modsPath = ModsFolder.getModPath(ModsFolder.currentModFolder);
 
 		// handing if the loading mod (before it's properly loaded) is a compressed mod
 		// we just need to use `Paths.assetsTree.hasCompressedLibrary` to complete valid checks for actual loaded compressed mods
@@ -86,6 +88,7 @@ class MainState extends FlxState {
 				quick_modsPath + "/addons/" : null
 			)
 		];
+		for (path in ModsFolder.extraAddonsPaths) addonPaths.push(path);
 
 		for (path in addonPaths) {
 			if (path == null) continue;
@@ -174,7 +177,7 @@ class MainState extends FlxState {
 		initiated = true;
 
 		if (@:privateAccess FlxG.game._nextState == null) {
-			var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
+			var startState:Class<FlxState> = #if mobile TitleState #else (Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState) #end;
 			var outdatedAPI:Bool = (Flags.MOD_API_VERSION ?? Flags.CURRENT_API_VERSION) < Flags.CURRENT_API_VERSION;
 			// In this case if the mod we just loaded a compressed modpack, we can't edit or modify files without decompressing it.
 			if (Options.devMode && Options.allowConfigWarning && !isZipMod) {
@@ -190,6 +193,19 @@ class MainState extends FlxState {
 			}
 
 			FlxG.switchState(cast Type.createInstance(startState, []));
+		}
+		} catch (e:Dynamic) {
+			Logs.error('Boot failed: $e');
+			#if android
+			funkin.mobile.BootStatus.set('boot failed: $e');
+			#end
+			#if sys
+			try {
+				sys.io.File.saveContent("codename-boot.txt", 'Boot failed: $e\n' + haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
+			} catch (_:Dynamic) {}
+			#end
+			if (@:privateAccess FlxG.game._nextState == null)
+				FlxG.switchState(new TitleState());
 		}
 	}
 }

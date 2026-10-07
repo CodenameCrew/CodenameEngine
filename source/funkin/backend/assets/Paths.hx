@@ -35,10 +35,31 @@ class Paths
 		});
 	}
 
+	#if android
+	static var __androidPaths:Map<String, String>;
+	#end
+
 	static function getExistingPath(path:String, prefix:String, nullFail:Bool):Null<String> {
 		var fixedPath = prefix + path;
 
-		#if (sys && !windows)
+		#if android
+		// asset pack lowercases folders, not the filename
+		if (Assets.exists(fixedPath)) return fixedPath;
+		var slash = fixedPath.lastIndexOf("/");
+		if (slash > 0) {
+			var tryPath = fixedPath.substr(0, slash + 1).toLowerCase() + fixedPath.substr(slash + 1);
+			if (tryPath != fixedPath && Assets.exists(tryPath)) return tryPath;
+		}
+		if (__androidPaths == null) {
+			__androidPaths = [];
+			var ids = Assets.list();
+			if (ids != null) for (id in ids) if (id != null) __androidPaths.set(id.toLowerCase(), id);
+		}
+		var found = __androidPaths.get(fixedPath.toLowerCase());
+		if (found != null) return found;
+		if (path.indexOf(".") == -1 || !nullFail) return fixedPath;
+		return null;
+		#elseif (sys && !windows)
 		if (Assets.exists(fixedPath)) return fixedPath;
 		else if (Flags.PATHS_UNIX_FIX) {
 			if (tempPathsCache.exists(fixedPath)) return tempPathsCache.get(fixedPath);
@@ -167,12 +188,23 @@ class Paths
 		return defaultPath;
 	}
 
-	public static inline function script(key:String, ?library:String, isAssetsPath:Bool = false) {
+	public static function script(key:String, ?library:String, isAssetsPath:Bool = false) {
 		var scriptPath = isAssetsPath ? key : getPath(key, library);
 		if (!Assets.exists(scriptPath)) {
 			var p:String;
 			for(ex in Script.scriptExtensions) {
-				if (Assets.exists(p = scriptPath + '.' + ex)) {
+				p = scriptPath + '.' + ex;
+				#if android
+				// week folders in the xml dont match the pack
+				if (!Assets.exists(p)) {
+					var slash = p.lastIndexOf('/');
+					if (slash > 0) {
+						var found = getExistingPath(p.substr(slash + 1), p.substr(0, slash + 1), true);
+						if (found != null) p = found;
+					}
+				}
+				#end
+				if (Assets.exists(p)) {
 					scriptPath = p;
 					break;
 				}
@@ -197,7 +229,9 @@ class Paths
 	 * @param font The font's path (if it's already passed as a font name, the same name will be returned)
 	 */
 	inline static public function getFontName(font:String) {
-		return Assets.exists(font, FONT) ? Assets.getFont(font).fontName : font;
+		if (font == null || !Assets.exists(font, FONT)) return font;
+		var got = Assets.getFont(font);
+		return got != null ? got.fontName : font;
 	}
 
 	public static inline function font(key:String) {
@@ -246,7 +280,7 @@ class Paths
 		return FlxAtlasFrames.fromAseprite('$key.${ext != null ? ext : Flags.IMAGE_EXTS}', '$key.json');
 
 	static public function getAssetsRoot():String {
-		return if (ModsFolder.currentModFolder != null) '${ModsFolder.modsPath}${ModsFolder.currentModFolder}';
+		return if (ModsFolder.currentModFolder != null) ModsFolder.getModPath(ModsFolder.currentModFolder);
 			else assetsTree.rootDirectory;
 	}
 

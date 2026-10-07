@@ -7,6 +7,7 @@ import flixel.math.FlxPoint;
 import funkin.backend.system.framerate.Framerate;
 import funkin.backend.assets.ModsFolder;
 import funkin.backend.FunkinText;
+import funkin.mobile.TouchNav;
 import haxe.io.Path;
 import sys.FileSystem;
 
@@ -30,6 +31,7 @@ class ModSwitchMenu extends MusicBeatSubstate {
 	var curSelected:Int = 0;
 	var curAddon:Int = 0;
 	var inAddons:Bool = false;
+	var touchAccept:Bool = false;
 
 	var subCam:FlxCamera;
 
@@ -133,10 +135,14 @@ class ModSwitchMenu extends MusicBeatSubstate {
 		title = new FunkinText(4, 4, FlxG.width - 8, TU.translate("mods.modsTitle"), 32);
 		title.borderSize = 1.25;
 		add(title);
-		desc = new FunkinText(4, title.y + title.height, FlxG.width - 8, getDescription(modConf[curSelected]), 16);
+		desc = new FunkinText(4, title.y + title.height, FlxG.width - 8, modDescription(), 16);
 		add(desc);
 
-		keyInfo = new FunkinText(FlxG.width - 4, title.y + title.height * 0.5, 0, '[${CoolUtil.keyToString(Options.SOLO_CHANGE_MODE[0])}] >>>', 24);
+		#if mobile
+		lime.app.Application.current.window.onFocusIn.add(onFocusBack);
+		#end
+
+		keyInfo = new FunkinText(FlxG.width - 4, title.y + title.height * 0.5, 0, #if mobile ">>>" #else '[${CoolUtil.keyToString(Options.SOLO_CHANGE_MODE[0])}] >>>' #end, 24);
 		keyInfo.x -= keyInfo.width;
 		keyInfo.y -= keyInfo.height * 0.5;
 		keyInfo.visible = addons.length > 0;
@@ -160,6 +166,7 @@ class ModSwitchMenu extends MusicBeatSubstate {
 		Framerate.offset.y = CoolUtil.fpsLerp(Framerate.offset.y, targetFramerateY, 0.35);
 
 		var scrollChange = (controls.DOWN_P ? 1 : 0) + (controls.UP_P ? -1 : 0) - FlxG.mouse.wheel;
+		pollTouch();
 		(inAddons ? addonControls : regularControls)(scrollChange);
 
 		for (i => check in addonChecks.members) {
@@ -182,10 +189,37 @@ class ModSwitchMenu extends MusicBeatSubstate {
 		}
 	}
 
+	function pollTouch() {
+		touchAccept = false;
+		if (!TouchNav.pointerJustPressed()) return;
+
+		#if mobile
+		if (!inAddons && mods[curSelected] == null && TouchNav.hits(desc, subCam) && !funkin.mobile.MobileStorage.hasPublicFolder()) {
+			funkin.mobile.MobileStorage.requestPublicFolder();
+			return;
+		}
+		#end
+
+		if (addons.length > 0 && keyInfo.visible && TouchNav.hits(keyInfo, subCam)) {
+			toggleTab(false);
+			return;
+		}
+
+		var items = inAddons ? addonObjs : alphabets;
+		var current = inAddons ? curAddon : curSelected;
+		for (index => item in items.members) {
+			if (item == null || !TouchNav.hits(item, subCam)) continue;
+			if (index == current) touchAccept = true;
+			else if (inAddons) changeAddon(index - current);
+			else changeSelection(index - current);
+			return;
+		}
+	}
+
 	function regularControls(scrollChange:Int) {
 		changeSelection(scrollChange);
 
-		if (controls.ACCEPT) {
+		if (controls.ACCEPT || touchAccept) {
 			var newAddonsOff:Array<String> = [];
 			for (i => isOff in queuedAddonsOff) {
 				if (isOff)
@@ -206,7 +240,7 @@ class ModSwitchMenu extends MusicBeatSubstate {
 	function addonControls(scrollChange:Int) {
 		changeAddon(scrollChange);
 
-		if (controls.ACCEPT) {
+		if (controls.ACCEPT || touchAccept) {
 			queuedAddonsOff[curAddon] = !queuedAddonsOff[curAddon];
 			addonChecks.members[curAddon].animation.play(queuedAddonsOff[curAddon] ? "unchecking" : "checking", true);
 
@@ -231,7 +265,7 @@ class ModSwitchMenu extends MusicBeatSubstate {
 		}
 		alphabets.members[curSelected].alpha = 1;
 
-		desc.text = getDescription(modConf[curSelected]);
+		desc.text = modDescription();
 	}
 	public function changeAddon(change:Int, force:Bool = false) {
 		if (change == 0 && !force) return;
@@ -266,13 +300,38 @@ class ModSwitchMenu extends MusicBeatSubstate {
 			title.alignment = desc.alignment = LEFT;
 
 			title.text = TU.translate("mods.modsTitle");
-			desc.text = getDescription(modConf[curSelected]);
+			desc.text = modDescription();
 		}
 
+		#if mobile
+		keyInfo.text = inAddons ? "<<<" : ">>>";
+		#else
 		keyInfo.text = '[${CoolUtil.keyToString(Options.SOLO_CHANGE_MODE[0])}]';
 		keyInfo.text = inAddons ? "<<< " + keyInfo.text : keyInfo.text + " >>>";
+		#end
 		CoolUtil.playMenuSFX(playCancel ? CANCEL : SCROLL, 0.7);
 	}
+
+	function modDescription():String {
+		#if mobile
+		if (mods[curSelected] == null) {
+			var hint = 'Mods folder: ${ModsFolder.modsPath}';
+			for (path in ModsFolder.extraModsPaths) {
+				if (path != null && path.length > 0 && !StringTools.endsWith(path, "mods/") && path != ModsFolder.modsPath)
+					hint += '\nAlso looking in $path';
+			}
+			if (!funkin.mobile.MobileStorage.hasPublicFolder()) hint += "\nTap here for Internal storage/CodenameEngine.";
+			return hint;
+		}
+		#end
+		return getDescription(modConf[curSelected]);
+	}
+
+	#if mobile
+	function onFocusBack() {
+		if (!inAddons && desc != null) desc.text = modDescription();
+	}
+	#end
 
 	inline function getDescription(conf:Map<String, Map<String, String>>) {
 		if (!conf.exists("Common")) return "";
@@ -295,6 +354,10 @@ class ModSwitchMenu extends MusicBeatSubstate {
 
 	override function destroy() {
 		super.destroy();
+
+		#if mobile
+		lime.app.Application.current.window.onFocusIn.remove(onFocusBack);
+		#end
 
 		if (FlxG.cameras.list.contains(subCam))
 			FlxG.cameras.remove(subCam);

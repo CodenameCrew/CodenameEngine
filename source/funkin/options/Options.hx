@@ -62,12 +62,30 @@ class Options
 
 	public static var songOffset:Float = 0;
 	public static var framerate:Int = 120;
-	public static var gpuOnlyBitmaps:Bool = #if (mac || web) false #else true #end; // causes issues on mac and web
+	public static var framerateMigrated:Bool = false; // old mobile saves stuck this at 60
+	public static var gpuOnlyBitmaps:Bool = #if (mac || web || android) false #else true #end; // causes issues on mac and web
 	public static var language = "en"; // default to english, Flags.DEFAULT_LANGUAGE should not modify this
 	public static var streamedMusic:Bool = true;
 	public static var streamedVocals:Bool = true;
 	public static var quality:Int = 1;
 	public static var allowConfigWarning:Bool = true;
+
+	public static var touchControls:Bool = #if mobile true #else false #end;
+	public static var touchSongLayout:String = "hitbox";
+	public static var touchButtonScroll:String = "downscroll";
+	public static var middlescroll:Bool = false;
+	public static var touchMenuPad:Bool = false;
+	public static var touchButtonAlpha:Float = 0.65;
+	public static var touchHitboxAlpha:Float = 0.3;
+	public static var touchScale:Float = 1;
+	public static var touchPadX:Float = 0.82;
+	public static var touchPadY:Float = 0.7;
+	public static var touchSafeInset:Float = #if mobile 24 #else 0 #end;
+	public static var touchHaptics:Bool = true;
+	public static var touchGestures:Bool = true;
+	public static var touchMovePad:Bool = false;
+	public static var touchFillScreen:Bool = false;
+	public static var mobileOptimize:Bool = #if mobile true #else false #end;
 	#if MODCHARTING_FEATURES
 	public static var modchartingHoldSubdivisions:Int = 4;
 	#end
@@ -261,6 +279,16 @@ class Options
 		if (__save == null) __save = new FlxSave();
 		__save.bind(name, path);
 		__load();
+		if (!framerateMigrated) {
+			#if mobile
+			if (framerate == 60) framerate = 120;
+			#end
+			framerateMigrated = true;
+		}
+		if (touchSongLayout != "hitbox" && touchSongLayout != "buttons" && touchSongLayout != "arrows" && touchSongLayout != "dpad")
+			touchSongLayout = "buttons";
+		if (touchButtonScroll != "downscroll" && touchButtonScroll != "upscroll")
+			touchButtonScroll = "downscroll";
 
 		if (!__eventAdded) {
 			Lib.application.onExit.add(function(i:Int) {
@@ -299,6 +327,29 @@ class Options
 			ImGuiIO.configFlags = ImGuiIO.configFlags & ~ImGuiConfigFlags.ViewportsEnable;
 		}
 		#end
+
+		applyMobile();
+	}
+
+	public static function applyMobile() {
+		#if android
+		gpuOnlyBitmaps = false;
+		autoPause = false;
+		FlxG.autoPause = false;
+		#end
+		if (Main.scaleMode != null)
+			Main.scaleMode.setFillScreen(touchFillScreen);
+
+		if (!mobileOptimize) return;
+
+		lowMemoryMode = true;
+		antialiasing = false;
+		gameplayShaders = false;
+		streamedMusic = true;
+		streamedVocals = true;
+		FlxG.enableAntialiasing = false;
+		FlxG.game.stage.quality = openfl.display.StageQuality.LOW;
+		flixel.sound.FlxSoundData.allowStreaming = true;
 	}
 
 	public static function applyQuality() {

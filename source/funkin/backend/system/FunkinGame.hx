@@ -9,20 +9,27 @@ class FunkinGame extends FlxGame {
 	var skipNextTickUpdate:Bool = false;
 	var manualPause:Bool = false; //fake autopause
 
-	#if desktop
-	var fullscreenListener:KeyboardEvent->Void;
-
+	#if (desktop || android)
 	override function create(_):Void {
 		super.create(_);
 
 		if (stage == null) return;
 
+		#if desktop
 		// In the future, make it so any keybinds are able to toggle fullscreen instead of just F11
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, function(e:KeyboardEvent) {
 			if (e.keyCode == 122) {
 				FlxG.fullscreen = !FlxG.fullscreen;
 			}
 		});
+		#end
+
+		#if android
+		stage.color = 0xFF000000;
+		var w = stage.stageWidth > 0 ? stage.stageWidth : 1280;
+		var h = stage.stageHeight > 0 ? stage.stageHeight : 720;
+		resizeGame(w, h);
+		#end
 	}
 	#end
 	
@@ -54,8 +61,12 @@ class FunkinGame extends FlxGame {
 	}
 
 	override public function onFocusLost(event:Event):Void {
+		#if mobile
+		return;
+		#else
 		if (manualPause) return;
 		super.onFocusLost(event);
+		#end
 	}
 
 	public function toggleManualPause() {

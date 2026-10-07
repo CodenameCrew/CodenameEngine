@@ -80,6 +80,7 @@ class DialogueCharacter extends FunkinSprite {
 	}
 
 	public function show(x:Float, y:Float, ?animation:String, force:Bool = false) {
+		if (charData == null) return;
 		if(animation == null) animation = defaultAnim;
 		var lastAnimContext:DialogueCharAnimContext = force ? POPOUT : curAnimContext;
 		curAnimContext = POPIN;

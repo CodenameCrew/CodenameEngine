@@ -14,6 +14,7 @@ import funkin.backend.week.*;
 import funkin.savedata.FunkinSave;
 import haxe.io.Path;
 import haxe.xml.Access;
+import funkin.mobile.TouchNav;
 
 class StoryMenuState extends MusicBeatState {
 	public var characters:Map<String, WeekData.WeekCharacter> = [];
@@ -52,6 +53,13 @@ class StoryMenuState extends MusicBeatState {
 	public override function create() {
 		super.create();
 		loadXMLs();
+		if (weeks.length == 0) {
+			var missing = new FunkinText(0, 0, FlxG.width, "No weeks found.", 32);
+			missing.alignment = CENTER;
+			missing.screenCenter(Y);
+			add(missing);
+			return;
+		}
 		persistentUpdate = persistentDraw = true;
 
 		// WEEK INFO
@@ -139,6 +147,11 @@ class StoryMenuState extends MusicBeatState {
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
 
+		if (weeks.length == 0) {
+			if (controls.BACK) goBack();
+			return;
+		}
+
 		lerpScore = lerp(lerpScore, intendedScore, 0.5);
 		scoreText.text = TU.translate("story.score", [Math.round(lerpScore)]);
 
@@ -153,20 +166,23 @@ class StoryMenuState extends MusicBeatState {
 			changeDifficulty((controls.LEFT_P ? -1 : 0) + (controls.RIGHT_P ? 1 : 0));
 			changeWeek((controls.UP_P ? -1 : 0) + (controls.DOWN_P ? 1 : 0) - FlxG.mouse.wheel);
 
-			if (FlxG.mouse.justPressed) {
-				if (leftArrow != null && leftArrow.exists && FlxG.mouse.overlaps(leftArrow)) {
-					leftArrow.animation.play('press');
-					changeDifficulty(-1);
-				}
-				else if (rightArrow != null && rightArrow.exists && FlxG.mouse.overlaps(rightArrow)) {
-					rightArrow.animation.play('press');
-					changeDifficulty(1);
-				}
-				else if (weekSprites?.members[curWeek] != null && FlxG.mouse.overlaps(weekSprites.members[curWeek])) {
-					selectWeek();
-				}
-				else if (weekSprites?.members[curWeek + 1] != null && FlxG.mouse.overlaps(weekSprites.members[curWeek + 1])) {
-					changeWeek(1);
+			if (leftArrow != null && leftArrow.exists && TouchNav.justHit(leftArrow)) {
+				leftArrow.animation.play('press');
+				changeDifficulty(-1);
+			}
+			else if (rightArrow != null && rightArrow.exists && TouchNav.justHit(rightArrow)) {
+				rightArrow.animation.play('press');
+				changeDifficulty(1);
+			}
+			else if (weekSprites != null) {
+				var index = weekSprites.length;
+				while (index-- > 0) {
+					var sprite = weekSprites.members[index];
+					if (sprite != null && TouchNav.hits(sprite)) {
+						if (index != curWeek) changeWeek(index - curWeek);
+						else selectWeek();
+						break;
+					}
 				}
 			}
 
@@ -321,6 +337,7 @@ class MenuItem extends FlxSprite
 		super(x, y);
 		CoolUtil.loadAnimatedGraphic(this, Paths.image(path, null, true));
 		screenCenter(X);
+		scrollFactor.set();
 		antialiasing = true;
 	}
 

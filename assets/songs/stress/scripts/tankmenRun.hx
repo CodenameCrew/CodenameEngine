@@ -18,7 +18,8 @@ function getTankman(data:Array<Float>) {
 }
 
 function postCreate() {
-	insert(members.indexOf(gf) - 1, tankmanGroup.group);
+	var idx = members.indexOf(gf);
+	insert(idx < 1 ? 0 : idx - 1, tankmanGroup.group);
 	if (inCutscene) tankmanGroup.group.visible = false;
 
 	/*var tempTankman:TankmenBG = recycleTankman();
@@ -28,7 +29,9 @@ function postCreate() {
 	grpTankmanRun.add(tempTankman.sprite);*/
 	graphicCache.cache(Paths.image('stages/tank/tankmanKilled1'));
 
-	for (note in strumLines.members[2].notes.members) {
+	var shootLine = strumLines.members.length > 2 ? strumLines.members[2] : null;
+	if (shootLine != null && shootLine.notes != null) for (note in shootLine.notes.members) {
+		if (note == null) continue;
 		if (FlxG.random.bool(16)) {
 			spawnTimes.push([note.strumTime, note.noteData]);
 		}
@@ -38,7 +41,7 @@ function postCreate() {
 }
 
 function onStartCountdown()
-	if (PlayState.instance.seenCutscene) tankmanGroup.group.visible = true;
+	tankmanGroup.group.visible = true;
 
 function spawnTankmen() {
 	var time = Conductor.songPosition;
@@ -80,8 +83,10 @@ class TankmenBG {
 		sprite = new FlxSprite();
 		sprite.frames = Paths.getSparrowAtlas('stages/tank/tankmanKilled1');
 		sprite.antialiasing = true;
-		sprite.animation.addByPrefix('run', 'tankman running', 24, true);
-		sprite.animation.play('run');
+		if (sprite.frames != null) {
+			sprite.animation.addByPrefix('run', 'tankman running', 24, true);
+			sprite.animation.play('run');
+		}
 		sprite.updateHitbox();
 		sprite.setGraphicSize(Std.int(sprite.width * 0.8));
 		sprite.updateHitbox();
@@ -97,7 +102,8 @@ class TankmenBG {
 		sprite.animation.remove("shot");
 		sprite.animation.addByPrefix('shot', 'John Shot ' + FlxG.random.int(1, 2), 24, false);
 		sprite.animation.play("run");
-		sprite.animation.curAnim.curFrame = FlxG.random.int(0, sprite.animation.curAnim.numFrames - 1);
+		if (sprite.animation.curAnim != null)
+			sprite.animation.curAnim.curFrame = FlxG.random.int(0, sprite.animation.curAnim.numFrames - 1);
 
 		killed = false;
 		sprite.flipX = goingRight;
@@ -106,7 +112,7 @@ class TankmenBG {
 	function update(elapsed) {
 		sprite.visible = !(sprite.x >= FlxG.width * 1.5 || sprite.x <= FlxG.width * -0.5);
 
-		if (sprite.animation.curAnim.name == 'run')
+		if (sprite.animation.curAnim != null && sprite.animation.curAnim.name == 'run')
 		{
 			var endDirection:Float = (FlxG.width * 0.74) + endingOffset;
 

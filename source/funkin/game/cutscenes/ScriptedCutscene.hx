@@ -27,7 +27,12 @@ class ScriptedCutscene extends Cutscene {
 
 	public override function create() {
 		super.create();
-		script.call("create");
+		try script.call("create")
+		catch (e:Dynamic) {
+			Logs.trace('Cutscene script crashed: $e', ERROR, RED);
+			close();
+			return;
+		}
 
 		if(Std.isOfType(script, DummyScript))
 			onErrorScriptLoading();

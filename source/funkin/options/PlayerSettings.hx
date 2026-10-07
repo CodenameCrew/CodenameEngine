@@ -1,5 +1,6 @@
 package funkin.options;
 
+import flixel.input.actions.FlxActionInput.FlxInputDeviceID;
 import flixel.util.FlxSignal;
 import funkin.backend.system.Controls;
 
@@ -57,6 +58,11 @@ class  PlayerSettings
 			++numPlayers;
 		}
 
+		#if mobile
+		solo.controls.addDefaultGamepad(FlxInputDeviceID.ALL);
+		player1.controls.addDefaultGamepad(0);
+		player2.controls.addDefaultGamepad(1);
+		#else
 		var numGamepads = FlxG.gamepads.numActiveGamepads;
 		if (numGamepads > 0)
 		{
@@ -81,6 +87,7 @@ class  PlayerSettings
 
 			player2.controls.addDefaultGamepad(1);
 		}
+		#end
 
 		// DeviceManager.init();
 	}

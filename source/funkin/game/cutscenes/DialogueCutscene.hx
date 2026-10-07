@@ -114,6 +114,7 @@ class DialogueCutscene extends ScriptedCutscene {
 			// Add dialogue box
 			dialogueBox = new DialogueBox(dialogueData.getAtt("box").getDefault("default"));
 			add(dialogueBox);
+			if (dialogueBox.text == null) throw "Dialogue box has no text";
 			add(dialogueBox.text);
 
 			next(true);

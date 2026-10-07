@@ -196,7 +196,7 @@ class Flags {
 	// Skip Cutscene -> pause.skipCutscene
 	// Restart Cutscene -> pause.restartCutscene
 	public static var DEFAULT_PAUSE_ITEMS:Array<String> = ['Resume', 'Restart Song', 'Change Controls', 'Change Options', 'Exit to menu', "Exit to charter"];
-	public static var DEFAULT_CUTSCENE_PAUSE_ITEMS:Array<String> = ['Resume Cutscene', 'Skip Cutscene', 'Restart Cutscene', 'Exit to menu'];
+	public static var DEFAULT_CUTSCENE_PAUSE_ITEMS:Array<String> = ['Resume Cutscene', 'Skip Cutscene', 'Restart Cutscene', 'Change Options', 'Exit to menu'];
 	public static var DEFAULT_GITAROO:Bool = true;
 	public static var GITAROO_CHANCE:Float = 0.1;
 	public static var DEFAULT_MUTE_VOCALS_ON_MISS:Bool = true;

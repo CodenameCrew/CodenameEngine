@@ -52,7 +52,7 @@ final class CrashHandler {
 		e.stopImmediatePropagation();
 
 		NativeAPI.showMessageBox("Codename Engine Crash Handler", 'Uncaught Error:$m\n\n$stackLabel', MSG_ERROR);
-		#if sys
+		#if (sys && !android)
 		Sys.exit(1);
 		#end
 	}

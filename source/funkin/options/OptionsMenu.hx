@@ -16,11 +16,18 @@ typedef OptionCategory = {
 
 class OptionsMenu extends TreeMenu {
 	public static var mainOptions:Array<OptionCategory> = [
+		#if !mobile
 		{  // name and desc are actually the translations ids!  - Nex
 			name: 'optionsTree.controls-name',
 			desc: 'optionsTree.controls-desc',
 			suffix: '',
 			substate: funkin.options.keybinds.KeybindsOptions
+		},
+		#end
+		{
+			name: 'optionsTree.mobile-name',
+			desc: 'optionsTree.mobile-desc',
+			state: funkin.options.categories.MobileOptions
 		},
 		{
 			name: 'optionsTree.gameplay-name',

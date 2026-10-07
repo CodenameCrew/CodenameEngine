@@ -169,7 +169,14 @@ class NativeAPI {
 		#if windows
 		Windows.showMessageBox(caption, message, icon);
 		#else
+		#if android
+		try {
+			sys.io.File.saveContent("codename-crash.txt", caption + "\n" + message);
+		} catch (_:Dynamic) {}
+		trace(caption + "\n" + message);
+		#else
 		lime.app.Application.current.window.alert(message, caption);
+		#end
 		#end
 	}
 

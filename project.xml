@@ -31,7 +31,7 @@
 		<define name="DISCORD_RPC" if="desktop"/>
 
 		<!-- Compile with video support (hxvlc) -->
-		<define name="VIDEO_CUTSCENES" if="desktop || mobile"/>
+		<define name="VIDEO_CUTSCENES" if="desktop || android"/>
 	</section>
 
 	<!-- Compile with tracy, use to catch memory leaks, generally, don't use this, inflates memory usages by 16gb~ -->
@@ -118,12 +118,13 @@
 	<icon path="art/iconOG.png" size='256'/>
 	<icon path="art/iconOG.png" size='512'/>
 	<icon path="art/iconOG.png" size='768'/>
-	<icon path="art/iconOG.png" size='1024'/>
+	<icon path="art/iconOG.png" priority="100"/>
 
 	<!-- ____________________________ Window Settings ___________________________ -->
 
-	<window hardware="true" colorDepth="32" background="" fps="0" orientation="landscape"/>
-	<window unless="desktop" width="0" height="0" vsync="true" fullscreen="true"/>
+	<window hardware="true" colorDepth="32" background="000000" fps="60" orientation="landscape"/>
+	<window if="mobile" type="opengl" hardware="true" width="1280" height="720" fullscreen="true" resizable="false" vsync="false" fps="60" background="000000"/>
+	<window unless="desktop || mobile" width="0" height="0" vsync="true" fullscreen="true"/>
 	<window if="desktop" type="opengl" width="1280" height="720" fullscreen="false" resizable="true" vsync="false" allowHighDPI="true"/>
 	<window if="mobile" resizable="false"/>
 	<window if="html5 || switch" resizable="true"/>
@@ -178,7 +179,7 @@
 
 	<!-- ____________________________ Assets Settings ___________________________ -->
 
-	<define name="PRELOAD_ALL" unless="web" />
+	<define name="PRELOAD_ALL" unless="web || mobile" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
 
 	<library name="assets"    preload="true"  if="PRELOAD_ALL"/>
@@ -186,7 +187,8 @@
 
 	<section unless="TEST_BUILD">
 		<assets path="assets/"    rename="assets"	exclude="*.ogg" if="web"/>
-		<assets path="assets/"    rename="assets"	exclude="*.mp3" unless="web"/>
+		<assets path="assets/"    rename="assets"	exclude="*.mp3|kickstarter.mp4" if="android"/>
+		<assets path="assets/"    rename="assets"	exclude="*.mp3" unless="web || android"/>
 
 		<!-- TODO: make it copy this manually, instead of using assets node, so it doesn't manually check for fonts -->
 		<assets path='mods' rename='mods' embed='false' />
@@ -250,12 +252,33 @@
 	<!--<haxedef name="HXCPP_GC_BIG_BLOCKS"/>-->
 	<!--<haxedef name="HXCPP_GC_GENERATIONAL"/>-->
 	<!--<haxedef name="HXCPP_GC_DYNAMIC_SIZE"/>-->
-	<haxedef name="HXCPP_CHECK_POINTER"/>
-	<haxedef name="HXCPP_STACK_LINE"/>
-	<haxedef name="HXCPP_STACK_TRACE"/>
+	<haxedef name="HXCPP_CHECK_POINTER" unless="android"/>
+	<haxedef name="HXCPP_STACK_LINE" unless="android"/>
+	<haxedef name="HXCPP_STACK_TRACE" unless="android"/>
 	<!--<haxedef name="HXCPP_CATCH_SEGV"/>-->
 	<haxedef name="HXCPP_FAST_LINK" unless="debug"/>
 	<!--<haxedef name="HXCPP_ALIGN_ALLOC"/>--> <!--hxcpp.h(71): warning C4005: 'HXCPP_ALIGN_ALLOC': macro redefinition-->
 
 	<haxedef name="analyzer-optimize" unless="debug"/>
+
+	<section if="android">
+		<window width="0" height="0" fullscreen="true" stencil-buffer="true" depth-buffer="true" vsync="false" hardware="true" allow-high-dpi="false" />
+		<config:android>
+			<application android:requestLegacyExternalStorage="true" android:extractNativeLibs="true" />
+			<activity android:preferMinimalPostProcessing="false" />
+			<!-- store the .so files compressed, they're most of the apk -->
+			<gradle-properties android.packaging.jniLibs.useLegacyPackaging="true" />
+		</config:android>
+		<android minimum-sdk-version="24" target-sdk-version="35" />
+		<android permission="android.permission.INTERNET" />
+		<android permission="android.permission.ACCESS_NETWORK_STATE" />
+		<android permission="android.permission.VIBRATE" />
+		<android permission="android.permission.MODIFY_AUDIO_SETTINGS" />
+		<android permission="android.permission.WAKE_LOCK" />
+		<android permission="android.permission.READ_EXTERNAL_STORAGE" />
+		<android permission="android.permission.WRITE_EXTERNAL_STORAGE" />
+		<android permission="android.permission.MANAGE_EXTERNAL_STORAGE" />
+		<android extension="com.yoshman29.codenameengine.MobileActivity" />
+		<java path="android/src" />
+	</section>
 </project>

@@ -14,6 +14,8 @@ var texts:Array<FlxText> = [];
 var isThorns = PlayState.SONG.meta.name.toLowerCase() == "thorns";
 
 function create(event) {
+	menuItems.remove("Change Controls");
+
 	// cancel default pause menu!!
 	event.cancel();
 
@@ -36,12 +38,12 @@ function create(event) {
 	bg.scale.y = 4;
 	add(bg);
 
-	songText = new FlxText(0, 22 * 6, 0, "Pause", 8, false);
+	songText = new FlxText(0, 0, 0, "Pause", 8, false);
 	confText(songText);
 	add(songText);
 
-	for (i=>e in menuItems) {
-		text = new FlxText(0, (22 * 6) + ((i+2) * 9 * 6), 0, e, 8, false);
+	for (e in menuItems) {
+		text = new FlxText(0, 0, 0, e, 8, false);
 		confText(text);
 	}
 
@@ -50,6 +52,8 @@ function create(event) {
 	hand.scale.set(6, 6);
 	hand.updateHitbox();
 	add(hand);
+
+	placePause();
 
 	FlxTween.tween(bg.scale, {y: 6}, 0.75, {ease: FlxEase.elasticOut});
 
@@ -81,13 +85,70 @@ function update(elapsed) {
 	time += elapsed;
 
 	var curText = texts[curSelected + 1];
-	hand.setPosition(curText.x - hand.width - 18 + (Math.sin(time * Math.PI * 2) * 12), curText.y + (text.height - hand.height) - 6);
-	hand.x -= hand.x % 6;
-	hand.y -= hand.y % 6;
+	if (curText != null) {
+		hand.x = curText.x - hand.width - 12 + (Math.sin(time * Math.PI * 2) * 12);
+		hand.y = curText.y + (curText.height - hand.height) * 0.5;
+		hand.x -= hand.x % 6;
+		hand.y -= hand.y % 6;
+	}
+
+	if (FlxG.touches != null) for (touch in FlxG.touches.list) {
+		if (!touch.justReleased) continue;
+		for (i in 0...menuItems.length) {
+			var opt = texts[i + 1];
+			if (opt == null || !touch.overlaps(opt, pauseCam)) continue;
+			if (curSelected != i) {
+				curSelected = i;
+				scrollSFX.play();
+			} else enterOption();
+			break;
+		}
+	}
 
 	changeSelection((controls.UP_P ? -1 : 0) + (controls.DOWN_P ? 1 : 0) - FlxG.mouse.wheel);
 
 	if (controls.ACCEPT) enterOption();
+}
+
+function placePause() {
+	var pad = 16 * 6;
+	var boxW = 125 * 6;
+	var boxH = 99 * 6;
+	var left = bg.x + pad;
+	var top = bg.y + pad;
+	var right = bg.x + boxW - pad;
+	var bottom = bg.y + boxH - pad;
+	var mid = bg.x + boxW * 0.5;
+	var textW = right - left;
+
+	songText.y = top;
+	fitText(songText, textW);
+	songText.x = mid - songText.width * 0.5;
+	songText.x -= songText.x % 6;
+
+	var count = menuItems.length;
+	if (count <= 0) return;
+	var rowTop = songText.y + songText.height + 12;
+	var rowH = (bottom - rowTop) / count;
+	for (i in 0...count) {
+		var t = texts[i + 1];
+		if (t == null) continue;
+		fitText(t, textW);
+		t.x = mid - t.width * 0.5;
+		t.y = rowTop + rowH * i + (rowH - t.height) * 0.5;
+		t.x -= t.x % 6;
+		t.y -= t.y % 6;
+	}
+}
+
+function fitText(t, maxW) {
+	t.scale.set(6, 6);
+	t.updateHitbox();
+	if (t.width > maxW && t.width > 0) {
+		var s = 6 * (maxW / t.width);
+		t.scale.set(s, s);
+		t.updateHitbox();
+	}
 }
 
 var scrollSFX = FlxG.sound.load(Paths.sound(isThorns ? 'pixel/type' : 'pixel/pixelText'));

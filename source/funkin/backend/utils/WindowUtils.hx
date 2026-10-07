@@ -1,5 +1,6 @@
 package funkin.backend.utils;
 
+import funkin.backend.system.Logs;
 import openfl.Lib;
 
 final class WindowUtils {
@@ -28,8 +29,10 @@ final class WindowUtils {
 	static var __triedClosing:Bool = false;
 	public static inline function resetClosing() __triedClosing = false;
 
-	@:dox(hide) public static inline function init() {
-		Lib.application.window.onClose.add(function () {
+	@:dox(hide) public static function init() {
+		var window = Lib.application != null ? Lib.application.window : null;
+		if (window == null || window.onClose == null) return;
+		window.onClose.add(function () {
 			if (preventClosing && !__triedClosing) {
 				Lib.application.window.onClose.cancel();
 				__triedClosing = true;
@@ -66,7 +69,12 @@ final class WindowUtils {
 		WindowUtils.title = title != null ? title : (Flags.WINDOW_TITLE_USE_MOD_NAME ? Flags.MOD_NAME : Flags.TITLE);
 
 		var iconPath = image != null ? image : Flags.MOD_ICON;
-		if (Assets.exists(Paths.image(iconPath))) Lib.application.window.setIcon(lime.graphics.Image.fromBytes(Assets.getBytes(Paths.image(iconPath))));
+		try {
+			if (Lib.application != null && Lib.application.window != null && Assets.exists(Paths.image(iconPath)))
+				Lib.application.window.setIcon(lime.graphics.Image.fromBytes(Assets.getBytes(Paths.image(iconPath))));
+		} catch (e:Dynamic) {
+			Logs.warn('Window icon failed: $e');
+		}
 	}
 
 	/**

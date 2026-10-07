@@ -54,37 +54,37 @@ enum KeyboardScheme
 class Controls extends FlxActionSet
 {
 	// Menus
-	#if !switch
-	@:rawGamepad([DPAD_UP, LEFT_STICK_DIGITAL_UP])
-	#else
+	#if (mobile || switch)
 	@:rawGamepad([DPAD_UP, LEFT_STICK_DIGITAL_UP, RIGHT_STICK_DIGITAL_UP])
+	#else
+	@:rawGamepad([DPAD_UP, LEFT_STICK_DIGITAL_UP])
 	#end
 	@:pressed("up") public var UP(get, set): Bool;
 	@:justPressed("up") public var UP_P(get, set): Bool;
 	@:justReleased("up") public var UP_R(get, set): Bool;
 
-	#if !switch
-	@:rawGamepad([DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT])
-	#else
+	#if (mobile || switch)
 	@:rawGamepad([DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT])
+	#else
+	@:rawGamepad([DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT])
 	#end
 	@:pressed("left") public var LEFT(get, set): Bool;
 	@:justPressed("left") public var LEFT_P(get, set): Bool;
 	@:justReleased("left") public var LEFT_R(get, set): Bool;
 
-	#if !switch
-	@:rawGamepad([DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT])
-	#else
+	#if (mobile || switch)
 	@:rawGamepad([DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT])
+	#else
+	@:rawGamepad([DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT])
 	#end
 	@:pressed("right") public var RIGHT(get, set): Bool;
 	@:justPressed("right") public var RIGHT_P(get, set): Bool;
 	@:justReleased("right") public var RIGHT_R(get, set): Bool;
 
-	#if !switch
-	@:rawGamepad([DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN])
-	#else
+	#if (mobile || switch)
 	@:rawGamepad([DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN, RIGHT_STICK_DIGITAL_DOWN])
+	#else
+	@:rawGamepad([DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN])
 	#end
 	@:pressed("down") public var DOWN(get, set): Bool;
 	@:justPressed("down") public var DOWN_P(get, set): Bool;
@@ -92,7 +92,9 @@ class Controls extends FlxActionSet
 
 	// Note Controls
 
-	#if !switch
+	#if mobile
+	@:rawGamepad([DPAD_UP, Y, LEFT_STICK_DIGITAL_UP, RIGHT_STICK_DIGITAL_UP])
+	#elseif !switch
 	@:rawGamepad([DPAD_UP, LEFT_STICK_DIGITAL_UP])
 	#else
 	@:rawGamepad([DPAD_UP, LEFT_STICK_DIGITAL_UP, RIGHT_STICK_DIGITAL_UP])
@@ -101,7 +103,9 @@ class Controls extends FlxActionSet
 	@:justPressed("note-up") public var NOTE_UP_P(get, set): Bool;
 	@:justReleased("note-up") public var NOTE_UP_R(get, set): Bool;
 
-	#if !switch
+	#if mobile
+	@:rawGamepad([DPAD_LEFT, X, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT])
+	#elseif !switch
 	@:rawGamepad([DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT])
 	#else
 	@:rawGamepad([DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT])
@@ -110,7 +114,9 @@ class Controls extends FlxActionSet
 	@:justPressed("note-left") public var NOTE_LEFT_P(get, set): Bool;
 	@:justReleased("note-left") public var NOTE_LEFT_R(get, set): Bool;
 
-	#if !switch
+	#if mobile
+	@:rawGamepad([DPAD_RIGHT, B, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT])
+	#elseif !switch
 	@:rawGamepad([DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT])
 	#else
 	@:rawGamepad([DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT])
@@ -119,7 +125,9 @@ class Controls extends FlxActionSet
 	@:justPressed("note-right") public var NOTE_RIGHT_P(get, set): Bool;
 	@:justReleased("note-right") public var NOTE_RIGHT_R(get, set): Bool;
 
-	#if !switch
+	#if mobile
+	@:rawGamepad([DPAD_DOWN, A, LEFT_STICK_DIGITAL_DOWN, RIGHT_STICK_DIGITAL_DOWN])
+	#elseif !switch
 	@:rawGamepad([DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN])
 	#else
 	@:rawGamepad([DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN, RIGHT_STICK_DIGITAL_DOWN])
@@ -138,17 +146,29 @@ class Controls extends FlxActionSet
 	@:pressed("back") public var BACK_HOLD(get, set): Bool;
 	@:justReleased("back") public var BACK_R(get, set): Bool;
 
+	#if mobile
+	@:gamepad([START, GUIDE, LEFT_STICK_CLICK])
+	#else
 	@:gamepad([START])
+	#end
 	@:justPressed("pause") public var PAUSE(get, set): Bool;
 	@:pressed("pause") public var PAUSE_HOLD(get, set): Bool;
 	@:justReleased("pause") public var PAUSE_R(get, set): Bool;
 
+	#if mobile
+	@:gamepad([])
+	#else
 	@:gamepad([Y])
+	#end
 	@:justPressed("reset") public var RESET(get, set): Bool;
 	@:pressed("reset") public var RESET_HOLD(get, set): Bool;
 	@:justReleased("reset") public var RESET_R(get, set): Bool;
 
-	@:gamepad([FlxGamepadInputID.BACK]) // select button
+	#if mobile
+	@:gamepad([FlxGamepadInputID.BACK, LEFT_SHOULDER])
+	#else
+	@:gamepad([FlxGamepadInputID.BACK])
+	#end
 	@:justPressed("change-mode") public var CHANGE_MODE(get, set): Bool;
 	@:pressed("change-mode") public var CHANGE_MODE_HOLD(get, set): Bool;
 	@:justReleased("change-mode") public var CHANGE_MODE_R(get, set): Bool;
@@ -158,7 +178,11 @@ class Controls extends FlxActionSet
 	//@:pressed("cheat") public var CHEAT_HOLD(get, set): Bool;
 	//@:justReleased("cheat") public var CHEAT_R(get, set): Bool;
 
-	@:gamepad([FlxGamepadInputID.BACK]) // select button
+	#if mobile
+	@:gamepad([FlxGamepadInputID.BACK, LEFT_SHOULDER])
+	#else
+	@:gamepad([FlxGamepadInputID.BACK])
+	#end
 	@:justPressed("switchmod") public var SWITCHMOD(get, set): Bool;
 	@:pressed("switchmod") public var SWITCHMOD_HOLD(get, set): Bool;
 	@:justReleased("switchmod") public var SWITCHMOD_R(get, set): Bool;

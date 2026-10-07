@@ -16,6 +16,7 @@ import funkin.editors.charter.Charter;
 import funkin.menus.StoryMenuState;
 import funkin.options.OptionsMenu;
 import funkin.options.keybinds.KeybindsOptions;
+import funkin.mobile.TouchNav;
 
 class PauseSubState extends MusicBeatSubstate
 {
@@ -68,6 +69,9 @@ class PauseSubState extends MusicBeatSubstate
 		pauseScript.call('create', [event]);
 
 		menuItems = event.options;
+		#if mobile
+		while (menuItems.remove("Change Controls")) {}
+		#end
 
 		if (Assets.exists(Paths.music(event.music))) {
 			pauseMusic = FlxG.sound.load(Assets.getMusic(Paths.music(event.music)), 0, true);
@@ -121,6 +125,9 @@ class PauseSubState extends MusicBeatSubstate
 		}
 
 		changeSelection();
+		#if mobile
+		funkin.mobile.TouchControls.vibrate();
+		#end
 
 		camera = new FlxCamera();
 		camera.bgColor = 0;
@@ -151,11 +158,27 @@ class PauseSubState extends MusicBeatSubstate
 		if (upP || downP || scroll != 0)  // like this we wont break mods that expect a 0 change event when calling sometimes  - Nex
 			changeSelection((upP ? -1 : 0) + (downP ? 1 : 0) - scroll);
 
+		if (grpMenuShit != null && TouchNav.pointerJustPressed()) {
+			for (index => item in grpMenuShit.members) {
+				if (TouchNav.hits(item)) {
+					if (curSelected != index) changeSelection(index - curSelected);
+					else selectOption();
+					break;
+				}
+			}
+		}
+
 		if (controls.ACCEPT)
 			selectOption();
+
+		if (controls.BACK)
+			close();
 	}
 
 	public function selectOption() {
+		#if mobile
+		funkin.mobile.TouchControls.vibrate();
+		#end
 		var event = EventManager.get(NameEvent).recycle(menuItems[curSelected]);
 		if (selectCall != null) selectCall(event);
 		pauseScript.call("onSelectOption", [event]);
@@ -214,6 +237,9 @@ class PauseSubState extends MusicBeatSubstate
 		if (event.cancelled) return;
 
 		curSelected = event.value;
+		#if mobile
+		if (change != 0) funkin.mobile.TouchControls.vibrate();
+		#end
 
 		for (i=>item in grpMenuShit.members)
 		{

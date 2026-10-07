@@ -26,11 +26,6 @@ import openfl.text.TextFormat;
 import openfl.utils.AssetLibrary;
 import sys.FileSystem;
 import sys.io.File;
-#if android
-import extension.androidtools.content.Context;
-import extension.androidtools.os.Build;
-#end
-
 #if IMGUI_ENABLED
 import lime.tools.imgui.ImGuiFlags;
 import lime.tools.imgui.ImGuiTypes;
@@ -70,6 +65,11 @@ class Main extends Sprite
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
 	public static function preInit() {
+		#if android
+		try {
+			lime.system.System.setHint("SDL_ANDROID_TRAP_BACK_BUTTON", "1");
+		} catch (e:Dynamic) Logs.warn('Could not trap the Android back button: $e');
+		#end
 		#if sys
 		funkin.backend.utils.NativeAPI.registerAsDPICompatible();
 		funkin.backend.system.CommandLineHandler.parseCommandLine(Sys.args());
@@ -145,10 +145,13 @@ class Main extends Sprite
 
 		funkin.options.PlayerSettings.init();
 		Options.load();
+		funkin.mobile.MobileGamepad.init();
+		funkin.mobile.TouchControls.init();
 
 		game.focusLostFramerate = 30;
 		FlxG.fixedTimestep = false;
 		FlxG.scaleMode = scaleMode = new FunkinRatioScaleMode();
+		Options.applyMobile();
 		FlxG.sound.applySoundCurve = applySoundCurve;
 		FlxG.sound.reverseSoundCurve = reverseSoundCurve;
 
@@ -164,6 +167,7 @@ class Main extends Sprite
 		if(funkin.backend.utils.NativeAPI.hasVersion("Windows 10")) funkin.backend.utils.NativeAPI.redrawWindowHeader();
 		#end
 
+		funkin.mobile.MobileStorage.apply();
 		ModsFolder.init();
 		#if MOD_SUPPORT
 		if (FileSystem.exists("mods/autoload.txt"))
@@ -275,7 +279,7 @@ class Main extends Sprite
 			Sys.setCwd(haxe.io.Path.directory(Sys.programPath()));
 		}
 		#elseif android
-		Sys.setCwd(haxe.io.Path.addTrailingSlash(VERSION.SDK_INT > 30 ? Context.getObbDir() : Context.getExternalFilesDir()));
+		funkin.mobile.MobileStorage.prepare();
 		#elseif (ios || switch)
 		Sys.setCwd(haxe.io.Path.addTrailingSlash(openfl.filesystem.File.applicationStorageDirectory.nativePath));
 		#end

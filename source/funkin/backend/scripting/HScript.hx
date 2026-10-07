@@ -200,8 +200,13 @@ class HScript extends Script {
 		if (interp == null) return null;
 
 		var func = interp.variables.get(funcName);
-		if (func != null && Reflect.isFunction(func))
-			return Reflect.callMethod(null, func, parameters == null ? Script._EMPTY_ARGS : parameters);
+		if (func != null && Reflect.isFunction(func)) {
+			try return Reflect.callMethod(null, func, parameters == null ? Script._EMPTY_ARGS : parameters)
+			catch (e:Dynamic) {
+				Logs.trace('${fileName}: ${funcName}() crashed: $e', ERROR, RED);
+				return null;
+			}
+		}
 
 		return null;
 	}

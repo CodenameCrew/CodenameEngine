@@ -863,6 +863,7 @@ class PlayState extends MusicBeatState
 
 		for(str in strumLines)
 			str.generate(str.data, (chartingMode && Charter.startHere) ? Charter.startTime : null);
+		updateTouchStrums();
 
 		FlxG.camera.follow(camFollow, LOCKON, Flags.DEFAULT_CAMERA_FOLLOW_SPEED);
 		FlxG.camera.zoom = defaultCamZoom;
@@ -961,6 +962,7 @@ class PlayState extends MusicBeatState
 		__updateNote_event = EventManager.get(NoteUpdateEvent);
 
 		gameAndCharsCall("postCreate", null, "gamePostCreate");
+		updateTouchStrums();
 	}
 
 	/**
@@ -1207,6 +1209,97 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	function updateTouchStrums() {
+		if (!Options.touchControls || coopMode) return;
+		var buttons = Options.touchSongLayout == "buttons";
+		var middle = Options.middlescroll;
+		if (!buttons && !middle) return;
+
+		var player:StrumLine = null;
+		for (line in strumLines) {
+			if (line == null || line.cpu) continue;
+			if (player != null) return; // coop, leave both lines alone
+			player = line;
+		}
+		if (player == null || player.members.length == 0) return;
+
+		if (buttons || middle) {
+			for (line in strumLines) if (line != null && line != player) {
+				line.visible = false;
+				if (line.notes != null) line.notes.visible = false;
+			}
+		}
+
+		var scale = player.strumScale <= 0 ? 1 : player.strumScale;
+		var w = Note.swagWidth * scale;
+		var count = player.members.length;
+		var step = w * ((player.data != null && player.data.strumSpacing != null) ? player.data.strumSpacing : 1);
+		var x:Float;
+		var gap:Float;
+		if (buttons && !middle) {
+			var margin = 18.0;
+			gap = count > 1 ? (FlxG.width - margin * 2 - w) / (count - 1) : 0.0;
+			x = margin;
+		} else {
+			gap = step;
+			x = (FlxG.width - (gap * (count - 1) + w)) * 0.5;
+		}
+
+		var downButtons = buttons && Options.touchButtonScroll != "upscroll";
+		var speed = scrollSpeed == 0 ? 1.0 : Math.abs(scrollSpeed);
+		if (downButtons) speed = -speed;
+		var y = 50.0;
+		if (downButtons && player.members[0] != null)
+			y = FlxG.height - player.members[0].height - 16;
+
+		if (buttons) downscroll = false;
+
+		for (i => strum in player.members) {
+			if (strum == null) continue;
+			strum.x = x + gap * i;
+			if (buttons) {
+				strum.y = y;
+				strum.scrollSpeed = speed;
+				strum.alpha = 0;
+				strum.visible = true; // notes take their camera from this in draw()
+				if (camHUD != null) strum.lastDrawCameras = [camHUD];
+			}
+		}
+		if (buttons && player.notes != null) {
+			player.notes.visible = true;
+			if (camHUD != null) player.notes.cameras = [camHUD];
+		}
+	}
+
+	function muteModchart() { // button notes follow the receptors
+		if (!Options.touchControls || Options.touchSongLayout != "buttons" || coopMode) return;
+
+		#if MODCHARTING_FEATURES
+		var mgr = modchart.Manager.instance;
+		if (mgr != null) {
+			mgr.active = false;
+			mgr.visible = false;
+			mgr.exists = false;
+		}
+		if (splashHandler != null) splashHandler.visible = true;
+		#end
+
+		updateTouchStrums(); // scripts set angle again after the notes copy it
+		for (line in strumLines.members) {
+			if (line == null) continue;
+			for (strum in line.members) if (strum != null) strum.angle = 0;
+			if (line.notes == null) continue;
+			line.notes.forEachAlive(function(note) {
+				var strum = line.members[note.noteData];
+				if (strum != null) strum.updateNotePosition(note);
+				else {
+					note.angle = 0;
+					note.__noteAngle = 0;
+				}
+			});
+		}
+	}
+
 	@:dox(hide)
 	override function openSubState(SubState:FlxSubState)
 	{
@@ -1399,12 +1492,15 @@ class PlayState extends MusicBeatState
 	@:dox(hide)
 	override public function update(elapsed:Float)
 	{
+		updateTouchStrums();
 		_ONE_ARG[0] = elapsed;
 		scripts.call("update", _ONE_ARG);
+		muteModchart();
 
 		if (inCutscene) {
 			super.update(elapsed);
 			scripts.call("postUpdate", _ONE_ARG);
+			muteModchart();
 			return;
 		}
 
@@ -1490,12 +1586,16 @@ class PlayState extends MusicBeatState
 		super.update(elapsed);
 
 		scripts.call("postUpdate", _ONE_ARG);
+		muteModchart();
+		updateTouchStrums();
 	}
 
 	override function draw() {
 		var e = scripts.event("draw", EventManager.get(DrawEvent).recycle());
-		if (!e.cancelled)
+		if (!e.cancelled) {
+			muteModchart();
 			super.draw();
+		}
 		scripts.event("postDraw", e);
 	}
 
@@ -1610,7 +1710,8 @@ class PlayState extends MusicBeatState
 
 				curCameraTarget = event.params[0];
 
-				cameraFocusOffset.set(event.params[5], event.params[6]);
+				// older camera events only saved the target
+				cameraFocusOffset.set(event.params.length > 5 ? event.params[5] : 0, event.params.length > 6 ? event.params[6] : 0);
 
 				moveCamera();
 

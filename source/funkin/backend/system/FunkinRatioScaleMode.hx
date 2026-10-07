@@ -8,6 +8,12 @@ class FunkinRatioScaleMode extends RatioScaleMode {
 
 	public override function updateGameSize(Width:Int, Height:Int):Void
 	{
+		if (Width <= 0) Width = 1280;
+		if (Height <= 0) Height = 720;
+
+		#if android
+		super.updateGameSize(Width, Height);
+		#else
 		var ratio:Float = width / height;
 		var realRatio:Float = Width / Height;
 
@@ -40,6 +46,15 @@ class FunkinRatioScaleMode extends RatioScaleMode {
 			FlxG.width = width;
 			FlxG.height = height;
 		}
+		#end
+	}
+
+	public function setFillScreen(value:Bool) {
+		fillScreen = value;
+		if (FlxG.stage == null || FlxG.stage.stageWidth <= 0 || FlxG.stage.stageHeight <= 0)
+			return;
+		@:privateAccess
+		FlxG.game.onResize(null);
 	}
 
 	public function resetSize() {

@@ -42,7 +42,7 @@ class Strum extends FlxSprite {
 	**/
 	public var noteAngle:Null<Float> = null;
 
-	public var lastDrawCameras(default, null):Array<FlxCamera> = [];
+	public var lastDrawCameras:Array<FlxCamera> = [];
 
 	// Copy fields
 	public var copyStrumCamera:Bool = true;

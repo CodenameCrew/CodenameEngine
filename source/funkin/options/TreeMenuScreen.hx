@@ -8,6 +8,7 @@ import funkin.options.TreeMenu.ITreeOption;
 import funkin.options.TreeMenu.ITreeFloatOption;
 import funkin.options.type.OptionType;
 import funkin.options.type.Separator;
+import funkin.mobile.TouchNav;
 
 class TreeMenuScreen extends FlxSpriteGroup {
 	public var persistentUpdate:Bool = false;
@@ -95,9 +96,9 @@ class TreeMenuScreen extends FlxSpriteGroup {
 			for (basic in turboBasics) basic.update(elapsed);
 
 			var change = (upTurboControl.activated ? -1 : 0) + (downTurboControl.activated ? 1 : 0) - FlxG.mouse.wheel, mouseControl = false;
-			if (FlxG.mouse.justPressed) {
+			if (TouchNav.pointerJustPressed()) {
 				for (i in CoolUtil.maxInt(curSelected - 3, 0)...CoolUtil.minInt(curSelected + 4, length))
-					if (i != curSelected && members[i] != null && mouseOverlaps(members[i])) {
+					if (i != curSelected && members[i] != null && TouchNav.hits(members[i])) {
 						change = i - curSelected;
 						mouseControl = true;
 						break;
@@ -106,7 +107,7 @@ class TreeMenuScreen extends FlxSpriteGroup {
 			changeSelection(change);
 
 			if (length > 0 && curOption != null) {
-				if (controls.ACCEPT || (!mouseControl && FlxG.mouse.justPressed && mouseOverlaps(members[curSelected]))) curOption.select();
+				if (controls.ACCEPT || (!mouseControl && TouchNav.justHit(members[curSelected]))) curOption.select();
 				if (curFloatOption != null) {
 					if (controls.LEFT) curFloatOption.changeValue(-elapsed);
 					if (controls.RIGHT) curFloatOption.changeValue(elapsed);
@@ -182,9 +183,6 @@ class TreeMenuScreen extends FlxSpriteGroup {
 	public function updateMenuDesc(?customTxt:String) {
 		if (parent != null) parent.updateDesc(customTxt);
 	}
-
-	function mouseOverlaps(sprite:FlxSprite):Bool
-		return sprite.overlapsPoint(FlxG.mouse.getPosition(@:privateAccess flixel.input.FlxPointer._cachedPoint), true);
 
 	override function destroy() {
 		super.destroy();

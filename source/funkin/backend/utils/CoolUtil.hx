@@ -508,6 +508,9 @@ final class CoolUtil
 	 * @param volume At which volume it should play
 	 */
 	@:noUsing public static inline function playMenuSFX(menuSFX:CoolSfx = SCROLL, volume:Float = 1):FlxSound {
+		#if mobile
+		funkin.mobile.TouchControls.vibrate();
+		#end
 		return FlxG.sound.play(Paths.sound(switch(menuSFX) {
 			case CONFIRM:	Flags.DEFAULT_MENU_CONFIRM_SOUND;
 			case CANCEL:	Flags.DEFAULT_MENU_CANCEL_SOUND;

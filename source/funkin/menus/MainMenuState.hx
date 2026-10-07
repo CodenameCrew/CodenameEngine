@@ -8,6 +8,7 @@ import funkin.backend.scripting.events.menu.MenuChangeEvent;
 import funkin.backend.scripting.events.NameEvent;
 import funkin.menus.credits.CreditsMain;
 import funkin.options.OptionsMenu;
+import funkin.mobile.TouchNav;
 import lime.app.Application;
 
 using StringTools;
@@ -76,15 +77,13 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		versionText = new FunkinText(5, FlxG.height - 2, 0, [
-			Flags.VERSION_MESSAGE,
-			TU.translate("mainMenu.commit", [Flags.COMMIT_NUMBER, Flags.COMMIT_HASH]),
-			TU.translate("mainMenu.openMods", [controls.getKeyName(SWITCHMOD)]),
-			''
-		].join('\n'));
+		versionText = new FunkinText(5, FlxG.height - 2, 0, versionLines().join('\n'));
 		versionText.y -= versionText.height;
 		versionText.scrollFactor.set();
 		add(versionText);
+		#if mobile
+		controllerHint = funkin.mobile.TouchControls.controllerActive;
+		#end
 
 		changeItem();
 
@@ -98,11 +97,19 @@ class MainMenuState extends MusicBeatState
 	var selectedSomethin:Bool = false;
 	var forceCenterX:Bool = true;
 	var devModeCount:Int = 0;
+	var controllerHint:Bool = false;
 
 	override function update(elapsed:Float)
 	{
 		if (FlxG.sound.music.volume < 0.8)
 			FlxG.sound.music.volume += 0.5 * elapsed;
+
+		#if mobile
+		if (controllerHint != funkin.mobile.TouchControls.controllerActive) {
+			controllerHint = funkin.mobile.TouchControls.controllerActive;
+			refreshVersionText();
+		}
+		#end
 
 		if (!selectedSomethin)
 		{
@@ -143,7 +150,7 @@ class MainMenuState extends MusicBeatState
 				FlxG.switchState(new TitleState());
 
 			#if MOD_SUPPORT
-			if (controls.SWITCHMOD || (FlxG.mouse.justPressed && versionText != null && FlxG.mouse.overlaps(versionText))) {
+			if (controls.SWITCHMOD || (versionText != null && TouchNav.justHit(versionText))) {
 				openSubState(new ModSwitchMenu());
 				persistentUpdate = false;
 				persistentDraw = true;
@@ -153,9 +160,9 @@ class MainMenuState extends MusicBeatState
 			if (controls.ACCEPT)
 				selectItem();
 
-			if (FlxG.mouse.justPressed && menuItems != null) {
+			if (menuItems != null && TouchNav.pointerJustPressed()) {
 				for (index => sprite in menuItems.members) {
-					if (FlxG.mouse.overlaps(sprite)) {
+					if (TouchNav.hits(sprite)) {
 						if (curSelected != index) changeItem(index - curSelected);
 						else selectItem();
 						break;
@@ -229,5 +236,22 @@ class MainMenuState extends MusicBeatState
 			spr.updateHitbox();
 			spr.centerOffsets();
 		});
+	}
+
+	function versionLines():Array<String> {
+		var modsHint = #if mobile (funkin.mobile.TouchControls.controllerActive ? "SELECT" : "MODS") #else controls.getKeyName(SWITCHMOD) #end;
+		return [
+			Flags.VERSION_MESSAGE,
+			TU.translate("mainMenu.commit", [Flags.COMMIT_NUMBER, Flags.COMMIT_HASH]),
+			TU.translate("mainMenu.openMods", [modsHint]),
+			''
+		];
+	}
+
+	function refreshVersionText() {
+		if (versionText == null) return;
+		var bottom = versionText.y + versionText.height;
+		versionText.text = versionLines().join('\n');
+		versionText.y = bottom - versionText.height;
 	}
 }

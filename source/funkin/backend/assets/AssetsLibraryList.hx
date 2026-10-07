@@ -227,7 +227,11 @@ class AssetsLibraryList extends AssetLibrary {
 		}
 		#end
 
+		#if android
+		__defaultLibraries.push(ModsFolder.prepareModLibrary('assets', new PackedAssetLibrary(getCleanLibrary(this.base), 'assets'), true, SOURCE));
+		#else
 		__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', rootDirectory, true, null, SOURCE));
+		#end
 
 		#end
 
