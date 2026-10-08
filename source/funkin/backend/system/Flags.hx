@@ -315,13 +315,13 @@ class Flags {
 	public static var USER_AGENT:String = 'request';
 	// -- End of Codename's Default Flags --
 
-	@:bypass public static var modIconImages:Array<Image> = [];
-	@:bypass public static var overridenFlags:Map<String, Bool> = [];
+	@:bypass public static var modIconImages:Array<Image>;
+	@:lazy public static var overridenFlags:Map<String, Bool> = [];
 
 	/**
 	 * Flags that Codename couldn't recognize as it's own defaults (they can only be `string`! due to them being unparsed).
 	 */
-	@:bypass public static var customFlags:Map<String, String> = [];
+	@:lazy public static var customFlags:Map<String, String> = [];
 
 	public static function loadFromData(flags:Map<String, String>, data:String) {
 		if (!(data.length > 0)) return;
