@@ -210,6 +210,9 @@
 		<str id="songOffsetAffectEditors-name">Atraso no Mapeador</str>
 		<str id="songOffsetAffectEditors-desc">Se marcado, irá ativar o Atraso da Música no Editor de Mapas, também.</str>
 
+		<str id="legacyModMenuNames-name">Nomes de Mods Legados</str>
+		<str id="legacyModMenuNames-desc">Se for selecionada, esta opção utilizará o nome da pasta do mod para o mod.</str>
+
 		<str id="legacyMemoryCounter-name">Contador de Memória Clássico</str>
 		<str id="legacyMemoryCounter-desc">Se marcado, o contador de memória mostrará o uso de memória do GC de Haxe e o seu máximo (o comportamento original) em vez da memória de trabalho vista no Gestor de Tarefas.</str>
 	</group>
