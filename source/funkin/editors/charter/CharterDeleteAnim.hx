@@ -99,7 +99,7 @@ class CharterDeleteAnim extends CharterNote {
 			}
 			alpha = 1;
 
-			sustainSpr.scale.set(10, (40 * deleteData.note.susLength) + (height/2));
+			sustainSpr.scale.set(10, (40 * (deleteData.note.susLength-1)) + (height/2));
 			sustainSpr.updateHitbox(); sustainSpr.follow(this, 15, 20);
 			sustainSpr.exists = deleteData.note.susLength != 0; sustainSpr.alpha = .8;
 

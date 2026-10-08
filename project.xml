@@ -106,19 +106,19 @@
 	<!--<set name="SWF_VERSION" value="11.8"/>-->
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
-	<icon path="art/icon16.png" size='16'/>
-	<icon path="art/icon32.png" size='24'/>
-	<icon path="art/icon32.png" size='32'/>
-	<icon path="art/icon64.png" size='40'/>
-	<icon path="art/icon64.png" size='48'/>
-	<icon path="art/icon64.png" size='64'/>
-	<icon path="art/iconOG.png" size='96'/>
-	<icon path="art/iconOG.png" size='128'/>
-	<icon path="art/iconOG.png" size='196'/>
-	<icon path="art/iconOG.png" size='256'/>
-	<icon path="art/iconOG.png" size='512'/>
-	<icon path="art/iconOG.png" size='768'/>
-	<icon path="art/iconOG.png" size='1024'/>
+	<icon path="assets/images/icon16.png" size='16'/>
+	<icon path="assets/images/icon32.png" size='24'/>
+	<icon path="assets/images/icon32.png" size='32'/>
+	<icon path="assets/images/icon.png" size='40'/>
+	<icon path="assets/images/icon.png" size='48'/>
+	<icon path="assets/images/icon.png" size='64'/>
+	<icon path="assets/images/icon.png" size='96'/>
+	<icon path="assets/images/icon.png" size='128'/>
+	<icon path="assets/images/icon.png" size='196'/>
+	<icon path="assets/images/icon.png" size='256'/>
+	<icon path="assets/images/icon.png" size='512'/>
+	<icon path="assets/images/icon.png" size='768'/>
+	<icon path="assets/images/icon.png" size='1024'/>
 
 	<!-- ____________________________ Window Settings ___________________________ -->
 
@@ -245,10 +245,13 @@
 	<!--<haxedef name="HXCPP_CPP20"/>-->
 	<!--<haxedef name="HXCPP_CLANG"/>-->
 	<!--<haxedef name="HXCPP_MSVC"/>-->
+	<!-- This doesn't seem very useful, and it also increases GC cleanup time -->
+	<!-- Unless you're placing more than ~300k notes in the game, I can't think of anywhere you'd need it -->
+	<!--<haxedef name="HXCPP_GC_BIG_BLOCKS"/>-->
+	<!-- Due to a design flaw, generational GC is not actually enabled; only its nursery bump is -->
+	<haxedef name="HXCPP_GC_GENERATIONAL"/>
 	<!-- This seems to causes more harm, but to be fair, its mostly because of text rendering -->
 	<!-- This is really important to fix honestly, try to get cairo text rendering not memory leak in the future -->
-	<!--<haxedef name="HXCPP_GC_BIG_BLOCKS"/>-->
-	<!--<haxedef name="HXCPP_GC_GENERATIONAL"/>-->
 	<!--<haxedef name="HXCPP_GC_DYNAMIC_SIZE"/>-->
 	<haxedef name="HXCPP_CHECK_POINTER"/>
 	<haxedef name="HXCPP_STACK_LINE"/>

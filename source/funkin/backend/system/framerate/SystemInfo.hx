@@ -183,7 +183,7 @@ class SystemInfo extends FramerateCategory {
 	}
 
 	public override function __enterFrame(t:Float) {
-		if (alpha <= 0.05) return;
+		if (alpha <= 0.05 || !visible) return;
 
 		var buf = new StringBuf();
 		buf.add(__formattedSysText);

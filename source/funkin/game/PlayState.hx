@@ -581,8 +581,6 @@ class PlayState extends MusicBeatState
 	@:noCompletion @:dox(hide) private var _startCountdownCalled:Bool = false;
 	@:noCompletion @:dox(hide) private var _endSongCalled:Bool = false;
 
-	@:noCompletion @:dox(hide) private static var _ONE_ARG:Array<Dynamic> = [null];
-
 	@:dox(hide)
 	var __vocalSyncTimer:Float = 1;
 
@@ -805,6 +803,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		var canCenter:Bool = Options.centeredFields && Flags.ALLOW_CENTERED_FIELDS && !coopMode;
 		for(i=>strumLine in SONG.strumLines) {
 			if (strumLine == null) continue;
 
@@ -820,7 +819,7 @@ class PlayState extends MusicBeatState
 				chars.push(char);
 			}
 
-			var strOffset:Float = strumLine.strumLinePos != null ? strumLine.strumLinePos : (strumLine.type == 1 ? 0.75 : 0.25);
+			var strOffset:Float = canCenter || strumLine.strumLinePos != null ? (canCenter ? 0.5 : strumLine.strumLinePos) : (strumLine.type == 1 ? 0.75 : 0.25);
 			var strScale:Float = strumLine.strumScale != null ? strumLine.strumScale : 1;
 			var strSpacing:Float = strumLine.strumSpacing == null ? 1 : strumLine.strumSpacing;
 			var keyCount:Int = strumLine.keyCount == null ? 4 : strumLine.keyCount;
@@ -837,7 +836,7 @@ class PlayState extends MusicBeatState
 			);
 			strLine.cameras = [camHUD];
 			strLine.data = strumLine;
-			strLine.visible = (strumLine.visible != false);
+			strLine.visible = (strumLine.visible != false && (!canCenter || !strLine.cpu));
 			strLine.vocals.group = FlxG.sound.defaultMusicGroup;
 			strLine.ID = i;
 			strumLines.add(strLine);
@@ -1181,7 +1180,7 @@ class PlayState extends MusicBeatState
 		curSong = songData.meta.name.toLowerCase();
 		curSongID = curSong.replace(" ", "-");
 
-		FlxG.sound.setMusic(inst = FlxG.sound.load(Assets.getMusic(Paths.inst(SONG.meta.name, difficulty, SONG.meta.instSuffix))));
+		FlxG.sound.setMusic(inst = FlxG.sound.load(Paths.inst(SONG.meta.name, difficulty, SONG.meta.instSuffix)));
 
 		var vocalsPath = Paths.voices(SONG.meta.name, difficulty, SONG.meta.vocalsSuffix);
 		if (SONG.meta.needsVoices && Assets.exists(vocalsPath))
@@ -1197,6 +1196,33 @@ class PlayState extends MusicBeatState
 
 	@:dox(hide) function sortByShit(Obj1:Note, Obj2:Note):Int {
 		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime, Obj2.strumTime);
+	}
+
+	/**
+	 * Resets the positioning and visibility of all the strumlines.
+	 * @param canCenter Whether or not the strumlines will be centered when resetting, similar to starting a song with `Options.centeredFields` on.
+	 */
+	public function resetStrumlinePositions(?canCenter:Bool = false):Void {
+		// NOTE TO ANY CONTRIBUTORS: DO NOT FORCE `canCenter`! THIS IS A MODDING UTILITY IN CASE THE POSITIONING OF THE STRUMLINES FULLY MATTER TO A SCRIPT/SONG!
+
+		strumLine.setPosition(0, 50); // just in case.
+
+		for (strLine in strumLines.members) {
+			var strumLine = strLine.data;
+
+			var strOffset:Float = canCenter || strumLine.strumLinePos != null ? (canCenter ? 0.5 : strumLine.strumLinePos) : (strumLine.type == 1 ? 0.75 : 0.25);
+			var strScale:Float = strumLine.strumScale != null ? strumLine.strumScale : 1;
+			var strSpacing:Float = strumLine.strumSpacing == null ? 1 : strumLine.strumSpacing;
+			var keyCount:Int = strumLine.keyCount == null ? 4 : strumLine.keyCount;
+			var strXPos:Float = StrumLine.calculateStartingXPos(strOffset, strScale, strSpacing, keyCount);
+
+			strLine.startingPos.set(
+				(strumLine.strumPos != null && strumLine.strumPos[0] != 0) ? strumLine.strumPos[0] : strXPos,
+				strumLine.strumPos != null ? strumLine.strumPos[1] : this.strumLine.y
+			);
+			strLine.resetStrumPositions();
+			strLine.visible = (strumLine.visible != false && (!canCenter || !strLine.cpu));
+		}
 	}
 
 	@:dox(hide)
@@ -1399,12 +1425,11 @@ class PlayState extends MusicBeatState
 	@:dox(hide)
 	override public function update(elapsed:Float)
 	{
-		_ONE_ARG[0] = elapsed;
-		scripts.call("update", _ONE_ARG);
+		scripts.callOne("update", elapsed);
 
 		if (inCutscene) {
 			super.update(elapsed);
-			scripts.call("postUpdate", _ONE_ARG);
+			scripts.callOne("postUpdate", elapsed);
 			return;
 		}
 
@@ -1489,7 +1514,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scripts.call("postUpdate", _ONE_ARG);
+		scripts.callOne("postUpdate", elapsed);
 	}
 
 	override function draw() {
@@ -2000,9 +2025,9 @@ class PlayState extends MusicBeatState
 
 		var event:NoteHitEvent;
 		if (strumLine != null && !strumLine.cpu)
-			event = EventManager.get(NoteHitEvent).recycle(rating.breaksCombo, !note.isSustainNote, !note.isSustainNote, null, null, null, note, strumLine.characters, true, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), null, null, note.strumID, rating.score, note.isSustainNote ? null : rating.accuracy, rating.health, rating.name, Options.splashesEnabled && !note.isSustainNote && rating.splash, null, null, null, null, null, iconP1);
+			event = EventManager.get(NoteHitEvent).recycle(rating.breaksCombo, !note.isSustainNote, !note.isSustainNote, null, null, null, note, strumLine.characters, true, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), "game/score/", "", note.strumID, rating.score, note.isSustainNote ? null : rating.accuracy, rating.health, rating.name, Options.splashesEnabled && !note.isSustainNote && rating.splash, null, null, null, null, null, iconP1, true);
 		else
-			event = EventManager.get(NoteHitEvent).recycle(rating.breaksCombo, false, false, null, null, null, note, strumLine.characters, false, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), null, null, note.strumID, 0, null, 0, rating.name, false, null, null, null, null, true, iconP2);
+			event = EventManager.get(NoteHitEvent).recycle(rating.breaksCombo, false, false, null, null, null, note, strumLine.characters, false, note.noteType, note.animSuffix.getDefault(note.strumID < strumLine.members.length ? strumLine.members[note.strumID].animSuffix : strumLine.animSuffix), "game/score/", "", note.strumID, 0, null, 0, rating.name, false, null, null, null, null, true, iconP2, false);
 		event.deleteNote = !note.isSustainNote; // work around, to allow sustain notes to be deleted
 		event = scripts.event(strumLine != null && !strumLine.cpu ? "onPlayerHit" : "onDadHit", event);
 		strumLine.onHit.dispatch(event);
@@ -2023,6 +2048,14 @@ class PlayState extends MusicBeatState
 					misses++;
 				} else if (event.countAsCombo)
 					combo++;
+
+				if (event.charsComboAnim && event.player && combo > 0) {
+					var comboAnim:String = 'combo$combo';
+					
+					for (sl in strumLines.members) for (c in sl.characters) {
+						if (c.hasAnim(comboAnim)) c.playAnim(comboAnim, true);
+					}
+				}
 
 				if (event.showRating || (event.showRating == null && event.player))
 				{
@@ -2077,8 +2110,8 @@ class PlayState extends MusicBeatState
 
 		var hasEvent:Bool = evt != null;
 
-		var pre:String = hasEvent && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
-		var suf:String = hasEvent && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
+		var pre:String = hasEvent && (event.ratingPrefix == null || event.ratingPrefix == "game/score/") ? evt.ratingPrefix : event.ratingPrefix;
+		var suf:String = hasEvent && (event.ratingSuffix == null || event.ratingSuffix == "") ? evt.ratingSuffix : event.ratingSuffix;
 
 		var ratingScale:Float = hasEvent && evt.ratingScale != null ? evt.ratingScale : event.ratingScale;
 
@@ -2119,8 +2152,8 @@ class PlayState extends MusicBeatState
 
 			var hasEvent:Bool = evt != null;
 
-			var pre:String = hasEvent && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
-			var suf:String = hasEvent && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
+			var pre:String = hasEvent && (event.ratingPrefix == null || event.ratingPrefix == "game/score/") ? evt.ratingPrefix : event.ratingPrefix;
+			var suf:String = hasEvent && (event.ratingSuffix == null || event.ratingSuffix == "") ? evt.ratingSuffix : event.ratingSuffix;
 
 			var ratingScale:Float = hasEvent && evt.ratingScale != null ? evt.ratingScale : event.ratingScale;
 
@@ -2165,8 +2198,8 @@ class PlayState extends MusicBeatState
 
 				var hasEvent:Bool = evt != null;
 
-				var pre:String = hasEvent && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
-				var suf:String = hasEvent && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
+				var pre:String = hasEvent && (event.ratingPrefix == null || event.ratingPrefix == "game/score/") ? evt.ratingPrefix : event.ratingPrefix;
+				var suf:String = hasEvent && (event.ratingSuffix == null || event.ratingSuffix == "") ? evt.ratingSuffix : event.ratingSuffix;
 
 				var numScale:Float = hasEvent && evt.numScale != null ? evt.numScale : event.numScale;
 
@@ -2207,14 +2240,14 @@ class PlayState extends MusicBeatState
 	override function stepHit(curStep:Int)
 	{
 		super.stepHit(curStep);
-		scripts.call("stepHit", [curStep]);
+		scripts.callOne("stepHit", curStep);
 	}
 
 	@:dox(hide)
 	override function measureHit(curMeasure:Int)
 	{
 		super.measureHit(curMeasure);
-		scripts.call("measureHit", [curMeasure]);
+		scripts.callOne("measureHit", curMeasure);
 	}
 
 	@:dox(hide)
@@ -2227,9 +2260,9 @@ class PlayState extends MusicBeatState
 				if (icon.bump != null)
 					icon.bump();
 
-		scripts.call("beatHit", [curBeat]);
+		scripts.callOne("beatHit", curBeat);
 	}
-
+	
 	public function addScript(file:String) {
 		var ext = Path.extension(file).toLowerCase();
 		if (Script.scriptExtensions.contains(ext))

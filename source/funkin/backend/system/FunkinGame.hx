@@ -2,6 +2,7 @@ package funkin.backend.system;
 
 import flixel.FlxGame;
 import flixel.FlxG;
+import funkin.backend.system.modules.CrashHandler;
 import openfl.events.KeyboardEvent;
 import openfl.events.Event;
 
@@ -35,6 +36,14 @@ class FunkinGame extends FlxGame {
 	}
 
 	override function __enterFrame(deltaTime:Float) {
+		// The state that threw must not update again, or it throws on every frame.
+		if (CrashHandler.blocking) {
+			ticks = getTicks();
+			try {
+				draw();
+			} catch (_:Dynamic) {}
+			return;
+		}
 		if (skipNextTickUpdate != (skipNextTickUpdate = false)) ticks = getTicks();
 		if (manualPause) {
 			var prevAutoPause = FlxG.autoPause;

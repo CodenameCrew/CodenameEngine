@@ -22,10 +22,16 @@ class Paths
 	public static var assetsTree:AssetsLibraryList;
 
 	public static var tempFramesCache:Map<String, FlxFramesCollection> = [];
+	#if (sys && !windows)
+	static var tempPathsCache:Map<String, Null<String>> = [];
+	#end
 
 	public static function init() {
 		FlxG.signals.preStateSwitch.add(function() {
 			tempFramesCache.clear();
+			#if (sys && !windows)
+			tempPathsCache.clear();
+			#end
 		});
 	}
 
@@ -35,29 +41,29 @@ class Paths
 		#if (sys && !windows)
 		if (Assets.exists(fixedPath)) return fixedPath;
 		else if (Flags.PATHS_UNIX_FIX) {
+			if (tempPathsCache.exists(fixedPath)) return tempPathsCache.get(fixedPath);
+
 			final isFile = path.lastIndexOf(".") != -1, parts = path.split("/");
-			final n = parts.length - 1;
+			final n = parts.length - 1, keyCache = fixedPath;
 
 			fixedPath = prefix;
 			for (i => part in parts) {
-				final partIsFile = isFile && i == n;
-				final lower = part.toLowerCase(), entries = partIsFile ? assetsTree.getFiles(fixedPath) : assetsTree.getFolders(fixedPath);
+				final lower = part.toLowerCase(), entries = (isFile && i == n) ? assetsTree.getFiles(fixedPath) : assetsTree.getFolders(fixedPath);
 				var pass = false;
 
 				for (entry in entries) if (entry.toLowerCase() == lower) {
 					pass = true;
-					if (partIsFile) fixedPath += entry;
-					else fixedPath += entry + "/";
+					fixedPath += i == n ? entry : entry + "/";
 					break;
 				}
 
 				if (!pass) {
-					if (nullFail) return null;
-					else fixedPath += part;
+					if (nullFail) return tempPathsCache[keyCache] = null;
+					else fixedPath += i == n ? part : part + "/";
 				}
 			}
 
-			return fixedPath;
+			return tempPathsCache[keyCache] = fixedPath;
 		}
 		else if (!nullFail) return fixedPath;
 		#else
@@ -221,23 +227,23 @@ class Paths
 	inline static public function getSparrowAtlas(key:String, ?library:String, ?ext:OneOfTwo<String, Array<String>>)
 		return FlxAtlasFrames.fromSparrow(image(key, library, ext), file('images/$key.xml', library));
 
-	inline static public function getAnimateAtlasAlt(key:String, ?settings:FlxAnimateSettings)
-		return FlxAnimateFrames.fromAnimate(key, null, null, null, false, settings);
+	inline static public function getAnimateAtlasAlt(key:String, ?settings:FlxAnimateSettings, ?unique:Bool)
+		return FlxAnimateFrames.fromAnimate(key, null, null, null, unique, settings);
 
 	inline static public function getSparrowAtlasAlt(key:String, ?ext:OneOfTwo<String, Array<String>>)
-		return FlxAtlasFrames.fromSparrow('$key.${ext != null ? ext : Flags.IMAGE_EXTS}', '$key.xml');
+		return FlxAtlasFrames.fromSparrow('$key.${ext != null ? ext : Flags.IMAGE_EXTS[0]}', '$key.xml');
 
 	inline static public function getPackerAtlas(key:String, ?library:String, ?ext:OneOfTwo<String, Array<String>>)
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library, ext), file('images/$key.txt', library));
 
 	inline static public function getPackerAtlasAlt(key:String, ?ext:OneOfTwo<String, Array<String>>)
-		return FlxAtlasFrames.fromSpriteSheetPacker('$key.${ext != null ? ext : Flags.IMAGE_EXTS}', '$key.txt');
+		return FlxAtlasFrames.fromSpriteSheetPacker('$key.${ext != null ? ext : Flags.IMAGE_EXTS[0]}', '$key.txt');
 
 	inline static public function getAsepriteAtlas(key:String, ?library:String, ?ext:OneOfTwo<String, Array<String>>)
 		return FlxAtlasFrames.fromAseprite(image(key, library, ext), file('images/$key.json', library));
 
 	inline static public function getAsepriteAtlasAlt(key:String, ?ext:OneOfTwo<String, Array<String>>)
-		return FlxAtlasFrames.fromAseprite('$key.${ext != null ? ext : Flags.IMAGE_EXTS}', '$key.json');
+		return FlxAtlasFrames.fromAseprite('$key.${ext != null ? ext : Flags.IMAGE_EXTS[0]}', '$key.json');
 
 	static public function getAssetsRoot():String {
 		return if (ModsFolder.currentModFolder != null) '${ModsFolder.modsPath}${ModsFolder.currentModFolder}';
@@ -277,7 +283,7 @@ class Paths
 
 		var asset:FlxAtlasFrames = cast tempFramesCache.get(assetKey);
 
-		if (asset != null && asset.parent != null && asset.parent.bitmap != null) return asset;
+		if (asset != null && asset.parent != null && !asset.parent.isDestroyed) return asset;
 		else tempFramesCache.remove(assetKey);
 
 		if (!unique) {
@@ -294,8 +300,8 @@ class Paths
 			final path = assetsPath ? key : image(key, null, true, ext);
 
 			var frames:FlxFramesCollection;
-			if (tempFramesCache.exists(key)) {
-				if ((frames = tempFramesCache.get(key)) != null && frames.parent != null && frames.parent.bitmap != null) {
+			if (!unique && tempFramesCache.exists(key)) {
+				if ((frames = tempFramesCache.get(key)) != null && frames.parent != null && !frames.parent.isDestroyed) {
 					if ((frames is FlxAnimateFrames) && asset == null) asset = cast frames;
 					frameCollections.push(frames);
 					continue;
@@ -314,16 +320,20 @@ class Paths
 			frameCollections.push(frames);
 		}
 
-		if (frameCollections.length == 1 && !unique && (key == null || key == assetKey)) return frameCollections[0];
+		if (frameCollections.length == 1 && (key == null || key == assetKey)) return frameCollections[0];
 
-		if (asset == null) asset = new FlxAtlasFrames(FlxGraphic.fromFrame(FlxG.bitmap.whitePixel, unique, assetKey));
+		if (asset == null) {
+			asset = new FlxAtlasFrames(FlxGraphic.fromRectangle(1, 1, 0, unique, assetKey));
+		}
 		else {
 			@:privateAccess asset.parent.key = assetKey;
 			asset.parent.unique = unique;
-			//asset.parent.bitmap = FlxG.bitmap.whitePixel;
+			asset.parent.bitmap = new openfl.display.BitmapData(1, 1, true, 0);
 			asset.parent.addFrameCollection(asset);
 			FlxG.bitmap.addGraphic(asset.parent);
 		}
+
+		asset.parent.destroyOnNoUse = false;
 
 		for (frames in frameCollections) asset.addAtlas(cast frames); // wont compile in hashlink because of mismatch type
 
@@ -382,23 +392,24 @@ class Paths
 				finalFrames.push('$noExt/$cur.$ext');
 				cur++;
 			}
-			return getMultiFrames(finalFrames, true, true,
+			return getMultiFrames(finalFrames, true, Unique,
 				'$noExt/mult', true, ext, animateSettings);
 		} else if (!SkipAtlasCheck && Assets.exists('$noExt/Animation.json')) {
 			// ???
 			if (noExt.endsWith('/')) noExt = noExt.substr(0, noExt.length - 1);
-			return Paths.getAnimateAtlasAlt(noExt, animateSettings);
-		} else if (Assets.exists('$noExt.xml')) {
-			return Paths.getSparrowAtlasAlt(noExt, ext);
-		} else if (Assets.exists('$noExt.txt')) {
-			return Paths.getPackerAtlasAlt(noExt, ext);
-		} else if (Assets.exists('$noExt.json')) {
-			return Paths.getAsepriteAtlasAlt(noExt, ext);
+			return Paths.getAnimateAtlasAlt(noExt, animateSettings, Unique);
 		}
 
-		var graph:FlxGraphic = FlxG.bitmap.add(path, Unique, Key);
-		if (graph == null)
-			return null;
+		var graph:FlxGraphic = FlxG.bitmap.add('$noExt.$ext', Unique, Key);
+		if (graph == null) return null;
+
+		if (Assets.exists('$noExt.xml'))
+			return FlxAtlasFrames.fromSparrow(graph, '$noExt.xml');
+		else if (Assets.exists('$noExt.txt'))
+			return FlxAtlasFrames.fromSpriteSheetPacker(graph, '$noExt.txt');
+		else if (Assets.exists('$noExt.json'))
+			return FlxAtlasFrames.fromAseprite(graph, '$noExt.json');
+
 		return graph.imageFrame;
 	}
 

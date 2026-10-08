@@ -4,6 +4,7 @@ import funkin.editors.ui.UIContextMenu.UIContextMenuOption;
 import flixel.util.FlxColor;
 import flixel.group.FlxSpriteGroup;
 import flixel.sound.FlxSound;
+import flixel.sound.FlxSoundData;
 import funkin.backend.chart.ChartData.ChartStrumLine;
 import funkin.backend.shaders.CustomShader;
 import funkin.editors.ui.UITopMenu.UITopMenuButton;
@@ -137,7 +138,7 @@ class CharterStrumline extends UISprite {
 
 		regenerateIcons(icons);
 
-		var asset = strumLine.vocalsSuffix.length > 0 ? Assets.getSound(Paths.voices(PlayState.SONG.meta.name, PlayState.difficulty, strumLine.vocalsSuffix)) : null;
+		var asset = strumLine.vocalsSuffix.length > 0 ? FlxSoundData.fromAssetKey(Paths.voices(PlayState.SONG.meta.name, PlayState.difficulty, strumLine.vocalsSuffix), false) : null;
 
 		if (vocals == null) FlxG.sound.list.add(vocals = new FlxSound());
 		if (asset != null) {
@@ -150,12 +151,6 @@ class CharterStrumline extends UISprite {
 			hasVocals = false;
 		}
 		vocals.group = FlxG.sound.defaultMusicGroup;
-
-		if (vocals.data?.buffer != null && vocals.data.buffer.data == null) {
-			vocals.data.buffer.load();
-			vocals.data.buffer.decoder?.dispose();
-			vocals.data.buffer.decoder = null;
-		}
 
 		highlightColor = 0xFFFFFFFF;
 		if (icons[0] != null) {

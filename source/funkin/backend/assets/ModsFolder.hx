@@ -98,6 +98,29 @@ class ModsFolder {
 		#end
 	}
 
+	public static function getModConfig(mod:String):Map<String, Map<String, String>> {
+		for (ext in Flags.ALLOWED_ZIP_EXTENSIONS) {
+			var path = modsPath + mod + "." + ext;
+			if (!FileSystem.exists(path))
+				continue;
+
+			var zip = new SysZip(path);
+			for (entry in zip.entries) {
+				if (entry.fileName.toLowerCase() == "data/config/modpack.ini") {
+					var bytes = zip.unzipEntry(entry);
+					return IniUtil.parseString(bytes.getString(0, bytes.length));
+				}
+			}
+			break; // theoretically once it finds a zip mod, it'll stop even if there's no config
+		}
+
+		var filePath = modsPath + mod + "/data/config/modpack.ini";
+		if (FileSystem.exists(filePath))
+			return IniUtil.parseString(sys.io.File.getContent(filePath));
+
+		return [];
+	}
+
 	public static function getModsList(?sortingOptions:ModSortingOptions):Array<String> {
 		var mods:Array<String> = [];
 		#if MOD_SUPPORT

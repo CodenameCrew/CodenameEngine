@@ -87,6 +87,7 @@ class Main extends Sprite
 		initImGui();
 		addChild(ImGuiHandler.instance);
 		#end
+		// Before the game loop, so an uncaught error is drawn in-game instead of closing the window.
 		CrashHandler.init();
 		ConsoleUI.init();
 
@@ -185,6 +186,20 @@ class Main extends Sprite
 
 	static var persistShaderKeys:Map<String, Bool>;
 
+	public static function refreshShaders() @:privateAccess {
+		if (persistShaderKeys == null) {
+			persistShaderKeys = [for (k in Lib.current.stage.context3D.__programs.keys()) k => true];
+		}
+		else {
+			for (key => program in Lib.current.stage.context3D.__programs) {
+				if (persistShaderKeys.get(key) || Type.resolveClass(key) != null) continue;
+
+				program.dispose();
+				Lib.current.stage.context3D.__programs.remove(key);
+			}
+		}
+	}
+
 	public static function refreshAssets() @:privateAccess {
 		FunkinCache.instance.clearSecondLayer();
 
@@ -202,17 +217,7 @@ class Main extends Sprite
 
 		game.addChildAt(game.soundTray = daSndTray, index);
 
-		if (persistShaderKeys == null) {
-			persistShaderKeys = [for (k in @:privateAccess Lib.current.stage.context3D.__programs.keys()) k => true];
-		}
-		else {
-			for (key => program in @:privateAccess Lib.current.stage.context3D.__programs) {
-				if (persistShaderKeys.get(key) || Type.resolveClass(key) != null) continue;
-
-				program.dispose();
-				@:privateAccess Lib.current.stage.context3D.__programs.remove(key);
-			}
-		}
+		refreshShaders();
 	}
 
 	public static function initTransition() {
@@ -234,9 +239,27 @@ class Main extends Sprite
 		scaleMode.resetSize();
 	}
 	public static function onUpdate() {
-		#if !IMGUI_ENABLED
-		if (PlayerSettings.solo.controls.DEV_CONSOLE)
+		if (#if IMGUI_ENABLED Options.useNativeConsole && #end
+			PlayerSettings.solo.controls.DEV_CONSOLE)
 			NativeAPI.allocConsole();
+
+		#if IMGUI_ENABLED
+		if ((ImGuiIO.configFlags & ImGuiConfigFlags.ViewportsEnable) != 0)
+		{
+			if (ImGui.isAnyWindowMultiViewport()) {
+				if (!imGuiActiveLastFrame) {
+					imGuiActiveLastFrame = true;
+					FlxG.autoPause = false;
+					FlxG.game.focusLostFramerate = FlxG.drawFramerate;
+				}
+			} else {
+				if (imGuiActiveLastFrame) {
+					imGuiActiveLastFrame = false;
+					FlxG.autoPause = Options.autoPause;
+					FlxG.game.focusLostFramerate = 30;
+				}
+			}
+		}
 		#end
 
 		if (PlayerSettings.solo.controls.FPS_COUNTER && Options.fpsCounter)
@@ -318,22 +341,8 @@ class Main extends Sprite
 		style.setColor(ImGuiCol.DockingPreview,         new ImVec4(0.56, 0.11, 0.71, 1.00));
 
 		ImGuiHandler.instance.addCallback(function() {
-			if ((ImGuiIO.configFlags & ImGuiConfigFlags.ViewportsEnable) != 0)
-			{
-				if (ImGuiIO.metricsRenderWindows > 2) { //debug window + dockspace
-					if (!imGuiActiveLastFrame) {
-						imGuiActiveLastFrame = true;
-						FlxG.autoPause = false;
-						FlxG.game.focusLostFramerate = FlxG.drawFramerate;
-					}
-				} else {
-					if (imGuiActiveLastFrame) {
-						imGuiActiveLastFrame = false;
-						FlxG.autoPause = Options.autoPause;
-						//FlxG.game.focusLostFramerate = 30; //just keep as draw fps, some timing issues with window focusing that keep it from working correctly
-					}
-				}
-			}
+			var ui = ConsoleUI.instance;
+			if (ui == null || !ui.uiVisible) return;
 			ImGui.dockSpaceOverViewport(0, null, ImGuiDockNodeFlags.PassthruCentralNode);
 		});
 		#end

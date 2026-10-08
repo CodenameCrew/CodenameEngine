@@ -124,11 +124,12 @@ class UpdateUtil {
 
 	static function __doReleaseFiltering(releases:Array<GitHubRelease>, currentVersionTag:String) {
 		releases = releases.filterReleases(Options.betaUpdates, false);
+
 		if (releases.length <= 0)
 			return releases;
 
 		var newArray:Array<GitHubRelease> = [], __curVersionPos = -2;
-
+		var thisVersionExists:Bool = false;
 		var skipNextBinaryChecks:Bool = false;
 		for(index in 0...releases.length) {
 			var i = index;
@@ -145,11 +146,15 @@ class UpdateUtil {
 			}
 			if (containsBinary) {
 				skipNextBinaryChecks = true; // no need to check for older versions
-				if (release.tag_name == currentVersionTag) __curVersionPos = -1;
+				if (release.tag_name == currentVersionTag) {
+					__curVersionPos = -1;
+					thisVersionExists = true;
+				}
 				newArray.insert(0, release);
 				if (__curVersionPos > -2) __curVersionPos++;
 			}
 		}
+		if (!thisVersionExists) return [];
 		if (__curVersionPos < -1)
 			__curVersionPos = -1;
 

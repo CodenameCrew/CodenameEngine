@@ -116,6 +116,12 @@ class ImGuiUtil {
 		}
 		return ImGuiKey.None;
 	}
+	public static function isNamedImGuiKey(key:FlxKey) {
+		final imguiKey:Int = toImGuiKey(key);
+		final begin:Int = ImGuiKey.NamedKey_BEGIN;
+		final end:Int = ImGuiKey.NamedKey_END;
+		return imguiKey > begin && imguiKey < end;
+	}
 
 	public static function getWindowSpaceX() {
 		return (ImGuiIO.configFlags & ImGuiConfigFlags.ViewportsEnable) != 0 ? Lib.application.window.x : 0;
