@@ -152,13 +152,13 @@ class MainState extends FlxState {
 
 		WindowUtils.setResolution();
 		WindowUtils.resetIcon();
-		TranslationUtil.findAllLanguages();
-		TranslationUtil.setLanguage(Flags.DISABLE_LANGUAGES ? Flags.DEFAULT_LANGUAGE : null);
-		ModsFolder.onModSwitch.dispatch(ModsFolder.currentModFolder); // Loads global.hx
-		MusicBeatTransition.script = Flags.DEFAULT_TRANSITION_SCRIPT;
 		WindowUtils.resetAffixes(false);
 		WindowUtils.setWindow();
 		Main.refreshAssets();
+		TranslationUtil.findAllLanguages();
+		TranslationUtil.setLanguage(Flags.DISABLE_LANGUAGES ? Flags.DEFAULT_LANGUAGE : null);
+		MusicBeatTransition.script = Flags.DEFAULT_TRANSITION_SCRIPT;
+		ModsFolder.onModSwitch.dispatch(ModsFolder.currentModFolder); // Loads global.hx
 		DiscordUtil.init();
 		EventsData.reloadEvents();
 		ControlsUtil.loadCustomControls();
