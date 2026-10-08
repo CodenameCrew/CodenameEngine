@@ -498,17 +498,33 @@ final class CoolUtil
 		return null;
 	}
 
+	public static var curMenuTheme:Int = 0;
+	public static var maxMenuTheme:Int = -1;
+
 	/**
 	 * Plays the main menu theme.
 	 * @param fadeIn
+	 * @param forceSwitch
 	 */
-	@:noUsing public static function playMenuSong(fadeIn:Bool = false)
+	@:noUsing public static function playMenuSong(fadeIn:Bool = false, ?forceSwitch:Bool = false)
 	{
-		if (FlxG.sound.music == null || !FlxG.sound.music.playing)
+		if (maxMenuTheme == -1)
 		{
-			playMusic(Paths.music(Flags.DEFAULT_MENU_MUSIC), true, fadeIn ? 0 : 1, true, 102);
+			var menuThemeList = Paths.getFolderContent('music/mainmenu', false, "BOTH", true);
+			maxMenuTheme = Std.int(menuThemeList.length / 2) - 1;
+		}
+
+		if (FlxG.sound.music == null || !FlxG.sound.music.playing || forceSwitch)
+		{
+			playMusic(Paths.music("mainmenu/" + curMenuTheme), true, fadeIn ? 0 : 1, true, 102);
+
 			if (fadeIn)
+			{
 				FlxG.sound.music.fadeIn(4, 0, 1);
+			}
+
+			curMenuTheme++;
+			curMenuTheme = FlxMath.wrap(curMenuTheme, 0, maxMenuTheme);
 		}
 	}
 
