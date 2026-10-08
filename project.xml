@@ -221,6 +221,8 @@
 	<section if="COMPILE_ALL_CLASSES">
 		<haxeflag name="-dce" value="no"/>
 		<haxeflag name="--macro" value="funkin.backend.system.macros.Macros.addAdditionalClasses()"/>
+		<!-- weird -->
+		<haxeflag name="--macro" value="include('funkin')" />
 	</section>
 
 	<haxeflag name="--macro" value="funkin.backend.system.macros.BuildInfo.printBuildInfo()"/>
