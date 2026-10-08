@@ -72,7 +72,7 @@ class ModSwitchMenu extends MusicBeatSubstate {
 			var conf = (mod != null && Options.legacyModMenuNames) ? disableConf : ModsFolder.getModConfig(mod);
 			modConf.push(conf);
 
-			var name = (Options.legacyModMenuNames ? (mod ?? disableConf["Common"].get("NAME")) : ((conf.exists("Common") && conf["Common"].exists("NAME")) ? conf["Common"].get("NAME") : mod));
+			var name = (Options.legacyModMenuNames ? (mod ?? disableConf["Common"].get("NAME")) : ((conf.exists("Common") && conf["Common"].exists("NAME")) ? conf["Common"].get("NAME") : (mod ?? disableConf["Common"].get("NAME"))));
 			if (name == "YOUR MOD NAME HERE")
 				name = mod;
 
