@@ -57,6 +57,7 @@ final class CrashHandler {
 		e.preventDefault();
 		e.stopPropagation();
 		e.stopImmediatePropagation();
+		FlxG.mouse.visible = true;
 		if (blocking) return;
 		present(describe(e.error), CallStack.exceptionStack());
 	}
