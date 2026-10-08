@@ -43,12 +43,12 @@ final class RatingsShowEvent extends CancellableEvent
 	/**
 	 * Prefix of the rating sprite path. Defaults to "game/score/"
 	 */
-	public var ratingPrefix:String;
+	public var ratingPrefix:String = "game/score/";
 
 	/**
 	 * Suffix of the rating sprite path.
 	 */
-	public var ratingSuffix:String;
+	public var ratingSuffix:String = "";
 
 	/**
 	 * The sprite's acceleration.
