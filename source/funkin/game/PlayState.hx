@@ -1971,6 +1971,29 @@ class PlayState extends MusicBeatState
 		scripts.event("postDraw", e);
 	}
 
+	public function doBopZoom()
+	{
+		var event:BopZoomEvent = EventManager.get(BopZoomEvent).recycle(useCamZoomMult, maxCamZoomMult, camZoomingStrength);
+		gameAndCharsEvent("onBopZoom", event);
+
+		if (event.cancelled)
+		{
+			gameAndCharsEvent("onPostBopZoom", event);
+			return;
+		}
+
+		if (event.useZoomMultiplier) {
+			if (camZoomingMult < event.maxZoomMultiplier)
+				camZoomingMult += event.zoomStrength;
+		}
+		else if (FlxG.camera.zoom < maxCamZoom) {
+			FlxG.camera.zoom += camGameZoomMult * event.zoomStrength;
+			camHUD.zoom += camHUDZoomMult * event.zoomStrength;
+		}
+
+		gameAndCharsEvent("onPostBopZoom", event);
+	}
+
 	public function moveCamera()
 		if (strumLines.members[curCameraTarget] != null)
 		{

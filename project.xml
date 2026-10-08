@@ -30,9 +30,6 @@
 	<!-- Comment this out to disable dark mode windows -->
 	<define name="DARK_MODE_WINDOW"/>
 
-	<!-- Should it checks for updates? -->
-	<define name="UPDATE_CHECKING" if="desktop" unless="hl || debug || COMPILE_EXPERIMENTAL || TEST_BUILD"/>
-
 	<section if="cpp">
 		<!-- Compile With Discord Rich Presence -->
 		<!-- TODO: Update Discord RPC Library & Rewrite DiscordUtil -->
@@ -198,7 +195,6 @@
 	<haxeflag name="--macro" value="funkin.backend.system.macros.Macros.initMacros()"/>
 
 	<haxedef name="VIDEO_CUTSCENES" if="VIDEO_CUTSCENES"/>
-	<haxedef name="UPDATE_CHECKING" if="UPDATE_CHECKING"/>
 	<haxedef name="DISCORD_RPC" if="DISCORD_RPC"/>
 	<haxedef name="SHOW_BUILD_ON_FPS" if="SHOW_BUILD_ON_FPS"/>
 	<haxedef name="SOFTCODED_CLASSES" if="SOFTCODED_CLASSES"/>

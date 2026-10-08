@@ -709,9 +709,9 @@ class Charter extends UIState
 			for (note in strL.notes)
 			{
 				var n = new CharterNote();
-				var t = Conductor.getStepForTime(note.time);
+				var t = Conductor.instance.getStepForTime(note.time);
 				CharterNote.callScriptOnNote('onCharterNoteCreation', n);
-				n.updatePos(t, note.id, Conductor.getStepForTime(note.time + note.sLen) - t, note.type, strumLines.members[i]);
+				n.updatePos(t, note.id, Conductor.instance.getStepForTime(note.time + note.sLen) - t, note.type, strumLines.members[i]);
 				notesGroup.members[notesCreated++] = n;
 			}
 		notesGroup.sortNotes();
@@ -2358,7 +2358,7 @@ class Charter extends UIState
 			FlxG.sound.music.pause();
 			vocals.pause();
 			for (strumLine in strumLines.members) strumLine.vocals.pause();
-			if (Options.charterPauseQuant) Conductor.instance.songPosition = Conductor.getTimeForStep(quantStep(Conductor.instance.curStepFloat));
+			if (Options.charterPauseQuant) Conductor.instance.songPosition = Conductor.instance.getTimeForStep(quantStep(Conductor.instance.curStepFloat));
 		} else {
 			FlxG.sound.music.play(true, Conductor.instance.songPosition + Conductor.instance.songOffset);
 			vocals.play(true, FlxG.sound.music.getActualTime());

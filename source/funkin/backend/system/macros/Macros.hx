@@ -98,8 +98,6 @@ class Macros
 				}
 			}
 		}
-
-		Compiler.include("funkin", [#if !UPDATE_CHECKING 'funkin.backend.system.updating' #end]);
 	}
 
 	public static function initMacros()
