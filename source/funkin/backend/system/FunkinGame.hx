@@ -2,11 +2,14 @@ package funkin.backend.system;
 
 import flixel.FlxGame;
 import flixel.FlxG;
+import funkin.backend.system.modules.CrashHandler;
 import openfl.events.KeyboardEvent;
+import openfl.events.Event;
 
 class FunkinGame extends FlxGame
 {
 	var skipNextTickUpdate:Bool = false;
+	var manualPause:Bool = false; //fake autopause
 
 	#if desktop
 	var fullscreenListener:KeyboardEvent->Void;
@@ -38,10 +41,49 @@ class FunkinGame extends FlxGame
 		skipNextTickUpdate = true;
 	}
 
-	override function __enterFrame(deltaTime:Float)
-	{
-		if (skipNextTickUpdate != (skipNextTickUpdate = false))
+	override function __enterFrame(deltaTime:Float) {
+		// The state that threw must not update again, or it throws on every frame.
+		if (CrashHandler.blocking) {
 			ticks = getTicks();
+			try {
+				draw();
+			} catch (_:Dynamic) {}
+			return;
+		}
+		if (skipNextTickUpdate != (skipNextTickUpdate = false)) ticks = getTicks();
+		if (manualPause) {
+			var prevAutoPause = FlxG.autoPause;
+			FlxG.autoPause = true;
+			super.__enterFrame(deltaTime);
+			FlxG.autoPause = prevAutoPause;
+			draw();
+			return;
+		}
 		super.__enterFrame(deltaTime);
+	}
+
+
+	override public function onFocus(_):Void {
+		if (manualPause) return;
+		super.onFocus(_);
+	}
+
+	override public function onFocusLost(event:Event):Void {
+		if (manualPause) return;
+		super.onFocusLost(event);
+	}
+
+	public function toggleManualPause() {
+		var prevAutoPause = FlxG.autoPause;
+		FlxG.autoPause = true;
+
+		if (!manualPause) {
+			onFocusLost(null);
+			manualPause = true;
+		} else {
+			manualPause = false;
+			onFocus(null);
+		}
+		FlxG.autoPause = prevAutoPause;
 	}
 }

@@ -35,4 +35,8 @@ using funkin.backend.utils.CoolUtil;
 using StringTools;
 using util.FloatTools;
 using util.ArrayTools;
+
+#if IMGUI_ENABLED
+import lime.tools.imgui.*;
+#end
 #end

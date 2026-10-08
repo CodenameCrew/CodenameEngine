@@ -88,6 +88,8 @@ class GlobalScript
 		{
 			call("preStateSwitch");
 
+			if (Flags.PATHS_CACHE_RESET_ON_SWITCH_STATE) Paths.assetsTree.resetAssetPathCache();
+
 			var stateName = Type.getClassName(Type.getClass(@:privateAccess FlxG.game._requestedState));
 			stateName = stateName.substring(stateName.lastIndexOf(".") + 1);
 			if (Flags.MOD_REDIRECT_STATES.exists(stateName))
@@ -130,8 +132,23 @@ class GlobalScript
 	{
 		destroy();
 		scripts = new ScriptPack("GlobalScript");
-		for (lib in funkin.backend.assets.ModsFolder.getLoadedModsLibs())
-		{
+
+		// global folder shit -HeroEyad
+		var folders = ["data/globals"];
+		while (folders.length > 0) {
+			var folder = folders.shift();
+			for (file in Paths.getFolderContent(folder, true)) {
+				if (!Script.scriptExtensions.contains(haxe.io.Path.extension(file)) || haxe.io.Path.withoutDirectory(file).startsWith("LIB_")) continue;
+				var script = Script.create(Paths.script(file));
+				if (script is DummyScript) continue;
+				scripts.add(script);
+				script.load();
+			}
+			for (dir in Paths.getFolderDirectories(folder, true))
+				folders.push(dir);
+		}
+
+		for (lib in funkin.backend.assets.ModsFolder.getLoadedModsLibs()) {
 			var modName = lib.modName;
 			var path = Paths.script('data/global/LIB_$modName');
 			var script = Script.create(path);

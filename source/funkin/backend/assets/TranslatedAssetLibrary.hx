@@ -41,252 +41,54 @@ class TranslatedAssetLibrary extends AssetLibrary implements IModsAssetLibrary
 	private inline function getAssetPath():String // because of the IModsAssetLibrary  - Nex
 		return basePath;
 
-	public inline function formatPath(mainPath:String, ?asset:String):String
-	{
-		if (!mainPath.endsWith('/'))
-		{
-			mainPath += '/';
-		}
-
-		return mainPath + getAssetPath() + (asset == null ? "" : asset);
-	}
+	private inline function formatPath(?asset:String):String
+		return (forLibrary.prefix.charCodeAt(forLibrary.prefix.length - 1) == '/'.code ? forLibrary.prefix : '${forLibrary.prefix}/')
+			+ getAssetPath() + (asset == null ? "" : asset);
 
 	public override function getAudioBuffer(id:String):AudioBuffer
-	{
-		// TODO: rewrite this, once it works
-		var libs = [forLibrary];
-
-		for (lib in libs)
-		{
-			if (!(lib is AssetLibrary))
-			{
-				continue;
-			}
-
-			var val = cast(lib, AssetLibrary).getAudioBuffer(formatPath(lib.prefix, id));
-
-			if (val != null)
-			{
-				return val;
-			}
-		}
-
-		return null;
-	}
+		return (forLibrary is AssetLibrary) ? cast(forLibrary, AssetLibrary).getAudioBuffer(formatPath(id)) : null;
 
 	public override function getBytes(id:String):Bytes
-	{
-		var libs = [forLibrary];
-
-		for (lib in libs)
-		{
-			if (!(lib is AssetLibrary))
-			{
-				continue;
-			}
-
-			var val = cast(lib, AssetLibrary).getBytes(formatPath(lib.prefix, id));
-
-			if (val != null)
-			{
-				return val;
-			}
-		}
-
-		return null;
-	}
+		return (forLibrary is AssetLibrary) ? cast(forLibrary, AssetLibrary).getBytes(formatPath(id)) : null;
 
 	public override function getText(id:String):String
-	{
-		var libs = [forLibrary];
-
-		for (lib in libs)
-		{
-			if (!(lib is AssetLibrary))
-			{
-				continue;
-			}
-
-			var val = cast(lib, AssetLibrary).getText(formatPath(lib.prefix, id));
-
-			if (val != null)
-			{
-				return val;
-			}
-		}
-
-		return null;
-	}
+		return (forLibrary is AssetLibrary) ? cast(forLibrary, AssetLibrary).getText(formatPath(id)) : null;
 
 	public override function getFont(id:String):Font
-	{
-		var libs = [forLibrary];
-
-		for (lib in libs)
-		{
-			if (!(lib is AssetLibrary))
-			{
-				continue;
-			}
-
-			var val = cast(lib, AssetLibrary).getFont(formatPath(lib.prefix, id));
-
-			if (val != null)
-			{
-				return val;
-			}
-		}
-
-		return null;
-	}
+		return (forLibrary is AssetLibrary) ? cast(forLibrary, AssetLibrary).getFont(formatPath(id)) : null;
 
 	public override function getImage(id:String):Image
-	{
-		var libs = [forLibrary];
-
-		for (lib in libs)
-		{
-			if (!(lib is AssetLibrary))
-			{
-				continue;
-			}
-
-			var val = cast(lib, AssetLibrary).getImage(formatPath(lib.prefix, id));
-
-			if (val != null)
-			{
-				return val;
-			}
-		}
-
-		return null;
-	}
+		return (forLibrary is AssetLibrary) ? cast(forLibrary, AssetLibrary).getImage(formatPath(id)) : null;
 
 	public override function getPath(id:String):String
-	{
-		var libs = [forLibrary];
+		return (forLibrary is AssetLibrary) ? cast(forLibrary, AssetLibrary).getPath(formatPath(id)) : null;
 
-		for (lib in libs)
-		{
-			if (!(lib is AssetLibrary))
-			{
-				continue;
-			}
-
-			var val = cast(lib, AssetLibrary).getPath(formatPath(lib.prefix, id));
-
-			if (val != null)
-			{
-				return val;
-			}
-		}
-
-		return null;
-	}
-
-	// TODO: list support for TranslatedAssetLibrary (idk how it works)
 	#if MOD_SUPPORT
 	public var _parsedAsset:String = null; // Theres no need to actually make this work  - Nex
 
 	public function getFiles(folder:String):Array<String>
-	{
-		var libs = [forLibrary];
-
-		for (lib in libs)
-		{
-			if (!(lib is AssetLibrary))
-			{
-				continue;
-			}
-
-			var val = lib.getFiles(formatPath(lib.prefix, folder));
-
-			if (val != null && val.length > 0)
-			{
-				return val;
-			}
-		}
-
-		return [];
-	}
+		return forLibrary.getFiles(formatPath(folder));
 
 	public function getFolders(folder:String):Array<String>
-	{
-		var libs = [forLibrary];
+		return forLibrary.getFolders(formatPath(folder));
 
-		for (lib in libs)
-		{
-			if (!(lib is AssetLibrary))
-			{
-				continue;
-			}
+	private function __isCacheValid(cache:Map<String, Dynamic>, asset:String, isLocal:Bool = false):Bool {
+		if (!(forLibrary is AssetLibrary)) return false;
 
-			var val = lib.getFolders(formatPath(lib.prefix, folder));
+		final lib = cast(forLibrary, AssetLibrary);
+		final libCache = (cache == cachedAudioBuffers) ? lib.cachedAudioBuffers :
+			(cache == cachedBytes) ? lib.cachedBytes :
+			(cache == cachedFonts) ? lib.cachedFonts :
+			(cache == cachedImages) ? lib.cachedImages :
+			(cache == cachedText) ? lib.cachedText : cache;
 
-			if (val != null && val.length > 0)
-			{
-				return val;
-			}
-		}
-
-		return [];
-	}
-
-	private function __isCacheValid(cache:Map<String, Dynamic>, asset:String, isLocal:Bool = false):Bool
-	{
-		var libs = [forLibrary];
-
-		for (lib in libs)
-		{
-			if (!(lib is AssetLibrary))
-			{
-				continue;
-			}
-
-			// are you fucking serious (no the fucking switch doesnt work here)  - Nex
-			var _lib = cast(lib, AssetLibrary);
-			var libCache = (cache == cachedAudioBuffers) ? _lib.cachedAudioBuffers : (cache == cachedBytes) ? _lib.cachedBytes : (cache == cachedFonts) ? _lib.cachedFonts : (cache == cachedImages) ? _lib.cachedImages : (cache == cachedText) ? _lib.cachedText : cache;
-			@:privateAccess if (lib.__isCacheValid(libCache, formatPath(lib.prefix, asset), isLocal))
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return forLibrary.__isCacheValid(libCache, formatPath(asset), isLocal);
 	}
 
 	private function __parseAsset(asset:String):Bool
-	{
-		@:privateAccess
-		var libs = [forLibrary];
-
-		for (lib in libs)
-		{
-			if (!(lib is AssetLibrary))
-			{
-				continue;
-			}
-
-			if (lib.__parseAsset(formatPath(lib.prefix, asset)))
-			{
-				return true;
-			}
-		}
-
-		return false;
-	}
+		return forLibrary.__parseAsset(formatPath(asset));
 	#end
 
 	public override function exists(id:String, type:String):Bool
-	{
-		for (lib in ModsFolder.getLoadedModsLibs(true))
-		{
-			if (lib is AssetLibrary && cast(lib, AssetLibrary).exists(formatPath(lib.prefix, id), type))
-			{
-				return true;
-			}
-		}
-
-		return false;
-	}
+		return (forLibrary is AssetLibrary) && cast(forLibrary, AssetLibrary).exists(formatPath(id), type);
 }

@@ -4,6 +4,7 @@ import funkin.menus.ui.MenuBackground;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
+import flixel.sound.FlxSoundData;
 import flixel.util.FlxSort;
 import funkin.backend.chart.*;
 import funkin.backend.chart.ChartData;
@@ -382,6 +383,11 @@ class Charter extends UIState
 						keybind: [SPACE],
 						onSelect: _playback_play
 					},
+					{
+						label: translate("playback.snap"),
+						onSelect: _playback_snap,
+						icon: Options.charterPauseQuant ? 1 : 0
+					},
 					null,
 					{
 						label: translate("playback.speedRaise", ["25"]),
@@ -508,6 +514,7 @@ class Charter extends UIState
 
 		songPosInfo = new UIText(FlxG.width - 30 - 400, scrollBar.y + 10, 400, "00:00 / 00:00\nBeat: 0\nStep: 0\nMeasure: 0\nBPM: 0\nTime Signature: 4/4");
 		songPosInfo.alignment = RIGHT;
+		songPosInfo.fieldHeight = 115; // ?????
 		uiGroup.add(songPosInfo);
 
 		playBackSlider = new UISlider(FlxG.width - 160 - 26 - 20, (23 / 2) - (12 / 2), 160, 1,
@@ -651,9 +658,11 @@ class Charter extends UIState
 		Conductor.instance.setupSong(PlayState.SONG);
 		noteTypes = PlayState.SONG.noteTypes;
 
-		FlxG.sound.setMusic(FlxG.sound.load(Paths.inst(__song, __diff, PlayState.SONG.meta.instSuffix)));
-		if (Assets.exists(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix)))
-			vocals = FlxG.sound.load(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix));
+		FlxG.sound.setMusic(FlxG.sound.load(FlxSoundData.fromAssetKey(Paths.inst(__song, __diff, PlayState.SONG.meta.instSuffix), false)));
+
+		if (Assets.exists(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix))) {
+			vocals = FlxG.sound.load(FlxSoundData.fromAssetKey(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix)));
+		}
 		else
 			vocals = new FlxSound();
 
@@ -669,6 +678,28 @@ class Charter extends UIState
 			noteCount += strL.notes.length;
 		}
 
+		// checks for newly created songs
+		if (PlayState.SONG.strumLines.length == 0) {
+			createStrumline(0, {
+				characters: ["dad"],
+				type: 0, // Opponent
+				notes: [],
+				position: "dad",
+				visible: true,
+				keyCount: 4
+			}, false, false);
+
+			createStrumline(1, {
+				characters: ["bf"],
+				type: 1, // Player
+				notes: [],
+				position: "boyfriend",
+				visible: true,
+				strumLinePos: 0.75,
+				keyCount: 4
+			}, false, false);
+		}
+
 		// create notes
 		notesGroup.autoSort = false;
 		notesGroup.preallocate(noteCount);
@@ -678,8 +709,9 @@ class Charter extends UIState
 			for (note in strL.notes)
 			{
 				var n = new CharterNote();
-				var t = Conductor.instance.getStepForTime(note.time);
-				n.updatePos(t, note.id, Conductor.instance.getStepForTime(note.time + note.sLen) - t, note.type, strumLines.members[i]);
+				var t = Conductor.getStepForTime(note.time);
+				CharterNote.callScriptOnNote('onCharterNoteCreation', n);
+				n.updatePos(t, note.id, Conductor.getStepForTime(note.time + note.sLen) - t, note.type, strumLines.members[i]);
 				notesGroup.members[notesCreated++] = n;
 			}
 		notesGroup.sortNotes();
@@ -1157,8 +1189,11 @@ class Charter extends UIState
 						{
 							var note = new CharterNote();
 							var targetStrumline = strumLines.getStrumlineFromID(id);
-							note.updatePos(CoolUtil.bound(FlxG.keys.pressed.SHIFT ? ((mousePos.y - 20) / 40) : quantStep(mousePos.y / 40), 0, __endStep - 1),
-								(id - targetStrumline.startingID) % targetStrumline.keyCount, 0, noteType, targetStrumline);
+							CharterNote.callScriptOnNote('onCharterNoteCreation', note);
+							note.updatePos(
+								CoolUtil.bound(FlxG.keys.pressed.SHIFT ? ((mousePos.y-20) / 40) : quantStep(mousePos.y/40), 0, __endStep-1),
+								(id-targetStrumline.startingID) % targetStrumline.keyCount, 0, noteType, targetStrumline
+							);
 							notesGroup.add(note);
 							selection = [note];
 							undos.addToUndo(CCreateSelection([note]));
@@ -1206,6 +1241,7 @@ class Charter extends UIState
 										{
 											var n:CharterNote = cast s;
 											var newNote = new CharterNote();
+											CharterNote.callScriptOnNote('onCharterNoteCreation', newNote);
 											newNote.updatePos(n.step, n.id, n.susLength, n.type, n.strumLine);
 											notesGroup.add(newNote);
 											newSelection.push(newNote);
@@ -1275,6 +1311,7 @@ class Charter extends UIState
 					{
 						deletedNotes.push(n);
 						deleteSingleSelection(n, false);
+						UIState.playEditorSound(Flags.DEFAULT_CHARTER_NOTEDELETE_SOUND);
 
 						if (selection.contains(n))
 							selection.remove(n);
@@ -1365,12 +1402,11 @@ class Charter extends UIState
 		if (selected == null)
 			return selected;
 
-		if (selected is CharterNote)
-		{
-			UIState.playEditorSound(Flags.DEFAULT_CHARTER_NOTEDELETE_SOUND);
+		if (selected is CharterNote) {
 			var note:CharterNote = cast selected;
 			note.strumLineID = strumLines.members.indexOf(note.strumLine);
 			note.strumLine = null; // For static undos :D
+			CharterNote.callScriptOnNote('onCharterNoteDelete', note);
 			notesGroup.remove(note);
 			note.kill();
 		}
@@ -1393,13 +1429,13 @@ class Charter extends UIState
 			return [];
 
 		notesGroup.autoSort = false;
-		selection.loop(function(n:CharterNote)
-		{
+		selection.loop(function (n:CharterNote) {
+			final lastAlive = n.alive;
 			n.strumLine = strumLines.members[n.strumLineID];
 			n.revive();
 			notesGroup.add(n);
-		}, function(e:CharterEvent)
-		{
+			if (!lastAlive) CharterNote.callScriptOnNote('onCharterNoteRevive', n);
+		}, function (e:CharterEvent) {
 			e.revive();
 			(e.global ? rightEventsGroup : leftEventsGroup).add(e);
 			e.refreshEventIcons();
@@ -1433,6 +1469,7 @@ class Charter extends UIState
 					member++;
 			}
 		}
+		UIState.playEditorSound(Flags.DEFAULT_CHARTER_NOTEDELETE_SOUND);
 		notesGroup.sortNotes();
 		notesGroup.autoSort = true;
 
@@ -1485,6 +1522,7 @@ class Charter extends UIState
 			for (note in strL.notes)
 			{
 				var n = new CharterNote();
+				CharterNote.callScriptOnNote('onCharterNoteCreation', n);
 				var t = Conductor.instance.getStepForTime(note.time);
 				n.updatePos(t, note.id, Conductor.instance.getStepForTime(note.time + note.sLen) - t, note.type, cStr);
 				notesGroup.add(n);
@@ -1549,7 +1587,7 @@ class Charter extends UIState
 			if (_ != null)
 			{
 				createStrumline(strumLines.members.length, _);
-
+				strumlineAddButton.button.setColorTransform(1, 1, 1, strumlineAddButton.button.alpha);
 				strumlineAddButton.textTweenColor.color = 0xFF00FF00;
 				strumlineAddButton.pressAnimation(true);
 			}
@@ -1599,12 +1637,21 @@ class Charter extends UIState
 	var __crochet:Float;
 	var __firstFrame:Bool = true;
 	var __timer:Float = 0;
+	var ugly:Array<Dynamic> = [];
 
-	public override function update(elapsed:Float)
-	{
-		if (Options.charterRainbowWaveforms)
-		{
-			__timer += elapsed / 8;
+	// dynamic in case scripts want to add more text
+	public dynamic function getSongPosInfoText(songLength:Float, curChange):String {
+		return'${CoolUtil.timeToStr(Conductor.instance.songPosition)} / ${CoolUtil.timeToStr(songLength)}'
+			+'\n'+SONGPOSINFO_STEP.format({ugly[0]=curStep;ugly;})
+			+'\n'+SONGPOSINFO_BEAT.format({ugly[0]=curBeat;ugly;})
+			+'\n'+SONGPOSINFO_MEASURE.format({ugly[0]=curMeasure;ugly;})
+			+'\n'+SONGPOSINFO_BPM.format({ugly[0]=(curChange != null && curChange.continuous && curChange.endSongTime > songPos) ? FlxMath.roundDecimal(Conductor.instance.bpm, 3) : Conductor.instance.bpm;ugly;})
+			+'\n'+SONGPOSINFO_TIMESIGNATURE.format({ugly[0]=Conductor.instance.beatsPerMeasure;ugly[1]=Conductor.instance.denominator;ugly;});
+	}
+
+	public override function update(elapsed:Float) {
+		if (Options.charterRainbowWaveforms) {
+			__timer += elapsed/8;
 			for (shader in waveformHandler.waveShaders)
 				shader.data.time.value = [__timer];
 		}
@@ -1673,7 +1720,8 @@ class Charter extends UIState
 			noteTypeText.x = noteTopButton.x + noteTopButton.bWidth + 6;
 			noteTypeText.y = Std.int((noteTopButton.bHeight - noteTypeText.height) / 2);
 		}
-		noteTypeText.text = '($noteType) ' + (noteTypes[noteType - 1] == null ? translate("noteTypes.default") : noteTypes[noteType - 1]);
+		var targetNoteText = '($noteType) ' + (noteTypes[noteType-1] == null ? translate("noteTypes.default") : noteTypes[noteType-1]);
+		if (noteTypeText.text != targetNoteText) noteTypeText.text = targetNoteText;
 
 		super.update(elapsed);
 
@@ -1729,25 +1777,23 @@ class Charter extends UIState
 				strumLine.vocals.pause();
 		}
 
-		var curChange = Conductor.instance.curChange;
-		songPosInfo.text = [
-			// no need to translate the time text since it has no text only numbers
-			'${CoolUtil.timeToStr(Conductor.instance.songPosition)} / ${CoolUtil.timeToStr(songLength)}',
-			SONGPOSINFO_STEP.format([curStep]),
-			SONGPOSINFO_BEAT.format([curBeat]),
-			SONGPOSINFO_MEASURE.format([curMeasure]),
-			SONGPOSINFO_BPM.format([
-				(curChange != null && curChange.continuous && curChange.endSongTime > songPos)
-				? FlxMath.roundDecimal(Conductor.instance.bpm, 3) : Conductor.instance.bpm
-			]),
-			SONGPOSINFO_TIMESIGNATURE.format([Conductor.instance.beatsPerMeasure, Conductor.instance.denominator])
-		].join("\n");
+		var targetText = getSongPosInfoText(songLength, Conductor.instance.curChange);
+		if (songPosInfo.text != targetText) songPosInfo.text = targetText;
 
 		if (charterCamera.zoom != (charterCamera.zoom = lerp(charterCamera.zoom, __camZoom, __firstFrame ? 1 : 0.125)))
 			updateDisplaySprites();
 
 		if (strumLines != null)
 			strumlineLockButton.button.animation.play(strumLines.draggable ? "1" : "0", true);
+
+		if (strumLines.members.length <= 0) {
+			final glow = (Math.sin(FlxG.game.ticks * 0.004) + 1) * 0.5;
+			strumlineAddButton.button.setColorTransform(
+				1 - (glow * 0.5), 1 - (glow * 0.5), 1 - (glow * 0.5),
+				strumlineAddButton.button.alpha,
+				Std.int(glow * 255), Std.int(glow * 255), Std.int(glow * 255), 0
+			);
+		}
 
 		WindowUtils.prefix = undos.unsaved ? Flags.UNDO_PREFIX : "";
 		SaveWarning.showWarning = undos.unsaved;
@@ -2071,7 +2117,8 @@ class Charter extends UIState
 			{
 				case CNote(step, id, strumLineID, susLength, type):
 					var note = new CharterNote();
-					note.updatePos(minStep + step, id, susLength, type, strumLines.members[CoolUtil.boundInt(strumLineID, 0, strumLines.length - 1)]);
+					CharterNote.callScriptOnNote('onCharterNoteCreation', note);
+					note.updatePos(minStep + step, id, susLength, type, strumLines.members[CoolUtil.boundInt(strumLineID, 0, strumLines.length-1)]);
 					notesGroup.add(note);
 					sObjects.push(note);
 				case CEvent(step, events, global):
@@ -2310,11 +2357,9 @@ class Charter extends UIState
 		{
 			FlxG.sound.music.pause();
 			vocals.pause();
-			for (strumLine in strumLines.members)
-				strumLine.vocals.pause();
-		}
-		else
-		{
+			for (strumLine in strumLines.members) strumLine.vocals.pause();
+			if (Options.charterPauseQuant) Conductor.instance.songPosition = Conductor.getTimeForStep(quantStep(Conductor.instance.curStepFloat));
+		} else {
 			FlxG.sound.music.play(true, Conductor.instance.songPosition + Conductor.instance.songOffset);
 			vocals.play(true, FlxG.sound.music.getActualTime());
 			for (strumLine in strumLines.members)
@@ -2322,6 +2367,9 @@ class Charter extends UIState
 				strumLine.vocals.play(true, FlxG.sound.music.getActualTime());
 			}
 		}
+	}
+	function _playback_snap(t) {
+		t.icon = (Options.charterPauseQuant = !Options.charterPauseQuant) ? 1 : 0;
 	}
 
 	function _playback_speed_raise(_)

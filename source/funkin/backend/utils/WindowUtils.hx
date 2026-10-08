@@ -1,9 +1,15 @@
 package funkin.backend.utils;
 
+import lime.graphics.Image;
 import openfl.Lib;
+#if windows
+import funkin.backend.utils.native.Windows;
+#end
 
-final class WindowUtils
-{
+final class WindowUtils {
+	/**
+	 * Text title of the game application window.
+	**/
 	public static var title(default, set):String;
 
 	private static function set_title(value:String):String
@@ -13,6 +19,9 @@ final class WindowUtils
 		return value;
 	}
 
+	/**
+	 * The text to add before the title window.
+	**/
 	public static var prefix(default, set):String = "";
 
 	private static function set_prefix(value:String):String
@@ -22,6 +31,9 @@ final class WindowUtils
 		return value;
 	}
 
+	/**
+	 * The text to add after the title window.
+	**/
 	public static var suffix(default, set):String = "";
 
 	private static function set_suffix(value:String):String
@@ -31,20 +43,27 @@ final class WindowUtils
 		return value;
 	}
 
+	/**
+	 * Whether or not to prevent the main game application window from closing first time,
+	 * call WindowUtils.resetClosing in WindowUtils.onClosing to keep preventing the game window from closing.
+	**/
 	public static var preventClosing:Bool = true;
+
+	/**
+	 * The callback when the main game application window is closing.
+	**/
 	public static var onClosing:Void->Void;
 
+	/**
+	 * Resets the preventClosing to keep prevent the main game application window from closing.
+	 * see WindowUtils.preventClosing
+	**/
+	public static inline function resetClosing() __triedClosing = false;
 	static var __triedClosing:Bool = false;
 
-	public static inline function resetClosing()
-		__triedClosing = false;
-
-	@:dox(hide) public static inline function init()
-	{
-		Lib.application.window.onClose.add(function()
-		{
-			if (preventClosing && !__triedClosing)
-			{
+	@:dox(hide) public static function init() {
+		Lib.application.window.onClose.add(function () {
+			if (preventClosing && !__triedClosing) {
 				Lib.application.window.onClose.cancel();
 				__triedClosing = true;
 			}
@@ -56,18 +75,63 @@ final class WindowUtils
 	/**
 	 * Resets the window title to the application name and resets the prefix and suffix.
 	**/
-	public static inline function resetTitle()
-	{
+	public static function resetTitle() {
 		resetAffixes(false);
-		title = Flags.TITLE;
+		title = Flags.WINDOW_TITLE_USE_MOD_NAME ? Flags.MOD_NAME : Flags.TITLE;
+	}
+
+	/**
+	 * Resets the window icon to the application or mod default icons.
+	**/
+	public static function resetIcon() {
+		if (Flags.modIconImages.length > 0) Lib.application.window.setIcon(Flags.modIconImages[0]);
+
+		#if windows
+		final smallMetric = Windows.getWindowIconMetrics(false);
+
+		var image:Image = Flags.modIconImages[0], i = Flags.modIconImages.length;
+		while (i-- > 0)
+			if (smallMetric <= Math.max((image = Flags.modIconImages[i]).width, image.height)) break;
+
+		if (image != Flags.modIconImages[0])
+			Windows.setWindowIconImage(false, Lib.application.window.title, image);
+		#end
+	}
+
+	/**
+	 * Changes the window resolution.
+	 * @param width The window's resolution width (Defaults to Flags.GAME_WIDTH or 1280).
+	 * @param height The window's resolution height (Defaults to Flags.GAME_HEIGHT or 720).
+	 * @param updateWindow Should it also update the window size and re-centers the position.
+	**/
+	public static function setResolution(?width:Int, ?height:Int, updateWindow = true) @:privateAccess {
+		if (width == null) width = Flags.GAME_WIDTH;
+		if (height == null) height = Flags.GAME_HEIGHT;
+
+		if (FlxG.width == width && FlxG.height == height) return;
+
+		FlxG.width = FlxG.initialWidth = width;
+		FlxG.height = FlxG.initialHeight = height;
+
+		if (updateWindow) {
+			final window = Lib.application.window;
+			final scale = MathUtil.minSmart(window.display.bounds.width / width, window.display.bounds.height / height, 1.0);
+
+			window.resize(Std.int(width * scale), Std.int(height * scale));
+			window.move(
+				Std.int(window.display.safeArea.x + (window.display.safeArea.width - window.width) * 0.5),
+				Std.int(window.display.safeArea.y + (window.display.safeArea.height - window.height) * 0.5)
+			);
+		}
+
+		if (FlxG.scaleMode != null) FlxG.scaleMode.onMeasure(width, height);
 	}
 
 	/**
 	 * Resets the prefix and suffix.
 	 * @param update Should it update window title.
 	**/
-	public static inline function resetAffixes(update = true)
-	{
+	public static function resetAffixes(update = true) {
 		prefix = suffix = "";
 		if (update)
 			updateTitle();
@@ -78,14 +142,11 @@ final class WindowUtils
 	 * @param title The title to set.
 	 * @param image The image to set as the icon.
 	**/
-	public static inline function setWindow(?title:String, ?image:String)
-	{
-		// TODO: Implement ICON SIZES in Flags.
+	public static function setWindow(?title:String, ?image:String) {
 		WindowUtils.title = title != null ? title : (Flags.WINDOW_TITLE_USE_MOD_NAME ? Flags.MOD_NAME : Flags.TITLE);
 
-		var iconPath = image != null ? image : Flags.MOD_ICON;
-		if (Assets.exists(Paths.image(iconPath)))
-			Lib.application.window.setIcon(lime.graphics.Image.fromBytes(Assets.getBytes(Paths.image(iconPath))));
+		if (image != null && Assets.exists(image = Paths.image(image)))
+			Lib.application.window.setIcon(Image.fromBytes(Assets.getBytes(image)));
 	}
 
 	/**
@@ -93,29 +154,4 @@ final class WindowUtils
 	**/
 	public static inline function updateTitle()
 		Lib.application.window.title = '$prefix$title$suffix';
-
-	// backwards compat
-	@:noCompletion public static var endfix(get, set):String;
-
-	@:noCompletion private inline static function set_endfix(value:String):String
-	{
-		return suffix = value;
-	}
-
-	@:noCompletion private inline static function get_endfix():String
-	{
-		return suffix;
-	}
-
-	@:noCompletion public static var winTitle(get, set):String;
-
-	@:noCompletion private inline static function get_winTitle():String
-	{
-		return title;
-	}
-
-	@:noCompletion private inline static function set_winTitle(value:String):String
-	{
-		return title = value;
-	}
 }

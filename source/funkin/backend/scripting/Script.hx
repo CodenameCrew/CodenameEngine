@@ -36,7 +36,6 @@ class Script extends FlxBasic implements IFlxDestroyable
 	 */
 	private static var _defaultVariablesTemplate:Map<String, Dynamic> = null;
 
-	@:haxe.warning("-WDeprecated")
 	private static function buildDefaultVariables():Map<String, Dynamic>
 	{
 		return [
@@ -73,12 +72,33 @@ class Script extends FlxBasic implements IFlxDestroyable
 			"FlxSpriteGroup" => flixel.group.FlxSpriteGroup,
 			"FlxTypeText" => flixel.addons.text.FlxTypeText,
 			"FlxText" => flixel.text.FlxText,
-			"FlxBitmapText" => flixel.text.FlxBitmapText,
-			"FlxBitmapFont" => flixel.graphics.frames.FlxBitmapFont,
 			"FlxTimer" => flixel.util.FlxTimer,
 			"FlxPoint" => CoolUtil.getMacroAbstractClass("flixel.math.FlxPoint"),
 			"FlxAxes" => CoolUtil.getMacroAbstractClass("flixel.util.FlxAxes"),
 			"FlxColor" => CoolUtil.getMacroAbstractClass("flixel.util.FlxColor"),
+
+			#if (THREE_D_SUPPORT && foxlite)
+			// Foxlite stuff
+			"FoxScene" => foxlite.FoxScene, "FoxCamera" => foxlite.FoxCamera, "FoxFPSCamera" => foxlite.extras.FoxFPSCamera, "FoxRenderer" =>
+			foxlite.renderer.FoxRenderer, "FoxLoaderUtil" => foxlite.loaders.FoxLoaderUtil, "FoxModel" => foxlite.FoxModel, "FoxQuadMesh" =>
+			foxlite.mesh.FoxQuadMesh, "FoxCubeMesh" => foxlite.mesh.FoxCubeMesh, "FoxMaterial" => foxlite.material.FoxMaterial, "FoxShader" =>
+			foxlite.FoxShader, "FoxTexture" => foxlite.texture.FoxTexture, "FoxCache" => foxlite.FoxCache, "FoxRenderMetrics" =>
+			foxlite.flixel.FoxRenderMetrics, "FoxFunkinSprite" => foxlite.funkin.FoxFunkinSprite, "FoxFlxSprite" => foxlite.flixel.FoxFlxSprite,
+			"FoxPanoramaSky" => foxlite.sky.FoxPanoramaSky, "FoxStencilAction" => foxlite.stencil.FoxStencilAction, "FoxOBJLoader" =>
+			foxlite.loaders.FoxOBJLoader, "FoxMTLLoader" => foxlite.loaders.FoxMTLLoader, "FoxDirectionalLight" => foxlite.lights.FoxDirectionalLight,
+			"FoxLayer" => CoolUtil.getMacroAbstractClass("foxlite.FoxLayer"), "FoxEaseType" => CoolUtil.getMacroAbstractClass("foxlite.animation.FoxEaseType"),
+			"FoxInstanceUpdateMode" => CoolUtil.getMacroAbstractClass("foxlite.instancing.FoxInstanceUpdateMode"), "FoxAreaLightShape" =>
+			CoolUtil.getMacroAbstractClass("foxlite.lights.FoxAreaLightShape"), "FoxLightType" =>
+			CoolUtil.getMacroAbstractClass("foxlite.lights.FoxLightType"), "FoxBlendMode" => CoolUtil.getMacroAbstractClass("foxlite.material.FoxBlendMode"),
+			"FoxDepthCompareMode" => CoolUtil.getMacroAbstractClass("foxlite.material.FoxDepthCompareMode"), "FoxStencilCompareMode" =>
+			CoolUtil.getMacroAbstractClass("foxlite.stencil.FoxStencilCompareMode"), "FoxTriangleFace" =>
+			CoolUtil.getMacroAbstractClass("foxlite.material.FoxTriangleFace"), "FoxMeshBufferType" =>
+			CoolUtil.getMacroAbstractClass("foxlite.mesh.FoxMeshBufferType"), "FoxQuadFace" => CoolUtil.getMacroAbstractClass("foxlite.mesh.FoxQuadFace"),
+			"FoxStencilActionType" => CoolUtil.getMacroAbstractClass("foxlite.stencil.FoxStencilActionType"), "FoxCubemapSide" =>
+			CoolUtil.getMacroAbstractClass("foxlite.texture.FoxCubemapSide"), "FoxMipFilter" => CoolUtil.getMacroAbstractClass("foxlite.texture.FoxMipFilter"),
+			"FoxTextureFilter" => CoolUtil.getMacroAbstractClass("foxlite.texture.FoxTextureFilter"), "FoxWrapMode" =>
+			CoolUtil.getMacroAbstractClass("foxlite.texture.FoxWrapMode"),
+			#end
 
 			// Engine related stuff
 			"engine" => {
@@ -216,6 +236,8 @@ class Script extends FlxBasic implements IFlxDestroyable
 	 * Shared empty argument array, used when calling scripts without parameters (avoids allocations).
 	 */
 	private static var _EMPTY_ARGS:Array<Dynamic> = [];
+
+	private var _ONE_ARG:Array<Dynamic> = [];
 
 	/**
 	 * Script name (with extension)
@@ -369,6 +391,18 @@ class Script extends FlxBasic implements IFlxDestroyable
 
 		curScript = oldScript;
 		return result;
+	}
+
+	/**
+	 * Calls the function `func` defined in the script with a single argument, reusing an internal array to avoid allocations.
+	 * @param func Name of the function
+	 * @param arg Argument of the function
+	 * @return Result (if void, then null)
+	 */
+	public function callOne(func:String, arg:Dynamic):Dynamic
+	{
+		_ONE_ARG[0] = arg;
+		return call(func, _ONE_ARG);
 	}
 
 	/**

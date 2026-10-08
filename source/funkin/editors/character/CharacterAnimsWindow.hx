@@ -108,7 +108,7 @@ class CharacterAnimsWindow extends UIButtonList<CharacterAnimButton>
 
 			displayAnimsFramesList.set(name, {
 				frame: character.frames.frames[anim.frames.getDefault([0])[0]],
-				scale: 104 / Math.max(animBounds.width, animBounds.height),
+				scale: 104/Math.max(animBounds.width, animBounds.height) * -1,
 				renderTexture: null
 			});
 		}
@@ -200,7 +200,7 @@ class CharacterAnimsWindow extends UIButtonList<CharacterAnimButton>
 
 		var nextButtonY:Float = 0;
 		for (buttonID in 0...newButton.ID)
-			nextButtonY += buttons.members[buttonID].bHeight + buttonOffset.y;
+			nextButtonY += buttons.members[buttonID].bHeight + globalButtonOffset.y;
 		nextscrollY = nextButtonY;
 	}
 

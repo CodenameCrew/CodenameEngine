@@ -1,5 +1,6 @@
 package funkin.editors.alphabet;
 
+import funkin.editors.alphabet.AlphabetEditor.ComponentButton;
 import flixel.math.FlxAngle;
 
 class GlyphInfoWindow extends UIWindow
@@ -30,14 +31,16 @@ class GlyphInfoWindow extends UIWindow
 	public var outlineItems:Array<FlxSprite>;
 	public var initialY:Array<Float> = [];
 
+	public var button:ComponentButton;
 	var compon(get, never):AlphabetComponent;
 	var data(get, never):AlphabetLetterData;
+	var advanceStyle(get, never):AdvanceMode;
 
 	public function new()
 	{
 		var width = 360;
 		var height = 255;
-		var margin = 30;
+		var margin = 15;
 		var itemMargin = 15; // there was already a buncha variables so i thought why not follow
 		var labelOffset = 24;
 		super(FlxG.width - width - margin, FlxG.height - height - margin, width, height, "Glyph Info");
@@ -50,10 +53,13 @@ class GlyphInfoWindow extends UIWindow
 		}
 
 		prefixBox = new UITextBox(x + itemMargin, y + itemMargin + labelOffset * 2, "", 330);
-		prefixBox.onChange = function(val)
-		{
+		prefixBox.onChange = function(val) {
+			if (button != null)
+				button.field.text = val;
+
 			var index = data.components.indexOf(compon);
 			compon.anim = val;
+			data.advanceStyle = advanceStyle;
 			var anim = AlphabetEditor.instance.bigLetter.text + Std.string(index);
 			AlphabetEditor.instance.bigLetter.animation.remove(anim);
 			AlphabetEditor.instance.tape.animation.remove(anim);
@@ -66,6 +72,7 @@ class GlyphInfoWindow extends UIWindow
 		xBox.onChange = valueSet.bind(xBox, function(val)
 		{ // kinda dumb but blame cne ui
 			compon.x = -val;
+			data.advanceStyle = advanceStyle;
 		});
 		members.push(xBox);
 
@@ -85,6 +92,7 @@ class GlyphInfoWindow extends UIWindow
 			compon.scaleX = val;
 			if (outlineCheck.checked)
 				data.components[compon.outIndex].scaleX = val;
+			data.advanceStyle = advanceStyle;
 		});
 		members.push(scaleXBox);
 
@@ -150,7 +158,7 @@ class GlyphInfoWindow extends UIWindow
 				compon.outIndex = AlphabetEditor.instance.outlineIdx;
 
 				var newOutline:AlphabetComponent = {
-					refIndex: data.components.indexOf(compon),
+					refIndex: data.components.indexOf(compon) - data.startIndex,
 					anim: outlineBox.label.text,
 
 					x: outlineXBox.value,
@@ -173,14 +181,19 @@ class GlyphInfoWindow extends UIWindow
 				data.components.insert(AlphabetEditor.instance.outlineIdx, newOutline);
 				++AlphabetEditor.instance.outlineIdx;
 				++data.startIndex;
-			}
-			else
-			{
+			} else {
+				var toRemove = compon.outIndex;
 				compon.outIndex = null;
-				data.components.splice(AlphabetEditor.instance.outlineIdx - 1, 1);
+				for (i in data.startIndex...data.components.length) {
+					final component = data.components[i];
+					if (component.outIndex != null && component.outIndex >= toRemove)
+						--component.outIndex;
+				}
+				data.components.splice(toRemove, 1);
 				--AlphabetEditor.instance.outlineIdx;
 				--data.startIndex;
 			}
+			data.advanceStyle = advanceStyle;
 		}
 		members.push(outlineCheck);
 
@@ -212,6 +225,7 @@ class GlyphInfoWindow extends UIWindow
 		outlineBox.onChange = function(val)
 		{
 			data.components[compon.outIndex].anim = val;
+			data.advanceStyle = advanceStyle;
 			var anim = AlphabetEditor.instance.bigLetter.text + Std.string(compon.outIndex);
 			AlphabetEditor.instance.bigLetter.animation.remove(anim);
 			AlphabetEditor.instance.tape.animation.remove(anim);
@@ -225,6 +239,7 @@ class GlyphInfoWindow extends UIWindow
 		{ // kinda dumb but blame cne ui
 			if (outlineCheck.checked)
 				data.components[compon.outIndex].x = val;
+			data.advanceStyle = advanceStyle;
 		});
 		members.push(outlineXBox);
 
@@ -332,13 +347,13 @@ class GlyphInfoWindow extends UIWindow
 		func(item.value);
 	}
 
-	function get_compon()
-	{
+	inline function get_compon() {
 		return AlphabetEditor.instance.curSelectedComponent;
 	}
-
-	function get_data()
-	{
+	inline function get_data() {
 		return AlphabetEditor.instance.curSelectedData;
+	}
+	function get_advanceStyle() {
+		return data.advanceStyle == CALCULATED ? AUTO : data.advanceStyle;
 	}
 }

@@ -1,27 +1,21 @@
 {
   "dependencies": [
     {
-      "name": "away3d",
-      "type": "git",
-      "ref": "fdd2231",
-      "url": "https://github.com/CodenameCrew/away3d"
-    },
-    {
       "name": "flixel",
       "type": "git",
-      "ref": "295e9fbae5ab2bdd0712c675aaac60422d3bb34b",
+      "ref": "d75442a742d74293ebc23c8925cc01dc25ccd5fb",
       "url": "https://github.com/SadGuyBigHead/cne-flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
-      "ref": "b6c8e5b",
+      "ref": "fd709cbc945be59d4784e974e42a42ad784fa0af",
       "url": "https://github.com/CodenameCrew/cne-flixel-addons"
     },
     {
       "name": "flixel-animate",
       "type": "git",
-      "ref": "d1e7758",
+      "ref": "829938ad09cd93bd7b9f426f387f99933ec67bbf",
       "url": "https://github.com/CodenameCrew/cne-flixel-animate/"
     },
     {
@@ -32,13 +26,19 @@
     {
       "name": "hscript-improved",
       "type": "git",
-      "ref": "cacd663",
+      "ref": "943d3055235ac5b7c6bd65e14231aab9ee2442d1",
       "url": "https://github.com/CodenameCrew/hscript-improved"
+    },
+    {
+      "name": "foxlite",
+      "type": "git",
+      "ref": "287cc98b653cbfde01ae2e5da572ba7364abfd96",
+      "url": "https://github.com/dwdvIl/foxlite"
     },
     {
       "name": "hxcpp",
       "type": "git",
-      "ref": "4ee2367",
+      "ref": "dc51f7381756248c0215fb572877979f7083eb63",
       "url": "https://github.com/CodenameCrew/cne-hxcpp"
     },
     {
@@ -72,7 +72,7 @@
     {
       "name": "lime",
       "type": "git",
-      "ref": "1604a56912a3ad55d7ca9011d19efe15c79682a3",
+      "ref": "dda50eb4b6a94320e099cef386001f6221bff91f",
       "url": "https://github.com/SadGuyBigHead/cne-lime"
     },
     {
@@ -88,7 +88,7 @@
     {
       "name": "openfl",
       "type": "git",
-      "ref": "3576951146ee8a53c5b47cefc37c1a0c03cb9ec0",
+      "ref": "987fb1fea4d5288c11409cfdb08c74ba723db2bf",
       "url": "https://github.com/SadGuyBigHead/cne-openfl"
     },
     {

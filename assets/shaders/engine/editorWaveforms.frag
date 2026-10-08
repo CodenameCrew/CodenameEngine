@@ -1,5 +1,9 @@
+// this causes issues apparently?? need to check GLSLSourceAssembler
+// but it could just be unnecessary too anyway
+// if not, put this also in editorWaveformsRainbow.frag
+//#version 120
+
 #pragma header
-#version 120 // this shader doesnt require expensive calculations
 
 const vec3 gradient1 = vec3(114.0/255.0, 81.0/255.0, 135.0/255.0);
 const vec3 gradient2 = vec3(144.0/255.0, 80.0/255.0, 186.0/255.0);

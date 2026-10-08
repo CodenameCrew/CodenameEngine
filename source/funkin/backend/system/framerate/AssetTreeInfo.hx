@@ -15,12 +15,11 @@ class AssetTreeInfo extends FramerateCategory
 	public function new()
 	{
 		super("Asset Libraries Tree Info");
+		visible = Options.fpsCounterAssets;
 	}
 
-	public override function __enterFrame(t:Float)
-	{
-		if (alpha <= 0.05)
-			return;
+	public override function __enterFrame(t:Float) {
+		if (alpha <= 0.05 || !visible) return;
 
 		if ((lastUpdateTime += FlxG.rawElapsed) < 1)
 			return;

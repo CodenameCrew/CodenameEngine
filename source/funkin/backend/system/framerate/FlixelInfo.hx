@@ -8,12 +8,11 @@ class FlixelInfo extends FramerateCategory
 	public function new()
 	{
 		super("Flixel Info");
+		visible = Options.fpsCounterFlixel;
 	}
 
-	public override function __enterFrame(t:Float)
-	{
-		if (alpha <= 0.05)
-			return;
+	public override function __enterFrame(t:Float) {
+		if (alpha <= 0.05 || !visible) return;
 
 		@:privateAccess {
 			var c:Int = Lambda.count(FlxG.bitmap._cache);

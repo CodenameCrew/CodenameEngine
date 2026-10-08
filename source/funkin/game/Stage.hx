@@ -149,10 +149,16 @@ class Stage extends FlxBasic implements IBeatReceiver
 				elems = onXMLLoaded(xml, elems);
 			}
 
-			for (node in elems)
-			{
-				var sprite:Dynamic = switch (node.name)
-				{
+			var curRemoved:Map<String, String> = [];
+			inline function tempRemove(xml:Xml, att:String) {
+				if (xml.exists(att)) {
+					curRemoved.set(att, xml.get(att));
+					xml.remove(att);
+				}
+			}
+
+			for(node in elems) {
+				var sprite:Dynamic = switch(node.name) {
 					case "sprite" | "spr" | "sparrow":
 						if (!node.has.sprite || !node.has.name)
 							continue;
@@ -171,11 +177,14 @@ class Stage extends FlxBasic implements IBeatReceiver
 						(isSolid ? spr.makeSolid : spr.makeGraphic)(Std.parseInt(node.att.width), Std.parseInt(node.att.height),
 							(node.has.color) ? CoolUtil.getColorFromDynamic(node.att.color) : -1);
 
-						if (isSolid)
-							node.x.remove("updateHitbox");
-						for (a in ["width", "height", "color"])
-							node.x.remove(a);
+						if (isSolid) tempRemove(node.x, "updateHitbox");
+						for (a in ["width", "height", "color"]) tempRemove(node.x, a);
 						XMLUtil.loadSpriteFromXML(spr, node, "", NONE, false);
+
+						// mainly for the stage editor
+						for (k => v in curRemoved)
+							node.x.set(k, v);
+						curRemoved.clear();
 
 						stageSprites.set(spr.name, spr);
 						addSprite(spr);
@@ -468,15 +477,20 @@ class Stage extends FlxBasic implements IBeatReceiver
 	 * Gets a list of stages that are available to be used.
 	 * @param mods Whenever only the mods folder should be checked
 	**/
-	public static function getList(?mods:Bool = false, ?xmlOnly:Bool = false):Array<String>
-	{
+	public static function getList(?mods:Bool = false, ?xmlOnly:Bool = false, includeFolders:Bool = false, folder:String = 'data/stages/'):Array<String> {
 		var list:Array<String> = [];
 		var extensions:Array<String> = ["xml"];
 		if (!xmlOnly)
 			extensions.push("hx");
 
-		for (path in Paths.getFolderContent("data/stages/", false, mods ? MODS : BOTH))
-		{
+		if(includeFolders) {
+			for (path in Paths.getFolderDirectories(folder, true, mods ? MODS : BOTH)) {
+				if(!path.endsWith("/")) path += "/";
+				list.push(path);
+			}
+		}
+		
+		for (path in Paths.getFolderContent(folder, false, mods ? MODS : BOTH)) {
 			var extension = Path.extension(path);
 			if (extensions.contains(extension))
 			{

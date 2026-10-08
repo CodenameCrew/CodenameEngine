@@ -6,6 +6,7 @@ import funkin.editors.ui.UIImageExplorer.ImageSaveData;
 import funkin.editors.EditorTreeMenu;
 import funkin.options.type.IconOption;
 import funkin.options.type.NewOption;
+import funkin.options.type.FolderOption;
 import funkin.options.type.TextOption;
 import funkin.options.type.OptionType;
 
@@ -49,11 +50,10 @@ class CharacterSelectionScreen extends EditorTreeMenuScreen
 				{
 					var folderName = CoolUtil.getFilename(char.substr(0, char.length - 1));
 
-					list.push(new TextOption(folderName, getID('acceptFolder'), ' >', () ->
-					{
+					list.push(new FolderOption(folderName + ' >', getID('acceptFolder'), () -> {
 						var newModsList = Character.getList(isMods, true, char);
 						var newList:Array<FlxSprite> = generateList(newModsList, isMods, folderPath + folderName + "/");
-						parent.addMenu(new EditorTreeMenuScreen(folderPath + folderName, translate('desc-folder', [folderPath + folderName + "/"]), newList));
+						parent.addMenu(new EditorTreeMenuScreen(folderName, translate('desc-folder', [folderPath + folderName + "/"]), newList));
 					}));
 				}
 				else
@@ -72,8 +72,7 @@ class CharacterSelectionScreen extends EditorTreeMenuScreen
 			add(o);
 	}
 
-	public function createCharacter(name:String, imageSaveData:ImageSaveData, xml:Xml)
-	{
+	public function createCharacter(name:String, imageSaveDatas:Array<ImageSaveData>, xml:Xml) {
 		var characterAlreadyExists:Bool = modsList.contains(name);
 		if (characterAlreadyExists)
 		{
@@ -92,8 +91,9 @@ class CharacterSelectionScreen extends EditorTreeMenuScreen
 		var characterPath:String = '${Paths.getAssetsRoot()}/data/characters/${name}.xml';
 		CoolUtil.safeSaveFile(characterPath, "<!DOCTYPE codename-engine-character>\n" + Printer.print(xml, true));
 
-		// Save Image files
-		UIImageExplorer.saveFilesGlobal(imageSaveData, '${Paths.getAssetsRoot()}/images/characters');
+		// Save Image files 
+		for(data in imageSaveDatas)
+			UIImageExplorer.saveFilesGlobal(data, '${Paths.getAssetsRoot()}/images/characters');
 
 		// Add to Menu >:D
 		var option:IconOption = new IconOption(name, getID('acceptCharacter'), Character.getIconFromCharName(name), () ->

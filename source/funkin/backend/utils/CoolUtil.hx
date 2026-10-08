@@ -35,6 +35,8 @@ import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
 import animate.FlxAnimateJson;
 import flixel.animation.FlxAnimationController;
+import animate.FlxAnimateFrames;
+import animate.FlxAnimate;
 
 using StringTools;
 
@@ -721,42 +723,42 @@ final class CoolUtil
 	 * @param key Key
 	 * @return Simple representation
 	 */
-	public static inline function keyToString(key:Null<FlxKey>):String
-	{
-		return switch (key)
-		{
-			case null | 0 | NONE: "---";
-			case LEFT: "←";
-			case DOWN: "↓";
-			case UP: "↑";
-			case RIGHT: "→";
-			case ESCAPE: "ESC";
-			case BACKSPACE: "[←]";
-			case NUMPADZERO: "#0";
-			case NUMPADONE: "#1";
-			case NUMPADTWO: "#2";
-			case NUMPADTHREE: "#3";
-			case NUMPADFOUR: "#4";
-			case NUMPADFIVE: "#5";
-			case NUMPADSIX: "#6";
-			case NUMPADSEVEN: "#7";
-			case NUMPADEIGHT: "#8";
-			case NUMPADNINE: "#9";
-			case NUMPADPLUS: "#+";
-			case NUMPADMINUS: "#-";
-			case NUMPADPERIOD: "#.";
-			case ZERO: "0";
-			case ONE: "1";
-			case TWO: "2";
-			case THREE: "3";
-			case FOUR: "4";
-			case FIVE: "5";
-			case SIX: "6";
-			case SEVEN: "7";
-			case EIGHT: "8";
-			case NINE: "9";
-			case PERIOD: ".";
-			default: key.toString();
+	public static inline function keyToString(key:Null<FlxKey>):String {
+		return switch(key) {
+			case null | 0 | NONE:	"---";
+			case LEFT: 				"←";
+			case DOWN: 				"↓";
+			case UP: 				"↑";
+			case RIGHT:				"→";
+			case ESCAPE:			"ESC";
+			case BACKSPACE:			"[←]";
+			case NUMPADZERO:		"#0";
+			case NUMPADONE:			"#1";
+			case NUMPADTWO:			"#2";
+			case NUMPADTHREE:		"#3";
+			case NUMPADFOUR:		"#4";
+			case NUMPADFIVE:		"#5";
+			case NUMPADSIX:			"#6";
+			case NUMPADSEVEN:		"#7";
+			case NUMPADEIGHT:		"#8";
+			case NUMPADNINE:		"#9";
+			case NUMPADPLUS:		"#+";
+			case NUMPADMINUS:		"#-";
+			case NUMPADPERIOD:		"#.";
+			case ZERO:				"0";
+			case ONE:				"1";
+			case TWO:				"2";
+			case THREE:				"3";
+			case FOUR:				"4";
+			case FIVE:				"5";
+			case SIX:				"6";
+			case SEVEN:				"7";
+			case EIGHT:				"8";
+			case NINE:				"9";
+			case PERIOD:			".";
+			case COMMA:				",";
+			case SEMICOLON:			";";
+			default:				key.toString();
 		}
 	}
 
@@ -1118,16 +1120,13 @@ final class CoolUtil
 	 * Returns the screen position of an object, while taking the camera zoom into account.
 	 *
 	 * @param	object	Any `FlxObject`
-	 * @param   camera  The desired "screen" coordinate space. If `null`, `FlxG.camera` is used.
+	 * @param   camera  The desired "screen" coordinate space. If `null`, a default camera is used.
 	 * @param   result  Optional arg for the returning point
 	 * @return  The screen position of the object.
 	 */
-	public static function worldToScreenPosition(object:FlxObject, ?camera:FlxCamera, ?result:FlxPoint)
-	{
-		if (result == null)
-			result = FlxPoint.get();
-		if (camera == null)
-			camera = FlxG.camera;
+	public static function worldToScreenPosition(object:FlxObject, ?camera:FlxCamera, ?result:FlxPoint) {
+		if (result == null) result = FlxPoint.get();
+		if (camera == null) camera = object.getDefaultCamera();
 
 		result.set(object.x, object.y);
 		result.x = (((result.x - camera.scroll.x * object.scrollFactor.x) * camera.zoom) - ((camera.width * 0.5) * (camera.zoom - camera.initialZoom)));
@@ -1486,14 +1485,38 @@ final class CoolUtil
 		return animsList;
 	}
 
-	public static function getAnimsListFromAtlas(atlas:AnimationJson):Array<String>
-	{
-		if (atlas == null)
-			return [];
+	public static function getAnimsListFromAnimate(animate:FlxAnimate):Array<String> {
+		if (animate == null) return [];
 
 		var animsList:Array<String> = [];
-		if (atlas.AN.SN != null)
-			animsList.push(atlas.AN.SN);
+
+		@:privateAccess var collections = cast (animate.frames, FlxAnimateFrames).addedCollections;
+		collections.push(cast animate.frames);
+		for(col in collections){
+			for(l in col.timeline.layers)
+				for(f in l.frames){
+					 if(f.name != "")
+						animsList.push(f.name);
+
+					 for(e in f.elements){
+						var element = e.toSymbolInstance();
+
+						if(element != null && element.symbolName != null)
+							animsList.push(element.symbolName);
+					 }
+				}
+		}
+
+		animsList = animsList.concat(getAnimsListFromFrames(animate.frames));
+
+		return animsList;
+	}
+
+	public static function getAnimsListFromAtlas(atlas:AnimationJson):Array<String> {
+		if (atlas == null) return [];
+
+		var animsList:Array<String> = [];
+		if (atlas.AN.SN != null) animsList.push(atlas.AN.SN);
 		if (atlas.SD != null)
 			for (symbol in atlas.SD)
 				if (symbol.SN != null)
@@ -1502,9 +1525,11 @@ final class CoolUtil
 		return animsList;
 	}
 
-	public static function getAnimsListFromSprite(spr:FunkinSprite):Array<String>
-	{
-		return getAnimsListFromFrames(spr.frames);
+	public static function getAnimsListFromSprite(spr:FunkinSprite):Array<String> {
+		if(spr.frames is FlxAnimateFrames)
+			return getAnimsListFromAnimate(spr);
+		else
+			return getAnimsListFromFrames(spr.frames);
 	}
 
 	// TODO: check this for bugs

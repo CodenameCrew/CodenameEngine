@@ -3,6 +3,7 @@ package funkin.editors.character;
 import haxe.io.Path;
 import funkin.editors.character.CharacterInfoScreen.CharacterExtraInfo;
 import funkin.game.Character;
+import funkin.editors.ui.UIImageExplorer.ImageSaveData;
 
 class CharacterPropertiesWindow extends UISliceSprite
 {
@@ -205,26 +206,60 @@ class CharacterPropertiesWindow extends UISliceSprite
 			CharacterEditor.undos.addToUndo(CCharEditInfo(oldInfo, info));
 	}
 
-	public function editCharacterSpriteUI()
-	{
-		CharacterEditor.instance.openSubState(new CharacterSpriteScreen('characters/${character.sprite}', (sprite:String, isAtlas:Bool) ->
-		{
-			changeSprite(sprite);
+	public function editCharacterSpriteUI() {
+		var paths:Array<String> = [];
+		var hasMultiSprite:Bool = false;
+
+		for(e in character.xml.elements)
+			if(e.name == "spritesheet" || e.name == "sheet"){ 
+				hasMultiSprite = true; break;
+			}
+
+		if(hasMultiSprite){
+			for(e in character.xml.elements)
+				if(e.name == "spritesheet" || e.name == "sheet")
+					paths.push(e.x.get('path'));
+		} else {
+			paths = ['characters/${character.sprite}'];
+		}
+
+		CharacterEditor.instance.openSubState(new CharacterSpriteScreen(paths, (arr:Array<ImageSaveData>) -> {
+			changeSprite(arr);
 		}));
 	}
 
-	public function changeSprite(sprite:String) @:privateAccess {
-		var path:String = Paths.image('characters/$sprite');
-		var noExt:String = Path.withoutExtension(path);
+	public function changeSprite(imageSaveDatas:Array<ImageSaveData>) @:privateAccess { //TODO: Add a 'spritesheets' variable to Character.hx and deprecate 'Character.sprite'
+		var paths:Array<String> = [];
 
-		character.sprite = sprite;
+		for(e in character.xml.elements)
+			if(e.name == "spritesheet" || e.name == "sheet") 
+				character.xml.x.removeChild(e.x);
+
+		if(imageSaveDatas.length == 1){ 
+			var imgData = imageSaveDatas[0];
+			character.sprite = '${imgData.directory.length > 0 ? '${imgData.directory}/' : ""}' + imgData.imageName;
+
+			paths.push(Paths.image('characters/${character.sprite}'));
+		} else {
+			character.sprite = null;
+
+			for(data in imageSaveDatas){
+				var sheetElement = Xml.createElement("spritesheet");
+				var path = 'characters/${data.directory.length > 0 ? '${data.directory}/' : ""}' + data.imageName;
+
+				sheetElement.set("path", path);
+				character.xml.x.addChild(sheetElement);
+
+				paths.push(Paths.image(path));
+			}
+		}
 
 		animsWindow.displayWindowSprite.animation.reset();
 		animsWindow.clearDisplayAnims();
 		if (animsWindow.displayWindowGraphic != null)
 			animsWindow.displayWindowGraphic.destroy();
 
-		character.frames = Paths.getFrames(path, true);
+		character.frames = Paths.getMultiFrames(paths, true);
 
 		animsWindow.displayWindowSprite.loadGraphicFromSprite(character);
 		if (Assets.exists(Paths.image('characters/${character.sprite}')))

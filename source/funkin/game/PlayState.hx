@@ -1030,6 +1030,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		var canCenter:Bool = Options.centeredFields && Flags.ALLOW_CENTERED_FIELDS && !coopMode;
 		for (i => strumLine in SONG.strumLines)
 		{
 			if (strumLine == null)
@@ -1056,7 +1057,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			var strOffset:Float = strumLine.strumLinePos != null ? strumLine.strumLinePos : (strumLine.type == 1 ? 0.75 : 0.25);
+			var strOffset:Float = canCenter || strumLine.strumLinePos != null ? (canCenter ? 0.5 : strumLine.strumLinePos) : (strumLine.type == 1 ? 0.75 : 0.25);
 			var strScale:Float = strumLine.strumScale != null ? strumLine.strumScale : 1;
 			var strSpacing:Float = strumLine.strumSpacing == null ? 1 : strumLine.strumSpacing;
 			var keyCount:Int = strumLine.keyCount == null ? 4 : strumLine.keyCount;
@@ -1068,7 +1069,7 @@ class PlayState extends MusicBeatState
 				coopMode ? ((strumLine.type == 1) != opponentMode ? controlsP1 : controlsP2) : controls, strumLine.vocalsSuffix);
 			strLine.cameras = [camHUD];
 			strLine.data = strumLine;
-			strLine.visible = (strumLine.visible != false);
+			strLine.visible = (strumLine.visible != false && (!canCenter || !strLine.cpu));
 			strLine.vocals.group = FlxG.sound.defaultMusicGroup;
 			strLine.ID = i;
 			strumLines.add(strLine);
@@ -1207,8 +1208,10 @@ class PlayState extends MusicBeatState
 
 		if (chartingMode)
 		{
-			WindowUtils.prefix = Charter.undos.unsaved ? Flags.UNDO_PREFIX : "";
-			WindowUtils.suffix = TU.translate("playtesting.chartPlaytesting");
+			if (Flags.CHANGE_WINDOW_TITLE_PLAYSTATE) {
+				WindowUtils.prefix = Charter.undos.unsaved ? Flags.UNDO_PREFIX : "";
+				WindowUtils.suffix = TU.translate("playtesting.chartPlaytesting");
+			}
 
 			SaveWarning.showWarning = Charter.undos.unsaved;
 			SaveWarning.selectionClass = CharterSelection;
@@ -1480,7 +1483,7 @@ class PlayState extends MusicBeatState
 
 		super.destroy();
 
-		WindowUtils.resetAffixes();
+		if (Flags.CHANGE_WINDOW_TITLE_PLAYSTATE) WindowUtils.resetAffixes();
 		SaveWarning.reset();
 
 		instance = null;
@@ -1548,7 +1551,7 @@ class PlayState extends MusicBeatState
 		curSong = songData.meta.name.toLowerCase();
 		curSongID = curSong.replace(" ", "-");
 
-		FlxG.sound.setMusic(inst = FlxG.sound.load(Assets.getMusic(Paths.inst(SONG.meta.name, difficulty, SONG.meta.instSuffix))));
+		FlxG.sound.setMusic(inst = FlxG.sound.load(Paths.inst(SONG.meta.name, difficulty, SONG.meta.instSuffix)));
 
 		var vocalsPath = Paths.voices(SONG.meta.name, difficulty, SONG.meta.vocalsSuffix);
 		if (SONG.meta.needsVoices && Assets.exists(vocalsPath))
@@ -1565,6 +1568,33 @@ class PlayState extends MusicBeatState
 	@:dox(hide) function sortByShit(Obj1:Note, Obj2:Note):Int
 	{
 		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime, Obj2.strumTime);
+	}
+
+	/**
+	 * Resets the positioning and visibility of all the strumlines.
+	 * @param canCenter Whether or not the strumlines will be centered when resetting, similar to starting a song with `Options.centeredFields` on.
+	 */
+	public function resetStrumlinePositions(?canCenter:Bool = false):Void {
+		// NOTE TO ANY CONTRIBUTORS: DO NOT FORCE `canCenter`! THIS IS A MODDING UTILITY IN CASE THE POSITIONING OF THE STRUMLINES FULLY MATTER TO A SCRIPT/SONG!
+
+		strumLine.setPosition(0, 50); // just in case.
+
+		for (strLine in strumLines.members) {
+			var strumLine = strLine.data;
+
+			var strOffset:Float = canCenter || strumLine.strumLinePos != null ? (canCenter ? 0.5 : strumLine.strumLinePos) : (strumLine.type == 1 ? 0.75 : 0.25);
+			var strScale:Float = strumLine.strumScale != null ? strumLine.strumScale : 1;
+			var strSpacing:Float = strumLine.strumSpacing == null ? 1 : strumLine.strumSpacing;
+			var keyCount:Int = strumLine.keyCount == null ? 4 : strumLine.keyCount;
+			var strXPos:Float = StrumLine.calculateStartingXPos(strOffset, strScale, strSpacing, keyCount);
+
+			strLine.startingPos.set(
+				(strumLine.strumPos != null && strumLine.strumPos[0] != 0) ? strumLine.strumPos[0] : strXPos,
+				strumLine.strumPos != null ? strumLine.strumPos[1] : this.strumLine.y
+			);
+			strLine.resetStrumPositions();
+			strLine.visible = (strumLine.visible != false && (!canCenter || !strLine.cpu));
+		}
 	}
 
 	@:dox(hide)
@@ -1688,7 +1718,7 @@ class PlayState extends MusicBeatState
 	 */
 	public function pauseGame()
 	{
-		var e = gameAndCharsEvent("onGamePause", new CancellableEvent());
+		var e = gameAndCharsEvent("onGamePause", EventManager.get(PauseGameEvent).recycle([], allowGitaroo));
 		if (e.cancelled)
 			return;
 
@@ -1697,14 +1727,14 @@ class PlayState extends MusicBeatState
 		paused = true;
 
 		// 1 / 1000 chance for Gitaroo Man easter egg
-		if (!chartingMode && allowGitaroo && FlxG.random.bool(Flags.GITAROO_CHANCE))
+		if (!chartingMode && e.allowGitaroo && FlxG.random.bool(Flags.GITAROO_CHANCE))
 		{
 			// gitaroo man easter egg
 			FlxG.switchState(new GitarooPause());
 		}
 		else
 		{
-			openSubState(new PauseSubState());
+			openSubState(new PauseSubState(null, null, e.excludeList));
 		}
 
 		updateDiscordPresence();
@@ -1818,13 +1848,12 @@ class PlayState extends MusicBeatState
 	@:dox(hide)
 	override public function update(elapsed:Float)
 	{
-		_ONE_ARG[0] = elapsed;
-		scripts.call("update", _ONE_ARG);
+		scripts.callOne("update", elapsed);
 
 		if (inCutscene)
 		{
 			super.update(elapsed);
-			scripts.call("postUpdate", _ONE_ARG);
+			scripts.callOne("postUpdate", elapsed);
 			return;
 		}
 
@@ -1840,16 +1869,8 @@ class PlayState extends MusicBeatState
 			if (camZoomingLastBeat != beat)
 			{
 				camZoomingLastBeat = beat;
-				if (useCamZoomMult)
-				{
-					if (camZoomingMult < maxCamZoomMult)
-						camZoomingMult += camZoomingStrength;
-				}
-				else if (FlxG.camera.zoom < maxCamZoom)
-				{
-					FlxG.camera.zoom += camGameZoomMult * camZoomingStrength;
-					camHUD.zoom += camHUDZoomMult * camZoomingStrength;
-				}
+				
+				doBopZoom();
 			}
 		}
 
@@ -1925,7 +1946,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scripts.call("postUpdate", _ONE_ARG);
+		scripts.callOne("postUpdate", elapsed);
 
 		if (skipping)
 			return;
@@ -2540,25 +2561,22 @@ class PlayState extends MusicBeatState
 			else if (event.countAsCombo)
 				combo++;
 
+			if (event.charsComboAnim && event.player && combo > 0) {
+				var comboAnim:String = 'combo$combo';
+				
+				for (sl in strumLines.members) for (c in sl.characters) {
+					if (c.hasAnim(comboAnim)) c.playAnim(comboAnim, true);
+				}
+			}
+
 			if (event.showRating || (event.showRating == null && event.player))
 			{
-				// clear combo graphics
-				for (comb in comboGroup.members)
-				{
-					if (comb != null)
-					{
-						comb.kill();
-					}
-				}
-
 				displayCombo(event);
 				displayRatingNumbers(event);
 				displayRating(event.rating, event);
 				ratingNum += 1;
 			}
-
-			if (event.player)
-				hits[rating.name] += 1;
+			if (event.player) hits[rating.name] += 1;
 
 			if (strumLine != null)
 				strumLine.addHealth(event.healthGain);
@@ -2612,8 +2630,8 @@ class PlayState extends MusicBeatState
 
 		var hasEvent:Bool = evt != null;
 
-		var pre:String = hasEvent && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
-		var suf:String = hasEvent && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
+		var pre:String = hasEvent && (event.ratingPrefix == null || event.ratingPrefix == "game/score/") ? evt.ratingPrefix : event.ratingPrefix;
+		var suf:String = hasEvent && (event.ratingSuffix == null || event.ratingSuffix == "") ? evt.ratingSuffix : event.ratingSuffix;
 
 		var ratingScale:Float = hasEvent && evt.ratingScale != null ? evt.ratingScale : event.ratingScale;
 
@@ -2670,8 +2688,8 @@ class PlayState extends MusicBeatState
 
 			var hasEvent:Bool = evt != null;
 
-			var pre:String = hasEvent && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
-			var suf:String = hasEvent && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
+			var pre:String = hasEvent && (event.ratingPrefix == null || event.ratingPrefix == "game/score/") ? evt.ratingPrefix : event.ratingPrefix;
+			var suf:String = hasEvent && (event.ratingSuffix == null || event.ratingSuffix == "") ? evt.ratingSuffix : event.ratingSuffix;
 
 			var ratingScale:Float = hasEvent && evt.ratingScale != null ? evt.ratingScale : event.ratingScale;
 
@@ -2730,8 +2748,8 @@ class PlayState extends MusicBeatState
 
 				var hasEvent:Bool = evt != null;
 
-				var pre:String = hasEvent && evt.ratingPrefix != null ? evt.ratingPrefix : event.ratingPrefix;
-				var suf:String = hasEvent && evt.ratingSuffix != null ? evt.ratingSuffix : event.ratingSuffix;
+				var pre:String = hasEvent && (event.ratingPrefix == null || event.ratingPrefix == "game/score/") ? evt.ratingPrefix : event.ratingPrefix;
+				var suf:String = hasEvent && (event.ratingSuffix == null || event.ratingSuffix == "") ? evt.ratingSuffix : event.ratingSuffix;
 
 				var numScale:Float = hasEvent && evt.numScale != null ? evt.numScale : event.numScale;
 
@@ -2878,14 +2896,14 @@ class PlayState extends MusicBeatState
 	override function stepHit(curStep:Int)
 	{
 		super.stepHit(curStep);
-		scripts.call("stepHit", [curStep]);
+		scripts.callOne("stepHit", curStep);
 	}
 
 	@:dox(hide)
 	override function measureHit(curMeasure:Int)
 	{
 		super.measureHit(curMeasure);
-		scripts.call("measureHit", [curMeasure]);
+		scripts.callOne("measureHit", curMeasure);
 	}
 
 	@:dox(hide)
@@ -2904,7 +2922,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		scripts.call("beatHit", [curBeat]);
+		scripts.callOne("beatHit", curBeat);
 	}
 
 	public function addScript(file:String)

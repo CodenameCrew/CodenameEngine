@@ -1,5 +1,6 @@
 package funkin.backend.system;
 
+import funkin.backend.system.console.ConsoleCommandManager;
 #if MOD_SUPPORT
 import sys.FileSystem;
 #end
@@ -13,6 +14,8 @@ import funkin.backend.system.framerate.Framerate;
 import funkin.editors.ModConfigWarning;
 import funkin.menus.TitleState;
 import haxe.io.Path;
+import openfl.Lib;
+
 
 @dox(hide)
 typedef AddonInfo =
@@ -31,12 +34,7 @@ class MainState extends FlxState
 	public override function create()
 	{
 		super.create();
-		if (!initiated)
-		{
-			Main.loadGameSettings();
-		}
-
-		initiated = true;
+		if (!initiated) Main.loadGameSettings();
 
 		#if sys
 		CoolUtil.deleteFolder('./.temp/'); // delete temp folder
@@ -44,6 +42,7 @@ class MainState extends FlxState
 		Options.save();
 
 		ControlsUtil.resetCustomControls();
+		ConsoleCommandManager.unregisterModdedCommands();
 		FlxG.bitmap.reset();
 		FlxG.sound.destroy(true);
 		FlxG.sound.resetCache();
@@ -111,6 +110,7 @@ class MainState extends FlxState
 					else
 						continue;
 				}
+				if (Options.disabledAddons.contains(addon)) continue;
 
 				var data:AddonInfo = {
 					name: addon,
@@ -156,13 +156,23 @@ class MainState extends FlxState
 		Flags.load();
 		funkin.savedata.FunkinSave.init();
 
-		TranslationUtil.findAllLanguages();
-		TranslationUtil.setLanguage(Flags.DISABLE_LANGUAGES ? Flags.DEFAULT_LANGUAGE : null);
-		ModsFolder.onModSwitch.dispatch(ModsFolder.currentModFolder); // Loads global.hx
-		MusicBeatTransition.script = Flags.DEFAULT_TRANSITION_SCRIPT;
+		Framerate.fontName = Framerate.defaultFontName;
+
+		FlxG.mouse.load();
+		FlxG.mouse.useSystemCursor = true;
+
+		if (Framerate.isLoaded)
+			Framerate.instance.visible = Framerate.memoryCounter.visible = Framerate.codenameBuildField.visible = Framerate.fpsCounter.visible = true;
+
+		WindowUtils.setResolution();
+		WindowUtils.resetIcon();
 		WindowUtils.resetAffixes(false);
 		WindowUtils.setWindow();
 		Main.refreshAssets();
+		TranslationUtil.findAllLanguages();
+		TranslationUtil.setLanguage(Flags.DISABLE_LANGUAGES ? Flags.DEFAULT_LANGUAGE : null);
+		MusicBeatTransition.script = Flags.DEFAULT_TRANSITION_SCRIPT;
+		ModsFolder.onModSwitch.dispatch(ModsFolder.currentModFolder); // Loads global.hx
 		DiscordUtil.init();
 		EventsData.reloadEvents();
 		ControlsUtil.loadCustomControls();
@@ -183,23 +193,34 @@ class MainState extends FlxState
 				cast(lib, ZipFolderLibrary).precacheVideos();
 		}
 
-		var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
-		var outdatedAPI:Bool = (Flags.MOD_API_VERSION ?? Flags.CURRENT_API_VERSION) < Flags.CURRENT_API_VERSION;
-		// In this case if the mod we just loaded a compressed modpack, we can't edit or modify files without decompressing it.
-		if (Options.devMode && Options.allowConfigWarning && !isZipMod)
-		{
-			var lib:ModsFolderLibrary;
-			for (e in Paths.assetsTree.libraries)
-				if ((lib = cast AssetsLibraryList.getCleanLibrary(e)) is ModsFolderLibrary && lib.modName == ModsFolder.currentModFolder)
+		if (!initiated) {
+			if (Main.goToSong != null) {
+				if (Main.goToCharter) FlxG.switchState(new funkin.editors.charter.Charter(Main.goToSong, Main.goToDifficulty, Main.goToVariation));
+				else {
+					PlayState.loadSong(Main.goToSong, Main.goToDifficulty, Main.goToVariation);
+					FlxG.switchState(new PlayState());
+				}
+			}
+		}
+		initiated = true;
+
+		if (@:privateAccess FlxG.game._nextState == null) {
+			var startState:Class<FlxState> = Flags.DISABLE_WARNING_SCREEN ? TitleState : funkin.menus.WarningState;
+			var outdatedAPI:Bool = (Flags.MOD_API_VERSION ?? Flags.CURRENT_API_VERSION) < Flags.CURRENT_API_VERSION;
+			// In this case if the mod we just loaded a compressed modpack, we can't edit or modify files without decompressing it.
+			if (Options.devMode && Options.allowConfigWarning && !isZipMod) {
+				var lib:ModsFolderLibrary;
+				for (e in Paths.assetsTree.libraries) if ((lib = cast AssetsLibraryList.getCleanLibrary(e)) is ModsFolderLibrary
+					&& lib.modName == ModsFolder.currentModFolder)
 				{
-					if (!outdatedAPI && lib.exists(Paths.ini("config/modpack"), lime.utils.AssetType.TEXT))
-						break;
+					if (!outdatedAPI && lib.exists(Paths.ini("config/modpack"), lime.utils.AssetType.TEXT)) break;
 
 					FlxG.switchState(new ModConfigWarning(lib, startState, outdatedAPI));
 					return;
 				}
-		}
+			}
 
-		FlxG.switchState(cast Type.createInstance(startState, []));
+			FlxG.switchState(cast Type.createInstance(startState, []));
+		}
 	}
 }

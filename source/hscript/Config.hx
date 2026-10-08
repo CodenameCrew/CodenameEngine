@@ -5,14 +5,34 @@ class Config
 	// Runs support for custom classes in these
 	public static final ALLOWED_CUSTOM_CLASSES = [
 		#if !DOCUMENTATION
-		"flixel", "funkin",
+		"flixel",
+
+		"funkin",
+		#if foxlite 
+		"foxlite", 
+		#end
+		#if MODCHARTING_FEATURES
+		"modchart.engine",
+		"modchart.backend.standalone",
+		#end
 		#end
 	];
 
 	// Runs support for abstract support in these
 	public static final ALLOWED_ABSTRACT_AND_ENUM = [
 		#if !DOCUMENTATION
-		"flixel", "openfl", "haxe.xml", "haxe.CallStack", "funkin",
+		"flixel",
+		"openfl",
+
+		"haxe.xml",
+		"haxe.CallStack",
+		"funkin",
+		#if IMGUI_ENABLED
+		"lime.tools.imgui",
+		#end
+		#if foxlite 
+		"foxlite" 
+		#end
 		#end
 	];
 

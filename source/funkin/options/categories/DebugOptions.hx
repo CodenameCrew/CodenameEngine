@@ -8,6 +8,9 @@ class DebugOptions extends TreeMenuScreen
 
 		#if windows
 		add(new TextOption(getNameID("showConsole"), getDescID("showConsole"), () -> funkin.backend.utils.NativeAPI.allocConsole()));
+		#if IMGUI_ENABLED
+		add(new Checkbox(getNameID("useNativeConsole"), getDescID("useNativeConsole"), "useNativeConsole", () -> { @:privateAccess if (Options.useNativeConsole) funkin.backend.system.console.ConsoleUI.instance.active = false; }));
+		#end
 		#end
 		add(new Checkbox(getNameID("editorsResizable"), getDescID("editorsResizable"), "editorsResizable"));
 		add(new Checkbox(getNameID("bypassEditorsResize"), getDescID("bypassEditorsResize"), "bypassEditorsResize"));
@@ -22,5 +25,11 @@ class DebugOptions extends TreeMenuScreen
 		add(new NumOption(getNameID("charterAutoSaveWarningTime"), getDescID("charterAutoSaveWarningTime"), 0, 15, 1, "charterAutoSaveWarningTime"));
 		add(new Checkbox(getNameID("charterAutoSavesSeparateFolder"), getDescID("charterAutoSavesSeparateFolder"), "charterAutoSavesSeparateFolder"));
 		add(new Checkbox(getNameID("songOffsetAffectEditors"), getDescID("songOffsetAffectEditors"), "songOffsetAffectEditors"));
+		#if (cpp && (windows || mac || linux))
+		add(new Checkbox(getNameID("legacyMemoryCounter"), getDescID("legacyMemoryCounter"), "legacyMemoryCounter"));
+		#end
+		#if IMGUI_ENABLED
+		add(new Checkbox(getNameID("imguiMultiViewport"), getDescID("imguiMultiViewport"), "imguiMultiViewport"));
+		#end
 	}
 }

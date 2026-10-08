@@ -76,6 +76,7 @@ class NoteGroup extends FlxTypedGroup<Note>
 		if (_cameras != null)
 			FlxCamera._defaultCameras = _cameras;
 
+		var renderingSustains = true;
 		var oldCur = __currentlyLooping;
 		__currentlyLooping = true;
 

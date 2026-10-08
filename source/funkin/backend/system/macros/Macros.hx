@@ -38,9 +38,29 @@ class Macros
 			"flixel.addons.transition",
 			"flixel.addons.util",
 			// OTHER LIBRARIES & STUFF
-			#if THREE_D_SUPPORT "away3d", "flx3d", #end
+			"openfl.utils",
+			#if THREE_D_SUPPORT
+			/*
+				supposed to be deprecated but
+				were keeping them in the source for now
+				commenting them out here will make them
+				not show up during compiling....
+			*/
+			// "away3d", "flx3d",
+			#if foxlite
+			"foxlite",
+			"foxlite.animation", "foxlite.color", "foxlite.culling",
+			"foxlite.extra", "foxlite.flixel", "foxlite.funkin",
+			"foxlite.groups", "foxlite.instancing", "foxlite.lights",
+			"foxlite.loaders", "foxlite.materials", "foxlite.math",
+			"foxlite.mesh", "foxlite.polyfill", "foxlite.post",
+			"foxlite.renderer", "foxlite.skin", "foxlite.sky",
+			"foxlite.stencil", "foxlite.system", "foxlite.texture",
+			#end
+			#end
 			#if VIDEO_CUTSCENES "hxvlc.flixel", "hxvlc.openfl", #end
 			#if NAPE_ENABLED "nape", "flixel.addons.nape", #end
+			#if IMGUI_ENABLED "lime.tools.imgui", #end
 			// BASE HAXE
 			"DateTools",
 			"EReg",

@@ -339,8 +339,7 @@ class IntroText
 			if (e is String)
 			{
 				var text = cast(e, String);
-				for (k => e in state.curWacky)
-					text = text.replace('{introText${k + 1}}', e);
+				for(k=>e in state.curWacky) text = text.replace('{introText${k+1}}', e.trim());
 				state.addMoreText(text);
 			}
 			else if (e is Dynamic)

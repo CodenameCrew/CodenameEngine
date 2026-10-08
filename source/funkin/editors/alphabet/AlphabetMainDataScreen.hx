@@ -207,10 +207,9 @@ UPPERLETTER and LOWERLETTTER can be used in any backup prefix.";
 		final newData:AlphabetLetterData = {
 			isDefault: true,
 			advance: 0.0,
-			advanceEmpty: true,
-			components: [
-				{
-					anim: name,
+			advanceStyle: EMPTY,
+			components: [{
+				anim: name,
 
 					x: 0.0,
 					y: 0.0,

@@ -220,12 +220,11 @@ class SystemInfo extends FramerateCategory
 	public function new()
 	{
 		super("System Info");
+		visible = Options.fpsCounterSystem;
 	}
 
-	public override function __enterFrame(t:Float)
-	{
-		if (alpha <= 0.05)
-			return;
+	public override function __enterFrame(t:Float) {
+		if (alpha <= 0.05 || !visible) return;
 
 		var buf = new StringBuf();
 		buf.add(__formattedSysText);

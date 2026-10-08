@@ -1,4 +1,5 @@
 import funkin.backend.utils.DiscordUtil;
+import funkin.backend.utils.TranslationUtil;
 
 function onGameOver()
 {
@@ -29,7 +30,7 @@ function onPlayStateUpdate()
 function onMenuLoaded(name:String)
 {
 	// Name is either "Main Menu", "Freeplay", "Title Screen", "Options Menu", "Credits Menu", "Beta Warning", "Update Available Screen", "Update Screen"
-	DiscordUtil.changePresenceSince("In the Menus", null);
+	DiscordUtil.changePresenceSince(TranslationUtil.translate('rpc.menus'), null);
 }
 
 function onEditorTreeLoaded(name:String)

@@ -22,6 +22,11 @@ typedef SongCreationData =
 	var voicesBytes:Bytes;
 	@:optional var playerVocals:Bytes;
 	@:optional var oppVocals:Bytes;
+
+	var instExt:String;
+	var voicesExt:String;
+	@:optional var playerExt:String;
+	@:optional var oppExt:String;
 }
 
 class SongCreationScreen extends UISubstateWindow
@@ -124,10 +129,8 @@ class SongCreationScreen extends UISubstateWindow
 		denominatorStepper = new UINumericStepper(beatsPerMeasureStepper.x + 30 + 24, beatsPerMeasureStepper.y, 4, 1, 0, 1, null, 54);
 		songDataGroup.add(denominatorStepper);
 
-		instExplorer = new UIFileExplorer(songNameTextBox.x, songNameTextBox.y + 32 + 36, null, null, Flags.SOUND_EXT, function(path, res)
-		{
-			if (path == null || res == null)
-				return;
+		instExplorer = new UIFileExplorer(songNameTextBox.x, songNameTextBox.y + 32 + 36, null, null, Flags.SOUND_EXTS, function (path, res) {
+			if (path == null || res == null) return;
 			var audioPlayer:UIAudioPlayer = new UIAudioPlayer(instExplorer.x + 8, instExplorer.y + 8, res);
 			instExplorer.members.push(audioPlayer);
 			instExplorer.uiElement = audioPlayer;
@@ -135,10 +138,8 @@ class SongCreationScreen extends UISubstateWindow
 		songDataGroup.add(instExplorer);
 		addLabelOn(instExplorer, "").applyMarkup(translate("instAudio"), [new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFAD1212), "$")]);
 
-		voicesExplorer = new UIFileExplorer(instExplorer.x + 320 + 26, instExplorer.y, null, null, Flags.SOUND_EXT, function(path, res)
-		{
-			if (path == null || res == null)
-				return;
+		voicesExplorer = new UIFileExplorer(instExplorer.x + 320 + 26, instExplorer.y, null, null, Flags.SOUND_EXTS, function (path, res) {
+			if (path == null || res == null) return;
 			var audioPlayer:UIAudioPlayer = new UIAudioPlayer(voicesExplorer.x + 8, voicesExplorer.y + 8, res);
 			voicesExplorer.members.push(audioPlayer);
 			voicesExplorer.uiElement = audioPlayer;
@@ -219,10 +220,8 @@ class SongCreationScreen extends UISubstateWindow
 		var menuTitle:UIText;
 		importAudioGroup.add(menuTitle = new UIText(windowSpr.x + 20, windowSpr.y + 30 + 16, 0, translate("importAudios"), 28));
 
-		importInstExplorer = new UIFileExplorer(menuTitle.x, menuTitle.y + menuTitle.height + 36, null, null, Flags.SOUND_EXT, function(path, res)
-		{
-			if (path == null || res == null)
-				return;
+		importInstExplorer = new UIFileExplorer(menuTitle.x, menuTitle.y + menuTitle.height + 36, null, null, Flags.SOUND_EXTS, function (path, res) {
+			if (path == null || res == null) return;
 			var audioPlayer:UIAudioPlayer = new UIAudioPlayer(importInstExplorer.x + 8, importInstExplorer.y + 8, res);
 			importInstExplorer.members.push(audioPlayer);
 			importInstExplorer.uiElement = audioPlayer;
@@ -230,10 +229,8 @@ class SongCreationScreen extends UISubstateWindow
 		importAudioGroup.add(importInstExplorer);
 		addLabelOn(importInstExplorer, "").applyMarkup(translate("instAudio"), [new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFAD1212), "$")]);
 
-		importVoicesExplorer = new UIFileExplorer(importInstExplorer.x + 320 + 26, importInstExplorer.y, null, null, Flags.SOUND_EXT, function(path, res)
-		{
-			if (path == null || res == null)
-				return;
+		importVoicesExplorer = new UIFileExplorer(importInstExplorer.x + 320 + 26, importInstExplorer.y, null, null, Flags.SOUND_EXTS, function (path, res) {
+			if (path == null || res == null) return;
 			var audioPlayer:UIAudioPlayer = new UIAudioPlayer(importVoicesExplorer.x + 8, importVoicesExplorer.y + 8, res);
 			importVoicesExplorer.members.push(audioPlayer);
 			importVoicesExplorer.uiElement = audioPlayer;
@@ -247,12 +244,11 @@ class SongCreationScreen extends UISubstateWindow
 		importDataGroup.add(importIdTextBox = new UITextBox(menuTitle.x, menuTitle.y + menuTitle.height + 36));
 		addLabelOn(importIdTextBox, "").applyMarkup(translate("songFileName"), [new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFAD1212), "$")]);
 
-		importChartFile = new UIFileExplorer(importIdTextBox.x, importIdTextBox.y + importIdTextBox.height + 56, null, null, "fnfc",
-			function(_, _) importIdTextBox.label.text = new haxe.io.Path(importChartFile.filePath).file);
+		importChartFile = new UIFileExplorer(importIdTextBox.x, importIdTextBox.y + importIdTextBox.height + 56, null, null, ["fnfc"], function (_, _) importIdTextBox.label.text = new haxe.io.Path(importChartFile.filePath).file);
 		importDataGroup.add(importChartFile);
 		addLabelOn(importChartFile, "").applyMarkup(translate("songDataFile"), [new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFAD1212), "$")]);
 
-		importMetaFile = new UIFileExplorer(importChartFile.x + 320 + 26, importChartFile.y, null, null, "json");
+		importMetaFile = new UIFileExplorer(importChartFile.x + 320 + 26, importChartFile.y, null, null, ["json"]);
 		importDataGroup.add(importMetaFile);
 		addLabelOn(importMetaFile, "").applyMarkup(translate("songMetaFile"), [new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFAD1212), "$")]);
 
@@ -326,7 +322,7 @@ class SongCreationScreen extends UISubstateWindow
 			else if (curPage == 2)
 			{
 				importIdTextBox.selectable = !project;
-				importChartFile.fileType = project ? "fnfc" : "json";
+				importChartFile.fileType = [project ? "fnfc" : "json"];
 				importMetaFile.selectable = name == translate("vslice");
 				saveButton.selectable = importChartFile.file != null
 					&& (!importMetaFile.selectable || importMetaFile.file != null)
@@ -403,61 +399,58 @@ class SongCreationScreen extends UISubstateWindow
 	{
 		if (isImporting)
 		{
-			try
-				switch (engineDropdown.index)
-				{
-					case 2 /*"V-Slice Project (.fnfc)"*/:
-						var files:Map<String, Any> = [];
-						for (field in new ZipReader(new BytesInput(importChartFile.file)).read())
-						{
-							var fileName = field.fileName;
-							var fileContent = ZipUtil.unzip(field);
-							files.set(fileName, fileContent);
-						}
-						saveFromVSlice(files);
-					case 1 /*"V-Slice"*/:
-						var songId = importIdTextBox.label.text;
-						var files:Map<String, Any> = [];
-						files.set('${songId}-metadata.json', importMetaFile.file);
-						files.set('${songId}-chart.json', importChartFile.file);
-						files.set('Inst.${Flags.SOUND_EXT}', importInstExplorer.file);
-						files.set('Voices.${Flags.SOUND_EXT}', importVoicesExplorer.file);
-						saveFromVSlice(files, songId);
-					default /*"Psych/Legacy FNF"*/:
-						var songId = importIdTextBox.label.text;
-						var oldChart:
-						SwagSong = Chart.cleanSongData(Json.parse(cast importChartFile.file));
-						var base:ChartData = {
-							strumLines: [],
-							noteTypes: [],
-							events: [],
-							meta: {name: songId},
-							scrollSpeed: Flags.DEFAULT_SCROLL_SPEED,
-							stage: Flags.DEFAULT_STAGE,
-							codenameChart: true
-						};
-						PsychParser.parse(oldChart, base);
-						var meta = formatMeta({
-							name: songId,
-							difficulties: ['normal'],
-							bpm: oldChart.bpm,
-							beatsPerMeasure: oldChart.beatsPerMeasure,
-							stepsPerBeat: oldChart.stepsPerBeat,
-							displayName: oldChart.song
-						});
-						if (onSave != null)
-							onSave({
-								meta: meta,
-								instBytes: importInstExplorer.file,
-								voicesBytes: importVoicesExplorer.file,
-							}, (songFolder:String) -> {
-								#if sys
-								CoolUtil.safeSaveFile('$songFolder/${getChartSavePath(meta, "normal")}', Json.stringify(base, Flags.JSON_PRETTY_PRINT));
-								#end
-							});
-				}
-			catch (e:haxe.Exception)
+			try switch(engineDropdown.index)
 			{
+				case 2 /*"V-Slice Project (.fnfc)"*/:
+					var files:Map<String, Any> = [];
+					for (field in new ZipReader(new BytesInput(importChartFile.file)).read()) {
+						var fileName = field.fileName;
+						var fileContent = ZipUtil.unzip(field);
+						files.set(fileName, fileContent);
+					}
+					saveFromVSlice(files);
+				case 1 /*"V-Slice"*/:
+					final ogg = "ogg";
+					var songId = importIdTextBox.label.text;
+					var files:Map<String, Any> = [];
+					files.set('${songId}-metadata.json', importMetaFile.file);
+					files.set('${songId}-chart.json', importChartFile.file);
+					files.set('Inst.$ogg', importInstExplorer.file);
+					files.set('Voices.$ogg', importVoicesExplorer.file);
+					saveFromVSlice(files, songId);
+				default /*"Psych/Legacy FNF"*/:
+					var songId = importIdTextBox.label.text;
+					var oldChart:SwagSong = Chart.cleanSongData(Json.parse(cast importChartFile.file));
+					var base:ChartData = {
+						strumLines: [],
+						noteTypes: [],
+						events: [],
+						meta: {name: songId},
+						scrollSpeed: Flags.DEFAULT_SCROLL_SPEED,
+						stage: Flags.DEFAULT_STAGE,
+						codenameChart: true
+					};
+					PsychParser.parse(oldChart, base);
+					var meta = formatMeta({
+						name: songId,
+						difficulties: ['normal'],
+						bpm: oldChart.bpm,
+						beatsPerMeasure: oldChart.beatsPerMeasure,
+						stepsPerBeat: oldChart.stepsPerBeat,
+						displayName: oldChart.song
+					});
+					if (onSave != null) onSave({
+						meta: meta,
+						instBytes: importInstExplorer.file,
+						voicesBytes: importVoicesExplorer.file,
+						instExt: importInstExplorer.fileExt,
+						voicesExt: importVoicesExplorer.fileExt
+					}, (songFolder:String) -> {
+						#if sys
+						CoolUtil.safeSaveFile('$songFolder/${getChartSavePath(meta, "normal")}', Json.stringify(base, Flags.JSON_PRETTY_PRINT));
+						#end
+					});
+			} catch (e:haxe.Exception) {
 				trace(e.stack, e.message);
 				openSubState(new UIWarningSubstate("Importing Song/Charts: Error!", e.details(), [
 					{
@@ -491,25 +484,25 @@ class SongCreationScreen extends UISubstateWindow
 				]
 			});
 
-			if (onSave != null)
-				onSave({
-					meta: meta,
-					instBytes: instExplorer.file,
-					voicesBytes: voicesExplorer.file
-				}, null);
+			if (onSave != null) onSave({
+				meta: meta,
+				instBytes: instExplorer.file,
+				voicesBytes: voicesExplorer.file,
+				instExt: instExplorer.fileExt,
+				voicesExt: voicesExplorer.fileExt
+			}, null);
 		}
 	}
 
-	function saveFromVSlice(files:Map<String, Any>, ?name:String)
-	{
+	function saveFromVSlice(files:Map<String, Any>, ?name:String) {
+		final ogg = "ogg"; // vslice doesnt know about anything that isnt ogg. this should just be a constant
 		var songId = name == null && files.exists("manifest.json") ? Json.parse(files.get("manifest.json")).songId : name;
 		var vslicemeta:SwagMetadata = Json.parse(files.get('${songId}-metadata.json'));
 		var vslicechart:NewSwagSong = Json.parse(files.get('${songId}-chart.json'));
 		var playData = vslicemeta.playData;
 
-		var meta:ChartMetaData = formatMeta({name: songId, needsVoices: files.get('Voices.${Flags.SOUND_EXT}') != null});
-		var diffCharts:Array<ChartDataWithInfo> = [],
-			events:Array<ChartEvent> = null;
+		var meta:ChartMetaData = formatMeta({name: songId, needsVoices: files.get('Voices.$ogg') != null});
+		var diffCharts:Array<ChartDataWithInfo> = [], events:Array<ChartEvent> = null;
 		VSliceParser.parse(vslicemeta, vslicechart, meta, diffCharts, songId);
 
 		if (diffCharts.length != 0)
@@ -517,21 +510,21 @@ class SongCreationScreen extends UISubstateWindow
 		for (diff in diffCharts)
 			diff.chart.events = [];
 
-		if (onSave != null)
-			onSave({
-				meta: meta,
-				instBytes: files.get('Inst.${Flags.SOUND_EXT}'),
-				voicesBytes: files.get('Voices.${Flags.SOUND_EXT}'), // it may exist
-				playerVocals: files.get('Voices-${playData.characters.playerVocals != null ? playData.characters.playerVocals[0] : playData.characters.player}.${Flags.SOUND_EXT}'),
-				oppVocals: files.get('Voices-${playData.characters.opponentVocals != null ? playData.characters.opponentVocals[0] : playData.characters.opponent}.${Flags.SOUND_EXT}'),
-			}, (songFolder:String) -> {
-				#if sys
-				for (diff in diffCharts)
-					CoolUtil.safeSaveFile('$songFolder/${getChartSavePath(meta, diff.diffName)}', Json.stringify(diff.chart, Flags.JSON_PRETTY_PRINT));
-				if (events != null)
-					CoolUtil.safeSaveFile('$songFolder/events${meta.variant != null && meta.variant != "" ? "-" + meta.variant : ""}.json',
-						Json.stringify({events: events}, Flags.JSON_PRETTY_PRINT));
-				#end
-			});
+		if (onSave != null) onSave({
+			meta: meta,
+			instBytes: files.get('Inst.$ogg'),
+			voicesBytes: files.get('Voices.$ogg'), //it may exist
+			playerVocals: files.get('Voices-${playData.characters.playerVocals != null ? playData.characters.playerVocals[0] : playData.characters.player}.$ogg'),
+			oppVocals: files.get('Voices-${playData.characters.opponentVocals != null ? playData.characters.opponentVocals[0] : playData.characters.opponent}.$ogg'),
+			instExt:   ogg,
+			voicesExt: ogg,
+			playerExt: ogg,
+			oppExt:    ogg
+		}, (songFolder:String) -> {
+			#if sys
+			for (diff in diffCharts) CoolUtil.safeSaveFile('$songFolder/${getChartSavePath(meta, diff.diffName)}', Json.stringify(diff.chart, Flags.JSON_PRETTY_PRINT));
+			if (events != null) CoolUtil.safeSaveFile('$songFolder/events${meta.variant != null && meta.variant != "" ? "-" + meta.variant : ""}.json', Json.stringify({events: events}, Flags.JSON_PRETTY_PRINT));
+			#end
+		});
 	}
 }

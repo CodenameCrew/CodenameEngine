@@ -253,6 +253,13 @@ class UISoftcodedWindow extends UISubstateWindow
 						add(dropdown);
 						addLabelOn(dropdown, label);
 						dropdown;
+					case "colorwheel":
+						var color = CoolUtil.getColorFromDynamic(execAtt(el, "color", 0xFFFFFFFF));
+
+						var wheel = new UIColorwheel(x, y, color);
+						add(wheel);
+						addLabelOn(wheel, label);
+						wheel;
 					case "buttonlist":
 						// x:Float, y:Float, width:Int, height:Int, windowName:String, buttonSize:FlxPoint, ?buttonOffset:FlxPoint, ?buttonSpacing:Float
 						var buttonlist = new UIButtonList<UIButton>(x, y, execAtt(el, "width"), execAtt(el, "height"),
@@ -278,9 +285,7 @@ class UISoftcodedWindow extends UISubstateWindow
 						addLabelOn(buttonlist, label);
 						set("buttonlist", old);
 						buttonlist;
-					// UIColorwheel
 					// UIAudioPlayer
-					// UIButtonList
 					// UIFileExplorer
 					// UIAutoCompleteTextbox
 					default: {

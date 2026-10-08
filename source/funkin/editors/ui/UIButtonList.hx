@@ -16,7 +16,8 @@ class UIButtonList<T:UIButton> extends UIWindow
 
 	public var buttonSpacing:Float = 16;
 	public var buttonSize:FlxPoint = null;
-	public var buttonOffset:FlxPoint = FlxPoint.get();
+	public var globalButtonOffset:FlxPoint = FlxPoint.get();
+	public var buttonsOffset:FlxPoint = FlxPoint.get();
 
 	public var dragging:Bool = false;
 	public var dragCallback:(T, Int, Int) -> Void;
@@ -24,13 +25,11 @@ class UIButtonList<T:UIButton> extends UIWindow
 	var curMoving:T = null;
 	var curMovingInterval:Float = 0;
 
-	public function new(x:Float, y:Float, width:Int, height:Int, windowName:String, buttonSize:FlxPoint, ?buttonOffset:FlxPoint, ?buttonSpacing:Float)
-	{
-		if (buttonSpacing != null)
-			this.buttonSpacing = buttonSpacing;
+	public function new(x:Float, y:Float, width:Int, height:Int, windowName:String, buttonSize:FlxPoint, ?globalButtonOffset:FlxPoint, ?buttonSpacing:Float, ?buttonsOffset:FlxPoint) {
+		if (buttonSpacing != null) this.buttonSpacing = buttonSpacing;
 		this.buttonSize = buttonSize;
-		if (buttonOffset != null)
-			this.buttonOffset = buttonOffset;
+		if (globalButtonOffset != null) this.globalButtonOffset = globalButtonOffset;
+		if (buttonsOffset != null) this.buttonsOffset = buttonsOffset;
 		super(x, y, width, height, windowName);
 
 		buttonCameras = new FlxCamera(Std.int(x), Std.int(y + cameraSpacing), width, height - cameraSpacing - 1);
@@ -76,14 +75,13 @@ class UIButtonList<T:UIButton> extends UIWindow
 	public inline function updateButtonsPos(elapsed:Float)
 	{
 		var endButtonY:Float = 0;
-		for (i => button in buttons.members)
-		{
-			if (button == null)
-				continue;
-
-			if (curMoving != button)
-			{
-				button.setPosition((bWidth / 2) - (buttonSize.x / 2) + buttonOffset.x, CoolUtil.fpsLerp(button.y, endButtonY + buttonOffset.y, 0.25));
+		for (i => button in buttons.members) {
+			if (button == null) continue;
+			
+			if (curMoving != button) {
+				button.setPosition(
+					(bWidth/2) - (buttonSize.x/2) + globalButtonOffset.x + buttonsOffset.x,
+					CoolUtil.fpsLerp(button.y, endButtonY + globalButtonOffset.y + buttonsOffset.y, 0.25));
 			}
 			endButtonY += button.bHeight + buttonSpacing;
 			if (button.hovered && FlxG.mouse.justPressed)
@@ -91,7 +89,9 @@ class UIButtonList<T:UIButton> extends UIWindow
 		}
 
 		if (addButton != null)
-			addButton.setPosition((bWidth / 2) - (buttonSize.x / 2) + buttonOffset.x, CoolUtil.fpsLerp(addButton.y, endButtonY + buttonOffset.y, 0.25));
+			addButton.setPosition(
+				(bWidth/2) - (buttonSize.x/2) + globalButtonOffset.x,
+				CoolUtil.fpsLerp(addButton.y, endButtonY + globalButtonOffset.y, 0.25));
 
 		if (curMoving != null)
 		{
