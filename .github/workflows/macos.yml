@@ -14,6 +14,7 @@ jobs:
     permissions: write-all
     runs-on: macos-26
     steps:
+      - uses: Swatinem/rust-cache@v2
       - name: Pulling the new commit
         uses: actions/checkout@v7
         with:
@@ -31,7 +32,6 @@ jobs:
       #       .haxelib/
       #       export/release/macos/obj/
       - name: Installing/Updating libraries
-        uses: Swatinem/rust-cache@v2
         run: |
           haxelib --global update haxelib
           haxe -cp commandline -D analyzer-optimize --run Main setup -si
@@ -84,6 +84,7 @@ jobs:
     permissions: write-all
     runs-on: macos-26
     steps:
+      - uses: Swatinem/rust-cache@v2
       - name: Pulling the new commit
         uses: actions/checkout@v7
         with:
@@ -104,6 +105,8 @@ jobs:
         run: |
           haxelib --global update haxelib
           haxe -cp commandline -D analyzer-optimize --run Main setup -si
+          cargo install hmm-rs
+          hmm-rs install
       - name: Building the game
         run: |
           haxelib run lime setup -alias -y -nocffi
@@ -201,6 +204,7 @@ jobs:
     runs-on: macos-26
     needs: universal_build # since its low priority, it'll run after, so actions will concentrate first on normal builds
     steps:
+      - uses: Swatinem/rust-cache@v2
       - name: Pulling the new commit
         uses: actions/checkout@v7
       - name: Setting up Haxe
@@ -219,6 +223,8 @@ jobs:
         run: |
           haxelib --global update haxelib
           haxe -cp commandline -D analyzer-optimize --run Main setup -si
+          cargo install hmm-rs
+          hmm-rs install
       - name: Building the game
         run: |
           haxelib run lime setup -alias -y -nocffi
@@ -267,6 +273,7 @@ jobs:
     runs-on: macos-26
     needs: universal_build # since its low priority, it'll run after, so actions will concentrate first on normal builds
     steps:
+      - uses: Swatinem/rust-cache@v2
       - name: Pulling the new commit
         uses: actions/checkout@v7
       - name: Setting up Haxe
@@ -285,6 +292,8 @@ jobs:
         run: |
           haxelib --global update haxelib
           haxe -cp commandline -D analyzer-optimize --run Main setup -si
+          cargo install hmm-rs
+          hmm-rs install
       - name: Building the game
         run: |
           haxelib run lime setup -alias -y -nocffi
