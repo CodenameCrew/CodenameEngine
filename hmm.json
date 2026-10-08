@@ -65,11 +65,6 @@
       "version": "1.9.3"
     },
     {
-      "name": "hxWebSockets",
-      "type": "haxelib",
-      "version": "1.4.0"
-    },
-    {
       "name": "lime",
       "type": "git",
       "ref": "dda50eb4b6a94320e099cef386001f6221bff91f",
