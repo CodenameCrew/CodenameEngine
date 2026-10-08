@@ -206,7 +206,7 @@ class FreeplayState extends MusicBeatState
 		if (Math.abs(lerpScore - intendedScore) <= 10)
 			lerpScore = intendedScore;
 
-		var pickedAnother = false;
+		var selectedAnotherSong:Bool = false;
 		if (canSelect) {
 			changeSelection((controls.UP_P ? -1 : 0) + (controls.DOWN_P ? 1 : 0) - FlxG.mouse.wheel);
 			changeDiff((controls.LEFT_P ? -1 : 0) + (controls.RIGHT_P ? 1 : 0));
@@ -215,11 +215,9 @@ class FreeplayState extends MusicBeatState
 
 			if (grpSongs != null) {
 				for (index => sprite in grpSongs.members) {
-					if (TouchNav.justHit(sprite)) {
-						if (curSelected != index) {
-							changeSelection(index - curSelected);
-							pickedAnother = true;
-						}
+					if (curSelected != index && FlxG.mouse.overlaps(sprite)) {
+						changeSelection(index - curSelected);
+						selectedAnotherSong = true;
 						break;
 					}
 				}
@@ -253,8 +251,8 @@ class FreeplayState extends MusicBeatState
 			convertChart();
 		#end
 
-		if (controls.ACCEPT || (canSelect && !pickedAnother && grpSongs?.members[curSelected] != null
-			&& TouchNav.justHit(grpSongs.members[curSelected])))
+		if ((controls.ACCEPT || (!selectedAnotherSong && FlxG.mouse.justPressed && grpSongs?.members[curSelected] != null
+			&& FlxG.mouse.overlaps(grpSongs.members[curSelected]))))
 		{
 			select();
 		}

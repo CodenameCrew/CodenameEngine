@@ -86,8 +86,7 @@ function update(elapsed) {
 
 	var curText = texts[curSelected + 1];
 	if (curText != null) {
-		hand.x = curText.x - hand.width - 12 + (Math.sin(time * Math.PI * 2) * 12);
-		hand.y = curText.y + (curText.height - hand.height) * 0.5;
+		hand.setPosition(curText.x - hand.width - 24 + (Math.sin(time * Math.PI * 2) * 12), curText.y + ((text.height) / 2) - 6);
 		hand.x -= hand.x % 6;
 		hand.y -= hand.y % 6;
 	}

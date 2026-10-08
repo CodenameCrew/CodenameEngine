@@ -1,17 +1,15 @@
 package funkin.editors.character;
 
-import haxe.io.Bytes;
-import flixel.util.typeLimit.OneOfTwo;
 import flixel.text.FlxText.FlxTextFormat;
 import funkin.editors.ui.UIImageExplorer.ImageSaveData;
 import flixel.text.FlxText.FlxTextFormatMarkerPair;
 
 class CharacterSpriteScreen extends UISubstateWindow {
-	private var imagePath:String = null;
-	private var onSave:(String, Bool) -> Void = null;
+	private var imagePaths:Array<String> = null;
+	private var onSave:(Array<ImageSaveData>) -> Void = null;
 
-	public var ogImageSaveData:ImageSaveData;
-	public var imageExplorer:UIImageExplorer;
+	public var ogImageSaveDatas:Array<ImageSaveData>;
+	public var imageList:UIImageList;
 
 	public var saveButton:UIButton;
 	public var closeButton:UIButton;
@@ -19,15 +17,15 @@ class CharacterSpriteScreen extends UISubstateWindow {
 	inline function translate(id:String, ?args:Array<Dynamic>)
 		return TU.translate("characterEditor.characterSpriteScreen." + id, args);
 
-	public function new(imagePath:String, ?onSave:(String, Bool)->Void) {
+	public function new(imagePaths:Array<String>, ?onSave:(saveDatas:Array<ImageSaveData>)->Void) {
 		super();
-		this.imagePath = imagePath;
+		this.imagePaths = imagePaths;
 		if (onSave != null) this.onSave = onSave;
 	}
 
 	public override function create() {
 		winTitle = translate("win-title");
-		winWidth = 360; winHeight = 183;
+		winWidth = 660; winHeight = 520;
 
 		function addLabelOn(ui:UISprite, text:String):UIText {
 			var text:UIText = new UIText(ui.x, ui.y - 24, 0, text);
@@ -37,20 +35,24 @@ class CharacterSpriteScreen extends UISubstateWindow {
 
 		super.create();
 
-		imageExplorer = new UIImageExplorer(20, windowSpr.y + 30 + 16 + 20, imagePath, 320, 58, (_, _) -> {onLoadImage();}, "images/characters");
-		add(imageExplorer);
-		addLabelOn(imageExplorer, "").applyMarkup(
+		imageList = new UIImageList(10, Std.int(windowSpr.y + 30 + 16 + 20), null, () -> {onLoadImage();}, imagePaths);
+		add(imageList);
+		addLabelOn(imageList, "").applyMarkup(
 			translate('charImageFile'),
 			[new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFAD1212), "$")]);
-
-		ogImageSaveData = imageExplorer.getSaveData();
+		imageList.bHeight += 100;
+	
+		ogImageSaveDatas = imageList.getSaveDatas();
 
 		saveButton = new UIButton(windowSpr.x + windowSpr.bWidth - 20, windowSpr.y + windowSpr.bHeight - 20, TU.translate("editor.saveClose"), function() {
 			addToUndo(); // should be async?? -lunar
-			imageExplorer.saveFiles('${Paths.getAssetsRoot()}/images/characters', () -> {
-				onSave('${imageExplorer.saveData.directory.length > 0 ? '${imageExplorer.saveData.directory}/' : ""}' + imageExplorer.imageName, imageExplorer.isAtlas);
-				close();
-			});
+			var saveDatas:Array<ImageSaveData> = imageList.getSaveDatas();
+			
+			for(data in saveDatas)
+				UIImageExplorer.saveFilesGlobal(data, '${Paths.getAssetsRoot()}/images/characters');
+
+			onSave(saveDatas);
+			close();
 		}, 125);
 		saveButton.x -= saveButton.bWidth;
 		saveButton.y -= saveButton.bHeight;
@@ -64,26 +66,10 @@ class CharacterSpriteScreen extends UISubstateWindow {
 		//closeButton.y -= closeButton.bHeight;
 		add(closeButton);
 		add(saveButton);
-
-		refreshWindowSize();
 	}
 
 	public function onLoadImage() {
-		refreshWindowSize();
-
-		if (imageExplorer == null || imageExplorer.imageFiles == null) return;
-		var filesSame = CoolUtil.deepEqual(ogImageSaveData.imageFiles, imageExplorer.imageFiles);
-		saveButton.selectable = !filesSame && !CoolUtil.isMapEmpty(imageExplorer.imageFiles) && (imageExplorer.animationList.length > 0);
-	}
-
-	public function refreshWindowSize() {
-		if (imageExplorer == null) return;
-		windowSpr.bWidth = 20 + imageExplorer.bWidth + 20;
-		windowSpr.bHeight = 30 + 16 + 20 + imageExplorer.bHeight + 14 + saveButton.bHeight + 14;
-
-		saveButton.x = windowSpr.x + windowSpr.bWidth - 20 - saveButton.bWidth;
-		closeButton.x = saveButton.x - 20 - closeButton.bWidth; 
-		closeButton.y = saveButton.y = imageExplorer.y + imageExplorer.bHeight + 14;
+		saveButton.selectable = imageList.getSaveDatas() != imageList.getSaveDatas() && (imageList.getAnimList().length > 0);
 	}
 
 	public static var idCounter:Int = -1;
@@ -91,7 +77,10 @@ class CharacterSpriteScreen extends UISubstateWindow {
 		idCounter = FlxMath.wrap(idCounter + FlxG.random.int(1, 57349), 0, 9999);
 		CharacterEditor.undos.addToUndo(CCharEditSprite(idCounter));
 	
-		CoolUtil.safeSaveFile('./.temp/__undo__${Type.getClassName(Type.getClass(FlxG.state))}__${idCounter}.cneisd', UIImageExplorer.serializeSaveDataGlobal(ogImageSaveData));
-		CoolUtil.safeSaveFile('./.temp/__redo__${Type.getClassName(Type.getClass(FlxG.state))}__${idCounter}.cneisd', UIImageExplorer.serializeSaveDataGlobal(imageExplorer.getSaveData()));
+		for(i in 0...ogImageSaveDatas.length)
+			CoolUtil.safeSaveFile('./.temp/${idCounter}__undo__/${Type.getClassName(Type.getClass(FlxG.state))}__$i.cneisd', UIImageExplorer.serializeSaveDataGlobal(ogImageSaveDatas[i]));
+		
+		for(i in 0...imageList.getSaveDatas().length)
+			CoolUtil.safeSaveFile('./.temp/${idCounter}__redo__/${Type.getClassName(Type.getClass(FlxG.state))}__$i.cneisd', UIImageExplorer.serializeSaveDataGlobal(imageList.getSaveDatas()[i]));
 	}
 }

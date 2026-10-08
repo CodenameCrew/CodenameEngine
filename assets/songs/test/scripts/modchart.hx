@@ -7,6 +7,7 @@ function create() {
 }
 
 function postCreate() {
+	if(stage.stageName != 'tank') return;
 	for(i in 0...6) {
 		var spr = stage.getSprite("tank" + i);
 		if (spr != null) spr.visible = false;

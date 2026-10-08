@@ -32,6 +32,9 @@ typedef InspectorObject = {
 	var members:Array<InspectorObject>;
 	var memberIndex:Int;
 	var ?groupParent:InspectorObject;
+	var ?uid:Int;
+	var ?nodeID:String;
+	var ?label:String;
 }
 
 class ConsoleInspector {
@@ -56,6 +59,7 @@ class ConsoleInspector {
 
 	var currentStateObjects:Array<InspectorObject> = [];
 	var inspectorObjectsThatNeedUpdating:Array<InspectorObject> = [];
+	var nextObjectUID:Int = 0;
 
 	function updateObjects() {
 		var states:Array<FlxState> = [FlxG.state];
@@ -77,79 +81,84 @@ class ConsoleInspector {
 				}
 				var packageSplit = packageName.split(".");
 				var stateName = packageSplit[packageSplit.length-1];
+				var uid = nextObjectUID++;
 
 				currentStateObjects[index] = {
 					obj: state,
 					name: stateName,
 					type: packageName,
 					memberIndex: index,
-					members: []
+					members: [],
+					uid: uid,
+					nodeID: "##inspector" + uid,
+					label: stateName + " (" + packageName + ")"
 				};
 			}
 		}
 
-		for (index => inspectorObject in currentStateObjects) {
-			updateObjectMembers(index, inspectorObject);
+		for (inspectorObject in currentStateObjects) {
+			updateObjectMembers(inspectorObject);
 		}
 	}
 
-	function updateObjectMembers(index:Int, inspectorObject:InspectorObject, fromGroup:Bool = false) {
-		var objMembers:Array<Dynamic> = inspectorObject.obj.members;
+	inline function isMemberGroup(obj:Dynamic):Bool {
+		return obj is FlxTypedGroup || obj is FlxTypedSpriteGroup #if foxlite || obj is FoxScene || obj is FoxTypedGroup || obj is FoxObjectGroup #end;
+	}
+
+	function getMemberObjects(obj:Dynamic):Null<Array<Dynamic>> {
 		#if foxlite
-		if (inspectorObject.obj is FoxScene) {
-			objMembers = inspectorObject.obj.foxGroup.members;
-		}
+		if (obj is FoxScene) return obj.foxGroup != null ? obj.foxGroup.members : null;
 		#end
+		return obj.members;
+	}
+
+	function updateObjectMembers(inspectorObject:InspectorObject, fromGroup:Bool = false) {
+		var objMembers:Array<Dynamic> = getMemberObjects(inspectorObject.obj);
 		if (objMembers == null) {
 			return;
 		}
 
-		//sort and remove if needed
-		var membersToRemove:Array<InspectorObject> = [];
-		for (member in inspectorObject.members) {
-			var currentIndex:Int = objMembers.indexOf(member.obj);
-			if (currentIndex == -1) {
-				membersToRemove.push(member);
-			}
-			member.memberIndex = currentIndex;
-		}
-		for (m in membersToRemove) inspectorObject.members.remove(m);
-		inspectorObject.members.sort(function(a, b) {
-           if(a.memberIndex < b.memberIndex) return -1;
-           else if(a.memberIndex > b.memberIndex) return 1;
-           else return 0;
-        });
+		var cached = inspectorObject.members;
 
-		//we have new members to add
-		if (inspectorObject.members.length != objMembers.length) {
-			var newList:Array<InspectorObject> = [];
-			var oldListIndex:Int = 0;
-			for (i in 0...objMembers.length) {
-				if (inspectorObject.members[oldListIndex] == null || inspectorObject.members[oldListIndex].memberIndex != i || inspectorObject.members[oldListIndex].obj != objMembers[i]) {
-					var member:Dynamic = objMembers[i];
-					var memberPackage = hscript.getFieldTypeName(objMembers[i]);
-					var memberPackageSplit = memberPackage.split(".");
-					var memberType = memberPackageSplit[memberPackageSplit.length-1];
-					var memberName:String = fromGroup ? inspectorObject.name + ".members[" + i + "]" : figureOutObjectName(inspectorObject.type, inspectorObject.obj, member);
-					var newObj = {
-						obj: objMembers[i],
-						name: memberName,
-						type: memberType,
-						memberIndex: i,
-						members: [],
-						groupParent: fromGroup ? inspectorObject : null
-					};
-					newList.push(newObj);
-					if (member is FlxTypedGroup || member is FlxTypedSpriteGroup #if foxlite || member is FoxScene || member is FoxTypedGroup || member is FoxObjectGroup #end) {
-						updateObjectMembers(i, newObj, true);
-					}
-				} else {
-					newList.push(inspectorObject.members[oldListIndex]);
-					oldListIndex++;
-				}
+		if (cached.length == objMembers.length) {
+			var unchanged = true;
+			for (i in 0...cached.length) {
+				if (cached[i].obj != objMembers[i]) { unchanged = false; break; }
 			}
-			inspectorObject.members = newList;
+			if (unchanged) return;
 		}
+
+		var cachedByObject = new Map<Dynamic, InspectorObject>();
+		for (member in cached) if (member.obj != null && !cachedByObject.exists(member.obj)) cachedByObject.set(member.obj, member);
+
+		var newList:Array<InspectorObject> = [];
+		for (i in 0...objMembers.length) {
+			var member:Dynamic = objMembers[i];
+			var memberData = member != null ? cachedByObject.get(member) : null;
+			if (memberData != null) {
+				cachedByObject.remove(member);
+			} else {
+				var memberPackage = hscript.getFieldTypeName(member);
+				var memberPackageSplit = memberPackage != null ? memberPackage.split(".") : null;
+				var memberType = memberPackageSplit != null ? memberPackageSplit[memberPackageSplit.length-1] : "Null";
+				var memberName:String = fromGroup ? inspectorObject.name + ".members[" + i + "]" : figureOutObjectName(inspectorObject.type, inspectorObject.obj, member);
+				var uid = nextObjectUID++;
+				memberData = {
+					obj: member,
+					name: memberName,
+					type: memberType,
+					memberIndex: i,
+					members: [],
+					groupParent: fromGroup ? inspectorObject : null,
+					uid: uid,
+					nodeID: "##inspector" + uid,
+					label: memberName + " (" + memberType + ")"
+				};
+			}
+			memberData.memberIndex = i;
+			newList.push(memberData);
+		}
+		inspectorObject.members = newList;
 	}
 
 	public function displayUI() {
@@ -169,16 +178,15 @@ class ConsoleInspector {
 			if (ImGui.selectable("Scale (R)", gizmo.gizmoMode == 2)) gizmo.gizmoMode = 2;
 			ImGui.unindent();
 			ImGui.separatorText("States");
-			for (index => member in currentStateObjects) {
-				var nodeID = member.name + index;
+			for (member in currentStateObjects) {
 				var flags = ImGuiTreeNodeFlags.DefaultOpen;
 				if (member.obj == selectedObject) flags |= ImGuiTreeNodeFlags.Selected;
-				if (ImGui.treeNodeEx(nodeID, flags, member.name + " (" + member.type + ")")) {
+				if (ImGui.treeNodeEx(member.nodeID, flags, member.label)) {
 					if (ImGui.isItemClicked()) {
 						selectObject(member.obj);
 					}
 					if (member.members.length > 0) {
-						generateTreeForMembers(nodeID, member);
+						generateTreeForMembers(member);
 					}
 					ImGui.treePop();
 				}
@@ -228,19 +236,23 @@ class ConsoleInspector {
 		}
 	}
 
-	function generateTreeForMembers(id:String, object:InspectorObject) {
-		for (index => member in object.members) {
+	function generateTreeForMembers(object:InspectorObject) {
+		for (member in object.members) {
 			var valid = member.obj != null;
-			var nodeID = id + object.name + index;
+			var isGroup:Bool = valid && isMemberGroup(member.obj);
+			var groupMembers:Null<Array<Dynamic>> = isGroup ? getMemberObjects(member.obj) : null;
 			var flags = ImGuiTreeNodeFlags.None;
-			if (member.members.length == 0) flags |= ImGuiTreeNodeFlags.Leaf;
+			if (member.members.length == 0 && (groupMembers == null || groupMembers.length == 0)) flags |= ImGuiTreeNodeFlags.Leaf;
 			if (valid && member.obj == selectedObject) flags |= ImGuiTreeNodeFlags.Selected;
-			if (ImGui.treeNodeEx(nodeID, flags, member.name + (valid ? " (" + member.type + ")" : ""))) {
+			if (ImGui.treeNodeEx(member.nodeID, flags, valid ? member.label : member.name)) {
 				if (valid && ImGui.isItemClicked()) {
 					selectObject(member.obj);
 				}
-				if (valid && member.members.length > 0) {
-					generateTreeForMembers(nodeID, member);
+				if (isGroup) {
+					updateObjectMembers(member, true);
+					if (member.members.length > 0) {
+						generateTreeForMembers(member);
+					}
 				}
 				ImGui.treePop();
 			}
@@ -325,6 +337,7 @@ class ConsoleInspector {
 			for (script in pack.scripts) {
 				if (script is HScript) {
 					var hscript:HScript = cast script;
+					if (hscript.interp == null) continue;
 					for (name => scriptObj in hscript.interp.variables) {
 						if (scriptObj is FlxBasic) {
 							if (scriptObj == object) return name;

@@ -50,6 +50,7 @@ class AssetsLibraryList extends AssetLibrary {
 				}
 			}
 			#end
+			resetAssetPathCache();
 		}
 		return lib;
 	}
@@ -64,9 +65,10 @@ class AssetsLibraryList extends AssetLibrary {
 
 	public function getAssetPathLibrary(id:String, type:Null<String>, source:AssetSource = BOTH):Null<AssetLibrary> {
 		var cacheLibraryPaths:Map<String, AssetLibrary> = null;
+
 		if (Flags.PATHS_CACHE_LIFETIME != 0) {
 			// Prevent massive lags on repetitive usage, primarily with getting note sprite sheets in mania charts (usually 2k+ notes)
-			final time = haxe.Timer.stamp();
+			final time = lime.system.System.getTimer() * 0.001;
 
 			var cacheLibraryTypes = assetPathCacheLibrary.get(source), cacheTimeTypes = assetPathCacheTime.get(source);
 			if (cacheLibraryTypes == null) {
@@ -80,14 +82,13 @@ class AssetsLibraryList extends AssetLibrary {
 				cacheLibraryTypes.set(type, cacheLibraryPaths = []);
 				cacheTimeTypes.set(type, cacheTimePaths = []);
 			}
-
-			if (cacheTimePaths.exists(id)) {
-				final library = cacheLibraryPaths.get(id);
-
+			else if (cacheTimePaths.exists(id)) {
 				if (Flags.PATHS_CACHE_LIFETIME != null) {
 					final cacheSafeTime = cacheTimePaths.get(id) + Flags.PATHS_CACHE_LIFETIME;
 
-					if (library != null) {
+					if (cacheLibraryPaths.exists(id)) {
+						final library = cacheLibraryPaths.get(id);
+
 						if (time < cacheSafeTime) return library;
 						else if (!shouldSkipLib(library, source)
 							&& (type == null ? library.exists(id, @:privateAccess library.types.get(id)) : library.exists(id, type))
@@ -98,12 +99,11 @@ class AssetsLibraryList extends AssetLibrary {
 
 						cacheLibraryPaths.remove(id);
 					}
-					else if (time < cacheSafeTime) {
+					else if (time < cacheSafeTime)
 						return null;
-					}
 				}
 				else
-					return library;
+					return cacheLibraryPaths.get(id);
 			}
 
 			cacheTimePaths.set(id, time);

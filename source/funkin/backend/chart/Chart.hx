@@ -184,7 +184,7 @@ class Chart {
 
 		var valid:Bool = true, namePrint = '$songName $difficulty' + ((variant != null && variant != '') ? ' ($variant)' : '');
 		if (!Assets.exists(chartPath)) {
-			Logs.error('Chart for song $namePrint at "$chartPath" was not found.');
+			Logs.warn('Chart file was not found for "$namePrint" in path: $chartPath');
 			valid = false;
 		}
 		var data:Dynamic = null;
