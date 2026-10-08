@@ -31,9 +31,12 @@ jobs:
       #       .haxelib/
       #       export/release/windows/obj/
       - name: Installing/Updating libraries
+        uses: Swatinem/rust-cache@v2
         run: |
           haxelib --global update haxelib
           haxe -cp commandline -D analyzer-optimize --run Main setup -si --no-vscheck
+          cargo install hmm-rs
+          hmm-rs install
       - name: Building the game
         run: |
           haxelib run lime setup -alias -y -nocffi
