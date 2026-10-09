@@ -382,8 +382,7 @@ class CrashOverlay extends Sprite {
 		try {
 			while (true) {
 				var label = new FlxText(0, 0, Std.int(textW), message, size);
-				label.alignment = FlxTextAlign.CENTER;
-				label.setFormat(Paths.font("pixel.otf"), size, 0xFFFFFFFF, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, 0xFF000000);
+				label.setFormat(Paths.font("MPLUS1Code-Regular.ttf"), size, 0xFFFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, 0xFF000000);
 				label.borderSize = 2;
 				label.antialiasing = false;
                 var textHeight = label.height;
@@ -534,7 +533,7 @@ class CrashButton extends Sprite {
 		addChild(bg);
 
 		var labelField = new FlxText(0, 0, 0, text, 20);
-		labelField.setFormat(Paths.font("pixel.otf"), 20, 0xFFFFFFFF, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, 0xFF000000);
+		labelField.setFormat(Paths.font("MPLUS1Code-Regular.ttf"), 20, 0xFFFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, 0xFF000000);
 		labelField.borderSize = 2;
 		labelField.antialiasing = false;
 
