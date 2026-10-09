@@ -43,7 +43,7 @@ jobs:
           haxelib run lime rebuild hxcpp
           haxelib run lime rebuild tools
           haxelib run lime rebuild windows -nocolor -release
-          haxelib run lime build windows -DCOMPILE_EXPERIMENTAL
+          haxelib run lime build windows -DCOMPILE_EXPERIMENTAL -DACTION_BUILD
       - name: Uploading artifact (executable)
         uses: actions/upload-artifact@v7
         with:
@@ -119,7 +119,7 @@ jobs:
           haxelib run lime rebuild hxcpp
           haxelib run lime rebuild tools
           haxelib run lime rebuild windows -nocolor -release
-          haxelib run lime build windows -debug
+          haxelib run lime build windows -debug -DACTION_BUILD
       - name: Uploading artifact (entire build)
         uses: actions/upload-artifact@v7
         with:

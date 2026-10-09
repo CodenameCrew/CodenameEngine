@@ -54,7 +54,7 @@ jobs:
           haxelib run lime rebuild hxcpp
           haxelib run lime rebuild tools
           haxelib run lime rebuild linux -nocolor -release
-          haxelib run lime build linux -DCOMPILE_EXPERIMENTAL
+          haxelib run lime build linux -DCOMPILE_EXPERIMENTAL -DACTION_BUILD
       # - name: Tar files
       #   run: tar -zcvf CodenameEngine.tar.gz -C export/release/linux/bin .
       - name: Uploading artifact (executable)
@@ -140,7 +140,7 @@ jobs:
           haxelib run lime rebuild hxcpp
           haxelib run lime rebuild tools
           haxelib run lime rebuild linux -nocolor -release
-          haxelib run lime build linux -debug -DCOMPILE_EXPERIMENTAL
+          haxelib run lime build linux -debug -DCOMPILE_EXPERIMENTAL -DACTION_BUILD
       # - name: Tar files
       #   run: tar -zcvf CodenameEngine.tar.gz -C export/debug/linux/bin .
       - name: Uploading artifact (entire build)

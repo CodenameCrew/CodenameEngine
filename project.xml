@@ -175,7 +175,7 @@
 	<library name="assets" preload="true" if="PRELOAD_ALL" />
 	<library name="assets" preload="false" if="NO_PRELOAD_ALL" />
 
-	<define name="MODS_FROM_SOURCE" unless="DO_THE_MODS_FOLDER_THING_AND_FINISH_THE_MOD" />
+	<define name="MODS_FROM_SOURCE" unless="DO_THE_MODS_FOLDER_THING_AND_FINISH_THE_MOD || ACTION_BUILD" />
 	<section unless="TEST_BUILD">
 		<assets path="assets/" rename="assets" />
 		<!-- TODO: make it copy this manually, instead of using assets node, so it doesn't manually

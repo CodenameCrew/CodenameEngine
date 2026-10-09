@@ -43,7 +43,7 @@ jobs:
           haxelib run lime rebuild hxcpp
           haxelib run lime rebuild tools
           arch -x86_64 haxelib run lime rebuild mac -nocolor -release
-          arch -x86_64 haxelib run lime build mac -DCOMPILE_EXPERIMENTAL
+          arch -x86_64 haxelib run lime build mac -DCOMPILE_EXPERIMENTAL -DACTION_BUILD
       - name: Tar files
         run: tar -zcvf CodenameEngine.tar.gz -C export/release/macos/bin .
       - name: Uploading artifact (entire build)
@@ -113,7 +113,7 @@ jobs:
           haxelib run lime rebuild hxcpp
           haxelib run lime rebuild tools
           haxelib run lime rebuild mac -nocolor -release
-          haxelib run lime build mac -DCOMPILE_EXPERIMENTAL
+          haxelib run lime build mac -DCOMPILE_EXPERIMENTAL -DACTION_BUILD
       - name: Tar files
         run: tar -zcvf CodenameEngine.tar.gz -C export/release/macos/bin .
       - name: Uploading artifact (entire build)
@@ -231,7 +231,7 @@ jobs:
           haxelib run lime rebuild hxcpp
           haxelib run lime rebuild tools
           arch -x86_64 haxelib run lime rebuild mac -nocolor -release
-          arch -x86_64 haxelib run lime build mac -debug -DCOMPILE_EXPERIMENTAL
+          arch -x86_64 haxelib run lime build mac -debug -DCOMPILE_EXPERIMENTAL -DACTION_BUILD
       - name: Tar files
         run: tar -zcvf CodenameEngine.tar.gz -C export/debug/macos/bin .
       - name: Uploading artifact (entire build)
@@ -300,7 +300,7 @@ jobs:
           haxelib run lime rebuild hxcpp
           haxelib run lime rebuild tools
           haxelib run lime rebuild mac -nocolor -release
-          haxelib run lime build mac -debug -DCOMPILE_EXPERIMENTAL
+          haxelib run lime build mac -debug -DCOMPILE_EXPERIMENTAL -DACTION_BUILD
       - name: Tar files
         run: tar -zcvf CodenameEngine.tar.gz -C export/debug/macos/bin .
       - name: Uploading artifact (entire build)
