@@ -35,7 +35,9 @@ import lime.tools.imgui.ImGuiFlags;
 import lime.tools.imgui.ImGuiTypes;
 #end
 // so dce doesnt kill it
+#if !linux
 import openfl.display.FPS;
+#end
 
 class Main extends Sprite
 {
