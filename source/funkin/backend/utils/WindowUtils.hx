@@ -93,7 +93,7 @@ final class WindowUtils {
 		while (i-- > 0)
 			if (smallMetric <= Math.max((image = Flags.modIconImages[i]).width, image.height)) break;
 
-		if (image != Flags.modIconImages[0])
+		if (image != null && (image != Flags.modIconImages[0] || smallMetric == Math.max(image.width, image.height)))
 			Windows.setWindowIconImage(false, Lib.application.window.title, image);
 		#end
 	}
