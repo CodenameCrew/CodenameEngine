@@ -78,7 +78,7 @@ class MemoryCounter extends Sprite {
 			memoryPeak = osMem;
 			memoryPeakText.visible = true;
 			memoryText.text = CoolUtil.getSizeString(gcMem);
-			memoryPeakText.text = ' / ${CoolUtil.getSizeString(osMem)}';
+			memoryPeakText.text = ' | ${CoolUtil.getSizeString(osMem)}';
 		}
 		#else
 		final mem = MemoryUtil.currentMemUsage();
