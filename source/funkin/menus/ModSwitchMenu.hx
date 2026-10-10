@@ -69,10 +69,10 @@ class ModSwitchMenu extends MusicBeatSubstate {
 
 		alphabets = new FlxTypedGroup<Alphabet>();
 		for(mod in mods) {
-			var conf = mod != null ? ModsFolder.getModConfig(mod) : disableConf;
+			var conf = (mod != null && Options.legacyModMenuNames) ? disableConf : ModsFolder.getModConfig(mod);
 			modConf.push(conf);
 
-			var name = (conf.exists("Common") && conf["Common"].exists("NAME")) ? conf["Common"].get("NAME") : mod;
+			var name = (Options.legacyModMenuNames ? (mod ?? disableConf["Common"].get("NAME")) : ((conf.exists("Common") && conf["Common"].exists("NAME")) ? conf["Common"].get("NAME") : (mod ?? disableConf["Common"].get("NAME"))));
 			if (name == "YOUR MOD NAME HERE")
 				name = mod;
 
