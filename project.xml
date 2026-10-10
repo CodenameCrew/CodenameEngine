@@ -236,7 +236,7 @@
 
 	<!-- EXPERMENTAL FEATURES -->
 	<haxedef name="EXPERIMENTAL_FLXGRAPHIC_DESTROY_FIX" />
-	<haxedef name="openfl_dpi_aware"/>
+	<haxedef name="openfl_dpi_aware" unless="mac"/>
 	<haxedef name="openfl_pool_events"/>
 	<haxedef name="openfl-enable-handle-error"/>
 	<haxedef name="openfl_no_custom_render_event"/>

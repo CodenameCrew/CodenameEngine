@@ -870,11 +870,14 @@ class PlayState extends MusicBeatState
 		if (smoothTransitionData != null && smoothTransitionData.stage == curStage) {
 			FlxG.camera.scroll.set(smoothTransitionData.camX, smoothTransitionData.camY);
 			FlxG.camera.zoom = smoothTransitionData.camZoom;
-			MusicBeatState.skipTransIn = true;
 			camFollow.setPosition(smoothTransitionData.camFollowX, smoothTransitionData.camFollowY);
-		} else {
+
+			if (smoothTransitionData.skipTransIn) MusicBeatState.skipTransIn = true;
+		}
+		else {
 			FlxG.camera.focusOn(camFollow.getPosition(FlxPoint.weak()));
 		}
+
 		smoothTransitionData = null;
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
@@ -1032,6 +1035,12 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * introLength - Conductor.songOffset;
 
+		// prepare the soudns!!
+		final time = (chartingMode && Charter.startHere) ? Charter.startTime : 0.0;
+		inst.prepare(time);
+		vocals.prepare(time);
+		for (strumLine in strumLines.members) strumLine.vocals.prepare(time);
+
 		if(introLength > 0) {
 			var swagCounter:Int = 0;
 			startTimer = new FlxTimer().start(Conductor.crochet / 1000, (tmr:FlxTimer) -> {
@@ -1098,10 +1107,10 @@ class PlayState extends MusicBeatState
 
 		inst.onComplete = endSong;
 
-		var time = (chartingMode && Charter.startHere) ? Charter.startTime : 0;
-		for (strumLine in strumLines.members) strumLine.vocals.play(true, time);
-		vocals.play(true, time);
-		inst.play(true, time);
+		final prevSongPos = Conductor.songPosition + Conductor.songOffset;
+		Conductor.songPosition = (chartingMode && Charter.startHere) ? Charter.startTime : 0.0;
+		resyncVocals();
+		Conductor.songPosition = prevSongPos;
 
 		updateDiscordPresence();
 
@@ -1114,11 +1123,6 @@ class PlayState extends MusicBeatState
 		scripts.call("destroy");
 
 		for (g in __cachedGraphics) g.decrementUseCount();
-		@:privateAccess {
-			for (strumLine in strumLines.members) FlxG.sound.destroySound(strumLine.vocals);
-			if (FlxG.sound.music != inst) FlxG.sound.destroySound(inst);
-			FlxG.sound.destroySound(vocals);
-		}
 
 		if (notNull) {
 			stage.destroySilently();
@@ -1184,11 +1188,14 @@ class PlayState extends MusicBeatState
 
 		var vocalsPath = Paths.voices(SONG.meta.name, difficulty, SONG.meta.vocalsSuffix);
 		if (SONG.meta.needsVoices && Assets.exists(vocalsPath))
-			vocals = FlxG.sound.load(Options.streamedVocals ? Assets.getMusic(vocalsPath) : vocalsPath);
+			vocals = FlxG.sound.load(Options.streamedVocals ? vocalsPath : flixel.sound.FlxSoundData.fromAssetKey(vocalsPath, false));
 		else
-			vocals = new FlxSound();
+		{
+			vocals = FlxG.sound.list.recycle(FlxSound);
+			vocals.alive = vocals.exists = true;
+		}
 
-		vocals.group = FlxG.sound.defaultMusicGroup;
+		FlxG.sound.defaultMusicGroup.add(vocals);
 		vocals.persist = false;
 
 		generatedMusic = true;
@@ -1307,11 +1314,11 @@ class PlayState extends MusicBeatState
 	@:dox(hide)
 	inline function resyncVocals():Void
 	{
-		final time = Conductor.songPosition + Conductor.songOffset;
-
-		if (!inst.playing) inst.play(true, time);
-		vocals.play(true, time);
-		for (strumLine in strumLines.members) strumLine.vocals.play(true, time);
+		final time = Conductor.songPosition + Conductor.songOffset, arr = [inst, vocals];
+		for (strumLine in strumLines.members) arr.push(strumLine.vocals.prepare(time));
+		inst.prepare(time);
+		vocals.prepare(time);
+		FlxSound.playSounds(arr);
 
 		gameAndCharsCall("onVocalsResync");
 	}
@@ -1457,8 +1464,7 @@ class PlayState extends MusicBeatState
 			updateIconPositions();
 
 		if (startingSong) {
-			if (startedCountdown && (Conductor.songPosition += Conductor.songOffset + elapsed * 1000) >= 0) {
-				Conductor.songPosition = Conductor.songOffset;
+			if (startedCountdown && (Conductor.songPosition += Conductor.songOffset + elapsed * 1000) >= 0.0) {
 				startSong();
 			}
 		}
@@ -1893,10 +1899,12 @@ class PlayState extends MusicBeatState
 			camY: FlxG.camera.scroll.y,
 			camFollowX: camFollow.x,
 			camFollowY: camFollow.y,
-			camZoom: FlxG.camera.zoom
+			camZoom: FlxG.camera.zoom,
+			skipTransIn: true
 		};
-		MusicBeatState.skipTransIn = true;
 		MusicBeatState.skipTransOut = true;
+
+		gameAndCharsCall("onRegisterSmoothTransition");
 	}
 
 	private inline function keyShit():Void
@@ -2421,6 +2429,7 @@ typedef PlayStateTransitionData = {
 	var camFollowX:Float;
 	var camFollowY:Float;
 	var camZoom:Float;
+	var ?skipTransIn:Bool;
 }
 
 class CamPosData {
