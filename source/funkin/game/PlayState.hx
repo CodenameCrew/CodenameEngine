@@ -1187,7 +1187,10 @@ class PlayState extends MusicBeatState
 		if (SONG.meta.needsVoices && Assets.exists(vocalsPath))
 			vocals = FlxG.sound.load(Options.streamedVocals ? vocalsPath : flixel.sound.FlxSoundData.fromAssetKey(vocalsPath, false));
 		else
-			vocals = new FlxSound();
+		{
+			vocals = FlxG.sound.list.recycle(FlxSound);
+			vocals.alive = vocals.exists = true;
+		}
 
 		FlxG.sound.defaultMusicGroup.add(vocals);
 		vocals.persist = false;
