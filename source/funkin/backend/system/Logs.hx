@@ -83,6 +83,8 @@ final class Logs {
 		};
 	}
 
+	private static function __init__() init();
+
 	public static function prepareColoredTrace(text:Array<LogText>, level:Level = INFO) {
 		var time = Date.now();
 		var superCoolText = [
