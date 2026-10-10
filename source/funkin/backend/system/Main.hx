@@ -74,6 +74,7 @@ class Main extends Sprite
 		funkin.backend.utils.NativeAPI.registerAsDPICompatible();
 		funkin.backend.system.CommandLineHandler.parseCommandLine(Sys.args());
 		funkin.backend.system.Main.fixWorkingDirectory();
+		funkin.backend.system.Logs.init();
 		#end
 	}
 
