@@ -368,8 +368,8 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 	override function destroy() {
 		super.destroy();
-		if(startingPos != null)
-			startingPos.put();
+		vocals?.destroy();
+		if (startingPos != null) startingPos.put();
 		notes = FlxDestroyUtil.destroy(notes);
 	}
 
