@@ -1,58 +1,77 @@
 # Compiling Codename Engine
-Do you want to turn your source code into a playable build to play? Then you want to **compile the source code**, follow this guide.
-> **Open the instructions for your platform.**
-<details>
-    <summary>Windows</summary>
 
-1. Install [version 4.3.7 of Haxe](https://haxe.org/download/version/4.3.7/).
-2. Download and install [`git-scm`](https://git-scm.com/download/win).
-    - Leave all installation options as default.
-3. Run `setup-windows.bat` using cmd or double-clicking it and wait for the libraries to install.
-4. Once the libraries are installed, run `haxelib run lime test windows` to compile and launch the game (may take a long time)
-    - ℹ You can run `haxelib run lime setup` to make the lime command global, allowing you to execute `lime test windows` directly.
-</details>
-<details>
-    <summary>Linux</summary>
+Do note that compiling is ***NOT*** the intended manner of modding with Codename Engine, as the softcoding system is designed in your favor. The exception to this is if you want to contribute to CNE's development by making a pull request, instructions on how to do so are shown [here](../CONTRIBUTING.md).
 
-1. Install [version 4.3.7 of Haxe](https://haxe.org/download/version/4.3.7/).
-2. Install `libvlc` if not present already.
-    - ℹ On certain Arch based distros installing `vlc-plugins-all` might solve if `libvlc` alone doesn't work.
-3. Install `g++`, if not present already.
-4. Download and install [`git-scm`](https://git-scm.com/download/linux) if not present already.
-5. Run `setup-unix.sh` using the terminal or double-clicking it and wait for the libraries to install.
-6. Once the libraries are installed, run `haxelib run lime test linux` to compile and launch the game (may take a long time)
-    - ℹ You can run `haxelib run lime setup` to make the lime command global, allowing you to execute `lime test linux` directly.
-</details>
 <details>
-    <summary>MacOS</summary>
+	<summary>"Why not?"</summary>
 
-1. Install [version 4.3.7 of Haxe](https://haxe.org/download/version/4.3.7/).
-2. Install `Xcode` to allow C++ app building.
-3. Download and install [`git-scm`](https://git-scm.com/download/mac).
-4. Run `setup-unix.sh` using the terminal and wait for the libraries to install.
-5. Once the libraries are installed, run `haxelib run lime test mac` to compile and launch the game (may take a long time)
-    - ℹ You can run `haxelib run lime setup` to make the lime command global, allowing you to execute `lime test mac` directly.
+- The version you downloaded is yours to keep forever. If a new release of CNE goes live, you bear the responsibility of merging by hand and testing it.
+- You lose compatibility with other mods. Softcoded mods stack on top of each other. Source mods cannot.
+- Changed something? In softcoding, it takes two seconds. In hardcoding, it now requires a rebuild, up to a few minutes to an hour if you have not compiled the engine beforehand.
+- Bugs caused by your changes will now be your reponsibility to fix.
+- HScript has a safety net that catches errors and (mostly) prevents crashes. Source modding does not have this. This means that if something goes wrong, HScript with catch it, but your source mod would not and it'll take the entire game down.
 </details>
 
-> [!TIP]
-> You can also run `./cne-windows.bat -help` or `./cne-unix.sh -help` (depending on your platform) to check out more useful commands!<br>
-> For example `./cne-windows test` or `./cne-unix.sh test` builds the game and uses the source assets folder instead of the export one for easier development (although you can still use `lime test` normally).
-> - If you're running the terminal from the project's main folder, use instead `./building/cne-windows.bat -COMMAND HERE` or `./building/cne-unix.sh -COMMAND HERE` depending on your platform.
+<details>
+	<summary>Pros of source modding</summary>
+
+- Full access. Literally.
+- Code is compiled to bytecode, which is magnitudes faster than HScript's interpreter.
+- The engine now becomes your template.
+</details>
+
+<details>
+	<summary>Cons of source modding</summary>
+
+- Syncs with the original repo usually causes conflicts. This means that you'll be stuck on whatever version you forked from.
+- Modpacks made for your fork are only compatible with your forks and not any releases of Codename.
+- Testing is *VERY* slow compared to softcoding.
+- Crashes are your responsibilty. A fork needs someone willing to maintain it.
+</details>
+
+## Initialization
+
+Here is what you'll need:
+
+- [Haxe v4.3.7](https://haxe.org/download/version/4.3.7/). You shouldn't grab the latest version just because it's newer.
+- [Git](https://git-scm.com/), more specifically `git-scm`.
+  - When installing, make sure to **leave the installation options at its defaults**.
+- A C++ compiler. Depending on your platform, it could be any of the following:
+  - For Windows, that's **Visual Studio Build Tools 2022** with the component *MSVC v143 C++ x64/x86 build tools* as well the *Windows SDK*.
+  - For Mac, you will need `Xcode` as it provides the compiler.
+  - For Linux, that's `gcc` and `g++`. `libvlc` must also be installed for video playback functionality.
+	- Do note that you'll need to install extra libraries to get Lime to compile. See [this](https://github.com/CodenameCrew/cne-lime/tree/develop/project#prerequisites) for what you'd need. 
+	- The prerequisites listed extra libraries required for HashLink; ignore these as support for HashLink has been dropped.
+- The engine's libaries.
+  - You can run `setup-windows.bat` to set these up in Windows, or `setup-unix.sh` for both Mac and Linux. Ensure that your `haxelib` is up to date.
+  - After running either of this, you might be given a warning similar to `warning: repository requires reformatting`. Ignore these warnings and do not run the command listed as it will break the structure of the libraries installed.
+- Any code editor. Yes, Notepad or `vim` is usable, but for the sake of readability, you should use Visual Studio Code with the [Haxe](https://marketplace.visualstudio.com/items?itemName=nadako.vshaxe) and [Lime](https://marketplace.visualstudio.com/items?itemName=openfl.lime-vscode-extension) extensions. You may optionally set up your `hxcpp` debugger at this stage.
+
+The entire setup with one platform will cost you the following:
+
+- 10 to 20 minutes installing the required libraries.
+- 10 to 40 minutes when compiling for the first time, sometimes up to an hour.
+- Up to around 10 GB worth of cache.
+
+Compiling to another platform is going to be another full build and rounds of testing.
+
+## Setup
+
+1. Fork the repo on GitHub, then clone your fork. **Do not make changes yet.**
+2. Run the required setup script.
+3. Rebuild Lime by running `haxelib run lime rebuild cpp`.
+4. Compile the *unmodified* build of Codename by doing any of the following:
+    1. Manually compile by running `haxelib run lime build <platform> -nocffi` / `haxelib run lime test <platform> -nocffi`. You can run `haxelib run lime setup` to make your install of Lime global, which allows you to omit `haxelib run` every time you want to build or test. 
+	2. Using the helper script for your platform in `/building`. This would be `cne-windows.bat` in Windows, and `cne-unix.sh` on Mac and Linux. You may run `cne-windows.bat -help` or `cne-unix.sh -help` for commands you can use.
+
+If it compiles, you're all set up! You may now begin editing.
+
 
 # Generating Codename Engine's API documentation
+
 **Mainly recommended if you intend to fork the engine and make your own custom version to publish.**<br>Do you want to generate an API documentation so people can understand and mod your playable build? This documentation can be uploaded to your website.<br>If you just want to compile the engine normally for your hardcoded mod or for yourself you can skip this step.
-> **Select your platform to continue.**
-<details>
-    <summary>Windows</summary>
 
-1. Run `generate-docs-windows.bat` using cmd or double-clicking it and wait for the `doc.xml` to be generated inside the `docs` folder.
-</details>
-<details>
-    <summary>MacOS/Linux</summary>
-
-1. Run `generate-docs-unix.sh` using the terminal or double-clicking it and wait for the `doc.xml` to be generated inside the `docs` folder.
-</details>
-
+1. Generate the docs by running `generate-docs-windows.bat` for Windows or `generate-docs-unix.sh` for Mac or Linux. The output `doc.xml` will be placed in the `docs` folder.
 2. You can use this `doc.xml` file to generate a full HTML documentation (that you can open in your browser for example) using Haxe's [dox](https://github.com/HaxeFoundation/dox) generator; check [Codename Engine's webiste](https://github.com/CodenameCrew/codename-website/tree/main/api-generator) for example.
 
 > [!CAUTION]
