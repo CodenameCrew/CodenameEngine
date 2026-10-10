@@ -190,7 +190,7 @@ class Flags {
 	// Font configuration
 	public static var DEFAULT_FONT:String = "vcr.ttf";
 	public static var DEFAULT_FONT_SIZE:Int = 16;
-	
+
 	public static var DEFAULT_ALT_ANIM_SUFFIX:String = "-alt";
 
 	// to translate these you need to convert them into ids
@@ -310,6 +310,8 @@ class Flags {
 	public static var FUNKIN_SHADER_CODE_PREFIX:String = "";
 	public static var FUNKIN_SHADER_CODE_FRAGMENT_PREFIX:String = "";
 	public static var FUNKIN_SHADER_CODE_VERTEX_PREFIX:String = "";
+
+	public static var DEFAULT_ANTIALIASING:Bool = true;
 
 	@:also(funkin.backend.utils.HttpUtil.userAgent)
 	public static var USER_AGENT:String = 'request';

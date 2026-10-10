@@ -186,7 +186,7 @@ class HealthIcon extends FunkinSprite
 
 		var parsedSteps:Map<Int, String> = [];
 
-		antialiasing = true;
+		antialiasing = Flags.DEFAULT_ANTIALIASING;
 		if (xmlValid) {
 			if (xmlData.exists("antialiasing"))
 				antialiasing = xmlData.get("antialiasing").toLowerCase() == "true";

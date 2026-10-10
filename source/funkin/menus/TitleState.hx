@@ -59,7 +59,7 @@ class TitleState extends MusicBeatState
 			titleText.frames = Paths.getFrames('menus/titlescreen/titleEnter');
 			titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
 			titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
-			titleText.antialiasing = true;
+			titleText.antialiasing = Flags.DEFAULT_ANTIALIASING;
 			titleText.animation.play('idle');
 			titleText.updateHitbox();
 			titleText.screenCenter(X);
@@ -337,7 +337,7 @@ class IntroText {
 				sprite.scale.set(scale, scale);
 				sprite.updateHitbox();
 				sprite.screenCenter(X);
-				sprite.antialiasing = true;
+				sprite.antialiasing = Flags.DEFAULT_ANTIALIASING;
 				state.textGroup.add(sprite);
 			}
 		}

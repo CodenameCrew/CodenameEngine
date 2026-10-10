@@ -35,7 +35,7 @@ class Checkbox extends TextOption {
 		checkbox.animation.addByPrefix("checked", "Check Box Selected Static0", 24);
 		checkbox.animation.addByPrefix("unchecking", "Check Box deselect animation0", 24, false);
 		checkbox.animation.addByPrefix("checking", "Check Box selecting animation0", 24, false);
-		checkbox.antialiasing = true;
+		checkbox.antialiasing = Flags.DEFAULT_ANTIALIASING;
 		checkbox.scale.set(0.75, 0.75);
 		checkbox.updateHitbox();
 

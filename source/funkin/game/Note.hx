@@ -190,7 +190,7 @@ class Note extends FlxSprite
 					}
 
 					scale.set(event.noteScale, event.noteScale);
-					antialiasing = true;
+					antialiasing = Flags.DEFAULT_ANTIALIASING;
 			}
 		}
 

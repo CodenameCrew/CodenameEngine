@@ -402,7 +402,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 			babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
 			babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
 
-			babyArrow.antialiasing = true;
+			babyArrow.antialiasing = Flags.DEFAULT_ANTIALIASING;
 			babyArrow.setGraphicSize(Std.int((babyArrow.width * Flags.DEFAULT_NOTE_SCALE) * strumScale));
 
 			babyArrow.animation.addByPrefix('static', 'arrow${event.animPrefix.toUpperCase()}');
