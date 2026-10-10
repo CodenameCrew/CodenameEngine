@@ -870,11 +870,14 @@ class PlayState extends MusicBeatState
 		if (smoothTransitionData != null && smoothTransitionData.stage == curStage) {
 			FlxG.camera.scroll.set(smoothTransitionData.camX, smoothTransitionData.camY);
 			FlxG.camera.zoom = smoothTransitionData.camZoom;
-			MusicBeatState.skipTransIn = true;
 			camFollow.setPosition(smoothTransitionData.camFollowX, smoothTransitionData.camFollowY);
-		} else {
+
+			if (smoothTransitionData.skipTransIn) MusicBeatState.skipTransIn = true;
+		}
+		else {
 			FlxG.camera.focusOn(camFollow.getPosition(FlxPoint.weak()));
 		}
+
 		smoothTransitionData = null;
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
@@ -1896,10 +1899,12 @@ class PlayState extends MusicBeatState
 			camY: FlxG.camera.scroll.y,
 			camFollowX: camFollow.x,
 			camFollowY: camFollow.y,
-			camZoom: FlxG.camera.zoom
+			camZoom: FlxG.camera.zoom,
+			skipTransIn: true
 		};
-		MusicBeatState.skipTransIn = true;
 		MusicBeatState.skipTransOut = true;
+
+		gameAndCharsCall("onRegisterSmoothTransition");
 	}
 
 	private inline function keyShit():Void
@@ -2424,6 +2429,7 @@ typedef PlayStateTransitionData = {
 	var camFollowX:Float;
 	var camFollowY:Float;
 	var camZoom:Float;
+	var ?skipTransIn:Bool;
 }
 
 class CamPosData {
