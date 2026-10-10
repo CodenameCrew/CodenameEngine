@@ -23,7 +23,6 @@
 		<git name="funkin-modchart" url="https://github.com/CodenameCrew/FunkinModchart" skipDeps="true"/>
 		<git name="foxlite" url="https://github.com/dwdvIl/foxlite" skipDeps="true"/>
 		<lib name="hxcpp-debug-server"/>
-		<lib name="format"/>
 		<lib name="markdown"/>
 		<lib name="nape-haxe4"/>
 
@@ -39,11 +38,10 @@
 
 		<!-- Build hxcpp -->
 		<cmd inLib="hxcpp" dir="tools/hxcpp" cmd="haxe compile.hxml" />
-		<cmd inLib="lime" cmd="haxelib run lime rebuild hxcpp"/>
 	</if>
 
 	<!-- Lime Building -->
-	<if cond="build-lime">
+	<if cond="build-lime || all">
 		<print pretty="true">Rebuilding Lime...</print>
 
 		<!-- Build lime -->

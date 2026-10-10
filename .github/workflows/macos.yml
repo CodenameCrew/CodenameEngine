@@ -22,6 +22,17 @@ jobs:
         uses: krdlab/setup-haxe@v2
         with:
           haxe-version: ${{ env.HAXE_VERSION }}
+      - name: Configuring haxelib
+        shell: bash
+        run: |
+          haxelib fixrepo --global || true
+          haxelib --debug --never --global install haxelib 4.1.0
+          haxelib --debug --global set haxelib 4.1.0
+          haxelib --global remove haxelib git || true
+          rm -rf .haxelib
+          haxelib --debug --never --global git haxelib https://github.com/FuroYT/haxelib.git funkin-patches --skip-dependencies
+          haxelib --debug --never newrepo
+          haxelib version
       # - name: Restore existing build cache for faster compilation
       #   uses: actions/cache@v6
       #   with:
@@ -32,14 +43,9 @@ jobs:
       #       export/release/macos/obj/
       - name: Installing/Updating libraries
         run: |
-          haxelib --global update haxelib
-          haxe -cp commandline -D analyzer-optimize --run Main setup -si
+          arch -x86_64 haxe -cp commandline -D analyzer-optimize --run Main setup -si
       - name: Building the game
         run: |
-          haxelib run lime setup -alias -y -nocffi
-          haxelib run lime rebuild hxcpp
-          haxelib run lime rebuild tools
-          arch -x86_64 haxelib run lime rebuild mac -nocolor -release
           arch -x86_64 haxelib run lime build mac -DCOMPILE_EXPERIMENTAL
       - name: Tar files
         run: tar -zcvf CodenameEngine.tar.gz -C export/release/macos/bin .
@@ -89,6 +95,17 @@ jobs:
         uses: krdlab/setup-haxe@v2
         with:
           haxe-version: ${{ env.HAXE_VERSION }}
+      - name: Configuring haxelib
+        shell: bash
+        run: |
+          haxelib fixrepo --global || true
+          haxelib --debug --never --global install haxelib 4.1.0
+          haxelib --debug --global set haxelib 4.1.0
+          haxelib --global remove haxelib git || true
+          rm -rf .haxelib
+          haxelib --debug --never --global git haxelib https://github.com/FuroYT/haxelib.git funkin-patches --skip-dependencies
+          haxelib --debug --never newrepo
+          haxelib version
       # - name: Restore existing build cache for faster compilation
       #   uses: actions/cache@v6
       #   with:
@@ -99,14 +116,9 @@ jobs:
       #       export/release/macos/obj/
       - name: Installing/Updating libraries
         run: |
-          haxelib --global update haxelib
           haxe -cp commandline -D analyzer-optimize --run Main setup -si
       - name: Building the game
         run: |
-          haxelib run lime setup -alias -y -nocffi
-          haxelib run lime rebuild hxcpp
-          haxelib run lime rebuild tools
-          haxelib run lime rebuild mac -nocolor -release
           haxelib run lime build mac -DCOMPILE_EXPERIMENTAL
       - name: Tar files
         run: tar -zcvf CodenameEngine.tar.gz -C export/release/macos/bin .
