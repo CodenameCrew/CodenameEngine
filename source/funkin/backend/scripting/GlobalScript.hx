@@ -72,6 +72,7 @@ class GlobalScript {
 			call("preStateSwitch");
 
 			if (Flags.PATHS_CACHE_RESET_ON_SWITCH_STATE) Paths.assetsTree.resetAssetPathCache();
+			if (Flags.SHADERS_CACHE_RESET_ON_SWITCH_STATE) Main.refreshShaders();
 
 			var stateName = Type.getClassName(Type.getClass(@:privateAccess FlxG.game._requestedState));
 			stateName = stateName.substring(stateName.lastIndexOf(".") + 1);
