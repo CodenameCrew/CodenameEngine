@@ -81,24 +81,32 @@ class Paths
 		var p:Null<String> = idx == -1 ? "" : file.substr(0, idx);
 		file = file.substr(idx + 1);
 
-		final e:Array<String> = (exts is String) ? [exts] : (cast exts);
+		final extArr:Array<String> = (exts is String) ? null : (cast exts);
+		final ext:String = extArr != null ? extArr[0] : (cast exts);
+		var fileExt:Null<String> = null;
 
 		idx = file.lastIndexOf(".");
 		if (idx != -1) {
-			e.unshift(file.substr(idx + 1));
+			fileExt = file.substr(idx + 1);
 			file = file.substr(0, idx);
 		}
 
 		p = library == null ? getExistingPath(p, 'assets/', true) : getExistingPath('$library/$p', '$library:assets/', true);
-		if (p == null) return library == null ? 'assets/$file.${e[0]}' : '$library:assets/$library/$file.${e[0]}';
+		if (p == null) return library == null ? 'assets/$file.${fileExt ?? ext}' : '$library:assets/$library/$file.${fileExt ?? ext}';
 		else p += "/";
 
-		for (extension in e) {
-			final path = getExistingPath('$file.$extension', p, true);
-			if (path != null) return path;
+		var path:String;
+		if (fileExt != null && (path = getExistingPath('$file.$fileExt', p, true)) != null) return path;
+		if (extArr == null) {
+			if ((path = getExistingPath('$file.$ext', p, true)) != null) return path;
+		}
+		else {
+			for (extension in extArr) {
+				if ((path = getExistingPath('$file.$extension', p, true)) != null) return path;
+			}
 		}
 
-		return '$p$file.${e[0]}';
+		return '$p$file.${fileExt ?? ext}';
 	}
 
 	public static inline function video(key:String, ?ext:OneOfTwo<String, Array<String>>)
