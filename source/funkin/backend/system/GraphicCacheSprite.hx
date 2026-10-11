@@ -15,46 +15,50 @@ class GraphicCacheSprite extends FlxSprite {
 	 */
 	public var nonRenderedCachedGraphics:Array<FlxGraphic> = [];
 
-	public override function new() {
+	@:dox(hide)
+	public function new() {
 		super();
-		alpha = 0.00001;
+		moves = false;
 	}
 
 	/**
 	 * Caches a graphic at specified path.
 	 * @param path Path to the graphic.
+	 * @return FlxGraphic
 	 */
-	public function cache(path:String) {
-		cacheGraphic(FlxG.bitmap.add(path));
-	}
+	public function cache(path:String):FlxGraphic return cacheGraphic(FlxG.bitmap.add(path));
 
 	/**
 	 * Caches a graphic.
 	 * @param graphic The FlxGraphic
+	 * @return FlxGraphic
 	 */
-	public function cacheGraphic(graphic:FlxGraphic) {
-		if (graphic == null) return;
-
-		// make their useCount one time higher to prevent them from auto being cleared from cache
-		graphic.incrementUseCount();
-		graphic.destroyOnNoUse = false;
-		cachedGraphics.push(graphic);
-		nonRenderedCachedGraphics.push(graphic);
+	public function cacheGraphic(graphic:FlxGraphic):FlxGraphic {
+		if (graphic != null) {
+			graphic.incrementUseCount();
+			cachedGraphics.push(graphic);
+			nonRenderedCachedGraphics.push(graphic);
+		}
+		return graphic;
 	}
 
-	public override function destroy() {
-		for(g in cachedGraphics) {
-			g.destroyOnNoUse = true;
-			g.decrementUseCount();
-		}
+	@:dox(hide)
+	override function destroy() {
+		for (g in cachedGraphics) g.decrementUseCount();
+
 		graphic = null;
 		super.destroy();
 	}
 
-	public override function draw() {
-		while (nonRenderedCachedGraphics.length > 0) {
-			loadGraphic(nonRenderedCachedGraphics.shift());
-			drawComplex(FlxG.camera);
+	@:dox(hide)
+	override function update(elapsed:Float) {}
+
+	@:dox(hide)
+	override function draw() {
+		while (nonRenderedCachedGraphics.length != 0) {
+			loadGraphic(nonRenderedCachedGraphics.pop());
+			if (FlxG.renderTile) drawComplex(FlxG.camera);
+			else drawSimple(FlxG.camera);
 		}
 	}
 }
