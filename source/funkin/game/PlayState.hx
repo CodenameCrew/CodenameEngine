@@ -4,6 +4,7 @@ import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.graphics.FlxGraphic;
 import flixel.math.FlxPoint;
+import flixel.sound.FlxSoundData;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
@@ -581,8 +582,8 @@ class PlayState extends MusicBeatState
 	@:noCompletion @:dox(hide) private var _startCountdownCalled:Bool = false;
 	@:noCompletion @:dox(hide) private var _endSongCalled:Bool = false;
 
-	@:dox(hide)
-	var __vocalSyncTimer:Float = 1;
+	@:dox(hide) var __vocalSyncTimer:Float = 1.0;
+	@:dox(hide) var __vocalSyncThreshold:Float = 40.0;
 
 	private function get_accuracy():Float {
 		if (accuracyPressedNotes <= 0) return -1;
@@ -807,8 +808,8 @@ class PlayState extends MusicBeatState
 		for(content in Paths.getFolderContent('images/game/score/', true, BOTH))
 			graphicCache.cache(Paths.getPath(content));
 
-		for(i in 1...4) {
-			FlxG.sound.load(Paths.sound('missnote' + Std.string(i)));
+		for (i in 1...4) {
+			FlxSoundData.fromAssetKey(Paths.sound('missnote' + Std.string(i)), false);
 		}
 		#end
 
@@ -955,13 +956,8 @@ class PlayState extends MusicBeatState
 
 		super.create();
 
-		for(s in introSprites)
-			if (s != null)
-				graphicCache.cache(Paths.image(s));
-
-		for(s in introSounds)
-			if (s != null)
-				FlxG.sound.load(Paths.sound(s));
+		for (s in introSprites) if (s != null) graphicCache.cache(Paths.image(s));
+		for (s in introSounds) if (s != null) FlxSoundData.fromAssetKey(Paths.sound(s));
 
 		if (chartingMode) {
 			if (Flags.CHANGE_WINDOW_TITLE_PLAYSTATE) {
@@ -1134,10 +1130,8 @@ class PlayState extends MusicBeatState
 
 		inst.onComplete = endSong;
 
-		final prevSongPos = Conductor.songPosition + Conductor.songOffset;
 		Conductor.songPosition = (chartingMode && Charter.startHere) ? Charter.startTime : 0.0;
 		resyncVocals();
-		Conductor.songPosition = prevSongPos;
 
 		updateDiscordPresence();
 
@@ -1215,7 +1209,7 @@ class PlayState extends MusicBeatState
 
 		var vocalsPath = Paths.voices(SONG.meta.name, difficulty, SONG.meta.vocalsSuffix);
 		if (SONG.meta.needsVoices && Assets.exists(vocalsPath))
-			vocals = FlxG.sound.load(Options.streamedVocals ? vocalsPath : flixel.sound.FlxSoundData.fromAssetKey(vocalsPath, false));
+			vocals = FlxG.sound.load(Options.streamedVocals ? vocalsPath : FlxSoundData.fromAssetKey(vocalsPath, false));
 		else
 		{
 			vocals = FlxG.sound.list.recycle(FlxSound);
@@ -1338,17 +1332,37 @@ class PlayState extends MusicBeatState
 		super.onFocusLost();
 	}
 
-	@:dox(hide)
-	inline function resyncVocals():Void
+	/**
+	 * Resyncs vocals and play the song without checking
+	 */
+	public function resyncVocals():Void
 	{
-		final time = Conductor.songPosition + Conductor.songOffset, arr = [inst, vocals];
+		final time = Conductor.songPosition + Conductor.songOffset;
+		final arr = [inst.prepare(time), vocals.prepare(time)];
 		for (strumLine in strumLines.members) arr.push(strumLine.vocals.prepare(time));
-		inst.prepare(time);
-		vocals.prepare(time);
 		FlxSound.playSounds(arr);
 
 		gameAndCharsCall("onVocalsResync");
 	}
+
+	@:dox(hide)
+	function checkDesyncVocals():Void
+	{
+		final instTime = FlxG.sound.music.getActualTime();
+		var isOffsync = vocals.loaded && Math.abs(instTime - vocals.getActualTime()) > __vocalSyncThreshold;
+
+		if (vocals.loaded && Math.abs(instTime - vocals.getActualTime()) > __vocalSyncThreshold)
+			resyncVocals();
+		else {
+			for (strumLine in strumLines.members) {
+				if (strumLine.vocals.loaded && Math.abs(instTime - strumLine.vocals.getActualTime()) > __vocalSyncThreshold) {
+					resyncVocals();
+					break;
+				}
+			}
+		}
+	}
+
 
 	/**
 	 * Pauses the game.
@@ -1525,16 +1539,8 @@ class PlayState extends MusicBeatState
 			}
 		}
 		else if (FlxG.sound.music != null && (__vocalSyncTimer -= elapsed) < 0) {
-			__vocalSyncTimer = 1;
-
-			final instTime = FlxG.sound.music.getActualTime();
-			var isOffsync:Bool = vocals.loaded && Math.abs(instTime - vocals.getActualTime()) > 12;
-			if (!isOffsync)
-				for (strumLine in strumLines.members)
-					if ((isOffsync = strumLine.vocals.loaded && Math.abs(instTime - strumLine.vocals.getActualTime()) > 12))
-						break;
-
-			if (isOffsync) resyncVocals();
+			__vocalSyncTimer = 1.0;
+			checkDesyncVocals();
 		}
 
 		while(events.length > 0 && events.last().time <= Conductor.songPosition)

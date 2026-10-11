@@ -628,6 +628,8 @@ class Charter extends UIState {
 		Conductor.setupSong(PlayState.SONG);
 		noteTypes = PlayState.SONG.noteTypes;
 
+		// TODO: MAYBE MAKE WAVEFORMS WORK TOO FOR STREAMED SOUNDS??
+
 		var data = FlxSoundData.fromAssetKey(Paths.inst(__song, __diff, PlayState.SONG.meta.instSuffix), false);
 		if (data.isStreamable) data.buffer.load();
 
@@ -1955,16 +1957,17 @@ class Charter extends UIState {
 		if (Conductor.songPosition >= FlxG.sound.music.getDefault(vocals).length - Conductor.songOffset) return;
 
 		if (FlxG.sound.music.playing) {
-			FlxG.sound.music.pause();
-			vocals.pause();
-			for (strumLine in strumLines.members) strumLine.vocals.pause();
+			final arr = [FlxG.sound.music, vocals];
+			for (strumLine in strumLines.members) arr.push(strumLine.vocals);
+			FlxSound.pauseSounds(arr);
+
 			if (Options.charterPauseQuant) Conductor.songPosition = Conductor.getTimeForStep(quantStep(Conductor.curStepFloat));
-		} else {
-			FlxG.sound.music.play(true, Conductor.songPosition + Conductor.songOffset);
-			vocals.play(true, FlxG.sound.music.getActualTime());
-			for (strumLine in strumLines.members) {
-				strumLine.vocals.play(true, FlxG.sound.music.getActualTime());
-			}
+		}
+		else {
+			final time = Conductor.songPosition + Conductor.songOffset;
+			final arr = [FlxG.sound.music.prepare(time), vocals.prepare(time)];
+			for (strumLine in strumLines.members) arr.push(strumLine.vocals.prepare(time));
+			FlxSound.playSounds(arr);
 		}
 	}
 	function _playback_snap(t) {
