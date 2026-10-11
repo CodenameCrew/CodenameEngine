@@ -1,5 +1,7 @@
 package funkin.backend.system;
 
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFramesCollection;
 import flixel.graphics.FlxGraphic;
 
 /**
@@ -19,6 +21,8 @@ class GraphicCacheSprite extends FlxSprite {
 	public function new() {
 		super();
 		moves = false;
+		alpha = 0.0001;
+		scale.set(0.001, 0.001);
 	}
 
 	/**
@@ -34,12 +38,26 @@ class GraphicCacheSprite extends FlxSprite {
 	 * @return FlxGraphic
 	 */
 	public function cacheGraphic(graphic:FlxGraphic):FlxGraphic {
-		if (graphic != null) {
+		if (graphic != null && !cachedGraphics.contains(graphic)) {
 			graphic.incrementUseCount();
 			cachedGraphics.push(graphic);
 			nonRenderedCachedGraphics.push(graphic);
 		}
 		return graphic;
+	}
+
+	/**
+	 * Caches a frames.
+	 * @param frames The FlxFramesCollection
+	 * @return FlxFramesCollection
+	 */
+	public function cacheFrames(frames:FlxFramesCollection):FlxFramesCollection {
+		if (frames != null) {
+			@:privateAccess
+			if (frames is FlxAtlasFrames) for (graphic in cast(frames, FlxAtlasFrames).usedGraphics) cacheGraphic(graphic);
+			cacheGraphic(frames.parent);
+		}
+		return frames;
 	}
 
 	@:dox(hide)
