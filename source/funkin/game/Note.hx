@@ -102,6 +102,8 @@ class Note extends FlxSprite
 	@:dox(hide) public var __strum:Strum = null;
 	@:dox(hide) public var __noteAngle:Float = 0;
 
+	@:dox(hide) private var __lastSustainClipT:Float = -1.0;
+
 	private function get_noteType() {
 		if (PlayState.instance == null) return null;
 		return PlayState.instance.getNoteType(noteTypeID);
@@ -153,7 +155,7 @@ class Note extends FlxSprite
 		this.strumTime = noteData.time.getDefault(0) + sustainOffset;
 		this.noteData = noteData.id.getDefault(0);
 
-		var customType = Paths.image('game/notes/${this.noteType}');
+		var customType = this.noteType != null ? Paths.image('game/notes/${this.noteType}') : null;
 		var event = EventManager.get(NoteCreationEvent).recycle(this, strumID, this.noteType, noteTypeID, PlayState.instance.strumLines.members.indexOf(strumLine), mustPress,
 			(this.noteType != null && customTypePathExists(customType)) ? 'game/notes/${this.noteType}' : 'game/notes/default', @:privateAccess strumLine.strumScale * Flags.DEFAULT_NOTE_SCALE, animSuffix);
 
@@ -336,19 +338,23 @@ class Note extends FlxSprite
 
 	public function updateSustainClip() if (wasGoodHit && !noSustainClip) {
 		var t = CoolUtil.bound((Conductor.songPosition - strumTime) / height * 0.45 * Math.abs(lastScrollSpeed), 0, 1);
-		@:bypassAccessor {
-			if (clipRect == null) clipRect = FlxRect.get();
-			clipRect.set(0, frameHeight * t, frameWidth, frameHeight * (1 - t));
-		}
-		@:privateAccess {
-			if (frame != null && _frame != null)
-				_frame = frame.clipTo(clipRect, _frame);
+		if (t != __lastSustainClipT || _frame == null) {
+			__lastSustainClipT = t;
+			@:bypassAccessor {
+				if (clipRect == null) clipRect = FlxRect.get();
+				clipRect.set(0, frameHeight * t, frameWidth, frameHeight * (1 - t));
+			}
+			@:privateAccess {
+				if (frame != null && _frame != null)
+					_frame = frame.clipTo(clipRect, _frame);
+			}
 		}
 	}
 
 	@:noCompletion
 	override function set_clipRect(rect:FlxRect):FlxRect {
 		@:bypassAccessor clipRect = rect;
+		__lastSustainClipT = -1.0;
 
 		@:privateAccess if (frame != null) {
 			if (rect != null && _frame != null)

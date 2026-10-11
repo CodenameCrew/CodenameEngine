@@ -659,11 +659,39 @@ class PlayState extends MusicBeatState
 		return name;
 	}
 
+	private var __charCallFunc:String = null;
+	private var __charCallArgs:Array<Dynamic> = null;
+	private var __charCallFn:StrumLine->Void = null;
+
 	public inline function callOnCharacters(func:String, ?parameters:Array<Dynamic>) {
-		if(strumLines != null) strumLines.forEachAlive(function (strLine:StrumLine) {
+		if (strumLines == null) return;
+
+		if (__charCallFn == null) {
+			__charCallFn = function(strLine:StrumLine) {
+				if (strLine.characters != null) for (character in strLine.characters)
+					if (character != null) character.scripts.call(__charCallFunc, __charCallArgs);
+			};
+		}
+
+		var prevFunc = __charCallFunc;
+		var prevArgs = __charCallArgs;
+		__charCallFunc = func;
+		__charCallArgs = parameters;
+		strumLines.forEachAlive(__charCallFn);
+		__charCallFunc = prevFunc;
+		__charCallArgs = prevArgs;
+	}
+
+	public inline function eventOnCharacters<T:CancellableEvent>(func:String, ?event:T):T {
+		if (strumLines == null) return event;
+
+		for (strLine in strumLines.members) {
+			if (strLine == null || !strLine.exists || !strLine.alive) continue;
 			if (strLine.characters != null) for (character in strLine.characters)
-				if (character != null) character.scripts.call(func, parameters);
-		});
+				if (character != null) character.scripts.event(func, event);
+		}
+
+		return event;
 	}
 
 	public inline function gameAndCharsCall(func:String, ?parameters:Array<Dynamic>, ?charsFunc:String) {
@@ -671,10 +699,9 @@ class PlayState extends MusicBeatState
 		callOnCharacters(charsFunc != null ? charsFunc : func, parameters);
 	}
 
-	public inline function gameAndCharsEvent<T:CancellableEvent>(func:String, ?event:T, ?charsFunc:String):T {
+	public function gameAndCharsEvent<T:CancellableEvent>(func:String, ?event:T, ?charsFunc:String):T {
 		scripts.event(func, event);
-		callOnCharacters(charsFunc != null ? charsFunc : func, [event]);
-		return event;
+		return eventOnCharacters(charsFunc != null ? charsFunc : func, event);
 	}
 
 	@:dox(hide) override public function create()
@@ -1424,16 +1451,43 @@ class PlayState extends MusicBeatState
 	private var TEXT_GAME_COMBOBREAKS = TU.getRaw("game.comboBreaks");
 	private var TEXT_GAME_ACCURACY = TU.getRaw("game.accuracy");
 
-	dynamic function updateRatingStuff() {
-		scoreTxt.text = TEXT_GAME_SCORE.format([songScore]);
-		missesTxt.text = (comboBreaks ? TEXT_GAME_COMBOBREAKS : TEXT_GAME_MISSES).format([misses]);
+	private var ratingStuffValid:Bool = false;
+	private var cachedScore:Int = 0;
+	private var cachedMisses:Int = 0;
+	private var cachedComboBreaks:Bool = false;
+	private var cachedAccuracy:Float = 0;
+	private var cachedRating:ComboRating = null;
+	private var scoreStr:String = null;
+	private var missesStr:String = null;
+	private var accuracyStr:String = null;
 
+	dynamic function updateRatingStuff() {
 		if (curRating == null)
 			curRating = new ComboRating(0, "[N/A]", 0xFF888888);
 
+		if (!ratingStuffValid || cachedScore != songScore) {
+			cachedScore = songScore;
+			scoreStr = TEXT_GAME_SCORE.format([songScore]);
+		}
+		scoreTxt.text = scoreStr;
+
+		if (!ratingStuffValid || cachedMisses != misses || cachedComboBreaks != comboBreaks) {
+			cachedMisses = misses;
+			cachedComboBreaks = comboBreaks;
+			missesStr = (comboBreaks ? TEXT_GAME_COMBOBREAKS : TEXT_GAME_MISSES).format([misses]);
+		}
+		missesTxt.text = missesStr;
+
+		var curAccuracy = accuracy;
+		if (!ratingStuffValid || cachedRating != curRating || cachedAccuracy != curAccuracy) {
+			cachedRating = curRating;
+			cachedAccuracy = curAccuracy;
+			accuracyStr = TEXT_GAME_ACCURACY.format([curAccuracy < 0 ? "-%" : '${CoolUtil.quantize(curAccuracy * 100, 100)}%', curRating.rating]);
+		}
+
 		@:privateAccess {
 			accFormat.format.color = curRating.color;
-			accuracyTxt.text = TEXT_GAME_ACCURACY.format([accuracy < 0 ? "-%" : '${CoolUtil.quantize(accuracy * 100, 100)}%', curRating.rating]);
+			accuracyTxt.text = accuracyStr;
 
 			for (i => frmtRange in accuracyTxt._formatRanges) if (frmtRange.format == accFormat) {
 				accuracyTxt._formatRanges[i].range.start = accuracyTxt.text.length - curRating.rating.length;
@@ -1441,6 +1495,8 @@ class PlayState extends MusicBeatState
 				break;
 			}
 		}
+
+		ratingStuffValid = true;
 	}
 
 	@:dox(hide)
@@ -1559,8 +1615,13 @@ class PlayState extends MusicBeatState
 		gameAndCharsEvent("onPostBopZoom", event);
 	}
 
+	@:noCompletion @:dox(hide) private var __camPos:FlxPoint = FlxPoint.get();
+	@:noCompletion @:dox(hide) private var __camPosData:CamPosData = null;
 	public function moveCamera() if (strumLines.members[curCameraTarget] != null) {
-		var data:CamPosData = getStrumlineCamPos(curCameraTarget);
+		if (__camPosData == null) __camPosData = new CamPosData(__camPos, 0);
+
+		__camPos.set(0, 0);
+		var data:CamPosData = getStrumlineCamPos(curCameraTarget, __camPos, true, __camPosData);
 		data.pos.add(cameraFocusOffset.x, cameraFocusOffset.y);
 
 		if (data.amount > 0) {
@@ -1568,7 +1629,6 @@ class PlayState extends MusicBeatState
 			if (!event.cancelled)
 				camFollow.setPosition(event.position.x, event.position.y);
 		}
-		data.put();
 	}
 
 	/**
@@ -1576,9 +1636,10 @@ class PlayState extends MusicBeatState
 	 * @param strumLine The strumline to get the camera position of.
 	 * @param pos The position to put the camera position in. If `null`, a new FlxPoint will be created.
 	 * @param ignoreInvisible Whenever invisible characters should be ignored.
+	 * @param out If provided, fills and returns this instance instead of allocating a new one. The caller keeps ownership of `pos` (don't put it back to the pool).
 	**/
-	public inline function getStrumlineCamPos(strumLine:Int, ?pos:FlxPoint = null, ?ignoreInvisible:Bool = true):CamPosData {
-		return getCharactersCamPos(strumLines.members[strumLine].characters, pos, ignoreInvisible);
+	public inline function getStrumlineCamPos(strumLine:Int, ?pos:FlxPoint = null, ?ignoreInvisible:Bool = true, ?out:CamPosData = null):CamPosData {
+		return getCharactersCamPos(strumLines.members[strumLine].characters, pos, ignoreInvisible, out);
 	}
 
 	/**
@@ -1586,8 +1647,9 @@ class PlayState extends MusicBeatState
 	 * @param chars The characters to get the camera position of.
 	 * @param pos The position to put the camera position in. If `null`, a new FlxPoint will be created.
 	 * @param ignoreInvisible Whenever invisible characters should be ignored.
+	 * @param out If provided, fills and returns this instance instead of allocating a new one. The caller keeps ownership of `pos` (don't put it back to the pool).
 	**/
-	public dynamic function getCharactersCamPos(chars:Array<Character>, ?pos:FlxPoint = null, ?ignoreInvisible:Bool = true):CamPosData {
+	public dynamic function getCharactersCamPos(chars:Array<Character>, ?pos:FlxPoint = null, ?ignoreInvisible:Bool = true, ?out:CamPosData = null):CamPosData {
 		if (pos == null) pos = FlxPoint.get();
 		var amount = 0;
 		for(c in chars) {
@@ -1602,7 +1664,13 @@ class PlayState extends MusicBeatState
 			pos.x /= amount;
 			pos.y /= amount;
 		}
-		return new CamPosData(pos, amount);
+
+		if (out == null)
+			return new CamPosData(pos, amount);
+
+		out.pos = pos;
+		out.amount = amount;
+		return out;
 	}
 
 
