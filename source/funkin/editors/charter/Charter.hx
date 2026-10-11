@@ -628,6 +628,8 @@ class Charter extends UIState {
 		Conductor.setupSong(PlayState.SONG);
 		noteTypes = PlayState.SONG.noteTypes;
 
+		// TODO: MAYBE MAKE WAVEFORMS WORK TOO FOR STREAMED SOUNDS??
+
 		var data = FlxSoundData.fromAssetKey(Paths.inst(__song, __diff, PlayState.SONG.meta.instSuffix), false);
 		if (data.isStreamable) data.buffer.load();
 
