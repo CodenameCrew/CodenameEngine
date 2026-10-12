@@ -9,15 +9,13 @@ env:
   HXCPP_COMPILE_CACHE: ${{ github.workspace }}/.hxcpp_cache
 
 jobs:
-  intel_build:
-    name: Mac OS x64 Build
+  intel_debug_build:
+    name: Mac OS x64 Debug Build
     permissions: write-all
     runs-on: macos-26
     steps:
       - name: Pulling the new commit
         uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
@@ -26,10 +24,10 @@ jobs:
       #   uses: actions/cache@v6
       #   with:
       #     # not caching the bin folder to prevent asset duplication and stuff like that
-      #     key: cache-build-mac-intel
+      #     key: cache-build-mac-intel-debug
       #     path: |
       #       .haxelib/
-      #       export/release/macos/obj/
+      #       export/debug/macos/obj/
       - name: Installing/Updating libraries
         run: |
           haxelib --global update haxelib
@@ -40,13 +38,13 @@ jobs:
           haxelib run lime rebuild hxcpp
           haxelib run lime rebuild tools
           arch -x86_64 haxelib run lime rebuild mac -nocolor -release
-          arch -x86_64 haxelib run lime build mac -DCOMPILE_EXPERIMENTAL
+          arch -x86_64 haxelib run lime build mac -debug -DCOMPILE_EXPERIMENTAL
       - name: Tar files
-        run: tar -zcvf CodenameEngine.tar.gz -C export/release/macos/bin .
+        run: tar -zcvf CodenameEngine.tar.gz -C export/debug/macos/bin .
       - name: Uploading artifact (entire build)
         uses: actions/upload-artifact@v7
         with:
-          name: Codename Engine-x64
+          name: Codename Engine-x64 Debug
           path: CodenameEngine.tar.gz
       # - name: Clearing already existing cache
       #   uses: actions/github-script@v9
@@ -57,7 +55,7 @@ jobs:
       #         repo: context.repo.repo,
       #       })
       #       for (const cache of caches.data.actions_caches) {
-      #         if (cache.key == "cache-build-mac-intel") {
+      #         if (cache.key == "cache-build-mac-intel-debug") {
       #           console.log('Clearing ' + cache.key + '...')
       #           await github.rest.actions.deleteActionsCacheById({
       #             owner: context.repo.owner,
@@ -71,20 +69,18 @@ jobs:
       #   uses: actions/cache@v6
       #   with:
       #     # caching again since for some reason it doesnt work with the first post cache shit
-      #     key: cache-build-mac-intel
+      #     key: cache-build-mac-intel-debug
       #     path: |
       #       .haxelib/
-      #       export/release/macos/obj/
+      #       export/debug/macos/obj/
 
-  arm_build:
-    name: Mac OS ARM64 Build
+  arm_debug_build:
+    name: Mac OS ARM64 Debug Build
     permissions: write-all
     runs-on: macos-26
     steps:
       - name: Pulling the new commit
         uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v2
         with:
@@ -93,10 +89,10 @@ jobs:
       #   uses: actions/cache@v6
       #   with:
       #     # not caching the bin folder to prevent asset duplication and stuff like that
-      #     key: cache-build-mac-arm
+      #     key: cache-build-mac-arm-debug
       #     path: |
       #       .haxelib/
-      #       export/release/macos/obj/
+      #       export/debug/macos/obj/
       - name: Installing/Updating libraries
         run: |
           haxelib --global update haxelib
@@ -107,13 +103,13 @@ jobs:
           haxelib run lime rebuild hxcpp
           haxelib run lime rebuild tools
           haxelib run lime rebuild mac -nocolor -release
-          haxelib run lime build mac -DCOMPILE_EXPERIMENTAL
+          haxelib run lime build mac -debug -DCOMPILE_EXPERIMENTAL
       - name: Tar files
-        run: tar -zcvf CodenameEngine.tar.gz -C export/release/macos/bin .
+        run: tar -zcvf CodenameEngine.tar.gz -C export/debug/macos/bin .
       - name: Uploading artifact (entire build)
         uses: actions/upload-artifact@v7
         with:
-          name: Codename Engine-ARM64
+          name: Codename Engine-ARM64 Debug
           path: CodenameEngine.tar.gz
       # - name: Clearing already existing cache
       #   uses: actions/github-script@v9
@@ -124,7 +120,7 @@ jobs:
       #         repo: context.repo.repo,
       #       })
       #       for (const cache of caches.data.actions_caches) {
-      #         if (cache.key == "cache-build-mac-arm") {
+      #         if (cache.key == "cache-build-mac-arm-debug") {
       #           console.log('Clearing ' + cache.key + '...')
       #           await github.rest.actions.deleteActionsCacheById({
       #             owner: context.repo.owner,
@@ -138,28 +134,28 @@ jobs:
       #   uses: actions/cache@v6
       #   with:
       #     # caching again since for some reason it doesnt work with the first post cache shit
-      #     key: cache-build-mac-arm
+      #     key: cache-build-mac-arm-debug
       #     path: |
       #       .haxelib/
-      #       export/release/macos/obj/
+      #       export/debug/macos/obj/
 
-  universal_build:
-    name: Mac OS Universal Build
+  universal_debug_build:
+    name: Mac OS Universal Debug Build
     permissions: write-all
     runs-on: macos-26
     needs: 
-      - intel_build
-      - arm_build
+      - intel_debug_build
+      - arm_debug_build
     steps:
       - name: Download Mac OS x64 Full Build
         uses: actions/download-artifact@v8
         with:
-          name: Codename Engine-x64
+          name: Codename Engine-x64 Debug
           path: intel
       - name: Download Mac OS ARM64 Full Build
         uses: actions/download-artifact@v8
         with:
-          name: Codename Engine-ARM64
+          name: Codename Engine-ARM64 Debug
           path: arm
       - name: Tar files (x64)
         run: tar -xvf intel/CodenameEngine.tar.gz -C intel
@@ -180,13 +176,8 @@ jobs:
           lipo -create "$INTEL/lime.ndll" "$ARM/lime.ndll" -output "$BIN/lime.ndll"
       - name: Tar files
         run:  tar -zcvf CodenameEngine.tar.gz CodenameEngine.app
-      - name: Uploading Universal Mac OS bundle (executable)
-        uses: actions/upload-artifact@v7
-        with:
-          name: Codename Engine (Executable Only)
-          path: CodenameEngine.app/Contents/MacOS/CodenameEngine
       - name: Uploading Universal Mac OS bundle (entire build)
         uses: actions/upload-artifact@v7
         with:
-          name: Codename Engine
+          name: Codename Engine Debug
           path: CodenameEngine.tar.gz
