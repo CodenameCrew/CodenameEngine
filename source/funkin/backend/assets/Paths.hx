@@ -292,7 +292,10 @@ class Paths
 		var asset:FlxAtlasFrames = cast tempFramesCache.get(assetKey);
 
 		if (asset != null && asset.parent != null && !asset.parent.isDestroyed) return asset;
-		else tempFramesCache.remove(assetKey);
+		else {
+			tempFramesCache.remove(assetKey);
+			asset = null;
+		}
 
 		if (!unique) {
 			final graphic = FlxG.bitmap.get(assetKey);
