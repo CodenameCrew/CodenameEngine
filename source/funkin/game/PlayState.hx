@@ -1091,7 +1091,7 @@ class PlayState extends MusicBeatState
 		if (!event.cancelled) {
 			if (event.spritePath != null) {
 				var spr = event.spritePath;
-				if (!Assets.exists(spr)) spr = Paths.image('$spr');
+				if (!Assets.exists(spr)) spr = Paths.image(spr);
 
 				sprite = new FunkinSprite().loadAnimatedGraphic(spr);
 				sprite.scrollFactor.set();

@@ -43,8 +43,12 @@ class Paths
 		else if (Flags.PATHS_UNIX_FIX) {
 			if (tempPathsCache.exists(fixedPath)) return tempPathsCache.get(fixedPath);
 
-			final isFile = path.lastIndexOf(".") != -1, parts = path.split("/");
-			final n = parts.length - 1, keyCache = fixedPath;
+			final isFile = path.lastIndexOf(".") != -1, parts = path.split("/"), keyCache = fixedPath;
+			var n = parts.length - 1;
+			if (parts[n] == "") {
+				parts.pop();
+				n--;
+			}
 
 			fixedPath = prefix;
 			for (i => part in parts) {
@@ -77,9 +81,9 @@ class Paths
 		if (exts == null)
 			return library == null ? getExistingPath(file, 'assets/', false) : getExistingPath('$library/$file', '$library:assets/', false);
 
-		var idx = file.lastIndexOf("/");
-		var p:Null<String> = idx == -1 ? "" : file.substr(0, idx);
-		file = file.substr(idx + 1);
+		var idx = file.lastIndexOf("/") + 1;
+		var dir = file.substr(0, idx);
+		file = file.substr(idx);
 
 		final extArr:Array<String> = (exts is String) ? null : (cast exts);
 		final ext:String = extArr != null ? extArr[0] : (cast exts);
@@ -91,22 +95,26 @@ class Paths
 			file = file.substr(0, idx);
 		}
 
-		p = library == null ? getExistingPath(p, 'assets/', true) : getExistingPath('$library/$p', '$library:assets/', true);
-		if (p == null) return library == null ? 'assets/$file.${fileExt ?? ext}' : '$library:assets/$library/$file.${fileExt ?? ext}';
-		else p += "/";
+		#if (sys && !windows)
+		if (Flags.PATHS_UNIX_FIX)
+			dir = (library == null ? getExistingPath(dir, 'assets/', false) : getExistingPath('$library/$dir', '$library:assets/', false)) + "/";
+		else
+		#end
+		dir = library == null ? 'assets/$dir' : '$library:assets/$library/$dir';
 
 		var path:String;
-		if (fileExt != null && (path = getExistingPath('$file.$fileExt', p, true)) != null) return path;
+		if (fileExt != null && (path = getExistingPath('$file.$fileExt', dir, true)) != null) return path;
+
 		if (extArr == null) {
-			if ((path = getExistingPath('$file.$ext', p, true)) != null) return path;
+			if ((path = getExistingPath('$file.$ext', dir, true)) != null) return path;
 		}
 		else {
 			for (extension in extArr) {
-				if ((path = getExistingPath('$file.$extension', p, true)) != null) return path;
+				if ((path = getExistingPath('$file.$extension', dir, true)) != null) return path;
 			}
 		}
 
-		return '$p$file.${fileExt ?? ext}';
+		return '$dir$file.${fileExt ?? ext}';
 	}
 
 	public static inline function video(key:String, ?ext:OneOfTwo<String, Array<String>>)
