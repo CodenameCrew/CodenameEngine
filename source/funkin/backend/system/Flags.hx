@@ -15,7 +15,7 @@ import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.AssetType;
 
 /**
- * A class that reads the `flags.ini` file, allowing to read settable Flags (customs too).
+ * A class that reads the `modpack.ini` file, allowing to read settable Flags (customs too).
  */
 @:build(funkin.backend.system.macros.FlagMacro.build())
 class Flags {
