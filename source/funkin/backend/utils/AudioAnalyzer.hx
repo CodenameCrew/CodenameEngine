@@ -12,6 +12,7 @@ import flixel.sound.FlxSoundData;
 typedef ReadCallback = Int->Int->Void;
 typedef WindowFunction = Float->Float;
 
+@:allow(funkin.backend.utils.AudioAnalyzer)
 final class WindowFunctions {
 	static inline final TWO_PI:Float = 6.283185307179586;
 	static inline final FOUR_PI:Float = 12.566370614359172;
@@ -142,6 +143,39 @@ final class AudioAnalyzer {
 	@:deprecated("Use getSpectrumFromFrequencies instead of getLevelsFromFrequencies.")
 	public static function getLevelsFromFrequencies(frequencies:Array<Float>, sampleRate:Int, barCount:Int, ?levels:Array<Float>, ratio = 0.0, minDb = -63.0, maxDb = -10.0, minFreq = 20.0, maxFreq = 22000.0):Array<Float>
 		return inline getSpectrumFromFrequencies(frequencies, sampleRate, barCount, levels, ratio, minDb, maxDb, minFreq, maxFreq);
+
+	/**
+	 * Gets RMS from the samples, without FFT computation.
+	 * @param	samples		The samples (can be from AudioAnalyzer.getSamples).
+	 * @param	sampleRate	Sample Rate input.
+	 * @param	window		Unused, only kept for parameter compatibility with getSpectrum (Optional).
+	 * @param	minDb		The minimum decibels to cap (Optional, default -63.0, -120 is pure silence).
+	 * @param	maxDb		The maximum decibels to cap (Optional, default -10.0, Above 0 is not recommended).
+	 * @param	minFreq		The minimum frequency to cap (Optional, default 20.0, Below 8.0 is not recommended).
+	 * @param	maxFreq		The maximum frequency to cap (Optional, default 20000.0, Above 23000.0 is not recommended).
+	 * @return	Output energy that ranges from 0 to 1.
+	 */
+	public function getRMSFromSamples(samples:Array<Float>, sampleRate:Int, ?window:WindowFunction, ?minDb:Float = -63.0, ?maxDb:Float = -10.0, ?minFreq:Float = 20.0, ?maxFreq:Float = 22000.0):Float {
+		final aLP = Math.min(1, WindowFunctions.TWO_PI * maxFreq / sampleRate);
+		final aHP = 1 / (1 + WindowFunctions.TWO_PI * minFreq / sampleRate);
+		final hasLP = aLP < 1, hasHP = aHP > 0;
+
+		var sum = 0.0, lp = 0.0, hp = 0.0, x = 0.0, xPrev = 0.0;
+		for (i in 0...fftN) {
+			x = samples[i];
+			if (hasHP) {
+				hp = aHP * (hp + x - xPrev);
+				xPrev = x;
+				x = hp;
+			}
+			if (hasLP) lp += aLP * (x - lp);
+			else lp = x;
+			sum += lp * lp;
+		}
+
+		final rms = Math.sqrt(sum / fftN);
+		return CoolUtil.bound((Math.log(rms) * 8.685889638065035/*20 / 2.302585092994046*/ - minDb) / (maxDb - minDb), 0, 1);
+	}
 
 	static final _permutations:Map<Int, Array<Int>> = [];
 	static final _twiddleReals:Map<Int, Array<Float>> = [];
@@ -301,7 +335,7 @@ final class AudioAnalyzer {
 	var _sampleOutputMerge:Bool;
 	var _sampleOutputLength:Int;
 	var _sampleOutput:Array<Float>;
-	var _freqSamples:Array<Float>;
+	var _samples:Array<Float>;
 	var _frequencies:Array<Float>;
 
 	public function new(sound:FlxSound, fftN = 4096) {
@@ -363,6 +397,31 @@ final class AudioAnalyzer {
 		return inline getSpectrum(startPos, MILLISECOND, volume, null, barCount, levels, ratio, minDb, maxDb, minFreq, maxFreq);
 
 	/**
+	 * Gets RMS from an attached sound from position, without FFT computation.
+	 * @param	pos			Position to get (Optional).
+	 * @param	timeUnit	TimeUnit to use for positions (Optional).
+	 * @param	gain		How much gain multiplier will it affect the output. (Optional, default 1.0).
+	 * @param	window		Unused, only kept for parameter compatibility with getSpectrum (Optional).
+	 * @param	minDb		The minimum decibels to cap (Optional, default -63.0, -120 is pure silence).
+	 * @param	maxDb		The maximum decibels to cap (Optional, default -10.0, Above 0 is not recommended).
+	 * @param	minFreq		The minimum frequency to cap (Optional, default 20.0, Below 8.0 is not recommended).
+	 * @param	maxFreq		The maximum frequency to cap (Optional, default 20000.0, Above 23000.0 is not recommended).
+	 * @return	Output energy that ranges from 0 to 1.
+	 */
+	public function getRMS(?pos:Float, ?timeUnit:TimeUnit, ?gain:Float = 1.0, ?window:WindowFunction, ?minDb:Float = -63.0, ?maxDb:Float = -10.0, ?minFreq:Float = 20.0, ?maxFreq:Float = 22000.0):Float {
+		_check();
+		if (data == null) return 0;
+
+		if (pos == null) {
+			if (sound == null) return 0;
+			if ((pos = sound.time / 1000 * data.sampleRate - fftN) < 0) pos = 0;
+			timeUnit = SAMPLE;
+		}
+
+		return getRMSFromSamples(_samples = getSamples(pos, timeUnit, fftN, true, -1, gain, _samples), data.sampleRate, window, minDb, maxDb, minFreq, maxFreq);
+	}
+
+	/**
 	 * Gets frequencies from an attached sound from position.
 	 * @param	pos			Position to get. (Optional).
 	 * @param	timeUnit	TimeUnit to use for positions. (Optional).
@@ -378,7 +437,7 @@ final class AudioAnalyzer {
 			if ((pos = sound.time / 1000 * data.sampleRate - fftN) < 0) pos = 0;
 			timeUnit = SAMPLE;
 		}
-		return getFrequenciesFromSamples(_freqSamples = getSamples(pos, timeUnit, fftN, true, -1, gain, _freqSamples), window, frequencies);
+		return getFrequenciesFromSamples(_samples = getSamples(pos, timeUnit, fftN, true, -1, gain, _samples), window, frequencies);
 	}
 
 	/**
