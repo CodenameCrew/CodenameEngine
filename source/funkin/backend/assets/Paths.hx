@@ -22,25 +22,20 @@ class Paths
 	public static var assetsTree:AssetsLibraryList;
 
 	public static var tempFramesCache:Map<String, FlxFramesCollection> = [];
-	#if sys
 	static var tempPathsCache:Map<String, Null<String>> = [];
-	#end
 
 	public static function init() {
 		FlxG.signals.preStateSwitch.add(function() {
 			tempFramesCache.clear();
-			#if (sys && !windows)
 			tempPathsCache.clear();
-			#end
 		});
 	}
 
 	static function getExistingPath(path:String, prefix:String, nullFail:Bool):Null<String> {
 		var fixedPath = prefix + path;
 
-		#if sys
 		if (Assets.exists(fixedPath)) return fixedPath;
-		else if (Flags.PATHS_CASE_SENSITIVE_FIX || Flags.PATHS_CASE_SENSITIVE_FIX == null) {
+		else if (Flags.PATHS_CASE_SENSITIVE_FIX || (prefix.contains("data/config")) || (prefix.contains("data") && path.contains("config"))) {
 			if (tempPathsCache.exists(fixedPath)) return tempPathsCache.get(fixedPath);
 
 			final isFile = path.lastIndexOf(".") != -1, parts = path.split("/"), keyCache = fixedPath;
@@ -75,9 +70,6 @@ class Paths
 			return tempPathsCache[keyCache] = fixedPath;
 		}
 		else if (!nullFail) return fixedPath;
-		#else
-		if (!nullFail || Assets.exists(fixedPath)) return fixedPath;
-		#end
 
 		return null;
 	}

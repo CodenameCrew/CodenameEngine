@@ -15,7 +15,8 @@ import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.AssetType;
 
 /**
- * A class that reads the `modpack.ini` file, allowing to read settable Flags (customs too).
+ * A class that reads the `data/config/modpack.ini` or `data/config/flags.ini` file,
+ * allowing to read settable Flags (customs too).
  */
 @:build(funkin.backend.system.macros.FlagMacro.build())
 class Flags {
@@ -356,7 +357,7 @@ class Flags {
 			#if windows
 			for (l in Paths.assetsTree.libraries) {
 				final lib = AssetsLibraryList.getCleanLibrary(l);
-				if (!(lib is IModsAssetLibrary) #if TRANSLATIONS_SUPPORT || (lib is TranslatedAssetLibrary) #end) continue;
+				if (!(lib is IModsAssetLibrary) || (lib is TranslatedAssetLibrary)) continue;
 
 				if (PATHS_CASE_SENSITIVE_FIX = !(lib is ModsFolderLibrary)) break;
 			}
@@ -442,17 +443,18 @@ class Flags {
 				@:privateAccess
 				l = cast(l, openfl.utils.AssetLibrary).__proxy;
 			}
-			if(lib is funkin.backend.assets.TranslatedAssetLibrary) {
+			if (lib is funkin.backend.assets.TranslatedAssetLibrary) {
 				// skip translations since it would be useless, if you wanna modify it set the flags inside of global.hx
 				continue;
 			}
 
 			if (l is IModsAssetLibrary) {
+				if (cast(l, IModsAssetLibrary).modName == "assets") continue;
+				if (cast(l, IModsAssetLibrary).modName == "source") continue;
+
 				var flagsTxt = "";
 				if (l.exists(Paths.ini("config/modpack"), AssetType.TEXT))
 					flagsTxt = l.getAsset(Paths.ini("config/modpack"), AssetType.TEXT);
-				if (cast(l, IModsAssetLibrary).modName == "assets") continue;
-				if (cast(l, IModsAssetLibrary).modName == "source") continue;
 
 				if (cast(l, IModsAssetLibrary).modName == ModsFolder.currentModFolder) {
 					var flags:Map<String, String> = [];
