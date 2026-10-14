@@ -19,6 +19,7 @@ class Macros {
 			"flixel.addons.plugin", "flixel.addons.text", "flixel.addons.tile", "flixel.addons.transition",
 			"flixel.addons.util",
 			// OTHER LIBRARIES & STUFF
+			"openfl.utils",
 			#if THREE_D_SUPPORT
 			/*
 				supposed to be deprecated but

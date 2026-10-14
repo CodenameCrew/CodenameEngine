@@ -24,19 +24,20 @@ API_VERSION=${Flags.CURRENT_API_VERSION}
 
 DOWNLOAD_LINK="YOUR MOD PAGE LINK HERE"
 
-# Not supported yet
-;MOD_ICON64="path/to/icon64"
-;MOD_ICON32="path/to/icon32"
-;MOD_ICON16="path/to/icon16"
-# The path starts in "your-mod/images/", do not add image extension.
-ICON="path/to/icon"
+# Icons to display as the game window icon. (NOTE: Small icons like 16x16 only shows up in Windows)
+;ICONS=images/icon.png,images/icon64.png,images/icon32.png,images/icon16.png
+;ICONS=icon,icon64,icon32,icon16
 
 [Flags] # This section doesn\'t apply any prefix.
-DISABLE_WARNING_SCREEN=true
 # Set this to false if you want to bring back the warning state (prior to 1.0.0)
 # NOTE: Beta warning state has been renamed from BetaWarningState.hx to WarningState.hx
-DISABLE_LANGUAGES=true
+DISABLE_WARNING_SCREEN=true
+
 # Some people might not translate their mods, but if you do then you may set this to false
+DISABLE_LANGUAGES=true
+
+# Enable this for to debug custom shaders, or disable this for when releasing your mod!!
+SHADERS_CACHE_RESET_ON_SWITCH_STATE=false
 
 [Discord] # This section applies the \'MOD_DISCORD_\' prefix to the flags so you don\'t have to.
 CLIENT_ID=""
