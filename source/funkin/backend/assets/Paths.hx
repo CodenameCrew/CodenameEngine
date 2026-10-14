@@ -22,7 +22,7 @@ class Paths
 	public static var assetsTree:AssetsLibraryList;
 
 	public static var tempFramesCache:Map<String, FlxFramesCollection> = [];
-	#if (sys && !windows)
+	#if sys
 	static var tempPathsCache:Map<String, Null<String>> = [];
 	#end
 
@@ -38,32 +38,37 @@ class Paths
 	static function getExistingPath(path:String, prefix:String, nullFail:Bool):Null<String> {
 		var fixedPath = prefix + path;
 
-		#if (sys && !windows)
+		#if sys
 		if (Assets.exists(fixedPath)) return fixedPath;
-		else if (Flags.PATHS_UNIX_FIX) {
+		else if (Flags.PATHS_CASE_SENSITIVE_FIX || Flags.PATHS_CASE_SENSITIVE_FIX == null) {
 			if (tempPathsCache.exists(fixedPath)) return tempPathsCache.get(fixedPath);
 
 			final isFile = path.lastIndexOf(".") != -1, parts = path.split("/"), keyCache = fixedPath;
-			var n = parts.length - 1;
-			if (parts[n] == "") {
+			var n = parts.length - 1, hasEndSlash = parts[n] == "", pass = true;
+			if (hasEndSlash) {
 				parts.pop();
 				n--;
 			}
 
 			fixedPath = prefix;
 			for (i => part in parts) {
+				if (pass) pass = false;
+				else {
+					fixedPath += (i == n && !hasEndSlash) ? part : part + "/";
+					continue;
+				}
+
 				final lower = part.toLowerCase(), entries = (isFile && i == n) ? assetsTree.getFiles(fixedPath) : assetsTree.getFolders(fixedPath);
-				var pass = false;
 
 				for (entry in entries) if (entry.toLowerCase() == lower) {
 					pass = true;
-					fixedPath += i == n ? entry : entry + "/";
+					fixedPath += (i == n && !hasEndSlash) ? entry : entry + "/";
 					break;
 				}
 
 				if (!pass) {
 					if (nullFail) return tempPathsCache[keyCache] = null;
-					else fixedPath += i == n ? part : part + "/";
+					else fixedPath += (i == n && !hasEndSlash) ? part : part + "/";
 				}
 			}
 
@@ -89,18 +94,12 @@ class Paths
 		final ext:String = extArr != null ? extArr[0] : (cast exts);
 		var fileExt:Null<String> = null;
 
-		idx = file.lastIndexOf(".");
-		if (idx != -1) {
+		if ((idx = file.lastIndexOf(".")) != -1) {
 			fileExt = file.substr(idx + 1);
 			file = file.substr(0, idx);
 		}
 
-		#if (sys && !windows)
-		if (Flags.PATHS_UNIX_FIX)
-			dir = (library == null ? getExistingPath(dir, 'assets/', false) : getExistingPath('$library/$dir', '$library:assets/', false)) + "/";
-		else
-		#end
-		dir = library == null ? 'assets/$dir' : '$library:assets/$library/$dir';
+		dir = library == null ? getExistingPath(dir, 'assets/', false) : getExistingPath('$library/$dir', '$library:assets/', false);
 
 		var path:String;
 		if (fileExt != null && (path = getExistingPath('$file.$fileExt', dir, true)) != null) return path;
