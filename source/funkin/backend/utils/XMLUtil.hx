@@ -157,7 +157,7 @@ final class XMLUtil {
 		if (parentFolder == null) parentFolder = "";
 
 		spr.name = node.getAtt("name");
-		spr.antialiasing = true;
+		spr.antialiasing = Flags.DEFAULT_ANTIALIASING;
 		if (loadGraphic) {
 			appendSpriteSheetsFromXML(spr, node, parentFolder);
 		}

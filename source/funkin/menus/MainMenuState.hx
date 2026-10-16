@@ -54,7 +54,7 @@ class MainMenuState extends MusicBeatState
 			bg.scale.set(1.15, 1.15);
 			bg.updateHitbox();
 			bg.screenCenter();
-			bg.antialiasing = true;
+			bg.antialiasing = Flags.DEFAULT_ANTIALIASING;
 		}
 
 		menuItems = new FlxTypedGroup<FlxSprite>();
@@ -71,7 +71,7 @@ class MainMenuState extends MusicBeatState
 			menuItem.screenCenter(X);
 			menuItems.add(menuItem);
 			menuItem.scrollFactor.set();
-			menuItem.antialiasing = true;
+			menuItem.antialiasing = Flags.DEFAULT_ANTIALIASING;
 		}
 
 		FlxG.camera.follow(camFollow, null, 0.06);

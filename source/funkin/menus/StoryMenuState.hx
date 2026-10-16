@@ -85,7 +85,7 @@ class StoryMenuState extends MusicBeatState {
 			arrow.animation.addByPrefix('idle', 'arrow $dir');
 			arrow.animation.addByPrefix('press', 'arrow push $dir', 24, false);
 			arrow.animation.play('idle');
-			arrow.antialiasing = true;
+			arrow.antialiasing = Flags.DEFAULT_ANTIALIASING;
 			add(arrow);
 		}
 		rightArrow.x -= rightArrow.width;
@@ -112,7 +112,7 @@ class StoryMenuState extends MusicBeatState {
 					var diffSprite = new FlxSprite(leftArrow.x + leftArrow.width, leftArrow.y);
 					diffSprite.loadAnimatedGraphic(Paths.image('menus/storymenu/difficulties/${le}'));
 					diffSprite.setUnstretchedGraphicSize(Std.int(rightArrow.x - leftArrow.x - leftArrow.width), Std.int(leftArrow.height), false, 1);
-					diffSprite.antialiasing = true;
+					diffSprite.antialiasing = Flags.DEFAULT_ANTIALIASING;
 					diffSprite.scrollFactor.set();
 					add(diffSprite);
 
@@ -321,7 +321,7 @@ class MenuItem extends FlxSprite
 		super(x, y);
 		CoolUtil.loadAnimatedGraphic(this, Paths.image(path, null, true));
 		screenCenter(X);
-		antialiasing = true;
+		antialiasing = Flags.DEFAULT_ANTIALIASING;
 	}
 
 	private var isFlashing:Bool = false;

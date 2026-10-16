@@ -35,7 +35,7 @@ class RadioButton extends TextOption {
 		radio.animation.addByPrefix("checked", "Radio Selected Static0", 24);
 		radio.animation.addByPrefix("unchecking", "Radio deselect animation0", 24, false);
 		radio.animation.addByPrefix("checking", "Radio selecting animation0", 24, false);
-		radio.antialiasing = true;
+		radio.antialiasing = Flags.DEFAULT_ANTIALIASING;
 		radio.scale.set(0.75, 0.75);
 		radio.updateHitbox();
 		add(radio);

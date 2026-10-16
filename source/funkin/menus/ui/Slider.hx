@@ -38,7 +38,7 @@ class Slider extends FlxSprite {
 		this.segments = segments;
 
 		frames = Paths.getFrames('menus/options/slider');
-		antialiasing = true;
+		antialiasing = Flags.DEFAULT_ANTIALIASING;
 	}
 
 	override function initVars() {
