@@ -1,3 +1,10 @@
+# Guidelines to Contribution
+- **Test your changes** before making a pull request. Gotta make sure it works before you ship it.
+- Keep your history as **linear** as you can. Avoid merging from the upstream unless there's a merge conflict you have to reconcile.
+- If your PR is merged, remember to **sync your fork** as well.
+- Stay on topic and **avoid making changes other than what your PR states.**
+- Code must be **handwritten**. AI-generated code is an automatic close.
+
 # Contributing to Codename
 
 With your fork, you can make pull requests if you want to fix a bug or add a feature to the game. To do this, once the changes you have are pushed to your repository in GitHub, do the following:
