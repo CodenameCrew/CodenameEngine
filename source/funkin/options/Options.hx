@@ -51,6 +51,7 @@ class Options
 	public static var betaUpdates:Bool = false;
 	public static var splashesEnabled:Bool = true;
 	public static var legacyMemoryCounter:Bool = false;
+	public static var legacyModMenuNames:Bool = false;
 
 	 // DEPRECATED
 	@:dox(hide) @:doNotSave public static var hitWindow:Float = 250;
