@@ -252,7 +252,7 @@ class FunkinShaderSourceAssembler extends FlxRuntimeShader.FlxShaderSourceAssemb
 		final path = Paths.getPath('shaders/' + include);
 		if (Assets.exists(path)) return Assets.getText(path);
 
-		final fallback = __getIncludeSource(include, fromVertex);
+		final fallback = super.__getIncludeSource(include, fromVertex);
 		if (fallback != null) return fallback;
 
 		Logs.traceColored([
