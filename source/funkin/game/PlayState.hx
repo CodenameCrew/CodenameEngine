@@ -2049,7 +2049,7 @@ class PlayState extends MusicBeatState
 				if (char == null) continue;
 
 				if(event.stunned) char.stunned = true;
-				char.playSingAnim(directionID, event.animSuffix, MISS, event.forceAnim);
+				char.playSingAnim(event.direction, event.animSuffix, MISS, event.forceAnim);
 			}
 		}
 
