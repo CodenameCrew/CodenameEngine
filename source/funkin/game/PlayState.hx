@@ -583,7 +583,7 @@ class PlayState extends MusicBeatState
 	@:noCompletion @:dox(hide) private var _endSongCalled:Bool = false;
 
 	@:dox(hide) var __vocalSyncTimer:Float = 1.0;
-	@:dox(hide) var __vocalSyncThreshold:Float = 40.0;
+	@:dox(hide) var __vocalSyncThreshold:Float = 12.0;
 
 	private function get_accuracy():Float {
 		if (accuracyPressedNotes <= 0) return -1;
