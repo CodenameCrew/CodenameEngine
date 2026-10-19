@@ -156,7 +156,7 @@ class Note extends FlxSprite
 		this.noteData = noteData.id.getDefault(0);
 
 		var customType = this.noteType != null ? Paths.image('game/notes/${this.noteType}') : null;
-		var event = EventManager.get(NoteCreationEvent).recycle(this, strumID, this.noteType, noteTypeID, PlayState.instance.strumLines.members.indexOf(strumLine), mustPress,
+		var event = EventManager.get(NoteCreationEvent).recycle(this, strumID, this.noteType, noteTypeID, (PlayState.instance != null) ? (PlayState.instance.strumLines.members.indexOf(strumLine)) : strumLine.ID, mustPress,
 			(this.noteType != null && customTypePathExists(customType)) ? 'game/notes/${this.noteType}' : 'game/notes/default', @:privateAccess strumLine.strumScale * Flags.DEFAULT_NOTE_SCALE, animSuffix);
 
 		if (PlayState.instance != null)
