@@ -286,20 +286,20 @@ class Paths
 	public static function getMultiFrames(sheets:Array<String>, assetsPath:Bool = false, ?unique:Bool = false, ?key:String = null,
 			?skipMulti:Bool = false, ?ext:OneOfTwo<String, Array<String>> = null, ?animateSettings:FlxAnimateSettings):FlxFramesCollection
 	{
-		final assetKey = key != null ? key : "combo/" + sheets.join(",");
+		final cacheKey = key != null ? key : "combo/" + sheets.join(",");
 
-		var asset:FlxAtlasFrames = cast tempFramesCache.get(assetKey);
+		var asset:FlxAtlasFrames = cast tempFramesCache.get(cacheKey);
 
 		if (asset != null && asset.parent != null && !asset.parent.isDestroyed) return asset;
 		else {
-			tempFramesCache.remove(assetKey);
+			tempFramesCache.remove(cacheKey);
 			asset = null;
 		}
 
 		if (!unique) {
-			final graphic = FlxG.bitmap.get(assetKey);
+			final graphic = FlxG.bitmap.get(cacheKey);
 			if (graphic != null && (asset = graphic.atlasFrames) != null) {
-				tempFramesCache.set(assetKey, asset);
+				tempFramesCache.set(cacheKey, asset);
 				return asset;
 			}
 		}
@@ -330,13 +330,14 @@ class Paths
 			frameCollections.push(frames);
 		}
 
-		if (frameCollections.length == 1 && (key == null || key == assetKey)) return frameCollections[0];
+		if (frameCollections.length == 1 && (key == null || key == cacheKey))
+			return unique ? frameCollections[0] : tempFramesCache[cacheKey] = frameCollections[0];
 
 		if (asset == null) {
-			asset = new FlxAtlasFrames(FlxGraphic.fromRectangle(1, 1, 0, unique, assetKey));
+			asset = new FlxAtlasFrames(FlxGraphic.fromRectangle(1, 1, 0, unique, cacheKey));
 		}
 		else {
-			@:privateAccess asset.parent.key = assetKey;
+			@:privateAccess asset.parent.key = cacheKey;
 			asset.parent.unique = unique;
 			asset.parent.bitmap = new openfl.display.BitmapData(1, 1, true, 0);
 			asset.parent.addFrameCollection(asset);
@@ -347,7 +348,7 @@ class Paths
 
 		for (frames in frameCollections) asset.addAtlas(cast frames); // wont compile in hashlink because of mismatch type
 
-		if (!unique) tempFramesCache.set(assetKey, asset);
+		if (!unique) tempFramesCache.set(cacheKey, asset);
 		return asset;
 	}
 
