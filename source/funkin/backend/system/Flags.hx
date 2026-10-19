@@ -260,7 +260,7 @@ class Flags {
 	@:also(funkin.game.GameOverSubstate.script)
 	public static var DEFAULT_GAMEOVER_SCRIPT:String = "";
 	@:also(funkin.menus.ui.FunkinSoundTray.scriptPath)
-	public static var DEFAULT_SOUNDTRAY_SCRIPT:String = "";
+	public static var DEFAULT_SOUNDTRAY_SCRIPT:String = "data/soundTray";
 
 	public static var URL_WIKI:String = "https://codename-engine.com/";
 	public static var URL_EDITOR_FALLBACK:String = "https://www.youtube.com/watch?v=9Youam7GYdQ";
