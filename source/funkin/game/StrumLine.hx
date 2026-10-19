@@ -263,10 +263,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		if (daNote.tooLate) {
 			if (!cpu) {
 				if (PlayState.instance != null) PlayState.instance.noteMiss(this, daNote);
-				else {
-					__dispatchOnMiss(daNote);
-					deleteNote(daNote);
-				}
+				else __dispatchOnMiss(daNote);
 			}
 			else deleteNote(daNote);
 			return;
@@ -382,6 +379,11 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		if (PlayState.instance != null) PlayState.instance.gameAndCharsEvent("onPostInputUpdate", event);
 	}
 
+	/*
+	 * Dispatches a NoteHitEvent when a note is supposed to be hit.
+	 * For use outside of `PlayState` only.
+	 * (you will need to call deleteNote manually !!!! for flexibility reasons)
+	 */
 	private inline function __dispatchOnHit(?note:Note) {
 		if (note == null) return;
 		var event:NoteHitEvent = EventManager.get(NoteHitEvent);
@@ -389,6 +391,12 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		onHit.dispatch(event);
 	}
 
+	/*
+	 * Dispatches a NoteMissEvent when a note is supposed to be missed.
+	 * Also brings a direction parameter for when ghost tapping instead.
+	 * For use outside of `PlayState` only.
+	 * (you will need to call deleteNote manually !!!! for flexibility reasons)
+	 */
 	private inline function __dispatchOnMiss(?note:Note, ?directionID:Int = 0) {
 		//if (note == null) return; // cant because ghost tapping
 		var hasNote:Bool = note != null;
