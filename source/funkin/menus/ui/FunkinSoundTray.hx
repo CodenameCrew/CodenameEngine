@@ -8,7 +8,7 @@ import openfl.text.TextFormat;
 
 class FunkinSoundTray extends FlxSoundTray
 {
-	public var scriptPath:String = Flags.DEFAULT_SOUNDTRAY_SCRIPT;
+	public static var scriptPath:String = Flags.DEFAULT_SOUNDTRAY_SCRIPT;
 	public var script:Script;
 
 	// Ne_Eo wanted them since it would reduce lags for some people if activated  - Nex
