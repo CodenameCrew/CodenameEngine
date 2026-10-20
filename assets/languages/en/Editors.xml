@@ -262,6 +262,9 @@
 				<group name="NoteMenu" prefix="note.">
 					<str id="addSustainLength">Add sustain length</str>
 					<str id="subtractSustainLength">Subtract sustain length</str>
+					<str id="duet">Duet selected</str>
+					<str id="swap">Swap selected</str>
+					<str id="mirror">Mirror selected</str>
 					<str id="selectAll">Select all</str>
 					<str id="selectMeasure">Select measure</str>
 					<str id="selectStrumline">Select Strumline</str>
