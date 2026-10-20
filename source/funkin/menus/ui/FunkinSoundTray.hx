@@ -8,6 +8,7 @@ import openfl.text.TextFormat;
 
 class FunkinSoundTray extends FlxSoundTray
 {
+	public static var scriptPath:String = Flags.DEFAULT_SOUNDTRAY_SCRIPT;
 	public var script:Script;
 
 	// Ne_Eo wanted them since it would reduce lags for some people if activated  - Nex
@@ -16,7 +17,7 @@ class FunkinSoundTray extends FlxSoundTray
 
 	public function new()
 	{
-		script = Script.create(Paths.script('data/soundTray'));
+		script = Script.create(Paths.script(scriptPath));
 		script.setParent(this);
 		script.load();
 
