@@ -176,8 +176,6 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 			final library = AssetsLibraryList.getCleanLibrary(Paths.assetsTree.getAssetPathLibrary(vertexPath));
 			if (library is ModsFolderLibrary) __cacheProgramId += ", vertexEditedTime: " + cast(library, ModsFolderLibrary).getEditedTime(vertexPath);
 		}
-
-		trace(__cacheProgramId);
 	}
 
 	override function __updateGL():Void {
