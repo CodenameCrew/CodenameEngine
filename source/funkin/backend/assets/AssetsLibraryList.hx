@@ -63,7 +63,7 @@ class AssetsLibraryList extends AssetLibrary {
 		return source != lib.tag;
 	}
 
-	public function getAssetPathLibrary(id:String, type:Null<String>, source:AssetSource = BOTH):Null<AssetLibrary> {
+	public function getAssetPathLibrary(id:String, ?type:String, source:AssetSource = BOTH):Null<AssetLibrary> {
 		var cacheLibraryPaths:Map<String, AssetLibrary> = null;
 
 		if (Flags.PATHS_CACHE_LIFETIME != 0) {

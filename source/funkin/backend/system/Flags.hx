@@ -72,9 +72,6 @@ class Flags {
 	@:lazy public static var PATHS_CACHE_LIFETIME:Null<Int> = null;
 	public static var PATHS_CACHE_RESET_ON_SWITCH_STATE:Bool = true;
 
-	// turn this true to debug shaders, or off for releasing mods.
-	public static var SHADERS_CACHE_RESET_ON_SWITCH_STATE:Bool = false;
-
 	public static var GAME_WIDTH:Int = 1280;
 	public static var GAME_HEIGHT:Int = 720;
 
@@ -259,6 +256,8 @@ class Flags {
 	public static var DEFAULT_PAUSE_SCRIPT:String = "";
 	@:also(funkin.game.GameOverSubstate.script)
 	public static var DEFAULT_GAMEOVER_SCRIPT:String = "";
+	@:also(funkin.menus.ui.FunkinSoundTray.scriptPath)
+	public static var DEFAULT_SOUNDTRAY_SCRIPT:String = "data/soundTray";
 
 	public static var URL_WIKI:String = "https://codename-engine.com/";
 	public static var URL_EDITOR_FALLBACK:String = "https://www.youtube.com/watch?v=9Youam7GYdQ";

@@ -36,9 +36,6 @@ DISABLE_WARNING_SCREEN=true
 # Some people might not translate their mods, but if you do then you may set this to false
 DISABLE_LANGUAGES=true
 
-# Enable this for to debug custom shaders, or disable this for when releasing your mod!!
-SHADERS_CACHE_RESET_ON_SWITCH_STATE=false
-
 [Discord] # This section applies the \'MOD_DISCORD_\' prefix to the flags so you don\'t have to.
 CLIENT_ID=""
 LOGO_KEY=""

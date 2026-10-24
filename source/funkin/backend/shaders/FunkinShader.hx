@@ -22,6 +22,9 @@ import flixel.graphics.FlxGraphic;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.util.FlxStringUtil;
 
+import funkin.backend.assets.AssetsLibraryList;
+import funkin.backend.assets.ModsFolderLibrary;
+
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.Program3D)
 @:access(openfl.display.ShaderInput)
@@ -160,6 +163,20 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 		}
 	}
 	#end
+
+	override function _fromFile(fragmentPath:Null<String>, vertexPath:Null<String>, version:Null<String>):Void {
+		super._fromFile(fragmentPath, vertexPath, version);
+
+		if (fragmentPath != null) {
+			final library = AssetsLibraryList.getCleanLibrary(Paths.assetsTree.getAssetPathLibrary(fragmentPath));
+			if (library is ModsFolderLibrary) __cacheProgramId += ", fragmentEditedTime: " + cast(library, ModsFolderLibrary).getEditedTime(fragmentPath);
+		}
+
+		if (vertexPath != null) {
+			final library = AssetsLibraryList.getCleanLibrary(Paths.assetsTree.getAssetPathLibrary(vertexPath));
+			if (library is ModsFolderLibrary) __cacheProgramId += ", vertexEditedTime: " + cast(library, ModsFolderLibrary).getEditedTime(vertexPath);
+		}
+	}
 
 	override function __updateGL():Void {
 		onGLUpdate.dispatch();
