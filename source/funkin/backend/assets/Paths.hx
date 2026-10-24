@@ -98,10 +98,13 @@ class Paths
 
 		if (extArr == null) {
 			if ((path = getExistingPath('$file.$ext', dir, true)) != null) return path;
+			// If incorrectly assumed if filename is an extension ex: Paths.music("Sneaky Snitch (website.com)")
+			else if (fileExt != null && (path = getExistingPath('$file.$fileExt.$ext', dir, true)) != null) return path;
 		}
 		else {
 			for (extension in extArr) {
 				if ((path = getExistingPath('$file.$extension', dir, true)) != null) return path;
+				else if (fileExt != null && (path = getExistingPath('$file.$fileExt.$extension', dir, true)) != null) return path;
 			}
 		}
 
