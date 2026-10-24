@@ -9,6 +9,7 @@ import funkin.backend.scripting.events.menu.freeplay.*;
 import funkin.backend.system.Conductor;
 import funkin.game.HealthIcon;
 import funkin.savedata.FunkinSave;
+import funkin.backend.assets.ModsFolder;
 
 using StringTools;
 
@@ -462,15 +463,21 @@ class FreeplaySonglist {
 	}
 
 	public function getSongsFromSource(source:funkin.backend.assets.AssetSource, useTxt:Bool = true, ?startDir:String = 'songs/', ?flatten:Bool = true) {
-		var songsFound:Array<String> = null;
-		if (useTxt) {
-			var oldPath = Paths.txt('freeplaySonglist');
-			var newPath = Paths.txt('config/freeplaySonglist');
-			if (Paths.assetsTree.existsSpecific(newPath, "TEXT", source)) songsFound = CoolUtil.coolTextFile(newPath);
+		var songsFound:Array<String> = []; // this cant be null or it errors. the more you nose
+		var songPaths:Array<String> = [];
+		for (lib in ModsFolder.getLoadedModsLibs()) if (useTxt) {
+			var modName = lib.modName;
+			var oldPath = Paths.txt('freeplaySonglist/LIB_$modName');
+			var newPath = Paths.txt('config/freeplaySonglist/LIB_$modName');
+
+			if (Paths.assetsTree.existsSpecific(newPath, "TEXT", source)) for (i in CoolUtil.coolTextFile(newPath)) songPaths.push(i);
 			else if (Paths.assetsTree.existsSpecific(oldPath, "TEXT", source)) {
 				Logs.warn("data/freeplaySonglist.txt is deprecated and will be removed in the future. Please move the file to data/config/", DARKYELLOW, "FreeplaySonglist");
-				songsFound = CoolUtil.coolTextFile(oldPath);
+				for (i in CoolUtil.coolTextFile(oldPath)) songPaths.push(i);
 			}
+		} // songsFound = CoolUtil.coolTextFile(oldPath);
+		for (song in songPaths) {
+			songsFound.push(song);
 		}
 		// todo: make this better
 		if (songsFound == null) {
