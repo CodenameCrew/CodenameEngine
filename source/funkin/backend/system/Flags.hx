@@ -235,7 +235,7 @@ class Flags {
 	public static var DEFAULT_STRUM_AMOUNT:Int = 4;
 	public static var DEFAULT_CAMERA_FOLLOW_SPEED:Float = 0.04;
 
-	public static var VOCAL_OFFSET_VIOLATION_THRESHOLD:Float = 25;
+	public static var VOCAL_OFFSET_VIOLATION_THRESHOLD:Float = 12.0;
 
 	// Usage: Codename Credits
 	public static var MAIN_DEVS_COLOR:FlxColor = 0xFF9C35D5;
