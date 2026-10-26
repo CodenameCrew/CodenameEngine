@@ -162,9 +162,7 @@ class Flags {
 
 	public static var DEFAULT_NOTE_MS_LIMIT:Float = 1500;
 	public static var DEFAULT_NOTE_SCALE:Float = 0.7;
-	#if MODCHARTING_FEATURES
 	public static var DEFAULT_MODCHART_HOLD_SUBDIVISIONS:Int = 4;
-	#end
 
 	public static var SUSTAINS_AS_ONE_NOTE:Null<Bool> = null;
 
@@ -423,9 +421,6 @@ class Flags {
 				if (!(parsed = parse(name, value))) customFlags.set(name, value);
 				if (!overridenFlags.exists(name)) overridenFlags.set(name, parsed);
 		}
-		#if MODCHARTING_FEATURES
-		Options.modchartingHoldSubdivisions = DEFAULT_MODCHART_HOLD_SUBDIVISIONS;
-		#end
 	}
 
 	/**

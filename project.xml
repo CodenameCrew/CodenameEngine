@@ -46,9 +46,6 @@
 	<!-- Uncomment this to achive faster compile times, will strip extraneous and commonly unused features. -->
 	<!-- <define name="STRIPPED_COMPILE" unless="debug"/> -->
 
-	<!-- Compile with _theo0p's modcharting tools -->
-	<define name="MODCHARTING_FEATURES" unless="STRIPPED_COMPILE"/>
-
 	<!-- Comment this out to disable GitHub API integration !-->
 	<define name="GITHUB_API" unless="web || hl"/>
 
@@ -167,14 +164,6 @@
 
 	<app main="funkin.backend.system.Main" preloader="flixel.system.FlxPreloader"/>
 	<source name="source"/>
-
-	<section if="MODCHARTING_FEATURES">
-		<haxedef name="FM_ENGINE" value="CODENAME"/>
-		<haxedef name="FM_ENGINE_VERSION" value="1.0"/>
-
-		<haxelib name="funkin-modchart" />
-		<haxeflag name="--macro" value="modchart.backend.macros.Macro.includeFiles()"/>
-	</section>
 
 	<!-- ____________________________ Assets Settings ___________________________ -->
 

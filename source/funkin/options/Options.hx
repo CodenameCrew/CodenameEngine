@@ -71,10 +71,6 @@ class Options
 	public static var streamedVocals:Bool = true;
 	public static var quality:Int = 1;
 	public static var allowConfigWarning:Bool = true;
-	#if MODCHARTING_FEATURES
-	public static var modchartingHoldSubdivisions:Int = 4;
-	#end
-
 	public static var lastLoadedMod:String = null;
 	public static var disabledAddons:Array<String> = [];
 
@@ -256,6 +252,10 @@ class Options
 	public static var SOLO_DEV_CONSOLE(get, null):Array<FlxKey>;
 	public static var SOLO_DEV_RELOAD(get, null):Array<FlxKey>;
 	public static var SOLO_DEV_INSPECTOR(get, null):Array<FlxKey>;
+
+	@:dox(hide) @:doNotSave public static var modchartingHoldSubdivisions(get, set):Int;
+	@:dox(hide) static function get_modchartingHoldSubdivisions():Int return Flags.DEFAULT_MODCHART_HOLD_SUBDIVISIONS;
+	@:dox(hide) static function set_modchartingHoldSubdivisions(v:Int):Int return Flags.DEFAULT_MODCHART_HOLD_SUBDIVISIONS = v;
 
 	public static function load() {
 		var path = haxe.macro.Compiler.getDefine("SAVE_OPTIONS_PATH"), name = haxe.macro.Compiler.getDefine("SAVE_OPTIONS_NAME");
