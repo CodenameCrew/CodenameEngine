@@ -167,11 +167,11 @@
 
 	<!-- ____________________________ Assets Settings ___________________________ -->
 
-	<define name="PRELOAD_ALL" unless="web" />
+	<define name="PRELOAD_ALL" unless="web"/>
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
 
 	<library name="assets"    preload="true"  if="PRELOAD_ALL"/>
-	<library name="assets"    preload="false" if="NO_PRELOAD_ALL" />
+	<library name="assets"    preload="false" if="NO_PRELOAD_ALL"/>
 
 	<section unless="TEST_BUILD">
 		<assets path="assets/"    rename="assets"	exclude="*.ogg" if="web"/>
@@ -195,7 +195,7 @@
 	<haxedef name="USE_ADAPTED_ASSETS" if="USE_ADAPTED_ASSETS"/>
 
 	<!-- Backward Compatibilities -->
-	<haxedef name="FLX_HEALTH" />
+	<haxedef name="FLX_HEALTH"/>
 
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN"/>
 	<haxedef name="FLX_NO_DEBUG" unless="debug"/>
@@ -221,12 +221,12 @@
 	<haxeflag name="--macro" value="funkin.backend.system.macros.BuildInfo.printBuildInfo()"/>
 
 	<!-- EXPERMENTAL FEATURES -->
-	<haxedef name="EXPERIMENTAL_FLXGRAPHIC_DESTROY_FIX" />
+	<haxedef name="EXPERIMENTAL_FLXGRAPHIC_DESTROY_FIX"/>
 	<haxedef name="openfl_dpi_aware" unless="mac"/>
 	<haxedef name="openfl_pool_events"/>
 	<haxedef name="openfl-enable-handle-error"/>
 	<haxedef name="openfl_no_custom_render_event"/>
-	<haxedef name="IMGUI_ENABLED" if="lime-imgui" />
+	<haxedef name="IMGUI_ENABLED" if="lime-imgui"/>
 
 	<haxedef name="HXCPP_M32" if="32bit"/>
 	<haxedef name="HXCPP_DEBUG_LINK" if="debug"/>
@@ -244,7 +244,7 @@
 	<haxedef name="HXCPP_STACK_LINE"/>
 	<haxedef name="HXCPP_STACK_TRACE"/>
 	<!--<haxedef name="HXCPP_CATCH_SEGV"/>-->
-	<haxedef name="HXCPP_FAST_LINK" unless="debug||HXCPP_OPTIMIZE_LINK"/>
+	<haxedef name="HXCPP_FAST_LINK" unless="debug || HXCPP_OPTIMIZE_LINK"/>
 	<!--<haxedef name="HXCPP_ALIGN_ALLOC"/>--> <!--hxcpp.h(71): warning C4005: 'HXCPP_ALIGN_ALLOC': macro redefinition-->
 
 	<haxedef name="analyzer-optimize" unless="debug"/>
