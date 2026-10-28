@@ -18,6 +18,7 @@ import openfl.utils._internal.Log;
 import openfl.utils.GLSLSourceAssembler;
 
 import flixel.addons.display.FlxRuntimeShader;
+import flixel.graphics.tile.FlxGraphicsShader;
 import flixel.graphics.FlxGraphic;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.util.FlxStringUtil;
@@ -287,110 +288,28 @@ class FunkinShaderSourceAssembler extends FlxRuntimeShader.FlxShaderSourceAssemb
 	}
 }
 
+class ShaderTypeException extends Exception {
+	var has:Class<Dynamic>;
+	var want:Class<Dynamic>;
+	var name:String;
+
+	public function new(name:String, has:Class<Dynamic>, want:Dynamic) {
+		this.has = has;
+		this.want = want;
+		this.name = name;
+		super('ShaderTypeException - Tried to set the shader uniform "${name}" as a ${Type.getClassName(has)}, but the shader uniform is a ${Std.string(want)}.');
+	}
+}
+
 #if REGION /* Backward Compatibility */
 class ShaderTemplates {
-	public static final vertHeader:String = "attribute float openfl_Alpha;
-attribute vec4 openfl_ColorMultiplier;
-attribute vec4 openfl_ColorOffset;
-attribute vec4 openfl_Position;
-attribute vec2 openfl_TextureCoord;
+	public static final vertHeader:String #if !macro = FlxGraphicsShader.classGLVertexPragmas.get("header") #end;
 
-varying float openfl_Alphav;
-varying vec4 openfl_ColorMultiplierv;
-varying vec4 openfl_ColorOffsetv;
-varying vec2 openfl_TextureCoordv;
+	public static final vertBody:String #if !macro = FlxGraphicsShader.classGLVertexPragmas.get("body") #end;
 
-uniform mat4 openfl_Matrix;
-uniform bool openfl_HasColorTransform;
-uniform vec2 openfl_TextureSize;
+	public static final fragHeader:String #if !macro = FlxGraphicsShader.classGLFragmentPragmas.get("header") #end;
 
-attribute float alpha;
-attribute vec4 colorMultiplier;
-attribute vec4 colorOffset;
-uniform bool hasColorTransform;";
-
-	public static final vertBody:String = "openfl_TextureCoordv = openfl_TextureCoord;
-
-if (hasColorTransform)
-{
-	openfl_Alphav = openfl_Alpha * colorMultiplier.a;
-	if (openfl_HasColorTransform)
-	{
-		openfl_ColorOffsetv = (openfl_ColorOffset / 255.0 * colorMultiplier) + (colorOffset / 255.0);
-		openfl_ColorMultiplierv = openfl_ColorMultiplier * vec4(colorMultiplier.rgb, 1.0);
-	}
-	else
-	{
-		openfl_ColorOffsetv = colorOffset / 255.0;
-		openfl_ColorMultiplierv = vec4(colorMultiplier.rgb, 1.0);
-	}
-}
-else
-{
-	openfl_Alphav = openfl_Alpha * alpha;
-	if (openfl_HasColorTransform)
-	{
-		openfl_ColorOffsetv = (openfl_ColorOffset + colorOffset) / 255.0;
-		openfl_ColorMultiplierv = openfl_ColorMultiplier;
-	}
-	else
-	{
-		openfl_ColorOffsetv = colorOffset / 255.0;
-		openfl_ColorMultiplierv = vec4(1.0);
-	}
-}";
-
-	public static final fragHeader:String = "varying float openfl_Alphav;
-varying vec4 openfl_ColorMultiplierv;
-varying vec4 openfl_ColorOffsetv;
-varying vec2 openfl_TextureCoordv;
-
-uniform bool openfl_HasColorTransform;
-uniform vec2 openfl_TextureSize;
-uniform sampler2D bitmap;
-uniform bool hasTransform;
-uniform bool hasColorTransform;
-uniform bool premultiplyAlpha;
-
-vec4 apply_flixel_transform(vec4 color)
-{
-	if (!hasTransform) return color;
-	else if (color.a <= 0.0 || openfl_Alphav == 0.0) return vec4(0.0);
-
-	// this is just solely for ASTC compressed textures.
-	// ...also in flixel_texture2D, it also converts to linear alpha anyway.
-	if (!premultiplyAlpha) color.rgb /= color.a;
-
-	color = clamp(openfl_ColorOffsetv + (color * openfl_ColorMultiplierv), 0.0, 1.0);
-	return vec4(color.rgb * color.a * openfl_Alphav, color.a * openfl_Alphav);
-}
-#define applyFlixelEffects(color) apply_flixel_transform(color)
-
-vec4 flixel_texture2D(sampler2D bitmap, vec2 coord)
-{
-	return apply_flixel_transform(texture2D(bitmap, coord));
-}
-
-uniform vec4 _camSize;
-
-float map(float value, float min1, float max1, float min2, float max2) {
-	return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
-}
-
-vec2 getCamPos(vec2 pos) {
-	vec4 size = _camSize / vec4(openfl_TextureSize, openfl_TextureSize);
-	return vec2(map(pos.x, size.x, size.x + size.z, 0.0, 1.0), map(pos.y, size.y, size.y + size.w, 0.0, 1.0));
-}
-vec2 camToOg(vec2 pos) {
-	vec4 size = _camSize / vec4(openfl_TextureSize, openfl_TextureSize);
-	return vec2(map(pos.x, 0.0, 1.0, size.x, size.x + size.z), map(pos.y, 0.0, 1.0, size.y, size.y + size.w));
-}
-vec4 textureCam(sampler2D bitmap, vec2 pos) {
-	return flixel_texture2D(bitmap, camToOg(pos));
-}";
-
-	public static final fragBody:String = "gl_FragColor = flixel_texture2D(bitmap, openfl_TextureCoordv);
-if (gl_FragColor.a == 0.0) discard;";
+	public static final fragBody:String #if !macro = FlxGraphicsShader.classGLFragmentPragmas.get("body") #end;
 
 	public static final vertBackCompatVarList:Array<EReg> = [
 		~/attribute float alpha/,
@@ -425,16 +344,3 @@ if(openfl_HasColorTransform) {
 gl_Position = openfl_Matrix * openfl_Position;";
 }
 #end
-
-class ShaderTypeException extends Exception {
-	var has:Class<Dynamic>;
-	var want:Class<Dynamic>;
-	var name:String;
-
-	public function new(name:String, has:Class<Dynamic>, want:Dynamic) {
-		this.has = has;
-		this.want = want;
-		this.name = name;
-		super('ShaderTypeException - Tried to set the shader uniform "${name}" as a ${Type.getClassName(has)}, but the shader uniform is a ${Std.string(want)}.');
-	}
-}
