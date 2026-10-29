@@ -29,11 +29,12 @@ DOWNLOAD_LINK="YOUR MOD PAGE LINK HERE"
 ;ICONS=icon,icon64,icon32,icon16
 
 [Flags] # This section doesn\'t apply any prefix.
-DISABLE_WARNING_SCREEN=true
 # Set this to false if you want to bring back the warning state (prior to 1.0.0)
 # NOTE: Beta warning state has been renamed from BetaWarningState.hx to WarningState.hx
-DISABLE_LANGUAGES=true
+DISABLE_WARNING_SCREEN=true
+
 # Some people might not translate their mods, but if you do then you may set this to false
+DISABLE_LANGUAGES=true
 
 [Discord] # This section applies the \'MOD_DISCORD_\' prefix to the flags so you don\'t have to.
 CLIENT_ID=""

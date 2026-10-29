@@ -147,15 +147,15 @@ class MainState extends FlxState {
 		if (Framerate.isLoaded)
 			Framerate.instance.visible = Framerate.memoryCounter.visible = Framerate.codenameBuildField.visible = Framerate.fpsCounter.visible = true;
 
-		WindowUtils.setResolution();
-		WindowUtils.resetIcon();
+		Main.refreshAssets();
 		TranslationUtil.findAllLanguages();
 		TranslationUtil.setLanguage(Flags.DISABLE_LANGUAGES ? Flags.DEFAULT_LANGUAGE : null);
-		ModsFolder.onModSwitch.dispatch(ModsFolder.currentModFolder); // Loads global.hx
 		MusicBeatTransition.script = Flags.DEFAULT_TRANSITION_SCRIPT;
+		WindowUtils.setResolution();
+		WindowUtils.resetIcon();
 		WindowUtils.resetAffixes(false);
 		WindowUtils.setWindow();
-		Main.refreshAssets();
+		ModsFolder.onModSwitch.dispatch(ModsFolder.currentModFolder); // Loads global.hx
 		DiscordUtil.init();
 		EventsData.reloadEvents();
 		ControlsUtil.loadCustomControls();

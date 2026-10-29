@@ -12,6 +12,7 @@ import flixel.sound.FlxSoundData;
 typedef ReadCallback = Int->Int->Void;
 typedef WindowFunction = Float->Float;
 
+@:allow(funkin.backend.utils.AudioAnalyzer)
 final class WindowFunctions {
 	static inline final TWO_PI:Float = 6.283185307179586;
 	static inline final FOUR_PI:Float = 12.566370614359172;
@@ -22,21 +23,21 @@ final class WindowFunctions {
 		return 1.0 - Math.abs(x - 0.5) * 2.0;
 
 	public static inline function hann(x:Float):Float
-		return 0.5 - 0.5 * FlxMath.fastCos(TWO_PI * x);
+		return 0.5 - 0.5 * Math.cos(TWO_PI * x);
 
 	public static inline function hamming(x:Float):Float
-		return 0.53836 - 0.46164 * FlxMath.fastCos(TWO_PI * x);
+		return 0.53836 - 0.46164 * Math.cos(TWO_PI * x);
 
 	public static inline function blackmanNuttall(x:Float):Float
-		return 0.3635819 - 0.4891775 * FlxMath.fastCos(TWO_PI * x) + 0.1365995 * FlxMath.fastCos(FOUR_PI * x)
-			- 0.0106411 * FlxMath.fastCos(SIX_PI * x);
+		return 0.3635819 - 0.4891775 * Math.cos(TWO_PI * x) + 0.1365995 * Math.cos(FOUR_PI * x)
+			- 0.0106411 * Math.cos(SIX_PI * x);
 
 	public static inline function blackmanHarris(x:Float):Float
-		return 0.4243801 - 0.4973406 * FlxMath.fastCos(TWO_PI * x) + 0.0782793 * FlxMath.fastCos(FOUR_PI * x);
+		return 0.4243801 - 0.4973406 * Math.cos(TWO_PI * x) + 0.0782793 * Math.cos(FOUR_PI * x);
 
 	public static inline function flatTop(x:Float):Float
-		return 0.21557895 - 0.41663158 * FlxMath.fastCos(TWO_PI * x) + 0.277263158 * FlxMath.fastCos(FOUR_PI * x)
-			+ 0.083578947 * FlxMath.fastCos(SIX_PI * x) + 0.006947368 * FlxMath.fastCos(EIGHT_PI * x);
+		return 0.21557895 - 0.41663158 * Math.cos(TWO_PI * x) + 0.277263158 * Math.cos(FOUR_PI * x)
+			+ 0.083578947 * Math.cos(SIX_PI * x) + 0.006947368 * Math.cos(EIGHT_PI * x);
 }
 
 enum abstract TimeUnit(Int) from Int to Int {
@@ -84,31 +85,33 @@ final class AudioAnalyzer {
 	 */
 	public static function getSpectrumFromFrequencies(frequencies:Array<Float>, sampleRate:Int, barCount:Int, ?spectrum:Array<Float>, ratio = 0.0, minDb = -63.0, maxDb = -10.0, minFreq = 20.0, maxFreq = 20000.0, logScale = true):Array<Float> {
 		if (spectrum == null) spectrum = [];
-		if (spectrum.length != barCount) spectrum.resize(barCount);
+		if (spectrum.length < barCount) spectrum.resize(barCount);
 
 		var n = frequencies.length - 1;
 
 		var base = logScale ? Math.log(minFreq) : minFreq;
 		var span = (logScale ? Math.log(maxFreq) : maxFreq) - base;
 
-		var dbRangeRate = 1 / (maxDb - minDb), rate = frequencies.length * 2 / sampleRate;
+		var dbRangeRate = 1.0 / (maxDb - minDb), rate = frequencies.length * 2.0 / sampleRate;
 
 		inline function calculateScale(i:Int) {
 			var t = base + span * i / (barCount + 1);
-			return FlxMath.bound((logScale ? Math.exp(t) : t) * rate, 0, n);
+			return CoolUtil.bound((logScale ? Math.exp(t) : t) * rate, 0, n);
 		}
 
 		var s1 = calculateScale(0), s2;
 		var i1 = Math.floor(s1), i2;
 		var v, range;
 		for (i in 0...barCount) {
-			if ((range = (s2 = calculateScale(i + 1)) - s1) < 1) {
-				i2 = Math.ceil(s2);
-				if (i2 == i1) v = frequencies[i1] * range;
-				else v = (frequencies[i1] + (frequencies[i2] - frequencies[i1]) * (s1 - i1)) * range;
+			if ((range = (s2 = calculateScale(i + 1)) - s1) < 1.0) {
+				var c = (s1 + s2) * 0.5;
+			    var s = Math.floor(c);
+			    var e = s + 1;
+			    if (e > n) e = n;
+			    v = frequencies[s] + (frequencies[e] - frequencies[s]) * (c - s);
 			}
 			else {
-				v = frequencies[i1] * (Math.ceil(s1) - i1);
+				v = frequencies[i1] * (Math.ceil(s1) - s1);
 				if (i1 != (i2 = Math.floor(s2))) {
 					while (++i1 < i2) v += frequencies[i1];
 					v += frequencies[i2] * (s2 - Math.floor(s2));
@@ -116,7 +119,7 @@ final class AudioAnalyzer {
 			}
 			i1 = Math.floor(s1 = s2);
 
-			v = FlxMath.bound((Math.log(v) * 8.685889638065035 - minDb) * dbRangeRate, 0, 1);
+			v = CoolUtil.bound((Math.log(v) * 8.685889638065035/*20 / 2.302585092994046*/ - minDb) * dbRangeRate, 0, 1);
 			if (ratio > 0 && ratio < 1 && v < spectrum[i]) spectrum[i] -= (spectrum[i] - v) * ratio;
 			else spectrum[i] = v;
 		}
@@ -143,6 +146,39 @@ final class AudioAnalyzer {
 	public static function getLevelsFromFrequencies(frequencies:Array<Float>, sampleRate:Int, barCount:Int, ?levels:Array<Float>, ratio = 0.0, minDb = -63.0, maxDb = -10.0, minFreq = 20.0, maxFreq = 22000.0):Array<Float>
 		return inline getSpectrumFromFrequencies(frequencies, sampleRate, barCount, levels, ratio, minDb, maxDb, minFreq, maxFreq);
 
+	/**
+	 * Gets RMS from the samples, without FFT computation.
+	 * @param	samples		The samples (can be from AudioAnalyzer.getSamples).
+	 * @param	sampleRate	Sample Rate input.
+	 * @param	window		Unused, only kept for parameter compatibility with getSpectrum (Optional).
+	 * @param	minDb		The minimum decibels to cap (Optional, default -63.0, -120 is pure silence).
+	 * @param	maxDb		The maximum decibels to cap (Optional, default -10.0, Above 0 is not recommended).
+	 * @param	minFreq		The minimum frequency to cap (Optional, default 20.0, Below 8.0 is not recommended).
+	 * @param	maxFreq		The maximum frequency to cap (Optional, default 20000.0, Above 23000.0 is not recommended).
+	 * @return	Output energy that ranges from 0 to 1.
+	 */
+	public function getRMSFromSamples(samples:Array<Float>, sampleRate:Int, ?window:WindowFunction, ?minDb:Float = -63.0, ?maxDb:Float = -10.0, ?minFreq:Float = 20.0, ?maxFreq:Float = 22000.0):Float {
+		final aLP = Math.min(1, WindowFunctions.TWO_PI * maxFreq / sampleRate);
+		final aHP = 1 / (1 + WindowFunctions.TWO_PI * minFreq / sampleRate);
+		final hasLP = aLP < 1, hasHP = aHP > 0;
+
+		var sum = 0.0, lp = 0.0, hp = 0.0, x = 0.0, xPrev = 0.0;
+		for (i in 0...fftN) {
+			x = samples[i];
+			if (hasHP) {
+				hp = aHP * (hp + x - xPrev);
+				xPrev = x;
+				x = hp;
+			}
+			if (hasLP) lp += aLP * (x - lp);
+			else lp = x;
+			sum += lp * lp;
+		}
+
+		final rms = Math.sqrt(sum / fftN);
+		return CoolUtil.bound((Math.log(rms) * 8.685889638065035/*20 / 2.302585092994046*/ - minDb) / (maxDb - minDb), 0, 1);
+	}
+
 	static final _permutations:Map<Int, Array<Int>> = [];
 	static final _twiddleReals:Map<Int, Array<Float>> = [];
 	static final _twiddleImags:Map<Int, Array<Float>> = [];
@@ -153,7 +189,7 @@ final class AudioAnalyzer {
 
 	/**
 	 * Gets frequencies from the samples.
-	 * @param	samples		The samples (can be from FunkinAudioAnalyzer.getSamples).
+	 * @param	samples		The samples (can be from AudioAnalyzer.getSamples).
 	 * @param	window		The windowing function to use when passed.
 	 * @param	frequencies	The output for getting the frequencies, to avoid memory leaks (Optional).
 	 * @return	Output of frequencies.
@@ -163,10 +199,10 @@ final class AudioAnalyzer {
 
 		var bits = 0;
 		while ((fftN >>= 1) > 0) bits++;
-		if (bits == 0) throw "FunkinAudioAnalyzer.getFrequenciesFromSamples: Cannot insert a sample length or fftN of 1";
+		if (bits == 0) throw "AudioAnalyzer.getFrequenciesFromSamples: Cannot insert a sample length or fftN of 1";
 
 		fftN = 1 << bits;
-		var fftN2 = fftN >> 1, n = fftN - 1;
+		var fftN2 = fftN >> 1, scale = 1.0 / fftN;
 
 		var permutation:Array<Int>, twiddleReal:Array<Float>, twiddleImag:Array<Float>;
 		_mutex.acquire();
@@ -192,7 +228,7 @@ final class AudioAnalyzer {
 			for (i in 0...fftN) {
 				permutation[i] = _bitReverse(i, bits);
 				if (i < fftN2) {
-					twiddleReal[i] = Math.cos((ang = -6.283185307179586 * i / n));
+					twiddleReal[i] = Math.cos((ang = -6.283185307179586 * i / fftN));
 					twiddleImag[i] = Math.sin(ang);
 				}
 			}
@@ -210,17 +246,23 @@ final class AudioAnalyzer {
 		}
 
 		if (frequencies == null) frequencies = [];
-		if (frequencies.length != fftN2) frequencies.resize(fftN2);
+		if (frequencies.length < fftN2) frequencies.resize(fftN2);
 
-		var tr = 1 / n;
+		var g = samples.length, tr:Float;
 		for (i in 0...fftN) {
-			real[permutation[i]] = samples[i];
-			if (window != null) real[permutation[i]] *= window(i * tr);
+			if (i < g) {
+				tr = samples[i];
+				if (window != null) tr *= window(i * scale);
+			}
+			else tr = 0.0;
+
+			real[permutation[i]] = tr;
 			imag[i] = 0;
 		}
 
-		var half = 1, g:Int, b:Int, r:Int, i0:Int, i1:Int, ti:Float;
-		while (fftN2 > 0) {
+		var half = 1, b:Int, r:Int, i0:Int, i1:Int, ti:Float;
+		bits = fftN2;
+		while (bits > 0) {
 			g = 0;
 			while (g < fftN) {
 				b = r = 0;
@@ -233,19 +275,16 @@ final class AudioAnalyzer {
 					real[i0] += tr;
 					imag[i0] += ti;
 					b++;
-					r += fftN2;
+					r += bits;
 				}
 				g += half << 1;
 			}
 			half <<= 1;
-			fftN2 >>= 1;
+			bits >>= 1;
 		}
 
-		tr = 1.0 / fftN;
-		i0 = frequencies.length - 1;
-		for (i in 1...i0) frequencies[i] = 2 * Math.sqrt(real[i] * real[i] + imag[i] * imag[i]) * tr;
-		frequencies[0] = Math.sqrt(real[0] * real[0] + imag[0] * imag[0]) * tr;
-		frequencies[i0] = Math.sqrt(real[i0] * real[i0] + imag[i0] * imag[i0]) * tr;
+		frequencies[0] = Math.sqrt(real[0] * real[0] + imag[0] * imag[0]) * scale;
+		for (i in 1...fftN2) frequencies[i] = 2 * Math.sqrt(real[i] * real[i] + imag[i] * imag[i]) * scale;
 
 		_mutex.acquire();
 		_freqCalculating--;
@@ -301,7 +340,7 @@ final class AudioAnalyzer {
 	var _sampleOutputMerge:Bool;
 	var _sampleOutputLength:Int;
 	var _sampleOutput:Array<Float>;
-	var _freqSamples:Array<Float>;
+	var _samples:Array<Float>;
 	var _frequencies:Array<Float>;
 
 	public function new(sound:FlxSound, fftN = 4096) {
@@ -312,8 +351,7 @@ final class AudioAnalyzer {
 
 	function _check() {
 		if (sound != null && !sound.data.isDestroyed) {
-			if (sound.data != data)
-			{
+			if (sound.data != data) {
 				byteSize = 1 << ((data = sound.data).bitsPerSample - 1);
 				_sampleSize = data.channels * (data.bitsPerSample >> 3);
 				_mins.resize(data.channels);
@@ -321,7 +359,8 @@ final class AudioAnalyzer {
 				//_decoder?.destroy();
 			}
 		}
-		else data = null;
+		else
+			data = null;
 	}
 
 	/**
@@ -363,6 +402,31 @@ final class AudioAnalyzer {
 		return inline getSpectrum(startPos, MILLISECOND, volume, null, barCount, levels, ratio, minDb, maxDb, minFreq, maxFreq);
 
 	/**
+	 * Gets RMS from an attached sound from position, without FFT computation.
+	 * @param	pos			Position to get (Optional).
+	 * @param	timeUnit	TimeUnit to use for positions (Optional).
+	 * @param	gain		How much gain multiplier will it affect the output. (Optional, default 1.0).
+	 * @param	window		Unused, only kept for parameter compatibility with getSpectrum (Optional).
+	 * @param	minDb		The minimum decibels to cap (Optional, default -63.0, -120 is pure silence).
+	 * @param	maxDb		The maximum decibels to cap (Optional, default -10.0, Above 0 is not recommended).
+	 * @param	minFreq		The minimum frequency to cap (Optional, default 20.0, Below 8.0 is not recommended).
+	 * @param	maxFreq		The maximum frequency to cap (Optional, default 20000.0, Above 23000.0 is not recommended).
+	 * @return	Output energy that ranges from 0 to 1.
+	 */
+	public function getRMS(?pos:Float, ?timeUnit:TimeUnit, ?gain:Float = 1.0, ?window:WindowFunction, ?minDb:Float = -63.0, ?maxDb:Float = -10.0, ?minFreq:Float = 20.0, ?maxFreq:Float = 22000.0):Float {
+		_check();
+		if (data == null) return 0;
+
+		if (pos == null) {
+			if (sound == null) return 0;
+			if ((pos = sound.time / 1000 * data.sampleRate - fftN) < 0) pos = 0;
+			timeUnit = SAMPLE;
+		}
+
+		return getRMSFromSamples(_samples = getSamples(pos, timeUnit, fftN, true, -1, gain, _samples), data.sampleRate, window, minDb, maxDb, minFreq, maxFreq);
+	}
+
+	/**
 	 * Gets frequencies from an attached sound from position.
 	 * @param	pos			Position to get. (Optional).
 	 * @param	timeUnit	TimeUnit to use for positions. (Optional).
@@ -378,7 +442,7 @@ final class AudioAnalyzer {
 			if ((pos = sound.time / 1000 * data.sampleRate - fftN) < 0) pos = 0;
 			timeUnit = SAMPLE;
 		}
-		return getFrequenciesFromSamples(_freqSamples = getSamples(pos, timeUnit, fftN, true, -1, gain, _freqSamples), window, frequencies);
+		return getFrequenciesFromSamples(_samples = getSamples(pos, timeUnit, fftN, true, -1, gain, _samples), window, frequencies);
 	}
 
 	/**
