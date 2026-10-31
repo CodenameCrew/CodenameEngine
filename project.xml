@@ -121,7 +121,8 @@
 
 	<window hardware="true" color-depth="32" background="" fps="0" orientation="landscape"/>
 	<window unless="desktop" width="0" height="0" vsync="true" fullscreen="true"/>
-	<window if="desktop" type="opengl" width="1280" height="720" fullscreen="false" resizable="true" vsync="false" allowHighDPI="true"/>
+	<window if="desktop" type="opengl" width="1280" height="720" fullscreen="false" resizable="true" vsync="false"/>
+	<window if="desktop" unless="mac" allowHighDPI="true"/>
 	<window if="mobile" resizable="false"/>
 	<window if="html5 || switch" resizable="true"/>
 
