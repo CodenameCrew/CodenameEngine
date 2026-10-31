@@ -548,10 +548,11 @@ class FreeplaySonglist {
 	}
 
 	public function getSongsFromSource(source:funkin.backend.assets.AssetSource, useTxt:Bool = true, ?startDir:String = 'songs/', ?flatten:Bool = true) {
-		var songsFound:Array<String> = []; // this cant be null or it errors. the more you nose
+		var songsFound:Array<String> = [];
 		var songPaths:Array<String> = [];
-		for (lib in ModsFolder.getLoadedModsLibs()) if (useTxt) {
-			var modName = lib.modName;
+		var mods:Array<String> = ModsFolder.getLoadedMods();
+		mods.reverse(); // addon songs appear lower than the mod's main music now
+		for (modName in mods) if (useTxt) {
 			var oldPath = Paths.txt('freeplaySonglist/LIB_$modName');
 			var newPath = Paths.txt('config/freeplaySonglist/LIB_$modName');
 
@@ -560,7 +561,7 @@ class FreeplaySonglist {
 				Logs.warn("data/freeplaySonglist.txt is deprecated and will be removed in the future. Please move the file to data/config/", DARKYELLOW, "FreeplaySonglist");
 				for (i in CoolUtil.coolTextFile(oldPath)) songPaths.push(i);
 			}
-		} // songsFound = CoolUtil.coolTextFile(oldPath);
+		}
 		for (song in songPaths) {
 			songsFound.push(song);
 		}
