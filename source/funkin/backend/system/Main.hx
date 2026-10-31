@@ -130,7 +130,6 @@ class Main extends Sprite
 		#if UPDATE_CHECKING
 		funkin.backend.system.updating.UpdateUtil.init();
 		#end
-		ShaderResizeFix.init();
 		Paths.init();
 
 		hscript.Interp.importRedirects = funkin.backend.scripting.Script.getDefaultImportRedirects();

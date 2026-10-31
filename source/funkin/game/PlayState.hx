@@ -1174,7 +1174,7 @@ class PlayState extends MusicBeatState
 		if (songData == null) songData = SONG;
 
 		var foundCam = false;
-		var foundSigs = songData.meta.beatsPerMeasure.getDefault(4) != 4 || songData.meta.stepsPerBeat.getDefault(4) != 4;
+		var foundSigs = Flags.FORCE_CAM_ZOOM_EVERY_MEASURE || songData.meta.beatsPerMeasure.getDefault(4) != 4 || songData.meta.stepsPerBeat.getDefault(4) != 4;
 
 		if (events == null) events = [];
 		else events = [

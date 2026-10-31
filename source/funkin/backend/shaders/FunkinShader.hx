@@ -188,8 +188,7 @@ class FunkinShader extends FlxRuntimeShader implements IHScriptCustomBehaviour {
 		__glSourceAssembler = new FunkinShaderSourceAssembler(this);
 	}
 
-	override function __getParameterDefault(assign:Null<String>, type:ShaderParameterType, isSampler:Bool):Dynamic
-	{
+	override function __getParameterDefault(assign:Null<String>, type:ShaderParameterType, isSampler:Bool):Dynamic {
 		if (isSampler && assign != null)
 		{
 			var p = assign.charAt(0);
