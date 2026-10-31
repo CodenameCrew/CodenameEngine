@@ -11,6 +11,7 @@ import funkin.backend.scripting.events.menu.freeplay.*;
 import funkin.backend.system.Conductor;
 import funkin.game.HealthIcon;
 import funkin.savedata.FunkinSave;
+import funkin.backend.assets.ModsFolder;
 
 using StringTools;
 
@@ -547,18 +548,25 @@ class FreeplaySonglist {
 	}
 
 	public function getSongsFromSource(source:funkin.backend.assets.AssetSource, useTxt:Bool = true, ?startDir:String = 'songs/', ?flatten:Bool = true) {
-		var songsFound:Array<String> = null;
-		if (useTxt) {
-			var oldPath = Paths.txt('freeplaySonglist');
-			var newPath = Paths.txt('config/freeplaySonglist');
-			if (Paths.assetsTree.existsSpecific(newPath, "TEXT", source)) songsFound = CoolUtil.coolTextFile(newPath);
+		var songsFound:Array<String> = [];
+		var songPaths:Array<String> = [];
+		var mods:Array<String> = ModsFolder.getLoadedMods();
+		mods.reverse(); // addon songs appear lower than the mod's main music now
+		for (modName in mods) if (useTxt) {
+			var oldPath = Paths.txt('freeplaySonglist/LIB_$modName');
+			var newPath = Paths.txt('config/freeplaySonglist/LIB_$modName');
+
+			if (Paths.assetsTree.existsSpecific(newPath, "TEXT", source)) for (i in CoolUtil.coolTextFile(newPath)) songPaths.push(i);
 			else if (Paths.assetsTree.existsSpecific(oldPath, "TEXT", source)) {
 				Logs.warn("data/freeplaySonglist.txt is deprecated and will be removed in the future. Please move the file to data/config/", DARKYELLOW, "FreeplaySonglist");
-				songsFound = CoolUtil.coolTextFile(oldPath);
+				for (i in CoolUtil.coolTextFile(oldPath)) songPaths.push(i);
 			}
 		}
+		for (song in songPaths) {
+			songsFound.push(song);
+		}
 		// todo: make this better
-		if (songsFound == null) {
+		if (songsFound == null || songsFound == [] || !useTxt) {
 			songsFound = [];
 			var songDirs = Paths.getFolderDirectories(startDir, false, source);
 			if (!flatten) {
