@@ -547,27 +547,41 @@ class FreeplaySonglist {
 		return true;
 	}
 
+	// todo: make this better
 	public function getSongsFromSource(source:funkin.backend.assets.AssetSource, useTxt:Bool = true, ?startDir:String = 'songs/', ?flatten:Bool = true) {
 		var songsFound:Array<String> = [];
-		var songPaths:Array<String> = [];
 		var mods:Array<String> = ModsFolder.getLoadedMods();
-		mods.reverse(); // addon songs appear lower than the mod's main music now
+		// addon songs appear lower than the mod's main music now
+		if (ModsFolder.currentModFolder == null) { // no mods
+			final thisMod = mods.pop();
+			mods.insert(0, thisMod);
+		} else {
+			// put mod folder first, assets folder second
+			while (mods[0] != ModsFolder.currentModFolder) {
+				final thisMod = mods.pop();
+				mods.insert(0, thisMod);
+			}
+		}
+		// shitty but who cares
+		var scannedThisMod = false;
 		for (modName in mods) if (useTxt) {
+			if (scannedThisMod && modName == 'assets') continue;
+			var scanningThisMod = modName == ModsFolder.currentModFolder;
+
 			var oldPath = Paths.txt('freeplaySonglist/LIB_$modName');
 			var newPath = Paths.txt('config/freeplaySonglist/LIB_$modName');
 
-			if (Paths.assetsTree.existsSpecific(newPath, "TEXT", source)) for (i in CoolUtil.coolTextFile(newPath)) songPaths.push(i);
-			else if (Paths.assetsTree.existsSpecific(oldPath, "TEXT", source)) {
+			if (Assets.exists(newPath)) {
+				for (i in CoolUtil.coolTextFile(newPath)) songsFound.push(i);
+				if (scanningThisMod) scannedThisMod = true;
+			} else if (Assets.exists(oldPath)) {
 				Logs.warn("data/freeplaySonglist.txt is deprecated and will be removed in the future. Please move the file to data/config/", DARKYELLOW, "FreeplaySonglist");
-				for (i in CoolUtil.coolTextFile(oldPath)) songPaths.push(i);
+				for (i in CoolUtil.coolTextFile(oldPath)) songsFound.push(i);
+				if (scanningThisMod) scannedThisMod = true;
 			}
 		}
-		for (song in songPaths) {
-			songsFound.push(song);
-		}
-		// todo: make this better
 		if (songsFound.length < 1 || !useTxt) {
-			songsFound = [];
+			// songsFound = []; // no need, its already empty
 			var songDirs = Paths.getFolderDirectories(startDir, false, source);
 			if (!flatten) {
 				for (i in songDirs) {
