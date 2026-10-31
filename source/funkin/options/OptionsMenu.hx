@@ -57,7 +57,7 @@ class OptionsMenu extends TreeMenu {
 		DiscordUtil.call("onMenuLoaded", ["Options Menu"]);
 
 		add(bg = new FlxSprite().loadAnimatedGraphic(Paths.image('menus/menuBGBlue')));
-		bg.antialiasing = true;
+		bg.antialiasing = Flags.DEFAULT_ANTIALIASING;
 		bg.scrollFactor.set();
 		updateBG();
 

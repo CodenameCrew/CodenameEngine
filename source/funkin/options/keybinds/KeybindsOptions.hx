@@ -169,7 +169,7 @@ class KeybindsOptions extends MusicBeatSubstate {
 			bg.scale.set(1.15, 1.15);
 			bg.updateHitbox();
 			bg.screenCenter();
-			bg.antialiasing = true;
+			bg.antialiasing = Flags.DEFAULT_ANTIALIASING;
 			add(bg);
 		}
 		coloredBG.alpha = 0;
