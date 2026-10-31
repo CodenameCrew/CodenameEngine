@@ -63,9 +63,15 @@
 	</group>
 
 	<group name="AppearanceOptions" prefix="AppearanceOptions.">
+		<str id="framePacer-name">Sincronía</str>
+		<str id="framePacer-desc">Pantalla ajusta los FPS a la tasa de refresco de tu monitor y activa la sincronización de scanlines y la alineación de envío; la opción FPS se desactiva mientras está activa. Adaptativo sólo las activa cuando los FPS coinciden con la tasa de refresco o una división exacta de ella (1/2, 1/4...). Apagado vuelve al comportamiento anterior. Sin límite elimina por completo el límite de FPS. La sincronización cuesta unos 0.3 ms de latencia de entrada: en pantalla completa la línea de desgarro queda fijada en el borde de la pantalla, fuera de la vista, y en modo ventana cada fotograma se muestra en vez de dar tirones.</str>
+		<str id="framePacer-off">Apagado</str>
+		<str id="framePacer-adaptive">Adaptativo</str>
+		<str id="framePacer-followDisplay">Pantalla</str>
+		<str id="framePacer-unlimited">Sin límite</str>
+
 		<str id="framerate-name">FPS</str>
 		<str id="framerate-desc">Yo creo que se explica sólo.</str>
-		<str id="framerate-unlimited">Ilimitado</str>
 
 		<str id="flashingMenu-name">Luces Intermitentes</str>
 		<str id="flashingMenu-desc">Si está desactivado, el menú no parpadeará, y otros parpadeos serán más lentos.</str>
