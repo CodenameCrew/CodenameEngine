@@ -184,6 +184,7 @@ class Flags {
 	public static var DEFAULT_ZOOM_LERP:Float = 0.05;
 	public static var MAX_CAMERA_ZOOM_MULT:Float = 10;
 	public static var USE_CAM_ZOOM_MULT:Bool = true;
+	public static var FORCE_CAM_ZOOM_EVERY_MEASURE:Bool = false;
 	public static var DEFAULT_CAM_ZOOM_MULT:Float = 0.015;
 	public static var DEFAULT_HUD_ZOOM_MULT:Float = 0.03;
 	public static var DEFAULT_CAM_ZOOM_LERP:Float = 0.05;
