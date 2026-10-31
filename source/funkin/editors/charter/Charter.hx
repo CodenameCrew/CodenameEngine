@@ -5,6 +5,7 @@ package funkin.editors.charter;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
+import flixel.sound.FlxSoundData;
 import flixel.util.FlxSort;
 import funkin.backend.chart.*;
 import funkin.backend.chart.ChartData;
@@ -368,6 +369,11 @@ class Charter extends UIState {
 						keybind: [SPACE],
 						onSelect: _playback_play
 					},
+					{
+						label: translate("playback.snap"),
+						onSelect: _playback_snap,
+						icon: Options.charterPauseQuant ? 1 : 0
+					},
 					null,
 					{
 						label: translate("playback.speedRaise", ["25"]),
@@ -622,28 +628,24 @@ class Charter extends UIState {
 		Conductor.setupSong(PlayState.SONG);
 		noteTypes = PlayState.SONG.noteTypes;
 
-		FlxG.sound.setMusic(FlxG.sound.load(Paths.inst(__song, __diff, PlayState.SONG.meta.instSuffix)));
+		// TODO: MAYBE MAKE WAVEFORMS WORK TOO FOR STREAMED SOUNDS??
 
-		// force full load the audio datas for waveform, maybe in the future dont do this and
-		// make it so it continously loads the only necessary waveform data in preview?
+		var data = FlxSoundData.fromAssetKey(Paths.inst(__song, __diff, PlayState.SONG.meta.instSuffix), false);
+		if (data.isStreamable) data.buffer.load();
 
-		if (FlxG.sound.music.data?.buffer != null && FlxG.sound.music.data.buffer.data == null) {
-			FlxG.sound.music.data.buffer.load();
-			FlxG.sound.music.data.buffer.decoder?.dispose();
-			FlxG.sound.music.data.buffer.decoder = null;
-		}
+		FlxG.sound.setMusic(FlxG.sound.load(data));
 
 		if (Assets.exists(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix))) {
-			vocals = FlxG.sound.load(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix));
+			data = FlxSoundData.fromAssetKey(Paths.voices(__song, __diff, PlayState.SONG.meta.vocalsSuffix), false);
+			if (data.isStreamable) data.buffer.load();
 
-			if (vocals.data?.buffer != null && vocals.data.buffer.data == null) {
-				vocals.data.buffer.load();
-				vocals.data.buffer.decoder?.dispose();
-				vocals.data.buffer.decoder = null;
-			}
+			vocals = FlxG.sound.load(data);
 		}
 		else
-			vocals = new FlxSound();
+		{
+			vocals = FlxG.sound.list.recycle(FlxSound);
+			vocals.alive = vocals.exists = true;
+		}
 
 		vocals.muted = !PlayState.SONG.meta.needsVoices;
 		vocals.group = FlxG.sound.defaultMusicGroup;
@@ -1955,16 +1957,21 @@ class Charter extends UIState {
 		if (Conductor.songPosition >= FlxG.sound.music.getDefault(vocals).length - Conductor.songOffset) return;
 
 		if (FlxG.sound.music.playing) {
-			FlxG.sound.music.pause();
-			vocals.pause();
-			for (strumLine in strumLines.members) strumLine.vocals.pause();
-		} else {
-			FlxG.sound.music.play(true, Conductor.songPosition + Conductor.songOffset);
-			vocals.play(true, FlxG.sound.music.getActualTime());
-			for (strumLine in strumLines.members) {
-				strumLine.vocals.play(true, FlxG.sound.music.getActualTime());
-			}
+			final arr = [FlxG.sound.music, vocals];
+			for (strumLine in strumLines.members) arr.push(strumLine.vocals);
+			FlxSound.pauseSounds(arr);
+
+			if (Options.charterPauseQuant) Conductor.songPosition = Conductor.getTimeForStep(quantStep(Conductor.curStepFloat));
 		}
+		else {
+			final time = Conductor.songPosition + Conductor.songOffset;
+			final arr = [FlxG.sound.music.prepare(time), vocals.prepare(time)];
+			for (strumLine in strumLines.members) arr.push(strumLine.vocals.prepare(time));
+			FlxSound.playSounds(arr);
+		}
+	}
+	function _playback_snap(t) {
+		t.icon = (Options.charterPauseQuant = !Options.charterPauseQuant) ? 1 : 0;
 	}
 
 	function _playback_speed_raise(_) playBackSlider.value += .25;

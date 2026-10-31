@@ -175,8 +175,10 @@ class Alphabet extends FlxSprite {
 	public var renderMode:AlphabetRenderMode = DEFAULT;
 
 	// for menu shit
+	public var menuOffset:FlxPoint = FlxPoint.get();
 	public var targetY:Float = 0;
 	public var isMenuItem:Bool = false;
+	public var itemSlide:Float = 20;
 	public var itemHeight:Float = 120;
 
 	public function new(?x:Float, ?y:Float, ?text:String = "", ?font:OneOfTwo<String, Bool> = "normal") {
@@ -213,8 +215,8 @@ class Alphabet extends FlxSprite {
 		if (isMenuItem) {
 			var scaledY = targetY * 1.3;
 
-			y = CoolUtil.fpsLerp(y, (scaledY * itemHeight) + (FlxG.height - height) * 0.5, 0.16);
-			x = CoolUtil.fpsLerp(x, (targetY * 20) + 90, 0.16);
+			y = CoolUtil.fpsLerp(y, (scaledY * itemHeight) + (FlxG.height - height) * 0.5 + menuOffset.y, 0.16);
+			x = CoolUtil.fpsLerp(x, (targetY * itemSlide) + 90 + menuOffset.x, 0.16);
 		}
 	}
 
@@ -522,19 +524,21 @@ class Alphabet extends FlxSprite {
 	function getLetterAnim(char:String, data:AlphabetLetterData, component:AlphabetComponent, index:Int):FlxAnimation {
 		if (data == null) return null;
 		var name = char + Std.string(index);
-		if (animation.exists(name)) return animation.getByName(name);
+		var anim = animation.getByName(name);
+		if (anim != null) return anim;
 
-		var anim = (data.isDefault) ?
+		var animPrefix = (data.isDefault) ?
 			component.anim.replace("LOWERLETTER", char.toLowerCase()).replace("UPPERLETTER", char.toUpperCase()).replace("LETTER", char) :
 			component.anim;
-		animation.addByPrefix(name, anim, fps);
-		if (!animation.exists(name)) {
+		animation.addByPrefix(name, animPrefix, fps);
+		anim = animation.getByName(name);
+		if (anim == null) {
 			failedLetters.push(char);
 			var traceIndex = (component.refIndex != null) ? 'Outline For Component Index ${component.refIndex}' : 'Component Index ${index - data.startIndex}';
-			Logs.error('Character $char: $traceIndex: Animation "$anim" not found.');
+			Logs.error('Character $char: $traceIndex: Animation "$animPrefix" not found.');
 			return null;
 		}
-		return animation.getByName(name);
+		return anim;
 	}
 
 	function checkNode(node:Xml):Void {
@@ -909,7 +913,8 @@ class Alphabet extends FlxSprite {
 	}
 
 	override function destroy():Void {
-		originOffset = FlxDestroyUtil.destroy(originOffset);
+		menuOffset = FlxDestroyUtil.put(menuOffset);
+		originOffset = FlxDestroyUtil.put(originOffset);
 		__drawScale = FlxDestroyUtil.put(__drawScale);
 		__renderData = null;
 		__laneWidths = null;

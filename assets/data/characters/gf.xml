@@ -11,4 +11,5 @@
 	<anim name="hairFall" anim="GF Dancing Beat Hair Landing" indices="0..11"/>
 	<anim name="scared" anim="GF FEAR " loop="true"/>
 	<anim name="sad" anim="gf sad" x="-51" y="315" loop="true" indices="0..12"/>
+	<anim name="combo50" anim="GF Cheer"/>
 </character>

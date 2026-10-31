@@ -29,20 +29,33 @@ typedef ConsoleSearchData = {
 typedef ConsoleLogData = {
 	var log:Array<LogText>;
 	var times:Int;
+	var ?lines:Array<ConsoleLine>; //cached display lines, rebuilt whenever the log or the filters change
+}
+
+typedef ConsoleLine = {
+	var segs:Array<ConsoleSegment>;
+	var plain:String; //same line as plain text, used for copying
+}
+
+typedef ConsoleSegment = {
+	var text:String;
+	var color:ConsoleColor;
 }
 
 class ConsoleUI {
 
-	static final CONSOLE_BG_COLOR = 0xFF380051;
-	static final SEARCH_HIGHLIGHT_COLOR = 0xFF00FF00;
-	static final SEARCH_SELECTED_COLOR = 0xFFE2D302;
-	static final SEARCH_DESC_COLOR = 0xFF636363;
-	static final SEARCH_ARGS_COLOR = 0xFF58804F;
+	static final CONSOLE_BG_COLOR = new ImGuiFloat3Ptr(0.22, 0.0, 0.32);
+	static final SEARCH_HIGHLIGHT_COLOR = new ImGuiFloat3Ptr(0.0, 1.0, 0.0);
+	static final SEARCH_SELECTED_COLOR = new ImGuiFloat3Ptr(0.888, 0.83, 0.008);
+	static final SEARCH_DESC_COLOR = new ImGuiFloat3Ptr(0.6, 0.6, 0.6);
+	static final SEARCH_ARGS_COLOR = new ImGuiFloat3Ptr(0.35, 0.5, 0.31);
 
 	static final CONSOLE_MAX_OUPUT = 100;
 	static final SEARCH_MAX_OUTPUT = 25;
 
 	public static var instance(default, null):ConsoleUI;
+
+	public var uiVisible(get, never):Bool;
 
 	private var active:Bool = false;
 	private var inspectorActive:Bool = false;
@@ -64,13 +77,13 @@ class ConsoleUI {
 	var consoleInputTextCallback:ImGuiInputTextCallback;
 	#end
 	var consoleOutput:Array<ConsoleLogData> = [];
-	var consoleOutputCurrentIndex:Int = 0;
-	var wrapConsoleOutput = false;
 	var autoScrollNextFrame = false;
+	var outputFilterSignature:Int = -1;
 
 
 	#if IMGUI_ENABLED
 	var settingsOpen:ImGuiBoolPtr = new ImGuiBoolPtr(false);
+	var stylesOpen:ImGuiBoolPtr = new ImGuiBoolPtr(false);
 
 	var timeFilter:ImGuiBoolPtr = new ImGuiBoolPtr(true);
 	var typeFilter:ImGuiBoolPtr = new ImGuiBoolPtr(true);
@@ -89,6 +102,9 @@ class ConsoleUI {
 	var hscriptScriptsFilter:ImGuiBoolPtr = new ImGuiBoolPtr(true);
 
 	var countDuplicatedOutput:ImGuiBoolPtr = new ImGuiBoolPtr(false);
+
+	//line that was right clicked in the log output, used by the context menu
+	var contextMenuLine:ConsoleLine = null;
 
 	function saveSettings() {
 		Options.consoleTimeFilter = timeFilter.value;
@@ -137,20 +153,19 @@ class ConsoleUI {
 		style = ImGui.getStyle();
 		consoleInputTextCallback = new ImGuiInputTextCallback(onInputTextCallback);
 		#end
-
-		for (i in 0...CONSOLE_MAX_OUPUT) {
-			consoleOutput.push({log: [], times: 0});
-		}
 	};
+
+	inline function get_uiVisible():Bool {
+		return active || inspectorActive;
+	}
 
 	private function addToConsole(text:Array<LogText>) {
 		#if IMGUI_ENABLED
-		//check for repeats
-		var min = consoleOutputCurrentIndex-10;
-		if (min < 0) min = 0;
 		if (countDuplicatedOutput.value) //currently disabled
 		{
-			for (i in min...consoleOutputCurrentIndex) {
+			var min = consoleOutput.length-10;
+			if (min < 0) min = 0;
+			for (i in min...consoleOutput.length) {
 				var matching = true;
 				if (text.length > 4 && text.length == consoleOutput[i].log.length) {
 					for (textIndex in 3...consoleOutput[i].log.length) {
@@ -160,13 +175,15 @@ class ConsoleUI {
 					matching = false;
 				}
 				if (matching) {
-					consoleOutput[i].log = text;
-					consoleOutput[i].times++;
-					if (i != consoleOutputCurrentIndex-1) { //TODO: this should push to bottom instead of swapping since it doesnt always work
-						var temp = consoleOutput[consoleOutputCurrentIndex-1];
-						consoleOutput[consoleOutputCurrentIndex-1] = consoleOutput[i];
-						consoleOutput[i] = temp;
+					var entry = consoleOutput[i];
+					entry.log = text;
+					entry.times++;
+					entry.lines = null;
+					if (i != consoleOutput.length-1) { //push to bottom so the counter always ends up on the newest log
+						consoleOutput.remove(entry);
+						consoleOutput.push(entry);
 					}
+					autoScrollNextFrame = true;
 					return;
 				}
 			}
@@ -177,13 +194,8 @@ class ConsoleUI {
 	}
 
 	private inline function addToConsoleOutput(text:Array<LogText>) {
-		consoleOutput[consoleOutputCurrentIndex] = {log: text, times: 1};
-		consoleOutputCurrentIndex++;
-
-		if (consoleOutputCurrentIndex >= CONSOLE_MAX_OUPUT) { //wrap around like a ring buffer
-			consoleOutputCurrentIndex = 0;
-			wrapConsoleOutput = true;
-		}
+		consoleOutput.push({log: text, times: 1, lines: null});
+		if (consoleOutput.length > CONSOLE_MAX_OUPUT) consoleOutput.shift(); //drop the oldest log
 	}
 
 	public function toggleUI() {
@@ -210,6 +222,35 @@ class ConsoleUI {
 		#end
 	}
 
+	private static final CONSOLE_COLOR_ORDER:Array<ConsoleColor> = [
+		BLACK, DARKBLUE, DARKGREEN, DARKCYAN, DARKRED, DARKMAGENTA, DARKYELLOW, LIGHTGRAY,
+		GRAY, BLUE, GREEN, CYAN, RED, MAGENTA, YELLOW, WHITE
+	];
+
+	public static final consoleColors:Map<ConsoleColor, ImGuiFloat3Ptr> = [
+		BLACK 			=> new ImGuiFloat3Ptr(0.0, 0.0, 0.0),
+		DARKBLUE 		=> new ImGuiFloat3Ptr(0.04, 0.04, 0.76),
+		DARKGREEN 		=> new ImGuiFloat3Ptr(0.0, 0.53, 0.0),
+		DARKCYAN 		=> new ImGuiFloat3Ptr(0.0, 0.53, 0.53),
+		DARKRED 		=> new ImGuiFloat3Ptr(0.53, 0.0, 0.0),
+		DARKMAGENTA 	=> new ImGuiFloat3Ptr(0.6, 0.11, 0.77),
+		DARKYELLOW 		=> new ImGuiFloat3Ptr(0.74, 0.74, 0.0),
+		LIGHTGRAY 		=> new ImGuiFloat3Ptr(0.83, 0.83, 0.83),
+		///////////////////////////////////////////////////////
+		GRAY 			=> new ImGuiFloat3Ptr(0.64, 0.64, 0.64),
+		BLUE 			=> new ImGuiFloat3Ptr(0.16, 0.29, 0.92),
+		GREEN 			=> new ImGuiFloat3Ptr(0.0, 1.0, 0.0),
+		CYAN			=> new ImGuiFloat3Ptr(0.0, 0.54, 1.0),
+		RED 			=> new ImGuiFloat3Ptr(1.0, 0.0, 0.0),
+		MAGENTA 		=> new ImGuiFloat3Ptr(1.0, 0.0, 1.0),
+		YELLOW 			=> new ImGuiFloat3Ptr(1.0, 1.0, 0.0),
+		WHITE 			=> new ImGuiFloat3Ptr(1.0, 1.0, 1.0),
+	];
+
+	public static function consoleColorToImColor(color:ConsoleColor) {
+		return (consoleColors.get(color) ?? consoleColors.get(WHITE)).toImColor();
+	}
+
 	public function displayUI() {
 		#if IMGUI_ENABLED
 		if (!Options.devMode) {
@@ -219,13 +260,17 @@ class ConsoleUI {
 		}
 		
 		var toggled:Bool = false;
-		for (key in Options.SOLO_DEV_CONSOLE) {
-			if (ImGui.isKeyPressed(key.toImGuiKey(), false)) toggled = true;
+		if (!Options.useNativeConsole) {
+			for (key in Options.SOLO_DEV_CONSOLE) {
+				if (!key.isNamedImGuiKey()) continue; //prevent imgui assert if key == FlxKey.NONE
+				if (ImGui.isKeyPressed(key.toImGuiKey(), false)) toggled = true;
+			}
 		}
 		if (toggled) toggleUI();
 
 		var toggledInspector:Bool = false;
 		for (key in Options.SOLO_DEV_INSPECTOR) {
+			if (!key.isNamedImGuiKey()) continue;
 			if (ImGui.isKeyPressed(key.toImGuiKey(), false)) toggledInspector = true;
 		}
 		if (toggledInspector) toggleInspector();
@@ -237,6 +282,9 @@ class ConsoleUI {
 			ImGui.setNextWindowPos(ImGuiUtil.getWindowSpaceX() + Lib.application.window.width - 240, ImGuiUtil.getWindowSpaceY(), ImGuiCond.FirstUseEver);
 			ImGui.setNextWindowSize(240, 405, ImGuiCond.FirstUseEver);
 			if (ImGui.begin("Console Settings", settingsOpen, 0)) {
+				if (ImGui.button("Open Style Editor")) {
+					stylesOpen.value = !stylesOpen.value;
+				}
 				//ImGui.checkbox("Count duplicated output##Console Settings", countDuplicatedOutput); ImGui.setItemTooltip("Toggles if duplicated logs add a counter instead of displaying again");
 				ImGui.separatorText("Log Filter:");
 				ImGui.checkbox("Time##Console Settings", timeFilter); ImGui.setItemTooltip("Toggles if timestamp shows in each log");
@@ -259,6 +307,27 @@ class ConsoleUI {
 			saveSettings();
 		}
 
+		if (stylesOpen.value) {
+			if (ImGui.begin("Style Editor")) {
+				ImGui.textWrapped("THIS WILL NOT SAVE !!! (yet)");
+				ImGui.textWrapped("Expect cool stuff to share with people once you're able to save though");
+				ImGui.separator();
+				ImGui.separatorText("Console Colors");
+				ImGui.colorEdit3("Input BG Color##Style Editor", CONSOLE_BG_COLOR, ImGuiColorEditFlags.NoInputs);
+				ImGui.colorEdit3("Search Highlight##Style Editor", SEARCH_HIGHLIGHT_COLOR, ImGuiColorEditFlags.NoInputs);
+				ImGui.colorEdit3("Search Selection##Style Editor", SEARCH_SELECTED_COLOR, ImGuiColorEditFlags.NoInputs);
+				ImGui.colorEdit3("Search Description##Style Editor", SEARCH_DESC_COLOR, ImGuiColorEditFlags.NoInputs);
+				ImGui.colorEdit3("Search Arguments##Style Editor", SEARCH_ARGS_COLOR, ImGuiColorEditFlags.NoInputs);
+				ImGui.separatorText("Text Colors");
+				for (x => i in CONSOLE_COLOR_ORDER) {
+					ImGui.colorEdit3('Text Color #${x+1}##Text Colors', consoleColors[i], ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel);
+					if ((x + 1) % Std.int(CONSOLE_COLOR_ORDER.length / 2) != 0) ImGui.sameLine(0, 2);
+				}
+				ImGui.showStyleEditor();
+			}
+			ImGui.end();
+		}
+
 		ImGui.setNextWindowPos(ImGuiUtil.getWindowSpaceX(), ImGuiUtil.getWindowSpaceY() + (Lib.application.window.height-250), ImGuiCond.FirstUseEver);
 		ImGui.setNextWindowSize(Lib.application.window.width, 250, ImGuiCond.FirstUseEver);
 		ImGui.setNextWindowDockID(0, ImGuiCond.FirstUseEver);
@@ -278,82 +347,152 @@ class ConsoleUI {
 		var outputHeight = windowHeight - (40 * style.fontScaleDpi); //I think scaling the dpi should be good enough?	//TODO: should probably look at this again
 		//var outputHeight = windowHeight - (ImGui.getFrameHeightWithSpacing()*2);
 		//if (ImGui.isWindowDocked()) windowHeight -= ImGui.getFrameHeightWithSpacing();
-		if (outputHeight > 0) {
-			ImGui.pushTextWrapPos();
-			if (ImGui.beginChild("Console output", windowWidth, outputHeight)) {
-				if (wrapConsoleOutput) {
-					outputLog(consoleOutputCurrentIndex, CONSOLE_MAX_OUPUT);
+		if (outputHeight <= 0) return;
+
+		var filterSignature = getFilterSignature();
+		if (filterSignature != outputFilterSignature) {
+			outputFilterSignature = filterSignature;
+			for (entry in consoleOutput) entry.lines = null;
+		}
+
+		if (ImGui.beginChild("Console output", windowWidth, outputHeight)) {
+			var lineHeight = ImGui.getTextLineHeightWithSpacing();
+			var scrollY = ImGui.getScrollY();
+			var firstLine = Std.int(Math.max(0, Math.floor(scrollY / lineHeight) - 1));
+			var lastLine = Std.int(Math.max(0, Math.ceil((scrollY + outputHeight) / lineHeight) + 1));
+
+			var cursorX = ImGui.getCursorStartPos().x;
+			var lineIndex = 0;
+			var hoveredLine:ConsoleLine = null;
+			var hoveredLineIndex = ImGui.isWindowHovered() ? Std.int((ImGui.getMousePos().y - ImGui.getWindowPos().y + scrollY) / lineHeight) : -1;
+
+			for (entry in consoleOutput) {
+				if (!isLogVisible(entry)) continue;
+
+				var lines = entry.lines;
+				if (lines == null) lines = entry.lines = buildLogLines(entry.log, entry.times);
+
+				for (line in lines) {
+					if (lineIndex == hoveredLineIndex) hoveredLine = line;
+					if (lineIndex >= firstLine && lineIndex < lastLine) {
+						ImGui.setCursorPos(cursorX, lineIndex * lineHeight);
+						drawLogLine(line);
+					}
+					lineIndex++;
 				}
-				outputLog(0, consoleOutputCurrentIndex);
 			}
-			if (autoScrollNextFrame) {
-				ImGui.setScrollHereY(1.0);
-				autoScrollNextFrame = false;
+
+			if (lineIndex > lastLine) {
+				ImGui.setCursorPos(cursorX, lineIndex * lineHeight);
+				ImGui.dummy(0, 0);
 			}
-			ImGui.endChild();
-			ImGui.popTextWrapPos();
+
+			if (hoveredLine != null && ImGui.isMouseReleased(ImGuiMouseButton.Right)) contextMenuLine = hoveredLine;
+
+			if (ImGui.beginPopupContextWindow("Console output menu", ImGuiPopupFlags.MouseButtonRight)) {
+				if (ImGui.menuItem("Copy Everything")) ImGui.setClipboardText(getLogText(0, -1));
+				if (ImGui.menuItem("Copy Visible")) ImGui.setClipboardText(getLogText(firstLine, lastLine));
+				if (contextMenuLine != null && ImGui.menuItem("Copy This Line")) ImGui.setClipboardText(contextMenuLine.plain);
+				ImGui.separator();
+				if (ImGui.menuItem("Clear")) clearConsole();
+				ImGui.endPopup();
+			}
+		}
+		if (autoScrollNextFrame) {
+			ImGui.setScrollHereY(1.0);
+			autoScrollNextFrame = false;
+		}
+		ImGui.endChild();
+	}
+
+	public function buildLogLines(log:Array<LogText>, times:Int):Array<ConsoleLine> {
+		var lines:Array<ConsoleLine> = [];
+		var current:ConsoleLine = {segs: [], plain: ""};
+		lines.push(current);
+
+		var skipTime = !timeFilter.value;
+		var skipType = !typeFilter.value;
+
+		for (textIndex => t in log) {
+			if (skipTime && skipType && textIndex <= 4) continue;
+			if (skipTime && (textIndex == 1 || textIndex == 2)) continue;
+			if (skipType && (textIndex == 2 || textIndex == 3)) continue;
+
+			var segText = t.text;
+			if (skipTime && textIndex == 0) segText = "[";
+			else if (skipType && textIndex == 4) segText = "  ] ";
+
+			var parts = segText.split("\n");
+			for (partIndex in 0...parts.length) {
+				if (partIndex > 0) { //newlines start a new display line
+					current = {segs: [], plain: ""};
+					lines.push(current);
+				}
+				current.segs.push({text: parts[partIndex], color: t.color});
+				current.plain += parts[partIndex];
+			}
+		}
+
+		if (countDuplicatedOutput.value && times > 1) {
+			var last = lines[lines.length-1];
+			last.segs.push({text: "  ("+times+"x)", color: LIGHTGRAY});
+			last.plain += "  ("+times+"x)";
+		}
+		return lines;
+	}
+
+	private inline function drawLogLine(line:ConsoleLine) {
+		var drewAny = false;
+		for (seg in line.segs) {
+			if (seg.text == "") continue;
+			if (drewAny) ImGui.sameLine(0, 0);
+			ImGui.pushStyleColor(ImGuiCol.Text, consoleColorToImColor(seg.color));
+			ImGui.textUnformatted(seg.text);
+			ImGui.popStyleColor();
+			drewAny = true;
 		}
 	}
 
-	private inline function outputLog(start:Int, end:Int) {
-		var indicesToIgnore:Array<Int> = [];
-		if (!timeFilter.value && !typeFilter.value) indicesToIgnore = [0, 1, 2, 3, 4];
-		else if (!timeFilter.value) indicesToIgnore = [1, 2];
-		else if (!typeFilter.value) indicesToIgnore = [2, 3];
-
-		var i = start;
-		while (i < end) {
-			if (consoleOutput[i].log.length > 0) {
-				var type = consoleOutput[i].log[0].level;
-				switch(type) {
-					case INFO:
-						if (!infoFilter.value) { i++; continue; }
-					case WARNING:
-						if (!warningFilter.value) { i++; continue; }
-					case ERROR:
-						if (!errorFilter.value) { i++; continue; }
-					case TRACE:
-						if (!traceFilter.value) { i++; continue; }
-					case VERBOSE:
-						if (!verboseFilter.value) { i++; continue; }
-					default:
-
-				}
-			}
-
-			for (textIndex => t in consoleOutput[i].log) {
-				if (indicesToIgnore.contains(textIndex)) continue;
-				if (!timeFilter.value && textIndex == 0) { //fix padding
-					ImGui.sameLine(0, 0);
-					ImGui.pushStyleColor(ImGuiCol.Text, consoleColorToImColor(t.color));
-					ImGui.textUnformatted("[");
-					ImGui.popStyleColor();
-					continue;
-				} else if (!typeFilter.value && textIndex == 4) {
-					ImGui.sameLine(0, 0);
-					ImGui.pushStyleColor(ImGuiCol.Text, consoleColorToImColor(t.color));
-					ImGui.textUnformatted("  ] ");
-					ImGui.popStyleColor();
-					continue;
-				}
-
-				ImGui.sameLine(0, 0);
-				ImGui.pushStyleColor(ImGuiCol.Text, consoleColorToImColor(t.color));
-				var lines = t.text.split("\n");
-				for (i => l in lines) {
-					ImGui.textUnformatted(l);
-				}
-				ImGui.popStyleColor();
-			}
-
-			if (countDuplicatedOutput.value && consoleOutput[i].times > 1) {
-				ImGui.sameLine(0, 0);
-				ImGui.textUnformatted("  ("+consoleOutput[i].times +"x)");
-			}
-
-			ImGui.newLine();
-			i++;
+	private inline function isLogVisible(entry:ConsoleLogData):Bool {
+		if (entry.log.length == 0) return false;
+		return switch (entry.log[0].level) {
+			case INFO: infoFilter.value;
+			case WARNING: warningFilter.value;
+			case ERROR: errorFilter.value;
+			case TRACE: traceFilter.value;
+			case VERBOSE: verboseFilter.value;
+			default: true;
 		}
+	}
+
+	private inline function getFilterSignature():Int {
+		return (timeFilter.value ? 1 : 0)
+			| (typeFilter.value ? 2 : 0)
+			| (infoFilter.value ? 4 : 0)
+			| (warningFilter.value ? 8 : 0)
+			| (errorFilter.value ? 16 : 0)
+			| (traceFilter.value ? 32 : 0)
+			| (verboseFilter.value ? 64 : 0)
+			| (countDuplicatedOutput.value ? 128 : 0);
+	}
+
+	//collects the plain text of the visible lines from [start, end), end = -1 means everything
+	public function getLogText(start:Int, end:Int):String {
+		var buffer = new StringBuf();
+		var lineIndex = 0;
+		for (entry in consoleOutput) {
+			if (!isLogVisible(entry)) continue;
+			var lines = entry.lines;
+			if (lines == null) continue; //not built yet, it will be on the next frame
+			for (line in lines) {
+				if (lineIndex >= start && (end < 0 || lineIndex < end)) {
+					buffer.add(line.plain);
+					buffer.add("\n");
+				}
+				lineIndex++;
+			}
+		}
+		return buffer.toString();
 	}
 
 	private function displayInput() {
@@ -388,8 +527,12 @@ class ConsoleUI {
 
 		ImGui.sameLine();
 		var settingButtonWidth = ImGui.calcTextSize("Settings").x + style.framePaddingX * 2;
+		var copyButtonWidth = ImGui.calcTextSize("Copy Log").x + style.framePaddingX * 2;
 		var pos = ImGui.getCursorPos();
-		ImGui.setCursorPos(pos.x + ImGui.getContentRegionAvail().x - settingButtonWidth, pos.y);
+		ImGui.setCursorPos(pos.x + ImGui.getContentRegionAvail().x - settingButtonWidth - copyButtonWidth - style.itemSpacingX, pos.y);
+		if (ImGui.button("Copy Log")) ImGui.setClipboardText(getLogText(0, -1));
+		ImGui.setItemTooltip("Copies the whole console output to your clipboard");
+		ImGui.sameLine();
 		if (ImGui.button("Settings")) {
 			settingsOpen.value = !settingsOpen.value;
 		}
@@ -402,9 +545,10 @@ class ConsoleUI {
 			if (end < SEARCH_MAX_OUTPUT) end = SEARCH_MAX_OUTPUT;
 			if (end > commandSearch.length) end = commandSearch.length;
 
-			ImGui.pushStyleColor(ImGuiCol.WindowBg, CONSOLE_BG_COLOR);
+			ImGui.pushStyleColor(ImGuiCol.WindowBg, CONSOLE_BG_COLOR.toImColor());
 			ImGui.setNextWindowPos(inputTextCursorPos.x, inputTextCursorPos.y - (ImGui.getTextLineHeightWithSpacing() * (end-start))-12);
 			if (ImGui.begin("Command Search window", null, ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoFocusOnAppearing)) {
+				ImGui.bringNamedWindowToDisplayFront("Command Search window");
 				for (i in start...end) {
 					var cmd = commandSearch[i];
 					if (!cyclingCommands) {
@@ -414,16 +558,16 @@ class ConsoleUI {
 						var after:String = cmdName.substring(cmd.searchIndex+inputName.length, cmdName.length);
 
 						if (before != "") {
-							if (i == commandSearch.length-1) ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_SELECTED_COLOR);
+							if (i == commandSearch.length-1) ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_SELECTED_COLOR.toImColor());
 							ImGui.textUnformatted(before);
 							ImGui.sameLine(0, 0);
 							if (i == commandSearch.length-1) ImGui.popStyleColor();
 						}
-						ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_HIGHLIGHT_COLOR);
+						ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_HIGHLIGHT_COLOR.toImColor());
 						ImGui.textUnformatted(cmdName.substring(cmd.searchIndex, cmd.searchIndex+inputName.length));
 						ImGui.popStyleColor();
 						if (after != "") {
-							if (i == commandSearch.length-1) ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_SELECTED_COLOR);
+							if (i == commandSearch.length-1) ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_SELECTED_COLOR.toImColor());
 							ImGui.sameLine(0, 0);
 							ImGui.textUnformatted(after);
 							if (i == commandSearch.length-1) ImGui.popStyleColor();
@@ -434,20 +578,20 @@ class ConsoleUI {
 							ImGui.textUnformatted("(TAB to Autocomplete)");
 						}
 					} else {
-						if (i == cycleIndex) ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_SELECTED_COLOR);
+						if (i == cycleIndex) ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_SELECTED_COLOR.toImColor());
 						ImGui.textUnformatted(cmd.name);
 						if (i == cycleIndex) ImGui.popStyleColor();
 					}
 
 					if (cmd.argsDesc != null && cmd.argsDesc != "") {
 						ImGui.sameLine();
-						ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_ARGS_COLOR);
+						ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_ARGS_COLOR.toImColor());
 						ImGui.textUnformatted(cmd.argsDesc);
 						ImGui.popStyleColor();
 					}
 					if (cmd.desc != "") {
 						ImGui.sameLine();
-						ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_DESC_COLOR);
+						ImGui.pushStyleColor(ImGuiCol.Text, SEARCH_DESC_COLOR.toImColor());
 						ImGui.textUnformatted(cmd.desc);
 						ImGui.popStyleColor();
 					}
@@ -665,35 +809,13 @@ class ConsoleUI {
 
 	private function clearConsole() {
 		commandSearch = [];
-		consoleOutputCurrentIndex = 0;
-		wrapConsoleOutput = false;
+		consoleOutput.resize(0);
 	}
 
 	private function tryExecuteCommand(str:String) {
 		if (!ConsoleCommandManager.tryExecute(str)) { //run hscript if there was no command
 			Logs.infos("Executing hscript: " + str, LIGHTGRAY, "Console");
 			Logs.infos(Std.string(consoleHscript.tryExecute(str)), LIGHTGRAY, "Console");
-		}
-	}
-
-	public static function consoleColorToImColor(color:ConsoleColor) {
-		return switch(color) {
-			case BLACK:			0xFF000000;
-			case DARKBLUE:		0xFF0909C3;
-			case DARKGREEN:		0xFF008800;
-			case DARKCYAN:		0xFF008888;
-			case DARKRED:		0xFF880000;
-			case DARKMAGENTA:	0xFF9A1CC5;
-			case DARKYELLOW:	0xFFBCBC00;
-			case LIGHTGRAY:		0xFFD4D4D4;
-			case GRAY:			0xFFA4A4A4;
-			case BLUE:			0xFF2A4AEA;
-			case GREEN:			0xFF00FF00;
-			case CYAN:			0xFF008CFF;
-			case RED:			0xFFFF0000;
-			case MAGENTA:		0xFFFF00FF;
-			case YELLOW:		0xFFFFFF00;
-			case WHITE | _:		0xFFFFFFFF;
 		}
 	}
 }

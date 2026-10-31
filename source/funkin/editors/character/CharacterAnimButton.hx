@@ -9,6 +9,7 @@ import funkin.backend.utils.XMLUtil.AnimData;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import funkin.editors.character.CharacterAnimsWindow;
+import animate.FlxAnimateFrames;
 
 using StringTools;
 
@@ -119,12 +120,10 @@ class CharacterAnimButton extends UIButton {
 
 		loopedCheckbox.x += 8; loopedCheckbox.y += 6;
 
-		if (parent.character.isAnimate) {
-			animLabelCheckbox = new UICheckbox(loopedCheckbox.x, animTextBox.y + 26, translate("label"), animData.label, 0, true);
-			animLabelCheckbox.onChecked = (newLabel:Bool) -> {this.changeLabel(newLabel);};
-			members.push(animLabelCheckbox);
-			foldableButtons.push(animLabelCheckbox);
-		}
+		animLabelCheckbox = new UICheckbox(loopedCheckbox.x, animTextBox.y + 26, translate("label"), animData.label, 0, true);
+		animLabelCheckbox.onChecked = (newLabel:Bool) -> {this.changeLabel(newLabel);};
+		members.push(animLabelCheckbox);
+		foldableButtons.push(animLabelCheckbox);
 
 		indicesTextBox = new UITextBox(nameTextBox.x, nameTextBox.y, CoolUtil.formatNumberRange(animData.indices.getDefault([]), ", "), 278, 22, false, true);
 		indicesTextBox.onChange = (text:String) -> {
@@ -223,6 +222,8 @@ class CharacterAnimButton extends UIButton {
 		for (button in foldableButtons)
 			button.visible = button.active = !closed;
 
+		if(animLabelCheckbox.visible)
+			animLabelCheckbox.visible = animLabelCheckbox.active = (parent.character.frames is FlxAnimateFrames);
 		super.update(elapsed);
 	}
 

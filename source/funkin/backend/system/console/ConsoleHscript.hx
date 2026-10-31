@@ -100,6 +100,7 @@ class ConsoleHscript {
 			for (scriptIndex => script in s.scripts) {
 				if (script is HScript) {
 					var hscript:HScript = cast script;
+					if (hscript.interp == null) continue;
 					var name = "_"+Path.withoutExtension(script.fileName);
 					while(interp.varExists(name)) name += "0"; //hopefully prevent duplicates
 					name = name.replace(" ", "_");

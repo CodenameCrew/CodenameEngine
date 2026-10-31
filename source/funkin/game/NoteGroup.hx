@@ -51,7 +51,7 @@ class NoteGroup extends FlxTypedGroup<Note> {
 		return __forcedSongPos == null ? Conductor.songPosition : __forcedSongPos;
 
 	public override function update(elapsed:Float) {
-		i = length-1;
+		i = length - 1;
 		__loopSprite = null;
 		__time = __getSongPos() + limit;
 		while(i >= 0) {
@@ -66,15 +66,27 @@ class NoteGroup extends FlxTypedGroup<Note> {
 		var oldDefaultCameras = FlxCamera._defaultCameras;
 		if (_cameras != null) FlxCamera._defaultCameras = _cameras;
 
+		var renderingSustains = true;
 		var oldCur = __currentlyLooping;
 		__currentlyLooping = true;
-
-		i = length-1;
-		__loopSprite = null;
 		__time = __getSongPos() + limit;
+
+		// only draw sustain notes first
+		i = length - 1;
+		__loopSprite = null;
 		while(i >= 0) {
 			__loopSprite = members[i--];
-			if (__loopSprite == null || !__loopSprite.exists || !__loopSprite.visible) continue;
+			if (__loopSprite == null || !__loopSprite.isSustainNote || !__loopSprite.exists || !__loopSprite.visible) continue;
+			if (__loopSprite.strumTime > __time) break;
+			__loopSprite.draw();
+		}
+
+		// now do it again but regular notes instead
+		i = length - 1;
+		__loopSprite = null;
+		while(i >= 0) {
+			__loopSprite = members[i--]; // this below is the only change
+			if (__loopSprite == null || __loopSprite.isSustainNote || !__loopSprite.exists || !__loopSprite.visible) continue;
 			if (__loopSprite.strumTime > __time) break;
 			__loopSprite.draw();
 		}
@@ -91,7 +103,14 @@ class NoteGroup extends FlxTypedGroup<Note> {
 	}
 
 	public override function forEach(noteFunc:Note->Void, recursive:Bool = false) {
-		i = length-1;
+		__doForEach(noteFunc, false);
+	}
+	public override function forEachAlive(noteFunc:Note->Void, recursive:Bool = false) {
+		__doForEach(noteFunc, true);
+	}
+
+	private function __doForEach(noteFunc:Note->Void, onlyAlive:Bool):Void {
+		i = length - 1;
 		__loopSprite = null;
 		__time = __getSongPos() + limit;
 
@@ -102,14 +121,9 @@ class NoteGroup extends FlxTypedGroup<Note> {
 			__loopSprite = members[i--];
 			if (__loopSprite == null || !__loopSprite.exists) continue;
 			if (__loopSprite.strumTime > __time) break;
-			noteFunc(__loopSprite);
+			if (!onlyAlive || __loopSprite.alive) noteFunc(__loopSprite);
 		}
 		__currentlyLooping = oldCur;
-	}
-	public override function forEachAlive(noteFunc:Note->Void, recursive:Bool = false) {
-		forEach(function(note) {
-			if (note.alive) noteFunc(note);
-		}, recursive);
 	}
 
 	public override function remove(Object:Note, Splice:Bool = false):Note

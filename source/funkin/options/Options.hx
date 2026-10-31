@@ -27,6 +27,7 @@ class Options
 	 */
 	public static var naughtyness:Bool = true;
 	public static var downscroll:Bool = false;
+	public static var centeredFields:Bool = false;
 	public static var ghostTapping:Bool = true;
 	public static var flashingMenu:Bool = true;
 	public static var camZoomOnBeat:Bool = true;
@@ -42,6 +43,7 @@ class Options
 	public static var volumeMusic:Float = 1;
 	public static var volumeSFX:Float = 1;
 	public static var week6PixelPerfect:Bool = true;
+	public static var discordRPC:Bool = true;
 	public static var gameplayShaders:Bool = true;
 	public static var colorHealthBar:Bool = true;
 	public static var lowMemoryMode:Bool = false;
@@ -49,6 +51,7 @@ class Options
 	public static var betaUpdates:Bool = false;
 	public static var splashesEnabled:Bool = true;
 	public static var legacyMemoryCounter:Bool = false;
+	public static var legacyModMenuNames:Bool = false;
 
 	 // DEPRECATED
 	@:dox(hide) @:doNotSave public static var hitWindow:Float = 250;
@@ -68,11 +71,8 @@ class Options
 	public static var streamedVocals:Bool = true;
 	public static var quality:Int = 1;
 	public static var allowConfigWarning:Bool = true;
-	#if MODCHARTING_FEATURES
-	public static var modchartingHoldSubdivisions:Int = 4;
-	#end
-
 	public static var lastLoadedMod:String = null;
+	public static var disabledAddons:Array<String> = [];
 
 	/**
 	 * EDITORS SETTINGS
@@ -114,6 +114,7 @@ class Options
 	public static var charterAutoSaveTime:Float = 60*5;
 	public static var charterAutoSaveWarningTime:Float = 5;
 	public static var charterAutoSavesSeparateFolder:Bool = false;
+	public static var charterPauseQuant:Bool = false;
 
 	/**
 	 * CHARACTER EDITOR
@@ -142,6 +143,8 @@ class Options
 	public static var consoleObjectsFilter:Bool = true;
 	public static var consoleScriptsFilter:Bool = true;
 	public static var consoleCountDuplicatedOutput:Bool = true;
+
+	public static var useNativeConsole:Bool = false;
 
 	#if IMGUI_ENABLED
 	/**
@@ -249,6 +252,10 @@ class Options
 	public static var SOLO_DEV_CONSOLE(get, null):Array<FlxKey>;
 	public static var SOLO_DEV_RELOAD(get, null):Array<FlxKey>;
 	public static var SOLO_DEV_INSPECTOR(get, null):Array<FlxKey>;
+
+	@:dox(hide) @:doNotSave public static var modchartingHoldSubdivisions(get, set):Int;
+	@:dox(hide) static function get_modchartingHoldSubdivisions():Int return Flags.DEFAULT_MODCHART_HOLD_SUBDIVISIONS;
+	@:dox(hide) static function set_modchartingHoldSubdivisions(v:Int):Int return Flags.DEFAULT_MODCHART_HOLD_SUBDIVISIONS = v;
 
 	public static function load() {
 		var path = haxe.macro.Compiler.getDefine("SAVE_OPTIONS_PATH"), name = haxe.macro.Compiler.getDefine("SAVE_OPTIONS_NAME");
