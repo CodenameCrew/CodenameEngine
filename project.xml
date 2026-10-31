@@ -139,7 +139,6 @@
 	<haxelib name="hscript-improved"/>
 	<haxelib name="hxWebSockets"/>
 
-	<haxelib name="format" unless="STRIPPED_COMPILE"/>
 	<haxelib name="markdown" unless="STRIPPED_COMPILE"/>
 
 	<haxelib name="hxvlc" if="VIDEO_CUTSCENES"/>
