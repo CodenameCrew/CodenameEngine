@@ -566,7 +566,7 @@ class FreeplaySonglist {
 			songsFound.push(song);
 		}
 		// todo: make this better
-		if (songsFound == null || songsFound == [] || !useTxt) {
+		if (songsFound.length < 1 || !useTxt) {
 			songsFound = [];
 			var songDirs = Paths.getFolderDirectories(startDir, false, source);
 			if (!flatten) {
