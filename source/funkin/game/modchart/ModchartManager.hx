@@ -1,5 +1,8 @@
 package funkin.game.modchart;
 
+import flixel.math.FlxAngle;
+import flixel.math.FlxPoint;
+import openfl.geom.Vector3D;
 import funkin.game.modchart.drawing.ModchartDrawing;
 import foxlite.FoxScene;
 
@@ -121,6 +124,22 @@ class ModchartManager/* extends FoxScene */ extends flixel.FlxBasic {
 			for (mod in allMods)
 				mod.active[field] = mod.isActive(field);
 		}
+	}
+
+	// leave it here for now
+	// troll's rotateV3 but with reduced allocations
+	static final cachePoint1:FlxPoint = new FlxPoint();
+	static final cachePoint2:FlxPoint = new FlxPoint();
+	public static function rotateVec(vec:Vector3D, x:Float, y:Float, z:Float) {
+		cachePoint1.set(vec.x, vec.y).rotateByDegrees(z);
+        cachePoint2.set(cachePoint1.x, vec.z).rotateByDegrees(y);
+
+        var xSin = Math.sin(x * FlxAngle.TO_RAD);
+        var xCos = Math.cos(x * FlxAngle.TO_RAD);
+
+        vec.x = cachePoint2.x;
+        vec.y = cachePoint2.y * xSin + cachePoint1.y * xCos;
+        vec.z = cachePoint2.y * xCos - cachePoint1.y * xSin;
 	}
 
 	inline function get_strumLines()

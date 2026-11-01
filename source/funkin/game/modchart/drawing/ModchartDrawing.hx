@@ -39,7 +39,7 @@ class QueuedDraw {
 	public function new() {}
 
 	public function reset(distance:Float, /*beatDistance:Float, */ lane:Int, fieldIndex:Int, field:StrumLine, object:FlxSprite) {
-		position.setTo(object.x, object.y, 0);
+		position.setTo(object.x + object.width * 0.5, object.y + object.height * 0.5, 0);
 		scale.setTo(object.scale.x, object.scale.y, 1);
 		rotation.setTo(0, 0, object.angle);
 		color.copyColorTransform(object.colorTransform);
@@ -134,7 +134,7 @@ class ModchartDrawing {
 			return;
 
 		// for now
-		strum.setPosition(queue.position.x, queue.position.y);
+		strum.setPosition(queue.position.x - strum.width * 0.5, queue.position.y - strum.height * 0.5);
 		strum.scale.set(queue.scale.x, queue.scale.y);
 	}
 	function drawNote(note:Note, index:Int) {
@@ -165,7 +165,7 @@ class ModchartDrawing {
 			return;
 
 		// for now
-		note.setPosition(queue.position.x, queue.position.y);
+		note.setPosition(queue.position.x - note.width * 0.5, queue.position.y - note.height * 0.5);
 		note.scale.set(queue.scale.x, queue.scale.y);
 	}
 

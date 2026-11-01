@@ -24,6 +24,13 @@ class LaneModValue {
 		return parent.get(prefix + idx + suffix, manager.curField);
 	}
 
+	public function addBoth(idx:Int):Float {
+		return parent.get(prefix + idx + suffix, manager.curField) + parent.get(prefix + suffix, manager.curField);
+	}
+	public function multBoth(idx:Int):Float {
+		return parent.get(prefix + idx + suffix, manager.curField) * parent.get(prefix + suffix, manager.curField);
+	}
+
 	public function ready(parent:BaseModifier) {
 		this.parent = parent;
 		for (i in 0...manager.storage.length) {
