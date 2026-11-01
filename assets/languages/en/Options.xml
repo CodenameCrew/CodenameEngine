@@ -66,9 +66,15 @@
 	</group>
 
 	<group name="AppearanceOptions" prefix="AppearanceOptions.">
+		<str id="framePacer-name">Pacer</str>
+		<str id="framePacer-desc">Display matches the frame rate to your monitor's refresh rate and enables scanline sync and submit alignment; the Framerate option is disabled while it is active. Adaptive enables them only when the frame rate matches the refresh rate or a whole division of it (1/2, 1/4...). Off restores the previous behavior. Unlimited removes the frame rate cap entirely. Sync costs about 0.3 ms of input latency: in fullscreen the tear line stays pinned to the screen edge, out of view, and in windowed mode every frame is shown instead of stuttering.</str>
+		<str id="framePacer-off">Off</str>
+		<str id="framePacer-adaptive">Adaptive</str>
+		<str id="framePacer-followDisplay">Display</str>
+		<str id="framePacer-unlimited">Unlimited</str>
+
 		<str id="framerate-name">Framerate</str>
 		<str id="framerate-desc">Pretty self explanatory, isn't it?</str>
-		<str id="framerate-unlimited">Unlimited</str>
 
 		<str id="fpsCounter-name">FPS Counter</str>
 		<str id="fpsCounter-desc">If checked, displays the Framerate and Memory counter in the top left.</str>
@@ -84,6 +90,9 @@
 
 		<str id="week6PixelPerfect-name">Pixel Perfect Effect</str>
 		<str id="week6PixelPerfect-desc">If checked, Week 6 or other pixel stages will have a pixel perfect effect to it enabled, aligning every pixel on the screen.</str>
+
+		<str id="discordRPC-name">Discord RPC</str>
+		<str id="discordRPC-desc">If unchecked, Codename Engine and its mods are not displayed under the "Playing" widget.</str>
 
 		<group name="AppearanceOptionsAdvanced" prefix="Advanced.">
 			<str id="quality-name">Quality</str>
@@ -129,6 +138,9 @@
 
 		<str id="ghostTapping-name">Ghost Tapping</str>
 		<str id="ghostTapping-desc">If unchecked, trying to hit any strum that have no note that can be hit will cause a miss.</str>
+
+		<str id="centeredFields-name">Centered Strumlines</str>
+		<str id="centeredFields-desc">If checked, only the playable strumlines will be visible and will be aligned horizontally to your screen. (Also known as "Middlescroll")</str>
 
 		<str id="naughtyness-name">Naughtyness</str>
 		<str id="naughtyness-desc">If unchecked, will censor the Week 7 cutscenes or more.</str>
@@ -193,6 +205,9 @@
 		<str id="showConsole-name">Show Console</str>
 		<str id="showConsole-desc">Select this to show the debug console, which contains log information about the game.</str>
 
+		<str id="useNativeConsole-name">Use Native Console</str>
+		<str id="useNativeConsole-desc">If checked, will always use the native console instead of the ImGui console when pressing its keybind.</str>
+
 		<str id="editorsResizable-name">Resizable Editors</str>
 		<str id="editorsResizable-desc">If checked, this will allow the editors to render beyond the base 1280x720 resolution of FNF (allowing for more detail and space...)</str>
 
@@ -231,6 +246,9 @@
 
 		<str id="songOffsetAffectEditors-name">Offset in Charter</str>
 		<str id="songOffsetAffectEditors-desc">If checked, this will enable the Song Offset option in the Chart Editor too.</str>
+		
+		<str id="legacyModMenuNames-name">Legacy Mod Names</str>
+		<str id="legacyModMenuNames-desc">If checked, this will use the mod folders name for the mod.</str>
 
 		<str id="legacyMemoryCounter-name">Legacy Memory Counter</str>
 		<str id="legacyMemoryCounter-desc">If checked, the memory counter will show the Haxe GC memory usage and its peak (the original behavior) instead of the working set memory seen in Task Manager.</str>

@@ -10,15 +10,20 @@ class AppearanceOptions extends TreeMenuScreen {
 	public function new() {
 		super('optionsTree.appearance-name', 'optionsTree.appearance-desc', 'AppearanceOptions.');
 
+		add(new ArrayOption(getNameID('framePacer'), getDescID('framePacer'),
+			[0, 1, 2, 3], [getID('framePacer-off'), getID('framePacer-adaptive'), getID('framePacer-followDisplay'), getID('framePacer-unlimited')],
+			'framePacerMode', __changeFramePacer
+		));
 		add(framerateOption = new NumOption(getNameID('framerate'), getDescID('framerate'),
-			30, Options.maxFrameRate + 1, 1,
+			30, Math.POSITIVE_INFINITY, 1,
 			'framerate', __changeFPS
 		));
-		if (framerateOption.currentValue > Options.maxFrameRate) __changeFPS(framerateOption.currentValue);
+		framerateOption.locked = Options.framePacerMode >= 2;
 		add(new Checkbox(getNameID('fpsCounter'), getDescID('fpsCounter'), 'fpsCounter', __changeFPSCounter));
 		add(new Checkbox(getNameID('flashingMenu'), getDescID('flashingMenu'), 'flashingMenu'));
 		add(new Checkbox(getNameID('colorHealthBar'), getDescID('colorHealthBar'), 'colorHealthBar'));
 		add(new Checkbox(getNameID('week6PixelPerfect'), getDescID('week6PixelPerfect'), 'week6PixelPerfect'));
+		#if DISCORD_RPC add(new Checkbox(getNameID('discordRPC'), getDescID('discordRPC'), 'discordRPC')); #end
 
 		add(new Separator());
 		add(new TextOption('optionsMenu.advanced', 'optionsTree.appearance.advanced-desc', ' >', () ->
@@ -27,12 +32,13 @@ class AppearanceOptions extends TreeMenuScreen {
 		__changeFPSCounter();
 	}
 
+	private function __changeFramePacer(value:Int) {
+		Options.applyFramePacerMode();
+		framerateOption.locked = value >= 2;
+	}
+
 	private function __changeFPS(value:Float) {
 		var framerate = Math.floor(value);
-		@:privateAccess if (framerate > Options.maxFrameRate) {
-			framerate = 0;
-			framerateOption.__number.text = TextOption.OPTION_VALUE_PREFIX + translate('framerate-unlimited');
-		}
 		if (FlxG.updateFramerate < framerate) FlxG.drawFramerate = FlxG.updateFramerate = framerate;
 		else FlxG.updateFramerate = FlxG.drawFramerate = framerate;
 	}
@@ -43,7 +49,7 @@ class AppearanceOptions extends TreeMenuScreen {
 		
 		if (Options.fpsCounter) {
 			if (fpsAdvancedOption == null) {
-				insert(2, fpsAdvancedOption = new TextOption(getNameID('fpsAdvanced'), getDescID('fpsAdvanced'), ' >', () -> parent.addMenu(new FramerateAppearanceOptions())));
+				insert(3, fpsAdvancedOption = new TextOption(getNameID('fpsAdvanced'), getDescID('fpsAdvanced'), ' >', () -> parent.addMenu(new FramerateAppearanceOptions())));
 			}
 		} else if (fpsAdvancedOption != null) {
 			remove(fpsAdvancedOption, true);

@@ -4,6 +4,7 @@ import hscript.IHScriptCustomBehaviour;
 import funkin.backend.scripting.events.shader.ShaderProcessEvent;
 import funkin.backend.scripting.ScriptPack;
 import funkin.backend.scripting.Script;
+import haxe.io.Path;
 
 @:structInit
 class FieldInfo {
@@ -23,16 +24,14 @@ class ScriptableShader extends FlxBasic implements IHScriptCustomBehaviour {
 	public function new(shader:FunkinShader, ?scriptName:String, ?parentScriptPack:ScriptPack) {
 		super();
 
-		if(parentScriptPack == null && PlayState.instance != null)
-			parentScriptPack = PlayState.instance.scripts;
-
-		if(scriptName == null)
-			if((shader is CustomShader)) scriptName = cast(shader, CustomShader).fileName;
-			else throw "Missing name for shader script, please provide a scriptName, or use CustomShader";
-
 		this.shader = shader;
 
-		script = Script.create(Paths.script('shaders/$scriptName'));
+		if (parentScriptPack == null && PlayState.instance != null)
+			parentScriptPack = PlayState.instance.scripts;
+
+		if (scriptName != null) script = Script.create(Paths.script('shaders/$scriptName'));
+		else script = Script.create(Paths.script(Path.withoutExtension(shader._fragmentFilePath ?? shader._vertexFilePath ?? ""), null, true));
+
 		script.setParent(shader);
 		script.set("shader", shader);
 		script.set("registerParameter", shader.registerParameter);

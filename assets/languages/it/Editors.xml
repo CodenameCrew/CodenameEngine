@@ -263,6 +263,7 @@
 					<str id="topBar.playback">Playback</str>
 					<group name="PlaybackMenu" prefix="playback.">
 						<str id="play">Inizia/Pausa</str>
+						<str id="snap">Allinea il tempo alla Griglia</str>
 						<str id="speedRaise">↑ {0}% Velocità</str>
 						<str id="speedReset">Ripristina Velocità</str>
 						<str id="speedLower">↓ {0}% Velocità</str>

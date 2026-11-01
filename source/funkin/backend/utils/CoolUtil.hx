@@ -35,6 +35,8 @@ import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
 import animate.FlxAnimateJson;
 import flixel.animation.FlxAnimationController;
+import animate.FlxAnimateFrames;
+import animate.FlxAnimate;
 
 using StringTools;
 
@@ -665,6 +667,8 @@ final class CoolUtil
 			case EIGHT:				"8";
 			case NINE:				"9";
 			case PERIOD:			".";
+			case COMMA:				",";
+			case SEMICOLON:			";";
 			default:				key.toString();
 		}
 	}
@@ -1286,6 +1290,33 @@ final class CoolUtil
 		return animsList;
 	}
 
+	public static function getAnimsListFromAnimate(animate:FlxAnimate):Array<String> {
+		if (animate == null) return [];
+
+		var animsList:Array<String> = [];
+
+		@:privateAccess var collections = cast (animate.frames, FlxAnimateFrames).addedCollections;
+		collections.push(cast animate.frames);
+		for(col in collections){
+			for(l in col.timeline.layers)
+				for(f in l.frames){
+					 if(f.name != "")
+						animsList.push(f.name);
+
+					 for(e in f.elements){
+						var element = e.toSymbolInstance();
+
+						if(element != null && element.symbolName != null)
+							animsList.push(element.symbolName);
+					 }
+				}
+		}
+
+		animsList = animsList.concat(getAnimsListFromFrames(animate.frames));
+
+		return animsList;
+	}
+
 	public static function getAnimsListFromAtlas(atlas:AnimationJson):Array<String> {
 		if (atlas == null) return [];
 
@@ -1299,7 +1330,10 @@ final class CoolUtil
 	}
 
 	public static function getAnimsListFromSprite(spr:FunkinSprite):Array<String> {
-		return getAnimsListFromFrames(spr.frames);
+		if(spr.frames is FlxAnimateFrames)
+			return getAnimsListFromAnimate(spr);
+		else
+			return getAnimsListFromFrames(spr.frames);
 	}
 
 	// TODO: check this for bugs

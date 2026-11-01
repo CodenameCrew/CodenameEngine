@@ -17,7 +17,7 @@ class AssetTreeInfo extends FramerateCategory {
 	}
 
 	public override function __enterFrame(t:Float) {
-		if (alpha <= 0.05) return;
+		if (alpha <= 0.05 || !visible) return;
 
 		if ((lastUpdateTime += FlxG.rawElapsed) < 1)
 			return;

@@ -1,5 +1,6 @@
 package funkin.options.keybinds;
 
+import funkin.backend.assets.ModsFolder;
 import flixel.util.FlxColor;
 import haxe.xml.Access;
 using StringTools;
@@ -306,9 +307,9 @@ class KeybindsOptions extends MusicBeatSubstate {
 			alphabet.p2Selected = p2Selected;
 			alphabet.alpha = 1;
 			var minH = FlxG.height / 2;
-			var maxH = alphabets.members[alphabets.length-1].y + alphabets.members[alphabets.length-1].height - (FlxG.height / 2);
+			var maxH = alphabets.members[alphabets.length-1].y + alphabets.members[alphabets.length-1].height - (FlxG.height / 2) + 75;
 			if (minH < maxH)
-				camFollow.setPosition(FlxG.width / 2, CoolUtil.bound(alphabet.y + (alphabet.height / 2) - 35, minH, maxH));
+				camFollow.setPosition(FlxG.width / 2, CoolUtil.bound(alphabet.y + (alphabet.height / 2), minH, maxH));
 			else
 				camFollow.setPosition(FlxG.width / 2, FlxG.height / 2);
 		}
@@ -317,40 +318,48 @@ class KeybindsOptions extends MusicBeatSubstate {
 	public function loadCustomCategories() {
 		var customCategories:Array<ControlsCategory> = [];
 
-		var xmlPath = Paths.xml("config/controls");
-		for(source in [funkin.backend.assets.AssetSource.SOURCE, funkin.backend.assets.AssetSource.MODS]) {
-			if (Paths.assetsTree.existsSpecific(xmlPath, "TEXT", source)) {
-				var access:Access = null;
-				try {
-					access = new Access(Xml.parse(Paths.assetsTree.getSpecificAsset(xmlPath, "TEXT", source)).firstElement());
-				} catch(e) {
-					Logs.trace('Error while parsing controls.xml: ${Std.string(e)}', ERROR);
-				}
+		var filePaths:Array<String> = [];
+		for (modName in ModsFolder.getLoadedMods()) {
+			var folder = Paths.xml('config/controls/LIB_$modName');
 
-				if (access != null) {
-					for (category in access.elements) {
-						if (!category.has.name) continue;
+			if (Assets.exists(folder)) filePaths.push(folder);
+		}
 
-						var cat:ControlsCategory = {
-							name: category.getAtt("name"),
-							custom: true,
-							settings: []
-						};
+		//Logs.trace("Found " + filePaths.length + " custom controls");
+		//for(i in filePaths) Logs.trace(i);
 
-						for (control in category.elements) {
-							if (control.has.menuName && control.has.saveName) {
-								cat.settings.push({
-									name: control.getAtt("menuName"),
-									control: control.getAtt("saveName"),
-									custom: true,
-									sparrowIcon: control.getAtt("menuIcon").getDefault(null),
-									sparrowAnim: control.getAtt("menuAnim").getDefault(null)
-								});
-							}
+		for(source in filePaths) {
+			var access:Access = null;
+
+			try {
+				access = new Access(Xml.parse(Assets.getText(source)).firstElement());
+			} catch(e) {
+				Logs.trace('Error while parsing controls.xml: ${Std.string(e)}', ERROR);
+			}
+
+			if (access != null) {
+				for (category in access.elements) {
+					if (!category.has.name) continue;
+
+					var cat:ControlsCategory = {
+						name: category.getAtt("name"),
+						custom: true,
+						settings: []
+					};
+
+					for (control in category.elements) {
+						if (control.has.menuName && control.has.saveName) {
+							cat.settings.push({
+								name: control.getAtt("menuName"),
+								control: control.getAtt("saveName"),
+								custom: true,
+								sparrowIcon: control.getAtt("menuIcon").getDefault(null),
+								sparrowAnim: control.getAtt("menuAnim").getDefault(null)
+							});
 						}
-
-						customCategories.push(cat);
 					}
+
+					customCategories.push(cat);
 				}
 			}
 		}

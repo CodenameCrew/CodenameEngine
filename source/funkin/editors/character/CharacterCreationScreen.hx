@@ -7,10 +7,12 @@ import flixel.text.FlxText.FlxTextFormat;
 import flixel.text.FlxText.FlxTextFormatMarkerPair;
 
 class CharacterCreationScreen extends UISubstateWindow {
-	private var onSave:(String, ImageSaveData, Xml)-> Void = null;
+	private var onSave:(String, Array<ImageSaveData>, Xml)-> Void = null;
 
 	public var characterNameTextBox:UITextBox;
 	public var imageExplorer:UIImageExplorer;
+
+	public var imageList:UIImageList;
 
 	public var saveButton:UIButton;
 	public var closeButton:UIButton;
@@ -18,7 +20,7 @@ class CharacterCreationScreen extends UISubstateWindow {
 	inline function translate(id:String, ?args:Array<Dynamic>)
 		return TU.translate("characterCreationScreen." + id, args);
 
-	public function new(?onSave:(String, ImageSaveData, Xml)->Void) {
+	public function new(?onSave:(String, Array<ImageSaveData>, Xml)->Void) {
 		super();
 		if (onSave != null) this.onSave = onSave;
 	}
@@ -26,7 +28,7 @@ class CharacterCreationScreen extends UISubstateWindow {
 	public override function create() {
 		winTitle = translate("win-title");
 
-		winWidth = 360;
+		winWidth = 660;
 		winHeight = 520;
 
 		super.create();
@@ -44,17 +46,20 @@ class CharacterCreationScreen extends UISubstateWindow {
 			translate("charName"),
 			[new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFAD1212), "$")]);
 
-		imageExplorer = new UIImageExplorer(characterNameTextBox.x, characterNameTextBox.y + 30 + 16 + 20, null, 320, 58, (_, _) -> {onLoadImage();}, "images/characters");
-		add(imageExplorer);
-		addLabelOn(imageExplorer, "").applyMarkup(
-			translate("charImgName"),
-			[new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFAD1212), "$")]);
-		imageExplorer.maxSize.y -= 100;
+		imageList = new UIImageList(10, 190, null, () -> {checkRequired();});
+		var listTxt = addLabelOn(imageList, "");
+		listTxt.applyMarkup(
+			"Character Image Files $* At Least One Required$",
+			[new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFAD1212), "$")]
+		);
+		listTxt.x += 30;
+		add(imageList);
 
 		saveButton = new UIButton(windowSpr.x + windowSpr.bWidth - 20 - 125, windowSpr.y + windowSpr.bHeight - 16 - 32, TU.translate("editor.saveClose"), function() {
 			close();
 			createCharacter();
 		}, 125);
+		saveButton.selectable = false;
 		add(saveButton);
 
 		closeButton = new UIButton(saveButton.x - 20 - saveButton.bWidth, saveButton.y, TU.translate("editor.cancel"), function() {
@@ -62,39 +67,31 @@ class CharacterCreationScreen extends UISubstateWindow {
 		}, 125);
 		add(closeButton);
 		closeButton.color = 0xFFFF0000;
-
-		onLoadImage();
-	}
-
-	public function onLoadImage() {
-		refreshWindowSize();
-		checkRequired();
-	}
-
-	public function refreshWindowSize() {
-		if (imageExplorer == null) return;
-		windowSpr.bWidth = 20 + imageExplorer.bWidth + 20;
-		windowSpr.bHeight = 30 + 16 + 20 + 32 + 30 + 10 + imageExplorer.bHeight + 14 + saveButton.bHeight + 14;
-
-		saveButton.x = windowSpr.x + windowSpr.bWidth - 20 - saveButton.bWidth;
-		closeButton.x = saveButton.x - 20 - closeButton.bWidth; 
-		closeButton.y = saveButton.y = imageExplorer.y + imageExplorer.bHeight + 14;
 	}
 
 	public function checkRequired() {
-		saveButton.selectable = characterNameTextBox.label.text.length > 0 && !CoolUtil.isMapEmpty(imageExplorer.imageFiles) && (imageExplorer.animationList.length > 0);
+		saveButton.selectable = characterNameTextBox.label.text.length > 0 && imageList.getSaveDatas().length > 0 && !CoolUtil.isMapEmpty(imageList.getSaveDatas()[0].imageFiles);
 	}
 
 	public function createCharacter() {
-		var imageSaveData:ImageSaveData = imageExplorer.getSaveData();
+		var imageSaveData = imageList.getSaveDatas();
 
 		var xml:Xml = Xml.createElement("character");
 		xml.attributeOrder = Character.characterProperties.copy();
 
-		xml.set("sprite", '${imageSaveData.directory.length > 0 ? '${imageSaveData.directory}/' : ""}' + imageSaveData.imageName);
+		if(imageSaveData.length == 1){
+			var imgData = imageSaveData[0];
+			xml.set("sprite", '${imgData.directory.length > 0 ? '${imgData.directory}/' : ""}' + imgData.imageName);
+		} else {
+			for(data in imageSaveData){
+				var sheetElement = Xml.createElement("spritesheet");
+				sheetElement.set("path", 'characters/${data.directory.length > 0 ? '${data.directory}/' : ""}' + data.imageName);
+				xml.addChild(sheetElement);
+			}
+		}
 
 		// Look for animations >:D
-		var animationList:Array<String> = imageExplorer.animationList.copy();
+		var animationList:Array<String> = imageList.getAnimList();
 		animationList.sort((a, b) -> {
 			var lengthCompare = a.length - b.length;
 			if (lengthCompare != 0) return lengthCompare;
@@ -132,19 +129,6 @@ class CharacterCreationScreen extends UISubstateWindow {
 			animXml.set("anim", found.getDefault(animationList[0]));
 
 			xml.addChild(animXml);
-		}
-
-		// Do the rest only if not atlas (until we make it animations and not symbols >:D)
-		if (!imageSaveData.isAtlas) {
-			for (imageAnim in animationList) {
-				var animXml:Xml = Xml.createElement('anim');
-				animXml.attributeOrder = Character.characterAnimProperties;
-	
-				animXml.set("name", imageAnim);
-				animXml.set("anim", imageAnim);
-	
-				xml.addChild(animXml);
-			}
 		}
 
 		if (onSave != null) onSave(characterNameTextBox.label.text, imageSaveData, xml);
