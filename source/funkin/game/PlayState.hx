@@ -1648,6 +1648,7 @@ class PlayState extends MusicBeatState
 	 * @param pos The position to put the camera position in. If `null`, a new FlxPoint will be created.
 	 * @param ignoreInvisible Whenever invisible characters should be ignored.
 	 * @param ignoreInactive Whether inactive characters should be ignored.
+	 * @param out If provided, fills and returns this instance instead of allocating a new one. The caller keeps ownership of `pos` (don't put it back to the pool).
 	**/
 	public dynamic function getCharactersCamPos(chars:Array<Character>, ?pos:FlxPoint = null, ?ignoreInvisible:Bool = true, ?ignoreInactive = false, ?out:CamPosData = null):CamPosData {
 		if (pos == null) pos = FlxPoint.get();
