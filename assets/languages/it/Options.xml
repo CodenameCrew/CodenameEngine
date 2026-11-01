@@ -62,6 +62,13 @@
 	</group>
 
 	<group name="AppearanceOptions" prefix="AppearanceOptions.">
+		<str id="framePacer-name">Sincronia</str>
+		<str id="framePacer-desc">Schermo adatta il framerate alla frequenza di aggiornamento del monitor e attiva la sincronizzazione delle scanline e l'allineamento dell'invio; l'opzione Framerate è disattivata mentre è attiva. Adattivo le attiva solo quando il framerate corrisponde alla frequenza di aggiornamento o a una sua divisione esatta (1/2, 1/4...). Spento torna al comportamento precedente. Illimitato rimuove del tutto il limite di framerate. La sincronizzazione costa circa 0,3 ms di latenza in input: a schermo intero la linea di tearing resta fissata al bordo dello schermo, fuori dalla vista, e in finestra ogni frame viene mostrato invece di andare a scatti.</str>
+		<str id="framePacer-off">Spento</str>
+		<str id="framePacer-adaptive">Adattivo</str>
+		<str id="framePacer-followDisplay">Schermo</str>
+		<str id="framePacer-unlimited">Illimitato</str>
+
 		<str id="framerate-name">Framerate</str>
 		<str id="framerate-desc">Non c'è proprio bisogno di una descrizione.</str>
 

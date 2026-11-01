@@ -162,9 +162,7 @@ class Flags {
 
 	public static var DEFAULT_NOTE_MS_LIMIT:Float = 1500;
 	public static var DEFAULT_NOTE_SCALE:Float = 0.7;
-	#if MODCHARTING_FEATURES
 	public static var DEFAULT_MODCHART_HOLD_SUBDIVISIONS:Int = 4;
-	#end
 
 	public static var SUSTAINS_AS_ONE_NOTE:Null<Bool> = null;
 
@@ -186,6 +184,7 @@ class Flags {
 	public static var DEFAULT_ZOOM_LERP:Float = 0.05;
 	public static var MAX_CAMERA_ZOOM_MULT:Float = 10;
 	public static var USE_CAM_ZOOM_MULT:Bool = true;
+	public static var FORCE_CAM_ZOOM_EVERY_MEASURE:Bool = false;
 	public static var DEFAULT_CAM_ZOOM_MULT:Float = 0.015;
 	public static var DEFAULT_HUD_ZOOM_MULT:Float = 0.03;
 	public static var DEFAULT_CAM_ZOOM_LERP:Float = 0.05;
@@ -235,7 +234,7 @@ class Flags {
 	public static var DEFAULT_STRUM_AMOUNT:Int = 4;
 	public static var DEFAULT_CAMERA_FOLLOW_SPEED:Float = 0.04;
 
-	public static var VOCAL_OFFSET_VIOLATION_THRESHOLD:Float = 25;
+	public static var VOCAL_OFFSET_VIOLATION_THRESHOLD:Float = 12.0;
 
 	// Usage: Codename Credits
 	public static var MAIN_DEVS_COLOR:FlxColor = 0xFF9C35D5;
@@ -423,9 +422,6 @@ class Flags {
 				if (!(parsed = parse(name, value))) customFlags.set(name, value);
 				if (!overridenFlags.exists(name)) overridenFlags.set(name, parsed);
 		}
-		#if MODCHARTING_FEATURES
-		Options.modchartingHoldSubdivisions = DEFAULT_MODCHART_HOLD_SUBDIVISIONS;
-		#end
 	}
 
 	/**

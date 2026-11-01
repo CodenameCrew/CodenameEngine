@@ -60,6 +60,8 @@ class CharacterEditor extends UIState {
 
 	public static var undos:UndoList<CharacterEditorChange>;
 
+	var dragTypeMenu:UIContextMenuOptionSpr = null;
+
 	public function new(character:String) {
 		super();
 		if (character != null) __character = character;
@@ -189,8 +191,8 @@ class CharacterEditor extends UIState {
 					null,
 					{
 						label: translate("offset.dragOffsetsMouse"),
-						onSelect: _offsets_drag_offsets_mouse,
-						icon: Options.characterDragging ? 1 : 0
+						childs: updateDragChecks(),
+						onCreate: (_) -> {dragTypeMenu = _;}
 					},
 					{
 						label: translate("offset.clearOffsets"),
@@ -396,7 +398,7 @@ class CharacterEditor extends UIState {
 
 		StageEditor.calcSpriteBounds(character);
 
-		if (Options.characterDragging)
+		if (Options.characterDragging != NONE)
 			handleMouseOffsets();
 
 		WindowUtils.prefix = undos.unsaved ? Flags.UNDO_PREFIX : "";
@@ -405,15 +407,43 @@ class CharacterEditor extends UIState {
 		super.update(elapsed);
 	}
 
+	function updateDragChecks() {
+		var mouseOffsetOptions:Array<UIContextMenuOption> = [
+		{
+			label: translate("offset.offset"),
+			onSelect: (_) -> {changeOffsetDragType(OFFSET);},
+			icon: Options.characterDragging == OFFSET ? 1 : 0
+		},
+		{
+			label: translate("offset.position"),
+			onSelect: (_) -> {changeOffsetDragType(POSITION);},
+			icon: Options.characterDragging == POSITION ? 1 : 0
+		},
+		{
+			label: translate("offset.none"),
+			onSelect: (_) -> {changeOffsetDragType(NONE);},
+			icon: Options.characterDragging == NONE ? 1 : 0
+		}];
+
+
+		if(dragTypeMenu != null)
+			dragTypeMenu.option.childs = mouseOffsetOptions;
+
+		return mouseOffsetOptions;
+	}
+
 	inline function handleMouseOffsets() {
 		if (draggingCharacter) {
 			cameraHoverDummy.cursor = DRAG;
 
 			if (FlxG.mouse.justReleased) {
-				draggingOffset.x /= character.scale.x;
-				draggingOffset.y /= character.scale.y;
+				if(Options.characterDragging == OFFSET){
+					draggingOffset.x /= character.scale.x;
+					draggingOffset.y /= character.scale.y;
 
-				_change_offset((draggingOffset.x * (character.isFlippedOffsets()  ? -1 : 1)), draggingOffset.y);
+					_change_offset((draggingOffset.x * (character.isFlippedOffsets()  ? -1 : 1)), draggingOffset.y);
+				} else
+					characterPropertiesWindow.changePosition(character.globalOffset.x + draggingOffset.x, character.globalOffset.y + draggingOffset.y);
 
 				draggingOffset.set(0, 0); draggingCharacter = false;
 				character.extraOffset = draggingOffset;
@@ -670,10 +700,6 @@ class CharacterEditor extends UIState {
 	function _offsets_extra_down(_) _change_offset(0, 5);
 	function _offsets_extra_right(_) _change_offset(5, 0);
 
-	function _offsets_drag_offsets_mouse(t) {
-		t.icon = (Options.characterDragging = !Options.characterDragging) ? 1 : 0;
-	}
-
 	function _offsets_clear(_) clearOffsets();
 
 	function clearOffsets(addToUndo:Bool = true) {
@@ -824,6 +850,11 @@ class CharacterEditor extends UIState {
 		remove(character);
 		if (stage.characterPoses.exists(stagePosition))
 			stage.applyCharStuff(character, stagePosition, 0);
+	}
+
+	function changeOffsetDragType(type){
+		Options.characterDragging = type;
+		updateDragChecks();
 	}
 
 	public function changeCharacterIsPlayer(player:Bool) @:privateAccess {

@@ -367,7 +367,12 @@
 					<str id="moveExtraUp">Mover Extra Arriba</str>
 					<str id="moveExtraDown">Mover Extra Abajo</str>
 					<str id="moveExtraRight">Mover Extra a la Derecha</str>
+
 					<str id="dragOffsetsMouse">¿Arrastrar posiciones con el mouse?</str>
+					<str id="offset">Offset</str>
+					<str id="position">Posición</str>
+					<str id="none">Ninguno</str>
+
 					<str id="clearOffsets">Borrar Posiciones</str>
 				</group>
 

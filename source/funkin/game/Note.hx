@@ -272,8 +272,8 @@ class Note extends FlxSprite
 				__lastStrumHalfH = __strum.height * 0.5;
 			}
 
-			x = -origin.x + offset.x + (originalY * __lastAngleCos) + __strum.x + __lastStrumHalfW;
-			y = -origin.y + offset.y + (originalY * __lastAngleSin) + __strum.y + __lastStrumHalfH;
+			x = -origin.x + offset.x + (originalY * __lastAngleCos + originalX * __lastAngleSin) + __strum.x + __lastStrumHalfW;
+			y = -origin.y + offset.y + (originalY * __lastAngleSin - originalX * __lastAngleCos) + __strum.y + __lastStrumHalfH;
 			super.draw();
 			x = originalX;
 			y = originalY;
