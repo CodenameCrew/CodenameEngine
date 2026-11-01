@@ -91,8 +91,9 @@ class ModSwitchMenu extends MusicBeatSubstate {
 
 		addonObjs = new FlxTypedGroup<Alphabet>();
 		addonChecks = new FlxTypedGroup<FlxSprite>();
-		for(i in 0...addons.length) {
-			var idx = addons.length - 1 - i; // reverse it for removal safety
+
+		var idx = addons.length;
+		while (idx-- > 0) {
 			var mod = addons[idx];
 			if (!FileSystem.isDirectory(ModsFolder.addonsPath + mod) && !Flags.ALLOWED_ZIP_EXTENSIONS.contains(Path.extension(mod))) {
 				addons.splice(idx, 1);
