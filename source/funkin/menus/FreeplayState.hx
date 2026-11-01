@@ -571,10 +571,10 @@ class FreeplaySonglist {
 			var oldPath = Paths.txt('freeplaySonglist/LIB_$modName');
 			var newPath = Paths.txt('config/freeplaySonglist/LIB_$modName');
 
-			if (Assets.exists(newPath)) {
+			if (Paths.assetsTree.existsSpecific(newPath, "TEXT", source)) {
 				for (i in CoolUtil.coolTextFile(newPath)) songsFound.push(i);
 				if (scanningThisMod) scannedThisMod = true;
-			} else if (Assets.exists(oldPath)) {
+			} else if (Paths.assetsTree.existsSpecific(oldPath, "TEXT", source)) {
 				Logs.warn("data/freeplaySonglist.txt is deprecated and will be removed in the future. Please move the file to data/config/", DARKYELLOW, "FreeplaySonglist");
 				for (i in CoolUtil.coolTextFile(oldPath)) songsFound.push(i);
 				if (scanningThisMod) scannedThisMod = true;
