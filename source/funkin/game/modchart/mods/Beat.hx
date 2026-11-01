@@ -62,20 +62,20 @@ class Beat extends BaseModifier {
 
 		final xVal = beat * times[0];
 		if (xVal != 0.0) {
-			final xPeriod = ((beatPeriod * 30) + 30);
-			queue.position.x += xVal * Math.cos(queue.distance / xPeriod);
+			final period = ((beatPeriod * 30) + 30);
+			queue.position.x += xVal * Math.cos(queue.distance / period);
 		}
 
 		final yVal = beatY * times[1];
 		if (yVal != 0.0) {
-			final xPeriod = ((beatPeriod * 30) + 30);
-			queue.position.x += xVal * Math.cos(queue.distance / xPeriod);
+			final period = ((beatYPeriod * 30) + 30);
+			queue.position.y += yVal * Math.cos(queue.distance / period);
 		}
 
 		final zVal = beatZ * times[2];
 		if (zVal != 0.0) {
-			final xPeriod = ((beatPeriod * 30) + 30);
-			queue.position.x += xVal * Math.cos(queue.distance / xPeriod);
+			final period = ((beatZPeriod * 30) + 30);
+			queue.position.z += zVal * Math.cos(queue.distance / period);
 		}
 	}
 }
