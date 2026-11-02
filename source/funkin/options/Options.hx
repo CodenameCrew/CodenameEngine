@@ -126,6 +126,7 @@ class Options
 	public static var characterCamera:Bool = true;
 	public static var characterAxis:Bool = true;
 	public static var characterDragging:CharacterDragMode = OFFSET;
+	public static var characterPosGuideAlpha:Float = 0.5;
 	public static var playAnimOnOffset:Bool = false;
 
 	/**

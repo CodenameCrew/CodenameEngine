@@ -419,6 +419,7 @@
 					<str id="charHitbox">Character Hitbox?</str>
 					<str id="charCam">Character Camera?</str>
 					<str id="axis">XY Axis?</str>
+					<str id="posGuide">Stage Pos. Guide</str>
 				</group>
 
 				<str id="topBar.animation">Animation</str>
