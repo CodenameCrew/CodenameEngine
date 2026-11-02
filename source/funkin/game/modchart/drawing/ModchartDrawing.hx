@@ -1,93 +1,9 @@
 package funkin.game.modchart.drawing;
 
-import flixel.graphics.frames.FlxFrame;
 import funkin.backend.system.Conductor;
-import openfl.geom.ColorTransform;
-import openfl.geom.Vector3D;
-
-@:access(flixel.FlxSprite)
-class QueuedDraw {
-	public var position:Vector3D = new Vector3D();
-	public var scale:Vector3D = new Vector3D(1, 1, 1);
-	public var rotation:Vector3D = new Vector3D();
-	public var color:ColorTransform = new ColorTransform();
-
-	public var stealthColor:Vector3D = new Vector3D(1, 1, 1);
-	public var stealth:Float = 0.0;
-
-	public var distance:Float = 0.0;
-	//public var beatDistance:Float = 0.0;
-	public var originalDistance(default, null):Float = 0.0;
-	public var lane:Int = 0;
-
-	public var time:Float = 0;
-	public var beat:Float = 0;
-
-	public var fieldCenter:Vector3D = new Vector3D();
-	public var fieldIndex:Int = 0;
-	public var arrowSize:Float = 0;
-	public var field:StrumLine;
-
-	public var frame:FlxFrame;
-	public var object:FlxSprite;
-	public var strum:Strum;
-	public var note:Note;
-
-	public var shouldRender:Bool = true;
-	public var antialiasing:Bool = true;
-
-	public function new() {}
-
-	public function reset(distance:Float, /*beatDistance:Float, */ lane:Int, fieldIndex:Int, field:StrumLine, object:FlxSprite) {
-		position.setTo(object.x + object.width * 0.5, object.y + object.height * 0.5, 0);
-		scale.setTo(object.scale.x, object.scale.y, 1);
-		rotation.setTo(0, 0, object.angle);
-		color.copyColorTransform(object.colorTransform);
-		antialiasing = object.antialiasing;
-
-		stealthColor.setTo(1, 1, 1);
-		stealth = 0;
-
-		this.fieldIndex = fieldIndex;
-		this.field = field;
-		arrowSize = Note.swagWidth * field.strumScale * (field.data?.strumSpacing ?? 1);
-		@:privateAccess fieldCenter.setTo(field.startingPos.x + arrowSize * (field.members.length * 0.5), FlxG.height * 0.5, 0);
-
-		this.distance = this.originalDistance = distance;
-		//this.beatDistance = beatDistance;
-		this.lane = lane;
-		this.object = object;
-		frame = object._frame;
-
-		time = Conductor.songPosition;
-		beat = Conductor.curBeatFloat;
-	}
-
-	public inline function isSustain()
-		return note != null && note.isSustainNote;
-	public inline function isForNote()
-		return note != null;
-	public inline function isForStrum()
-		return strum != null;
-
-
-	// for now
-	static final projectDiv:Float = 1 / 1280;
-	public function project() {
-		position.w = (1280 - position.z) * projectDiv;
-		shouldRender = position.w > 0;
-		if (!shouldRender)
-			return;
-
-		var scaleMult = 1 / position.w;
-		position.x = (position.x - FlxG.width * 0.5) * scaleMult + FlxG.width * 0.5;
-		position.y = (position.y - FlxG.height * 0.5) * scaleMult + FlxG.height * 0.5;
-		scale.x *= scaleMult;
-		scale.y *= scaleMult;
-	}
-}
 
 @:access(funkin.game.modchart.ModchartManager)
+@:access(funkin.game.Strum)
 @:access(flixel.FlxCamera)
 @:access(flixel.FlxBasic)
 class ModchartDrawing {
@@ -115,6 +31,14 @@ class ModchartDrawing {
 
 
 	function drawStrum(strum:Strum, index:Int) {
+		var angle = strum.getNotesAngle();
+		if (angle != Strum.__lastNoteAngle) {
+			Strum.__lastNoteAngle = angle;
+			final result = FlxMath.fastSinCos((angle + 90) * flixel.math.FlxAngle.TO_RAD);
+			Strum.__lastAngleSin = result.sin;
+			Strum.__lastAngleCos = result.cos;
+		}
+
 		prepareExtra(strum, strum.extra);
 		parent.curField = index;
 		parent.curLane = strum.ID;
@@ -123,6 +47,7 @@ class ModchartDrawing {
 			queues[queueCount] = new QueuedDraw();
 		var queue = queues[queueCount];//++];
 		queue.reset(0, parent.curLane, index, strumLines.members[index], strum);
+		queue.speed = strum.getScrollSpeed();
 		queue.strum = strum;
 
 		for (mod in parent.allMods) {
@@ -138,22 +63,26 @@ class ModchartDrawing {
 		strum.scale.set(queue.scale.x, queue.scale.y);
 	}
 	function drawNote(note:Note, index:Int) {
+		final strum = note.__strum;
+
 		prepareExtra(note, note.extra);
 		note.extra.set("__modRelative", note.strumRelativePos);
 		parent.curField = index;
 		parent.curLane = note.strumID;
 
 		note.strumRelativePos = false;
-		note.__strum.updateNotePos(note);
-		if  (note.__strum.updateNotesPosX && note.updateNotesPosX)
-			note.x -= note.__strum.x - note.__strum.extra.get("__modchartX");
-		if  (note.__strum.updateNotesPosY && note.updateNotesPosY)
-			note.y -= note.__strum.y - note.__strum.extra.get("__modchartY");
+		strum.updateNotePos(note);
+		if  (strum.updateNotesPosX && note.updateNotesPosX)
+			note.x -= strum.x - strum.extra.get("__modchartX");
+		if  (strum.updateNotesPosY && note.updateNotesPosY)
+			note.y -= strum.y - strum.extra.get("__modchartY");
 
 		if (queueCount >= queues.length)
 			queues[queueCount] = new QueuedDraw();
 		var queue = queues[queueCount];//++];
-		queue.reset(note.y - note.__strum.extra.get("__modchartY"), parent.curLane, index, strumLines.members[index], note);
+		var speed = strum.getScrollSpeed(note);
+		queue.reset((note.strumTime - Conductor.songPosition) * 0.45 * speed, parent.curLane, index, strumLines.members[index], note);
+		queue.speed = speed;
 		queue.note = note;
 
 		for (mod in parent.allMods) {

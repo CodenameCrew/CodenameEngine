@@ -1,6 +1,6 @@
 package funkin.game.modchart;
 
-import funkin.game.modchart.drawing.ModchartDrawing;
+import funkin.game.modchart.drawing.QueuedDraw;
 
 typedef ModifierFloat = Float;
 typedef ModifierBool = Bool;
