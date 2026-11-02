@@ -12,6 +12,9 @@ import funkin.backend.system.Conductor;
 import funkin.game.HealthIcon;
 import funkin.savedata.FunkinSave;
 import funkin.backend.assets.ModsFolder;
+import funkin.backend.assets.ModsFolderLibrary;
+import funkin.backend.assets.IModsAssetLibrary;
+import funkin.backend.assets.AssetSource;
 
 using StringTools;
 
@@ -548,70 +551,61 @@ class FreeplaySonglist {
 	}
 
 	// todo: make this better
-	public function getSongsFromSource(source:funkin.backend.assets.AssetSource, useTxt:Bool = true, ?startDir:String = 'songs/', ?flatten:Bool = true) {
+	public function getSongsFromSource(source:AssetSource = BOTH, useTxt:Bool = true, ?startDir:String = 'songs/', ?flatten:Bool = true) {
 		var totalSongsFound:Array<String> = [];
-		var mods:Array<String> = ModsFolder.getLoadedMods();
+		var mods:Array<IModsAssetLibrary> = ModsFolder.getLoadedModsLibs(true);
 		// addon songs appear lower than the mod's main music now
-		if (ModsFolder.currentModFolder == null) { // no mods
+		while (mods[0].modName != (ModsFolder.currentModFolder ?? 'assets')) {
 			final thisMod = mods.pop();
 			mods.insert(0, thisMod);
-			// IDK WHY BUT I HAVE TO DO THIS FOR THE ASSETS FREEPLAYSONGLIST TO WORK???? IT WORKS WITH AND WITHOUT ADDONS SO I GUESS TRHIS IS FINE IDK
-			for (i in CoolUtil.coolTextFile(Paths.txt('config/freeplaySonglist/LIB_assets'))) totalSongsFound.push(i);
-		} else {
-			// put mod folder first, assets folder second
-			while (mods[0] != ModsFolder.currentModFolder) {
-				final thisMod = mods.pop();
-				mods.insert(0, thisMod);
+		}
+		if (source != BOTH && ModsFolder.currentModFolder != null) {
+			var i:Int = 0;
+			while (i < mods.length) {
+				final thisMod = mods[i];
+				if (thisMod.modName == ((source == MODS) ? 'assets' : ModsFolder.currentModFolder))
+					mods.remove(thisMod);
+				else i++;
 			}
 		}
-		// ok so this might be even worse so im hoping john cne comes and looks at my shitty code and fixes it for me
-		var scannedMods = [];
-		for (modName in mods) {
-			var songsFound:Array<String> = [];
-			if (scannedMods.indexOf(modName) != -1) continue; // we already scammed this mod
-			scannedMods.push(modName); // we are scamming this mod
-			//trace('added ${modName} to the scanned mods list!');
+		var i:Int = 0;
+		while (i < mods.length) {
+			final modLib:ModsFolderLibrary = cast mods[i++];
+			if (modLib == null) { i++; continue; }
 
-			// find freeplaySnoglist crap
+			final modName = modLib.modName;
+			var songsFound:Array<String> = [];
+
 			if (useTxt) {
-				//trace('checking txt');
 				var oldPath = Paths.txt('freeplaySonglist/LIB_$modName');
 				var newPath = Paths.txt('config/freeplaySonglist/LIB_$modName');
 
-				if (Paths.assetsTree.existsSpecific(newPath, "TEXT", source)) {
+				if (modLib.exists(newPath, "TEXT")) {
 					for (i in CoolUtil.coolTextFile(newPath)) songsFound.push(i);
-				} else if (Paths.assetsTree.existsSpecific(oldPath, "TEXT", source)) {
+				} else if (modLib.exists(oldPath, "TEXT")) {
 					Logs.warn("data/freeplaySonglist.txt is deprecated and will be removed in the future. Please move the file to data/config/", DARKYELLOW, "FreeplaySonglist");
 					for (i in CoolUtil.coolTextFile(oldPath)) songsFound.push(i);
 				}
 				for (s in songsFound) totalSongsFound.push(s);
 			}
-			// if there's none of that or we just dont use txt then i'm going to kill you
 			if (songsFound.length < 1 || !useTxt) {
-				//trace('no txt');
-				var songDirs = Paths.getFolderDirectories(startDir, false, source);
-				if (!flatten) {
-					for (i in songDirs) {
-						var subs = Paths.getFolderDirectories('$startDir$i', false, source);
-						songsFound.push(isSubSongDirectory(subs) ? '$i/' : i);
-					}
-				} else {
-					function poop(a:Array<Dynamic>, startDir:String) {
-						for (i in a) {
-							var subs = Paths.getFolderDirectories('$startDir$i', false, source);
-							if (isSubSongDirectory(subs)) poop(subs, '$startDir$i/');
-							else songsFound.push(startDir.substr('songs/'.length) + i);
+				// only scan the songs folder in this library (assets/ is automatically replaced)
+				var songDirs = modLib.getFolders('assets/' + startDir);
+				function scanForSongs(a:Array<Dynamic>, startDir:String, ?multiScan:Bool = false) {
+					for (i in a) {
+						var subs = modLib.getFolders('$startDir$i');
+						if (isSubSongDirectory(subs)) {
+							if (multiScan) scanForSongs(subs, '$startDir$i');
+							else songsFound.push(StringTools.trim(i + '/'));
 						}
+						else songsFound.push(StringTools.trim(i));
 					}
-					poop(songDirs, startDir);
 				}
+				scanForSongs(songDirs, 'assets/' + startDir, flatten);
 				for (s in songsFound) if (totalSongsFound.indexOf(s) == -1) totalSongsFound.push(s); // dont allow any duplicates
 			}
-			//trace(songsFound + ' ' + modName);
 		}
-		//trace('total song list: ' + totalSongsFound);
-		//trace('we scanned alla these mods: ' + scannedMods);
-		// put folders at the top
+		// put folders at the top (in chart editor)
 		totalSongsFound = totalSongsFound.filter(a -> a.endsWith('/'))
 			.concat(totalSongsFound.filter(a -> !a.endsWith('/')));
 		if (totalSongsFound.length > 0) {
