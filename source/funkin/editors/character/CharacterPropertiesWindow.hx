@@ -125,12 +125,16 @@ class CharacterPropertiesWindow extends UISliceSprite {
 			if (newPosY != null && newPosY == character.globalOffset.y) return;
 		}
 
-		newPosX = FlxMath.roundDecimal(newPosX, 2); newPosY = FlxMath.roundDecimal(newPosY, 2);
-
 		var oldPosition:FlxPoint = character.globalOffset.clone();
 
-		if (newPosX != null) character.globalOffset.x = newPosX;
-		if (newPosY != null) character.globalOffset.y = newPosY;
+		if (newPosX != null) {
+			newPosX = FlxMath.roundDecimal(newPosX, 2);
+			character.globalOffset.x = newPosX;
+		}
+		if (newPosY != null){
+			newPosY = FlxMath.roundDecimal(newPosY, 2);
+			character.globalOffset.y = newPosY;
+		}
 
 		CharacterEditor.instance.playAnimation(character.getAnimName());
 
