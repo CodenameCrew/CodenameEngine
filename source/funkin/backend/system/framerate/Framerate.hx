@@ -141,8 +141,6 @@ class Framerate extends Sprite {
 			fpsCounter.contentDirty = memoryCounter.contentDirty = false;
 		}
 
-		// Periodic safety net: something outside the counters (e.g. a script) may modify their
-		// contents without flagging them as dirty, so force a re-measure + reflow every so often
 		if (++refreshTimer >= 60) {
 			refreshTimer = 0;
 			fpsCounter.refreshDisplay();
@@ -165,9 +163,6 @@ class Framerate extends Sprite {
 			memoryCounter.memoryText.selectable = memoryCounter.memoryPeakText.selectable =
 			fpsCounter.fpsNum.selectable = fpsCounter.fpsLabel.selectable =
 			#if SHOW_BUILD_ON_FPS codenameBuildField.selectable = #end selectable;
-			// Caches the whole HUD as a single bitmap so its text fields don't go through the full
-			// draw pipeline on every frame (it re-renders only when the contents change). Selectable
-			// text needs the regular render path for caret/selection, so uncached while debugMode == 2
 			cacheAsBitmap = !selectable;
 		}
 

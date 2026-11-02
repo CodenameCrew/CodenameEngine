@@ -89,11 +89,6 @@ class FramerateCounter extends Sprite {
 		lastUpdateTime = frameCount = 0;
 	}
 
-	/**
-	 * Forces a reflow of the label positions and flags this counter's content as dirty.
-	 * Used by `Framerate` as a periodic safety net in case something outside this class
-	 * (e.g. a script) modifies the counters' contents without flagging them as dirty.
-	 */
 	public function refreshDisplay():Void {
 		updateLabelPosition();
 		contentDirty = true;
