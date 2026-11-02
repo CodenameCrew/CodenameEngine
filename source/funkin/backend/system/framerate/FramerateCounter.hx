@@ -96,10 +96,10 @@ class FramerateCounter extends Sprite {
 
 	private inline function updateLabelPosition():Void
 	{
-		fpsLabel.x = fpsNum.x + fpsNum.width;
-		fpsLabel.y = (fpsNum.y + fpsNum.height) - fpsLabel.height;
+		fpsLabel.x = Math.round(fpsNum.x + fpsNum.width);
+		fpsLabel.y = Math.round((fpsNum.y + fpsNum.height) - fpsLabel.height);
 
-		lowFPS.x = fpsLabel.x + fpsLabel.width;
-		lowFPS.y = (fpsLabel.y + fpsLabel.height) - lowFPS.height;
+		lowFPS.x = Math.round(fpsLabel.x + fpsLabel.width);
+		lowFPS.y = Math.round((fpsLabel.y + fpsLabel.height) - lowFPS.height);
 	}
 }

@@ -126,8 +126,8 @@ class Framerate extends Sprite {
 		super.__enterFrame(t);
 		bgSprite.alpha = debugAlpha * 0.5;
 
-		x = 10 + offset.x * FlxG.scaleMode.scale.x;
-		y = 2 + offset.y * FlxG.scaleMode.scale.y;
+		x = Math.round(10 + offset.x * FlxG.scaleMode.scale.x);
+		y = Math.round(2 + offset.y * FlxG.scaleMode.scale.y);
 
 		if (fpsCounter.contentDirty || memoryCounter.contentDirty #if SHOW_BUILD_ON_FPS || codenameBuildField.contentDirty #end) {
 			#if SHOW_BUILD_ON_FPS

@@ -100,5 +100,5 @@ class MemoryCounter extends Sprite {
 	}
 
 	private inline function updateLabelPosition():Void
-		memoryPeakText.x = memoryText.x + memoryText.width;
+		memoryPeakText.x = Math.round(memoryText.x + memoryText.width);
 }
