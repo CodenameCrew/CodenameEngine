@@ -86,20 +86,4 @@ class QueuedDraw {
 
 		return distance = to;
 	}
-	
-
-	// for now
-	static final projectDiv:Float = 1 / 1280;
-	public function project() {
-		position.w = (1280 - position.z) * projectDiv;
-		shouldRender = position.w > 0;
-		if (!shouldRender)
-			return;
-
-		var scaleMult = 1 / position.w;
-		position.x = (position.x - FlxG.width * 0.5) * scaleMult + FlxG.width * 0.5;
-		position.y = (position.y - FlxG.height * 0.5) * scaleMult + FlxG.height * 0.5;
-		scale.x *= scaleMult;
-		scale.y *= scaleMult;
-	}
 }

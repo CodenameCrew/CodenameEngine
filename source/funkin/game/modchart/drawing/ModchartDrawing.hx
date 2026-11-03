@@ -39,7 +39,6 @@ class ModchartDrawing {
 			Strum.__lastAngleCos = result.cos;
 		}
 
-		prepareExtra(strum, strum.extra);
 		parent.curField = index;
 		parent.curLane = strum.ID;
 
@@ -54,28 +53,21 @@ class ModchartDrawing {
 			if (mod.active[index])
 				mod.edit(queue);
 		}
-		queue.project();
-		if (!queue.shouldRender)
-			return;
-
-		// for now
-		strum.setPosition(queue.position.x - strum.width * 0.5, queue.position.y - strum.height * 0.5);
-		strum.scale.set(queue.scale.x, queue.scale.y);
+		parent.TEMPmodel.buildFromQueue(queue);
 	}
 	function drawNote(note:Note, index:Int) {
 		final strum = note.__strum;
 
-		prepareExtra(note, note.extra);
-		note.extra.set("__modRelative", note.strumRelativePos);
+		var ogNoteX = note.x;
+		var ogNoteY = note.y;
+		var wasRelative = note.strumRelativePos;
 		parent.curField = index;
 		parent.curLane = note.strumID;
 
-		note.strumRelativePos = false;
-		strum.updateNotePos(note);
-		if  (strum.updateNotesPosX && note.updateNotesPosX)
-			note.x -= strum.x - strum.extra.get("__modchartX");
-		if  (strum.updateNotesPosY && note.updateNotesPosY)
-			note.y -= strum.y - strum.extra.get("__modchartY");
+		if (wasRelative) {
+			note.strumRelativePos = false;
+			strum.updateNotePos(note);
+		}
 
 		if (queueCount >= queues.length)
 			queues[queueCount] = new QueuedDraw();
@@ -89,19 +81,16 @@ class ModchartDrawing {
 			if (mod.active[index])
 				mod.edit(queue);
 		}
-		queue.project();
-		if (!queue.shouldRender)
-			return;
+		parent.TEMPmodel.buildFromQueue(queue);
 
-		// for now
-		note.setPosition(queue.position.x - note.width * 0.5, queue.position.y - note.height * 0.5);
-		note.scale.set(queue.scale.x, queue.scale.y);
+		note.setPosition(ogNoteX, ogNoteY);
+		note.strumRelativePos = wasRelative;
 	}
 
 	function preDraw() {
 		// store the strumlines' visibility and if this is visible, hide it internally
 		__fieldsVisible = strumLines.visible;
-		//strumLines.visible = !parent.visible && __fieldsVisible;
+		strumLines.visible = !parent.visible && __fieldsVisible;
 
 		var oldDefaultCams = FlxCamera._defaultCameras;
 		if (parent._cameras != null)
@@ -126,29 +115,5 @@ class ModchartDrawing {
 	}
 	function postDraw() {
 		strumLines.visible = __fieldsVisible;
-
-		for (field in strumLines.members) {
-			for (strum in field.members)
-				restoreFromExtra(strum, strum.extra);
-			field.notes.forEachAlive(restoreNote);
-		}
-	}
-
-	// leaving this down here since this isnt gonna stay once foxlite gets into this
-	function restoreNote(note:Note) {
-		restoreFromExtra(note, note.extra);
-		note.strumRelativePos = note.extra.get("__modRelative");
-	}
-	function restoreFromExtra(obj:FlxSprite, map:Map<String, Dynamic>) {
-		obj.setPosition(map.get("__modchartX"), map.get("__modchartY"));
-		obj.scale.set(map.get("__modScaleX"), map.get("__modScaleY"));
-		obj.angle = map.get("__modchartRot");
-	}
-	function prepareExtra(obj:FlxSprite, map:Map<String, Dynamic>) {
-		map.set("__modchartX", obj.x);
-		map.set("__modchartY", obj.y);
-		map.set("__modScaleX", obj.scale.x);
-		map.set("__modScaleY", obj.scale.y);
-		map.set("__modchartRot", obj.angle);
 	}
 }

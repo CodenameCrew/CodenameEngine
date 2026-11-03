@@ -1,5 +1,6 @@
 package funkin.game.modchart;
 
+import funkin.game.modchart.drawing.ModchartModel;
 import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
 import openfl.geom.Vector3D;
@@ -7,7 +8,7 @@ import funkin.game.modchart.drawing.ModchartDrawing;
 import foxlite.FoxScene;
 
 // for now
-class ModchartManager/* extends FoxScene */ extends flixel.FlxBasic {
+class ModchartManager extends FoxScene {
 	public static var references:Map<String, Class<BaseModifier>>;
 	public var storage:Array<Map<String, Float>> = [];
 	public var aliases:Map<String, String> = [];
@@ -24,13 +25,24 @@ class ModchartManager/* extends FoxScene */ extends flixel.FlxBasic {
 
 	static final digitRegex = ~/\d/g;
 
+	// its going to become smarter later
+	var TEMPmodel:ModchartModel;
+
 	public function new(strumLines:FlxTypedGroup<StrumLine>) {
-		//super(FlxG.width, FlxG.height);
-		super();
+		foxlite.renderer.FoxRenderer.initLibs();
+		super(FlxG.width, FlxG.height);
+
 		drawer = new ModchartDrawing(this, strumLines);
 		for (field in strumLines.members) {
 			storage.push([]);
 			laneCount = MathUtil.maxInt(laneCount, field.members.length, field.data.keyCount);
+		}
+
+		try {
+			TEMPmodel = new ModchartModel();
+			add(TEMPmodel);
+		} catch (e) {
+			Sys.println(e.details());
 		}
 	}
 	override function destroy() {
