@@ -1655,14 +1655,15 @@ class PlayState extends MusicBeatState
 	public dynamic function getCharactersCamPos(chars:Array<Character>, ?pos:FlxPoint = null, ?ignoreInvisible:Bool = true, ?ignoreInactive = false, ?out:CamPosData = null):CamPosData {
 		if (pos == null) pos = FlxPoint.get();
 		var amount:Int = 0;
+		final cpos = FlxPoint.get();
 		for(c in chars) {
 			if (c == null || (ignoreInvisible && (c.alpha <= 0 || !c.visible || !c.exists)) || (ignoreInactive && !c.active)) continue;
-			var cpos = c.getCameraPosition();
+			c.__getCameraPositionInto(cpos);
 			pos.x += cpos.x;
 			pos.y += cpos.y;
 			amount++;
-			//cpos.put(); // not actually in the pool, so no need
 		}
+		cpos.put();
 		if (amount > 0) {
 			pos.x /= amount;
 			pos.y /= amount;
