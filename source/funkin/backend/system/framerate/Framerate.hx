@@ -111,34 +111,68 @@ class Framerate extends Sprite {
 
 
 	var debugAlpha:Float = 0;
+	var lastSelectable:Null<Bool> = null;
+	var lastBoundsWidth:Float = 0;
+	var lastBoundsHeight:Float = 0;
+	var refreshTimer:Int = 0;
 	public override function __enterFrame(t:Float) {
-		alpha = CoolUtil.fpsLerp(alpha, debugMode > 0 ? 1 : 0, 0.5);
-		debugAlpha = CoolUtil.fpsLerp(debugAlpha, debugMode > 1 ? 1 : 0, 0.5);
+		final targetAlpha:Float = debugMode > 0 ? 1 : 0;
+		alpha = Math.abs(alpha - targetAlpha) < 0.005 ? targetAlpha : CoolUtil.fpsLerp(alpha, targetAlpha, 0.5);
+
+		final targetDebugAlpha:Float = debugMode > 1 ? 1 : 0;
+		debugAlpha = Math.abs(debugAlpha - targetDebugAlpha) < 0.005 ? targetDebugAlpha : CoolUtil.fpsLerp(debugAlpha, targetDebugAlpha, 0.5);
 
 		if (alpha < 0.05) return;
 		super.__enterFrame(t);
 		bgSprite.alpha = debugAlpha * 0.5;
 
-		x = 10 + offset.x * FlxG.scaleMode.scale.x;
-		y = 2 + offset.y * FlxG.scaleMode.scale.y;
+		x = Math.round(10 + offset.x * FlxG.scaleMode.scale.x);
+		y = Math.round(2 + offset.y * FlxG.scaleMode.scale.y);
 
-		var width = MathUtil.maxSmart(fpsCounter.width, memoryCounter.width #if SHOW_BUILD_ON_FPS , codenameBuildField.width #end) + (x*2);
-		var height = #if SHOW_BUILD_ON_FPS codenameBuildField.y + codenameBuildField.height #else memoryCounter.y + memoryCounter.height #end;
+		if (fpsCounter.contentDirty || memoryCounter.contentDirty #if SHOW_BUILD_ON_FPS || codenameBuildField.contentDirty #end) {
+			#if SHOW_BUILD_ON_FPS
+			lastBoundsWidth = MathUtil.maxSmart(fpsCounter.width, memoryCounter.width, codenameBuildField.width);
+			lastBoundsHeight = codenameBuildField.y + codenameBuildField.height;
+			codenameBuildField.contentDirty = false;
+			#else
+			lastBoundsWidth = MathUtil.maxSmart(fpsCounter.width, memoryCounter.width);
+			lastBoundsHeight = memoryCounter.y + memoryCounter.height;
+			#end
+			fpsCounter.contentDirty = memoryCounter.contentDirty = false;
+		}
+
+		if (++refreshTimer >= 60) {
+			refreshTimer = 0;
+			fpsCounter.refreshDisplay();
+			memoryCounter.refreshDisplay();
+			#if SHOW_BUILD_ON_FPS
+			codenameBuildField.contentDirty = true;
+			#end
+		}
+
+		final width = lastBoundsWidth + (x * 2);
+		final height = lastBoundsHeight;
 		bgSprite.x = -x;
 		bgSprite.y = offset.x;
 		bgSprite.scaleX = width;
 		bgSprite.scaleY = height;
 
-		var selectable = debugMode == 2;
-		{  // idk i tried to make it more readable:sob:  - Nex
+		final selectable = debugMode == 2;
+		if (selectable != lastSelectable) {
+			lastSelectable = selectable;
 			memoryCounter.memoryText.selectable = memoryCounter.memoryPeakText.selectable =
 			fpsCounter.fpsNum.selectable = fpsCounter.fpsLabel.selectable =
 			#if SHOW_BUILD_ON_FPS codenameBuildField.selectable = #end selectable;
+			cacheAsBitmap = !selectable;
 		}
 
 		var y:Float = height + 4;
 		for(c in categories) {
 			if (!c.visible) continue;
+			if (debugAlpha <= 0.005) {
+				c.alpha = 0;
+				continue;
+			}
 			c.title.selectable = c.text.selectable = selectable;
 			c.alpha = debugAlpha;
 			c.x = FlxMath.lerp(-c.width - offset.x, 0, debugAlpha);

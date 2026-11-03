@@ -184,6 +184,7 @@ class Flags {
 	public static var DEFAULT_ZOOM_LERP:Float = 0.05;
 	public static var MAX_CAMERA_ZOOM_MULT:Float = 10;
 	public static var USE_CAM_ZOOM_MULT:Bool = true;
+	public static var FORCE_CAM_ZOOM_EVERY_MEASURE:Bool = false;
 	public static var DEFAULT_CAM_ZOOM_MULT:Float = 0.015;
 	public static var DEFAULT_HUD_ZOOM_MULT:Float = 0.03;
 	public static var DEFAULT_CAM_ZOOM_LERP:Float = 0.05;
@@ -207,7 +208,7 @@ class Flags {
 	// Restart Cutscene -> pause.restartCutscene
 	public static var DEFAULT_PAUSE_ITEMS:Array<String> = ['Resume', 'Restart Song', 'Change Controls', 'Change Options', 'Exit to menu', "Exit to charter"];
 	public static var DEFAULT_CUTSCENE_PAUSE_ITEMS:Array<String> = ['Resume Cutscene', 'Skip Cutscene', 'Restart Cutscene', 'Exit to menu'];
-	public static var DEFAULT_GITAROO:Bool = true;
+	public static var DEFAULT_GITAROO:Bool = false;
 	public static var GITAROO_CHANCE:Float = 0.1;
 	public static var DEFAULT_MUTE_VOCALS_ON_MISS:Bool = true;
 

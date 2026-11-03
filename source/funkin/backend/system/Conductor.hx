@@ -357,8 +357,9 @@ final class Conductor
 
 	private static function __updateSongPos(elapsed:Float) {
 		if (FlxG.sound.music != null) { // CNE FlxSound is Interpolated.
-			lastSongPos = FlxG.sound.music.time - songOffset;
-			if (FlxG.sound.music.playing) songPosition = FlxG.sound.music.time;
+			final time = FlxG.sound.music.time;
+			lastSongPos = time - songOffset;
+			if (FlxG.sound.music.playing) songPosition = time;
 		}
 	}
 

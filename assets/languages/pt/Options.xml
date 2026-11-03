@@ -65,6 +65,13 @@
 	</group>
 
 	<group name="AppearanceOptions" prefix="AppearanceOptions.">
+		<str id="framePacer-name">Sincronia</str>
+		<str id="framePacer-desc">Tela ajusta o FPS à taxa de atualização do seu monitor e ativa a sincronização de scanlines e o alinhamento de envio; a opção FPS fica desativada enquanto está ativa. Adaptativo só as ativa quando o FPS corresponde à taxa de atualização ou a uma divisão exata dela (1/2, 1/4...). Desligado volta ao comportamento anterior. Sem limite remove por completo o limite de FPS. A sincronização custa cerca de 0,3 ms de latência de entrada: em tela cheia a linha de rasgo fica presa na borda da tela, fora da vista, e no modo janela cada quadro é exibido em vez de engasgar.</str>
+		<str id="framePacer-off">Desligado</str>
+		<str id="framePacer-adaptive">Adaptativo</str>
+		<str id="framePacer-followDisplay">Tela</str>
+		<str id="framePacer-unlimited">Sem limite</str>
+
 		<str id="framerate-name">FPS</str>
 		<str id="framerate-desc">Quadros Por Segundo, se quiser. Explica-se a sí próprio, certo?</str>
 
