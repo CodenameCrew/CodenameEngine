@@ -1468,32 +1468,30 @@ class PlayState extends MusicBeatState
 			cachedScore = songScore;
 			scoreStr = TEXT_GAME_SCORE.format([songScore]);
 		}
-		if (scoreTxt.text != scoreStr)
-			scoreTxt.text = scoreStr;
+		scoreTxt.text = scoreStr;
 
 		if (!ratingStuffValid || cachedMisses != misses || cachedComboBreaks != comboBreaks) {
 			cachedMisses = misses;
 			cachedComboBreaks = comboBreaks;
 			missesStr = (comboBreaks ? TEXT_GAME_COMBOBREAKS : TEXT_GAME_MISSES).format([misses]);
 		}
-		if (missesTxt.text != missesStr)
-			missesTxt.text = missesStr;
+		missesTxt.text = missesStr;
 
 		var curAccuracy = accuracy;
 		if (!ratingStuffValid || cachedRating != curRating || cachedAccuracy != curAccuracy) {
 			cachedRating = curRating;
 			cachedAccuracy = curAccuracy;
 			accuracyStr = TEXT_GAME_ACCURACY.format([curAccuracy < 0 ? "-%" : '${CoolUtil.quantize(curAccuracy * 100, 100)}%', curRating.rating]);
+		}
 
-			@:privateAccess {
-				accFormat.format.color = curRating.color;
-				accuracyTxt.text = accuracyStr;
+		@:privateAccess {
+			accFormat.format.color = curRating.color;
+			accuracyTxt.text = accuracyStr;
 
-				for (i => frmtRange in accuracyTxt._formatRanges) if (frmtRange.format == accFormat) {
-					accuracyTxt._formatRanges[i].range.start = accuracyTxt.text.length - curRating.rating.length;
-					accuracyTxt._formatRanges[i].range.end = accuracyTxt.text.length;
-					break;
-				}
+			for (i => frmtRange in accuracyTxt._formatRanges) if (frmtRange.format == accFormat) {
+				accuracyTxt._formatRanges[i].range.start = accuracyTxt.text.length - curRating.rating.length;
+				accuracyTxt._formatRanges[i].range.end = accuracyTxt.text.length;
+				break;
 			}
 		}
 
