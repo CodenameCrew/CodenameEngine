@@ -10,6 +10,7 @@ class MemoryCounter extends Sprite {
 
 	public var memory:Float = 0;
 	public var memoryPeak:Float = 0;
+	public var contentDirty:Bool = true;
 
 	public function new() {
 		super();
@@ -31,10 +32,13 @@ class MemoryCounter extends Sprite {
 		#if !(cpp && (windows || mac || linux))
 		memoryPeakText.visible = false;
 		#end
+		updateLabelPosition();
 	}
 
 	public function reload() {
 		for(label in [memoryText, memoryPeakText]) label.defaultTextFormat = Framerate.textFormat;
+		updateLabelPosition();
+		contentDirty = true;
 	}
 
 	private var usingLegacy:Bool = false;
@@ -54,10 +58,8 @@ class MemoryCounter extends Sprite {
 
 			final mem = MemoryUtil.currentMemUsage();
 			if (memoryPeak < mem) memoryPeak = mem;
-			if (mem == memory) {
-				updateLabelPosition();
+			if (mem == memory)
 				return;
-			}
 
 			memory = mem;
 			memoryPeakText.visible = true;
@@ -69,10 +71,8 @@ class MemoryCounter extends Sprite {
 			final gcMem = MemoryUtil.currentMemUsage();
 			final osMem = MemoryUtil.currentProcessMemUsage();
 
-			if (gcMem == memory && osMem == memoryPeak) {
-				updateLabelPosition();
+			if (gcMem == memory && osMem == memoryPeak)
 				return;
-			}
 
 			memory = gcMem;
 			memoryPeak = osMem;
@@ -83,18 +83,22 @@ class MemoryCounter extends Sprite {
 		#else
 		final mem = MemoryUtil.currentMemUsage();
 
-		if (mem == memory) {
-			updateLabelPosition();
+		if (mem == memory)
 			return;
-		}
 
 		memory = mem;
 		memoryText.text = CoolUtil.getSizeString(mem);
 		#end
 
 		updateLabelPosition();
+		contentDirty = true;
+	}
+
+	public function refreshDisplay():Void {
+		updateLabelPosition();
+		contentDirty = true;
 	}
 
 	private inline function updateLabelPosition():Void
-		memoryPeakText.x = memoryText.x + memoryText.width;
+		memoryPeakText.x = Math.round(memoryText.x + memoryText.width);
 }

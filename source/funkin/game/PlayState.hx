@@ -1468,30 +1468,32 @@ class PlayState extends MusicBeatState
 			cachedScore = songScore;
 			scoreStr = TEXT_GAME_SCORE.format([songScore]);
 		}
-		scoreTxt.text = scoreStr;
+		if (scoreTxt.text != scoreStr)
+			scoreTxt.text = scoreStr;
 
 		if (!ratingStuffValid || cachedMisses != misses || cachedComboBreaks != comboBreaks) {
 			cachedMisses = misses;
 			cachedComboBreaks = comboBreaks;
 			missesStr = (comboBreaks ? TEXT_GAME_COMBOBREAKS : TEXT_GAME_MISSES).format([misses]);
 		}
-		missesTxt.text = missesStr;
+		if (missesTxt.text != missesStr)
+			missesTxt.text = missesStr;
 
 		var curAccuracy = accuracy;
 		if (!ratingStuffValid || cachedRating != curRating || cachedAccuracy != curAccuracy) {
 			cachedRating = curRating;
 			cachedAccuracy = curAccuracy;
 			accuracyStr = TEXT_GAME_ACCURACY.format([curAccuracy < 0 ? "-%" : '${CoolUtil.quantize(curAccuracy * 100, 100)}%', curRating.rating]);
-		}
 
-		@:privateAccess {
-			accFormat.format.color = curRating.color;
-			accuracyTxt.text = accuracyStr;
+			@:privateAccess {
+				accFormat.format.color = curRating.color;
+				accuracyTxt.text = accuracyStr;
 
-			for (i => frmtRange in accuracyTxt._formatRanges) if (frmtRange.format == accFormat) {
-				accuracyTxt._formatRanges[i].range.start = accuracyTxt.text.length - curRating.rating.length;
-				accuracyTxt._formatRanges[i].range.end = accuracyTxt.text.length;
-				break;
+				for (i => frmtRange in accuracyTxt._formatRanges) if (frmtRange.format == accFormat) {
+					accuracyTxt._formatRanges[i].range.start = accuracyTxt.text.length - curRating.rating.length;
+					accuracyTxt._formatRanges[i].range.end = accuracyTxt.text.length;
+					break;
+				}
 			}
 		}
 
@@ -1620,7 +1622,7 @@ class PlayState extends MusicBeatState
 		if (__camPosData == null) __camPosData = new CamPosData(__camPos, 0);
 
 		__camPos.set(0, 0);
-		var data:CamPosData = getStrumlineCamPos(curCameraTarget, __camPos, true, __camPosData);
+		var data:CamPosData = getStrumlineCamPos(curCameraTarget, __camPos, true, false, __camPosData);
 		data.pos.add(cameraFocusOffset.x, cameraFocusOffset.y);
 
 		if (data.amount > 0) {
@@ -1653,14 +1655,15 @@ class PlayState extends MusicBeatState
 	public dynamic function getCharactersCamPos(chars:Array<Character>, ?pos:FlxPoint = null, ?ignoreInvisible:Bool = true, ?ignoreInactive = false, ?out:CamPosData = null):CamPosData {
 		if (pos == null) pos = FlxPoint.get();
 		var amount:Int = 0;
+		final cpos = FlxPoint.get();
 		for(c in chars) {
 			if (c == null || (ignoreInvisible && (c.alpha <= 0 || !c.visible || !c.exists)) || (ignoreInactive && !c.active)) continue;
-			var cpos = c.getCameraPosition();
+			c.__getCameraPositionInto(cpos);
 			pos.x += cpos.x;
 			pos.y += cpos.y;
 			amount++;
-			//cpos.put(); // not actually in the pool, so no need
 		}
+		cpos.put();
 		if (amount > 0) {
 			pos.x /= amount;
 			pos.y /= amount;
