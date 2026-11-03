@@ -1,7 +1,6 @@
 package funkin.game;
 
 import flixel.graphics.FlxGraphic;
-import flixel.graphics.frames.FlxFrame;
 import flixel.math.FlxPoint;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.backend.scripting.events.healthicon.HealthIconChangeEvent;
@@ -75,6 +74,8 @@ class HealthIcon extends FunkinSprite
 	 */
 	public var extraOffsets:FlxPoint = FlxPoint.get();
 
+	private var _iconAnimData:IconAnimData;
+
 	/**
 	 * Helper for HScript who can't make maps
 	 *
@@ -117,23 +118,12 @@ class HealthIcon extends FunkinSprite
 		updateHitbox();
 	}
 
-	@:noCompletion private var __lastBumpFrame:FlxFrame = null;
-	@:noCompletion private var __lastBumpOffsetX:Float = 0;
-	@:noCompletion private var __lastBumpOffsetY:Float = 0;
-
 	/**
 	 * Called every frame and causes the icon to become smaller
 	**/
 	public dynamic function updateBump():Void {
-		if (scale.x == defaultScale && scale.y == defaultScale && frame == __lastBumpFrame
-			&& extraOffsets.x == __lastBumpOffsetX && extraOffsets.y == __lastBumpOffsetY)
-			return;
-
 		var iconLerp = Flags.ICON_LERP;
 		scale.set(CoolUtil.fpsLerp(scale.x, defaultScale, iconLerp), CoolUtil.fpsLerp(scale.y, defaultScale, iconLerp));
-		__lastBumpFrame = frame;
-		__lastBumpOffsetX = extraOffsets.x;
-		__lastBumpOffsetY = extraOffsets.y;
 		updateHitbox();
 	}
 
@@ -349,20 +339,12 @@ class HealthIcon extends FunkinSprite
 		return anim;
 	}
 
-	@:noCompletion private var __lastIconAnimHealth:Float = Math.NaN;
-	@:noCompletion private var __lastIconAnimSteps:Map<Int, OneOfTwo<String, Int>> = null;
-	@:noCompletion private var __lastIconAnimState:OneOfTwo<String, Int> = -1;
-	@:noCompletion private var __lastIconAnimValid:Bool = false;
-
 	/**
 	 * Gets the animation data for a specific health percentage
 	 * @param health Health percentage
 	 * @return Animation data (-1 if invalid)
 	 */
-	public dynamic function getIconAnim(health:Float):IconAnimData {
-		if (health == __lastIconAnimHealth && healthSteps == __lastIconAnimSteps)
-			return new IconAnimData(__lastIconAnimState, __lastIconAnimValid);
-
+	public dynamic function getIconAnim(health:Float, ?out:IconAnimData):IconAnimData {
 		var i:OneOfTwo<String, Int> = -1;
 		var oldKey:Int = -1;
 		var isValid = false;
@@ -374,11 +356,11 @@ class HealthIcon extends FunkinSprite
 
 		i = normalizeAnim(i);
 
-		__lastIconAnimHealth = health;
-		__lastIconAnimSteps = healthSteps;
-		__lastIconAnimState = i;
-		__lastIconAnimValid = isValid;
-		return new IconAnimData(i, isValid);
+		if (out == null) return new IconAnimData(i, isValid);
+
+		out.animState = i;
+		out.isValid = isValid;
+		return out;
 	}
 
 	override function update(elapsed:Float):Void {
@@ -393,10 +375,10 @@ class HealthIcon extends FunkinSprite
 		}
 
 		if (animation.curAnim != null || this.animated) {
-			var data = getIconAnim(health);
-			var localAnimState = data.animState;
+			_iconAnimData = getIconAnim(health, _iconAnimData);
+			var localAnimState = _iconAnimData.animState;
 
-			if (data.isValid && curAnimState != localAnimState) {
+			if (_iconAnimData.isValid && curAnimState != localAnimState) {
 				var event = EventManager.get(HealthIconChangeEvent).recycle(localAnimState, this);
 				funkin.backend.scripting.GlobalScript.event("onHealthIconAnimChange", event);
 				if (!event.cancelled) {
