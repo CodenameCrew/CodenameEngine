@@ -59,7 +59,7 @@ class VideoCutscene extends Cutscene {
 		parseSubtitles();
 
 		add(video);
-		video.antialiasing = true;
+		video.antialiasing = Flags.DEFAULT_ANTIALIASING;
 		video.bitmap.onEndReached.add(close);
 		video.bitmap.onFormatSetup.add(function() if (video.bitmap != null && video.bitmap.bitmapData != null) {
 			final width = video.bitmap.bitmapData.width;

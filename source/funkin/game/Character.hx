@@ -84,7 +84,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		this.isPlayer = isPlayer;
 		__switchAnims = switchAnims;
 
-		antialiasing = true;
+		antialiasing = Flags.DEFAULT_ANTIALIASING;
 
 		xml = getXMLFromCharName(this);
 

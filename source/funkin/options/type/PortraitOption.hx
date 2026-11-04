@@ -20,7 +20,7 @@ class PortraitOption extends TextOption {
 	public function addPortrait(graphic:FlxGraphic, size:Int = 96, usePortrait:Bool = true) {
 		if (portrait == null) {
 			portrait = new FlxSprite();
-			portrait.antialiasing = true;
+			portrait.antialiasing = Flags.DEFAULT_ANTIALIASING;
 			if(usePortrait) portrait.shader = new CustomShader('engine/circleProfilePicture');
 			add(portrait);
 		}

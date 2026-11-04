@@ -18,7 +18,7 @@ class CreditsMain extends TreeMenu {
 		DiscordUtil.call("onMenuLoaded", ["Credits Menu"]);
 
 		add(bg = new FlxSprite().loadAnimatedGraphic(Paths.image('menus/menuBGBlue')));
-		bg.antialiasing = true;
+		bg.antialiasing = Flags.DEFAULT_ANTIALIASING;
 		bg.scrollFactor.set();
 		updateBG();
 
