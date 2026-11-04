@@ -29,7 +29,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download Windows Full Build
-        uses: dawidd6/action-download-artifact@v24
+        uses: dawidd6/action-download-artifact@v28
         with:
           workflow: windows.yml
           name: Codename Engine
@@ -37,7 +37,7 @@ jobs:
           allow_forks: false
 
       - name: Download Windows Executable
-        uses: dawidd6/action-download-artifact@v24
+        uses: dawidd6/action-download-artifact@v28
         with:
           workflow: windows.yml
           name: Codename Engine (Executable Only)
@@ -45,7 +45,7 @@ jobs:
           allow_forks: false
 
       - name: Download Mac OS Full Build
-        uses: dawidd6/action-download-artifact@v24
+        uses: dawidd6/action-download-artifact@v28
         with:
           workflow: macos.yml
           name: Codename Engine
@@ -53,7 +53,7 @@ jobs:
           allow_forks: false
 
       - name: Download Mac OS Executable
-        uses: dawidd6/action-download-artifact@v24
+        uses: dawidd6/action-download-artifact@v28
         with:
           workflow: macos.yml
           name: Codename Engine (Executable Only)
@@ -61,7 +61,7 @@ jobs:
           allow_forks: false
 
       - name: Download Linux Full Build
-        uses: dawidd6/action-download-artifact@v24
+        uses: dawidd6/action-download-artifact@v28
         with:
           workflow: linux.yml
           name: Codename Engine
@@ -69,7 +69,7 @@ jobs:
           allow_forks: false
 
       - name: Download Linux Executable
-        uses: dawidd6/action-download-artifact@v24
+        uses: dawidd6/action-download-artifact@v28
         with:
           workflow: linux.yml
           name: Codename Engine (Executable Only)
