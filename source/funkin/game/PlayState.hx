@@ -1620,7 +1620,7 @@ class PlayState extends MusicBeatState
 		if (__camPosData == null) __camPosData = new CamPosData(__camPos, 0);
 
 		__camPos.set(0, 0);
-		var data:CamPosData = getStrumlineCamPos(curCameraTarget, __camPos, true, false, __camPosData);
+		var data:CamPosData = getStrumlineCamPos(curCameraTarget, __camPos, true, true, __camPosData);
 		data.pos.add(cameraFocusOffset.x, cameraFocusOffset.y);
 
 		if (data.amount > 0) {
@@ -1638,7 +1638,7 @@ class PlayState extends MusicBeatState
 	 * @param ignoreInactive Whether inactive characters should be ignored.
 	 * @param out If provided, fills and returns this instance instead of allocating a new one. The caller keeps ownership of `pos` (don't put it back to the pool).
 	**/
-	public inline function getStrumlineCamPos(strumLine:Int, ?pos:FlxPoint = null, ?ignoreInvisible:Bool = true, ?ignoreInactive = false, ?out:CamPosData = null):CamPosData {
+	public inline function getStrumlineCamPos(strumLine:Int, ?pos:FlxPoint = null, ?ignoreInvisible:Bool = true, ?ignoreInactive:Bool = true, ?out:CamPosData = null):CamPosData {
 		return getCharactersCamPos(strumLines.members[strumLine].characters, pos, ignoreInvisible, ignoreInactive, out);
 	}
 
@@ -1650,12 +1650,12 @@ class PlayState extends MusicBeatState
 	 * @param ignoreInactive Whether inactive characters should be ignored.
 	 * @param out If provided, fills and returns this instance instead of allocating a new one. The caller keeps ownership of `pos` (don't put it back to the pool).
 	**/
-	public dynamic function getCharactersCamPos(chars:Array<Character>, ?pos:FlxPoint = null, ?ignoreInvisible:Bool = true, ?ignoreInactive = false, ?out:CamPosData = null):CamPosData {
+	public dynamic function getCharactersCamPos(chars:Array<Character>, ?pos:FlxPoint = null, ?ignoreInvisible:Bool = true, ?ignoreInactive:Bool = true, ?out:CamPosData = null):CamPosData {
 		if (pos == null) pos = FlxPoint.get();
 		var amount:Int = 0;
 		final cpos = FlxPoint.get();
 		for(c in chars) {
-			if (c == null || (ignoreInvisible && (c.alpha <= 0 || !c.visible || !c.exists)) || (ignoreInactive && !c.active)) continue;
+			if (c == null || (!ignoreInvisible && (c.alpha <= 0 || !c.visible || !c.exists)) || (!ignoreInactive && !c.active)) continue;
 			c.__getCameraPositionInto(cpos);
 			pos.x += cpos.x;
 			pos.y += cpos.y;
