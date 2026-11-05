@@ -30,6 +30,9 @@
 		<!-- NOTE before v1.1.0 release: PLEASE DO THIS ABOVE -->
 		<define name="DISCORD_RPC" if="desktop"/>
 
+		<!-- cppia JIT host: mods can ship .cppia bytecode for hscript to import; disable with -DNO_SCRIPTABLE -->
+		<define name="scriptable" unless="NO_SCRIPTABLE || STRIPPED_COMPILE"/>
+
 		<!-- Compile with video support (hxvlc) -->
 		<define name="VIDEO_CUTSCENES" if="desktop || mobile"/>
 	</section>
