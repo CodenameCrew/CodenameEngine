@@ -47,8 +47,8 @@ jobs:
           haxelib run lime setup -alias -y -nocffi
           haxelib run lime rebuild hxcpp
           haxelib run lime rebuild tools
-          haxelib run lime rebuild linux -nocolor
-          haxelib run lime build linux -debug -DCOMPILE_EXPERIMENTAL
+          haxelib run lime rebuild linux -nocolor -debug
+          haxelib run lime build linux -nocffi -debug -DCOMPILE_EXPERIMENTAL
       # - name: Tar files
       #   run: tar -zcvf CodenameEngine.tar.gz -C export/debug/linux/bin .
       - name: Uploading artifact (entire build)
