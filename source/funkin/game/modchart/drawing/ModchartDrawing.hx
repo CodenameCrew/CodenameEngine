@@ -2,6 +2,10 @@ package funkin.game.modchart.drawing;
 
 import funkin.backend.system.Conductor;
 
+/*
+TODO:
+- Create storage of FoxInstancedModels and allow notes to have a `mesh` variable for 3d notes
+*/
 @:access(funkin.game.modchart.ModchartManager)
 @:access(funkin.game.Strum)
 @:access(flixel.FlxCamera)
@@ -10,8 +14,10 @@ class ModchartDrawing {
 	public var parent:ModchartManager;
 
 	// there may be extra queues in the array, this is to reduce allocations.
+	// Update! this may just become like a singleton, ModchartModel's taking a lot of care of the rendering work.
 	public var queues:Array<QueuedDraw> = [];
 	public var queueCount:Int = 0;
+	public var models:Array<ModchartModel> = [];
 
 	public var strumLines:FlxTypedGroup<StrumLine>;
 	var __fieldsVisible:Bool = true;
@@ -53,7 +59,7 @@ class ModchartDrawing {
 			if (mod.active[index])
 				mod.edit(queue);
 		}
-		parent.TEMPmodel.buildFromQueue(queue);
+		pushToModel(queue);
 	}
 	function drawNote(note:Note, index:Int) {
 		final strum = note.__strum;
@@ -81,10 +87,34 @@ class ModchartDrawing {
 			if (mod.active[index])
 				mod.edit(queue);
 		}
-		parent.TEMPmodel.buildFromQueue(queue);
+		queue.position.z += note.isSustainNote ? 1 : 2;
+		pushToModel(queue);
 
 		note.setPosition(ogNoteX, ogNoteY);
 		note.strumRelativePos = wasRelative;
+	}
+
+	function pushToModel(queue:QueuedDraw) {
+		var emptyModel = null;
+		var tex = ModchartModel.getTex(queue);
+		for (model in models) {
+			if (model.elemCount <= 0) {
+				emptyModel ??= model;
+				continue;
+			}
+
+			if (model.curTex == tex) {
+				model.buildFromQueue(queue);
+				return;
+			}
+		}
+
+		if (emptyModel == null) {
+			emptyModel = new ModchartModel(parent);
+			models.push(emptyModel);
+			parent.add(emptyModel);
+		}
+		emptyModel.buildFromQueue(queue);
 	}
 
 	function preDraw() {

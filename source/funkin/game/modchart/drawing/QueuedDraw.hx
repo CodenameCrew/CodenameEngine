@@ -62,6 +62,8 @@ class QueuedDraw {
 		//this.beatDistance = beatDistance;
 		this.lane = lane;
 		this.object = object;
+		note = null; // these apply on `drawNote` and `drawStrum`
+		strum = null;
 		frame = object._frame;
 
 		time = Conductor.songPosition;
@@ -74,6 +76,8 @@ class QueuedDraw {
 
 	public inline function isSustain()
 		return note != null && note.isSustainNote;
+	public inline function isTap()
+		return note != null && !note.isSustainNote;
 	public inline function isForNote()
 		return note != null;
 	public inline function isForStrum()

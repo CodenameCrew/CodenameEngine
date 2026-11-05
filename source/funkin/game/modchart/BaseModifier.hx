@@ -1,6 +1,7 @@
 package funkin.game.modchart;
 
 import funkin.game.modchart.drawing.QueuedDraw;
+import openfl.geom.Vector3D;
 
 typedef ModifierFloat = Float;
 typedef ModifierBool = Bool;
@@ -19,6 +20,9 @@ class BaseModifier {
 	}
 
 	public function edit(queue:QueuedDraw) {}
+
+	public function willEditVertex() {return false;}
+	public function editVertex(vertex:Vector3D, queue:QueuedDraw) {}
 
 	public function ready() {}
 	public function isActive(field:Int) {return false;}

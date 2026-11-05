@@ -1,11 +1,11 @@
 package funkin.game.modchart;
 
-import funkin.game.modchart.drawing.ModchartModel;
+import foxlite.FoxScene;
 import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
 import openfl.geom.Vector3D;
+import funkin.game.modchart.drawing.QueuedDraw;
 import funkin.game.modchart.drawing.ModchartDrawing;
-import foxlite.FoxScene;
 
 // for now
 class ModchartManager extends FoxScene {
@@ -25,9 +25,6 @@ class ModchartManager extends FoxScene {
 
 	static final digitRegex = ~/\d/g;
 
-	// its going to become smarter later
-	var TEMPmodel:ModchartModel;
-
 	public function new(strumLines:FlxTypedGroup<StrumLine>) {
 		foxlite.renderer.FoxRenderer.initLibs();
 		super(FlxG.width, FlxG.height);
@@ -36,13 +33,6 @@ class ModchartManager extends FoxScene {
 		for (field in strumLines.members) {
 			storage.push([]);
 			laneCount = MathUtil.maxInt(laneCount, field.members.length, field.data.keyCount);
-		}
-
-		try {
-			TEMPmodel = new ModchartModel();
-			add(TEMPmodel);
-		} catch (e) {
-			Sys.println(e.details());
 		}
 	}
 	override function destroy() {
@@ -135,6 +125,13 @@ class ModchartManager extends FoxScene {
 		} else {
 			for (mod in allMods)
 				mod.active[field] = mod.isActive(field);
+		}
+	}
+
+	public function editVertex(vertex:Vector3D, queue:QueuedDraw) {
+		for (mod in allMods) {
+			if (mod.active[queue.fieldIndex] && mod.willEditVertex())
+				mod.editVertex(vertex, queue);
 		}
 	}
 

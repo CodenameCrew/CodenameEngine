@@ -1,6 +1,5 @@
 package funkin.game.modchart.drawing;
 
-import foxlite.FoxCamera;
 import foxlite.texture.FoxTexture;
 import foxlite.mesh.buffer.FoxVertexBufferType;
 import foxlite.mesh.buffer.FoxVertexBuffer;
@@ -11,11 +10,20 @@ import foxlite.material.FoxMaterial;
 import foxlite.renderer.FoxRenderer;
 import foxlite.polyfill.TypedArray;
 import foxlite.mesh.FoxMesh;
+import foxlite.FoxCamera;
 import foxlite.FoxShader;
 import foxlite.FoxModel;
-import flixel.math.FlxAngle;
-import openfl.geom.Vector3D;
 
+import openfl.display.BitmapData;
+import openfl.geom.Vector3D;
+import flixel.math.FlxAngle;
+
+/*
+TODO:
+- Utilize `curField` to allow for StrumLine transformations and proxies
+  - Begin using instance rendering
+- Utilize `curShader` to allow for custom processing
+*/
 @:access(foxlite.FoxShader)
 class ModchartModel extends FoxModel {
 	static var vertices:Array<Vector3D> = [for (i in 0...4) new Vector3D()];
@@ -35,10 +43,15 @@ class ModchartModel extends FoxModel {
 
 	var finalColors:Array<Float> = [];
 	var finalStealth:Array<Float> = [];
-	var elemCount:Int = 0;
 
-	public function new() {
+	public var curTex:BitmapData;
+	// public var curShader:FoxShader;
+	// public var curField:StrumLine;
+	public var elemCount:Int = 0;
+
+	public function new(manager:ModchartManager) {
 		super();
+		this.manager = manager;
 		name = "ModchartModel";
 
 		modMesh = new FoxMesh();
@@ -55,10 +68,11 @@ class ModchartModel extends FoxModel {
 
 	public function buildFromQueue(queue:QueuedDraw) {
 		if (elemCount == 0) {
+			curTex = getTex(queue);
 			if (modMesh.material.textures.exists("bitmap"))
-				modMesh.material.textures.get("bitmap").take(getTex(queue));
+				modMesh.material.textures.get("bitmap").take(curTex);
 			else
-				modMesh.material.textures.set("bitmap", FoxTexture.wrap(getTex(queue)));
+				modMesh.material.textures.set("bitmap", FoxTexture.wrap(curTex));
 		}
 
 		var frame = queue.frame.frame;
@@ -101,12 +115,14 @@ class ModchartModel extends FoxModel {
 			ModchartManager.rotateVec(vert, queue.rotation.x, queue.rotation.y, queue.rotation.z);
 
 			vert.addToOutput(queue.position, vert);
-			vert.x += queue.object.width * 0.5 + origin.x - offset.x;
-			vert.y += queue.object.height * 0.5 + origin.y - offset.y;
+			vert.x += origin.x - offset.x - queue.object.width * 0.5;
+			vert.y += origin.y - offset.y - queue.object.height * 0.5;
+
+			manager.editVertex(vert, queue);
 
 			finalVertices.push((vert.x - FlxG.width * 0.5) / FlxG.height);
 			finalVertices.push(0.5 - vert.y / FlxG.height); // distribute division and negate
-			finalVertices.push(vert.z / FlxG.height);
+			finalVertices.push(vert.z / FlxG.width);
 
 			finalColors.push(queue.color.redMultiplier);
 			finalColors.push(queue.color.greenMultiplier);
@@ -142,7 +158,7 @@ class ModchartModel extends FoxModel {
 	}
 
 	override function renderMesh(mesh:FoxMesh, shader:FoxShader) {
-		if (!modMesh.material.textures.exists("bitmap"))
+		if (elemCount <= 0 || !modMesh.material.textures.exists("bitmap"))
 			return;
 
 		if (lastShader == null || shader != lastShader) {
@@ -165,6 +181,9 @@ class ModchartModel extends FoxModel {
 		elemCount = 0;
 	}
 	override function draw(cam:FoxCamera) {
+		if (elemCount <= 0)
+			return;
+
 		modMesh.calculateBounds(finalVertices);
 		cacheBounds.copyFrom(modMesh.bounds);
 		super.draw(cam);
@@ -172,7 +191,7 @@ class ModchartModel extends FoxModel {
 
 
 	// similar to FoxFlxSprite.getSpriteTexture()
-	inline function getTex(queue:QueuedDraw) {
+	public static inline function getTex(queue:QueuedDraw) {
 		return queue.frame.parent?.bitmap ?? queue.object.pixels;
 	}
 
@@ -180,9 +199,9 @@ class ModchartModel extends FoxModel {
 	function setMeshArrays() {
 		var idxBuffer:FoxVertexBuffer = modMesh.buffers[FoxVertexBufferType.INDICES];
 		if (idxBuffer == null)
-			modMesh.buffers[FoxVertexBufferType.INDICES] = idxBuffer = new FoxIndexBuffer(elemCount, 1);
+			modMesh.buffers[FoxVertexBufferType.INDICES] = idxBuffer = new FoxIndexBuffer(finalIndices.length, 1);
 		idxBuffer.usage = modMesh.bufferUsage;
-		idxBuffer.count = elemCount;
+		idxBuffer.count = finalIndices.length;
 		modMesh.setIndexBuffer(finalIndices);
 
 		checkBufferArr(FoxVertexBufferType.VERTICES, 3, finalVertices);

@@ -16,6 +16,8 @@ class Confusion extends BaseModifier {
 	}
 
 	override function edit(queue:QueuedDraw) {
+		if (queue.isSustain())
+			return;
 		queue.rotation.x += queue.beat * confusionX.addBoth(queue.lane) + confusionOffsetX.addBoth(queue.lane);
 		queue.rotation.y += queue.beat * confusionY.addBoth(queue.lane) + confusionOffsetY.addBoth(queue.lane);
 		queue.rotation.z += queue.beat * confusion.addBoth(queue.lane) + confusionOffset.addBoth(queue.lane);
