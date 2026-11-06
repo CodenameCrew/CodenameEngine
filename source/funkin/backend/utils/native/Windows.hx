@@ -271,5 +271,25 @@ final class Windows {
 	{
 		return 0;
 	}
+
+	@:functionCode('
+		typedef LONG (WINAPI *RtlGetVersionFn)(PRTL_OSVERSIONINFOW);
+
+		HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
+		if (!ntdll) return 0;
+
+		RtlGetVersionFn fn = (RtlGetVersionFn)(void*)GetProcAddress(ntdll, "RtlGetVersion");
+		if (!fn) return 0;
+
+		RTL_OSVERSIONINFOW info = {0};
+		info.dwOSVersionInfoSize = sizeof(info);
+		if (fn(&info) != 0) return 0;
+
+		return (int)info.dwBuildNumber;
+	')
+	public static function getBuildNumber():Int
+	{
+		return 0;
+	}
 }
 #end

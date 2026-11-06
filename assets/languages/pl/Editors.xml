@@ -381,7 +381,12 @@
 					<str id="moveExtraUp">Rusz Mocniej w Górę</str>
 					<str id="moveExtraDown">Rusz Mocniej w Dół</str>
 					<str id="moveExtraRight">Rusz Mocniej w Prawo</str>
-					<str id="dragOffsetsMouse">Ruszaj Domiary Myszą?</str>
+
+					<str id="dragOffsetsMouse">Ruszanie postaci zmienia?</str>
+					<str id="offset">Domiary</str>
+					<str id="position">Pozycje</str>
+					<str id="none">Nic</str>
+
 					<str id="clearOffsets">Wyczyść Domiary</str>
 				</group>
 

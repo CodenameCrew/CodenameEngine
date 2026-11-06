@@ -186,7 +186,6 @@ class GameOverSubstate extends MusicBeatSubstate
 			if (Charter.instance != null) Charter.instance.__clearStatics();
 
 			if (FlxG.sound.music != null) FlxG.sound.music.stop();
-			FlxG.sound.music = null;
 
 			FlxG.switchState(PlayState.isStoryMode ? new StoryMenuState() : new FreeplayState());
 		}

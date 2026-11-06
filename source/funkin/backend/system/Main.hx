@@ -74,6 +74,7 @@ class Main extends Sprite
 		funkin.backend.utils.NativeAPI.registerAsDPICompatible();
 		funkin.backend.system.CommandLineHandler.parseCommandLine(Sys.args());
 		funkin.backend.system.Main.fixWorkingDirectory();
+		funkin.backend.system.Logs.init();
 		#end
 	}
 
@@ -129,8 +130,6 @@ class Main extends Sprite
 		#if UPDATE_CHECKING
 		funkin.backend.system.updating.UpdateUtil.init();
 		#end
-		ShaderResizeFix.init();
-		Logs.init();
 		Paths.init();
 
 		hscript.Interp.importRedirects = funkin.backend.scripting.Script.getDefaultImportRedirects();

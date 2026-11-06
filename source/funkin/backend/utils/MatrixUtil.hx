@@ -72,11 +72,6 @@ final class MatrixUtil {
 				x += camera.scroll.x;
 				y += camera.scroll.y;
 
-				if(isFunkinSprite) {
-					var ratio = 1 - FlxMath.lerp(1 / camera.zoom, 1, funkinSprite.zoomFactor);
-					x += camera.width / 2 * ratio;
-					y += camera.height / 2 * ratio;
-				}
 			}
 			point.set(x, y);
 		}

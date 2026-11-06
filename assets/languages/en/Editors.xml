@@ -396,7 +396,12 @@
 					<str id="moveExtraUp">Move Extra Up</str>
 					<str id="moveExtraDown">Move Extra Down</str>
 					<str id="moveExtraRight">Move Extra Right</str>
-					<str id="dragOffsetsMouse">Drag Offsets With Mouse?</str>
+
+					<str id="dragOffsetsMouse">Dragging Character Changes?</str>
+					<str id="offset">Offset</str>
+					<str id="position">Position</str>
+					<str id="none">None</str>
+
 					<str id="clearOffsets">Clear Offsets</str>
 				</group>
 
@@ -414,6 +419,7 @@
 					<str id="charHitbox">Character Hitbox?</str>
 					<str id="charCam">Character Camera?</str>
 					<str id="axis">XY Axis?</str>
+					<str id="posGuide">Stage Pos. Guide</str>
 				</group>
 
 				<str id="topBar.animation">Animation</str>

@@ -310,7 +310,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 			lastHit = Conductor.songPosition;
 	}
 
-	public inline function getCameraPosition() {
+	@:noCompletion public inline function __getCameraPositionInto(out:FlxPoint):FlxPoint {
 		var midpoint:FlxPoint = centeredCamera ? getMidpoint() : getPosition();
 		var event = EventManager.get(PointEvent).recycle(
 			midpoint.x + (isPlayer ? -100 : 150) + globalOffset.x + cameraOffset.x,
@@ -318,7 +318,11 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		scripts.event("onGetCamPos", event);
 
 		midpoint.put();
-		return new FlxPoint(event.x, event.y);
+		return out.set(event.x, event.y);
+	}
+
+	public inline function getCameraPosition() {
+		return __getCameraPositionInto(new FlxPoint());
 	}
 
 	public override function destroy() {

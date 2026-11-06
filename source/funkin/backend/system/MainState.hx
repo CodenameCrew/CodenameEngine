@@ -147,15 +147,15 @@ class MainState extends FlxState {
 		if (Framerate.isLoaded)
 			Framerate.instance.visible = Framerate.memoryCounter.visible = Framerate.codenameBuildField.visible = Framerate.fpsCounter.visible = true;
 
-		WindowUtils.setResolution();
-		WindowUtils.resetIcon();
+		Main.refreshAssets();
 		TranslationUtil.findAllLanguages();
 		TranslationUtil.setLanguage(Flags.DISABLE_LANGUAGES ? Flags.DEFAULT_LANGUAGE : null);
-		ModsFolder.onModSwitch.dispatch(ModsFolder.currentModFolder); // Loads global.hx
 		MusicBeatTransition.script = Flags.DEFAULT_TRANSITION_SCRIPT;
+		WindowUtils.setResolution();
+		WindowUtils.resetIcon();
 		WindowUtils.resetAffixes(false);
 		WindowUtils.setWindow();
-		Main.refreshAssets();
+		ModsFolder.onModSwitch.dispatch(ModsFolder.currentModFolder); // Loads global.hx
 		DiscordUtil.init();
 		EventsData.reloadEvents();
 		ControlsUtil.loadCustomControls();
@@ -165,7 +165,12 @@ class MainState extends FlxState {
 			Framerate.instance.reload();
 
 		#if sys
-		CoolUtil.safeAddAttributes('./.temp/', NativeAPI.FileAttribute.HIDDEN);
+		try {
+			CoolUtil.safeAddAttributes('./.temp/', NativeAPI.FileAttribute.HIDDEN);
+		}
+		catch (e) {
+			Logs.warn("Unable to make the .temp directory... is the game unpacked?");
+		}
 		#end
 
 		for (lib in ModsFolder.getLoadedModsLibs()) {
