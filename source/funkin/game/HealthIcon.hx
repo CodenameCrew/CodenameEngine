@@ -380,7 +380,9 @@ class HealthIcon extends FunkinSprite
 
 			if (_iconAnimData.isValid && curAnimState != localAnimState) {
 				var event = EventManager.get(HealthIconChangeEvent).recycle(localAnimState, this);
+				#if GLOBAL_SCRIPT
 				funkin.backend.scripting.GlobalScript.event("onHealthIconAnimChange", event);
+				#end
 				if (!event.cancelled) {
 					if (this.animated) {
 						var transAnim = 'from-$curAnimState-to-${event.anim}';
