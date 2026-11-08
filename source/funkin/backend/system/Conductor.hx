@@ -377,7 +377,7 @@ final class Conductor
 		else {
 			var state = FlxG.state;
 			while (state != null) {
-				if (state is IBeatCancellableReceiver && (cast state:IBeatCancellableReceiver).cancelConductorUpdate) return;
+				if (state is IBeatCancellableReceiver && (cast(state, IBeatCancellableReceiver)).cancelConductorUpdate) return;
 				state = state.subState;
 			}
 		}
