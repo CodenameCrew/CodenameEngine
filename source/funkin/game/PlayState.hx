@@ -1551,16 +1551,8 @@ class PlayState extends MusicBeatState
 		if (generatedMusic)
 			moveCamera();
 
-		if (camZooming) {
-			if (useCamZoomMult) {
-				camZoomingMult = lerp(camZoomingMult, defaultZoom, camZoomLerp) - defaultZoom;
-				FlxG.camera.zoomMultiplier = camZoomingMult * camGameZoomMult + defaultZoom;
-				camHUD.zoomMultiplier = camZoomingMult * camHUDZoomMult + defaultZoom;
-				camZoomingMult += defaultZoom;
-			}
-			FlxG.camera.zoom = lerp(FlxG.camera.zoom, defaultCamZoom, camGameZoomLerp);
-			camHUD.zoom = lerp(camHUD.zoom, defaultHudZoom, camHUDZoomLerp);
-		}
+		if (camZooming) 
+			updateCamZoom();
 
 		// RESET = Quick Game Over Screen
 		if (startedCountdown && controls.RESET)
@@ -1589,6 +1581,18 @@ class PlayState extends MusicBeatState
 		if (!e.cancelled)
 			super.draw();
 		scripts.event("postDraw", e);
+	}
+
+	@:dox(hide)
+	private inline function updateCamZoom() {
+		if (useCamZoomMult) {
+			camZoomingMult = lerp(camZoomingMult, defaultZoom, camZoomLerp) - defaultZoom;
+			FlxG.camera.zoomMultiplier = camZoomingMult * camGameZoomMult + defaultZoom;
+			camHUD.zoomMultiplier = camZoomingMult * camHUDZoomMult + defaultZoom;
+			camZoomingMult += defaultZoom;
+		}
+		FlxG.camera.zoom = lerp(FlxG.camera.zoom, defaultCamZoom, camGameZoomLerp);
+		camHUD.zoom = lerp(camHUD.zoom, defaultHudZoom, camHUDZoomLerp);
 	}
 
 	public function doBopZoom()

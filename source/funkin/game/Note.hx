@@ -289,7 +289,7 @@ class Note extends FlxSprite
 	var __lastX:Float = 0;
 
 	@:noCompletion @:dox(hide) override function isOnScreen(?camera:FlxCamera):Bool {
-		var downscrollCam = (Std.isOfType(camera, HudCamera) ? cast(camera, HudCamera).downscroll : false);
+		var downscrollCam:Bool = (Std.isOfType(camera, HudCamera) ? (cast camera:HudCamera).downscroll : false);
 		if (updateFlipY) {
 			flipY = (isSustainNote && flipSustain) && (downscrollCam != (lastScrollSpeed < 0));
 		}
