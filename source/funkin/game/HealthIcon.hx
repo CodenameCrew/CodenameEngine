@@ -106,6 +106,7 @@ class HealthIcon extends FunkinSprite
 		this.isPlayer = isPlayer;
 		setIcon(char != null ? char : Flags.DEFAULT_CHARACTER);
 
+		useRenderTexture = true;
 		scrollFactor.set();
 	}
 
