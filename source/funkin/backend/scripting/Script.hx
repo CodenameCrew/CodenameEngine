@@ -144,6 +144,7 @@ class Script extends FlxBasic implements IFlxDestroyable
 			"ThreadUtil" => funkin.backend.utils.ThreadUtil,
 			"MemoryUtil" => funkin.backend.utils.MemoryUtil,
 			"BitmapUtil" => funkin.backend.utils.BitmapUtil,
+			"WindowUtils" => funkin.backend.utils.WindowUtils,
 
 			#if TRANSLATIONS_SUPPORT
 			"TranslationUtil" => funkin.backend.utils.TranslationUtil, "translate" => funkin.backend.utils.TranslationUtil.get,
