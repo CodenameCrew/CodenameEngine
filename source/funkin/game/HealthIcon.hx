@@ -138,7 +138,9 @@ class HealthIcon extends FunkinSprite
 		var oldIconPath = 'icons/$char';
 		var newIconPath = 'icons/$char/icon';
 
-		if (!Assets.exists(Paths.image(oldIconPath)) && !Assets.exists(Paths.image(newIconPath))) {
+		var newExists = Assets.exists(Paths.image(newIconPath)) || Paths.framesExists(Paths.image(newIconPath), true, true, true);
+
+		if (!Assets.exists(Paths.image(oldIconPath)) && !newExists) {
 			char = 'face';
 			oldIconPath = 'icons/$char';
 			newIconPath = 'icons/$char/icon';
