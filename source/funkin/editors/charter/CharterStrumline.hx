@@ -131,6 +131,7 @@ class CharterStrumline extends UISprite {
 		super.update(elapsed);
 	}
 
+	static var __stupidScriptParamArray:Array<Dynamic> = [];
 	public function updateInfo() {
 		var icons = strumLine.characters != null ? strumLine.characters : [];
 
@@ -163,6 +164,12 @@ class CharterStrumline extends UISprite {
 
 			//make darker colors more visible for the highlight
 			highlightColor.brightness = Math.max(highlightColor.brightness, 0.65);
+		}
+
+		if (Charter.instance != null) {
+			__stupidScriptParamArray[0] = this;
+			__stupidScriptParamArray[1] = strumLine;
+			Charter.instance.stateScripts.call('onStrumlineUpdateInfo', __stupidScriptParamArray);
 		}
 	}
 }
