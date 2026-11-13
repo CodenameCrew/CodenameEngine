@@ -1,0 +1,170 @@
+package funkin.backend.system.macros;
+
+#if macro
+import haxe.crypto.Md5;
+import haxe.io.Path;
+import haxe.macro.Compiler;
+import haxe.macro.Context;
+import sys.FileSystem;
+import sys.io.File;
+
+using StringTools;
+
+// Init macro for mod .cppia builds:
+//   --macro funkin.backend.system.macros.CppiaScriptMacro.build('source')
+// .hx files without a top-level type declaration are treated as class bodies: their
+// import/using/@metadata header gets hoisted and the rest is wrapped into a generated
+// path-derived class name, so no DummyMain entry is needed either. Must stay an init
+// macro (plain `--macro` call) because it registers class paths. Error positions inside
+// wrapped files are shifted by exactly +1 (the inserted class-header line).
+class CppiaScriptMacro
+{
+	static var genDir:String;
+
+	public static function build(path:String):Void
+	{
+		var abs = FileSystem.absolutePath(path);
+		if (!FileSystem.exists(abs))
+			Context.error('[CppiaScriptMacro] path does not exist: $abs', Context.currentPos());
+
+		var isDir = FileSystem.isDirectory(abs);
+		var root = isDir ? abs : Path.directory(abs);
+		genDir = Path.join([tempDir(), "cppia-gen", Md5.make(haxe.io.Bytes.ofString(Sys.getCwd().toLowerCase())).toHex()]);
+		mkdirRecursive(genDir);
+		cleanGenDir();
+
+		var pending:Array<String> = [];
+		var files = isDir ? collectHx(abs) : [abs];
+		for (file in files)
+			handleFile(root, file, pending);
+		Compiler.addClassPath(root);
+		Compiler.addClassPath(genDir);
+		for (name in pending)
+			Context.getType(name);
+	}
+
+	static function tempDir():String
+	{
+		for (key in ["TEMP", "TMP", "TMPDIR"]) {
+			var v = Sys.getEnv(key);
+			if (v != null && v.length > 0) return v;
+		}
+		return ".cppia-gen";
+	}
+
+	static function cleanGenDir():Void
+	{
+		// stale wrappers from earlier runs must never shadow real classes
+		for (f in FileSystem.readDirectory(genDir))
+			if (f.endsWith(".hx"))
+				FileSystem.deleteFile(Path.join([genDir, f]));
+	}
+
+	static function collectHx(dir:String):Array<String>
+	{
+		var out = [];
+		for (f in FileSystem.readDirectory(dir)) {
+			if (f.startsWith(".")) continue;
+			var full = Path.join([dir, f]);
+			if (FileSystem.isDirectory(full))
+				out = out.concat(collectHx(full));
+			else if (f.toLowerCase().endsWith(".hx"))
+				out.push(full);
+		}
+		out.sort(Reflect.compare);
+		return out;
+	}
+
+	static function handleFile(root:String, file:String, pending:Array<String>):Void
+	{
+		var rel = file.substr(root.length + 1);
+		var classPath = rel.substr(0, rel.length - 3).split("\\").join("/").split("/");
+		var className = classPath.pop();
+		var content = File.getContent(file);
+		if (content.charCodeAt(0) == 0xFEFF) content = content.substr(1);
+
+		if (declaresType(content)) {
+			pending.push(classPath.length > 0 ? classPath.join(".") : className);
+			return;
+		}
+
+		if (!~/^[A-Za-z_]\w*$/.match(className))
+			Context.error('[CppiaScriptMacro] "$file" declares no type, so its file name must be a valid class name', Context.currentPos());
+
+		File.saveContent(Path.join([genDir, '$className.hx']), wrap(className, content, file));
+		pending.push(className);
+	}
+
+	static var TYPE_DECL = ~/^(extern\s+|private\s+|final\s+|macro\s+|public\s+|abstract\s+)*(class|interface|enum|typedef|abstract)\b/;
+
+	static function declaresType(content:String):Bool
+	{
+		for (line in content.split("\n")) {
+			var t = line.trim();
+			if (t.length == 0 || t.startsWith("//") || t.startsWith("/*") || t.startsWith("*"))
+				continue;
+			if (t.startsWith("import ") || t.startsWith("using ") || t.startsWith("package ") || t.charAt(0) == "@")
+				continue;
+			return TYPE_DECL.match(t);
+		}
+		return false;
+	}
+
+	static function wrap(name:String, content:String, src:String):String
+	{
+		var header = new StringBuf();
+		var meta = new StringBuf();
+		var body = new StringBuf();
+		var headerDone = false;
+		var inBlock = false;
+		for (line in content.split("\n")) {
+			if (headerDone) {
+				body.add(line); body.add("\n");
+				continue;
+			}
+			var t = line.trim();
+			if (inBlock) {
+				header.add(line); header.add("\n");
+				if (t.indexOf("*/") >= 0) inBlock = false;
+			} else if (t.length == 0 || t.startsWith("//")) {
+				header.add(line); header.add("\n");
+			} else if (t.startsWith("/*")) {
+				header.add(line); header.add("\n");
+				if (t.indexOf("*/") < 0) inBlock = true;
+			} else if (t.startsWith("import ") || t.startsWith("using ")) {
+				header.add(line); header.add("\n");
+			} else if (t.charAt(0) == "@") {
+				meta.add(line); meta.add("\n");
+			} else {
+				headerDone = true;
+				body.add(line); body.add("\n");
+			}
+		}
+
+		var buf = new StringBuf();
+		buf.add(header.toString());
+		buf.add(meta.toString());
+		// CppiaMacro adds __parent forwarders when the fragment carries @:scriptParent
+		// single header line so source line N still lands on generated line N + 1
+		buf.add('@:keep @:build(funkin.backend.system.macros.CppiaMacro.build()) class $name { // generated by CppiaScriptMacro from $src (error on line N = source line N-1)');
+		buf.add("\n");
+		buf.add(body.toString());
+		buf.add("}\n");
+		return buf.toString();
+	}
+
+	static function mkdirRecursive(dir:String):Void
+	{
+		var cur = "";
+		for (part in dir.split("\\").join("/").split("/")) {
+			if (part.length == 0) {
+				if (cur.length == 0) cur = "/";
+				continue;
+			}
+			cur = cur.length == 0 ? part : (cur.endsWith("/") ? cur + part : '$cur/$part');
+			if (part.length == 2 && part.charAt(1) == ":") continue;
+			if (!FileSystem.exists(cur)) FileSystem.createDirectory(cur);
+		}
+	}
+}
+#end
