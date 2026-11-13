@@ -397,11 +397,6 @@
 					<str id="moveExtraDown">Move Extra Down</str>
 					<str id="moveExtraRight">Move Extra Right</str>
 
-					<str id="dragOffsetsMouse">Dragging Character Changes?</str>
-					<str id="offset">Offset</str>
-					<str id="position">Position</str>
-					<str id="none">None</str>
-
 					<str id="clearOffsets">Clear Offsets</str>
 				</group>
 
@@ -441,6 +436,13 @@
 					<str id="antialiased">Antialiased?</str>
 					<str id="testCharAs">Test Character As...</str>
 					<str id="charDesign">Char Designed As...</str>
+				</group>
+
+				<group name="CharacterDragModeWindow" prefix="dragMode.">
+					<str id="currentDrag">Current Dragging Mode</str>
+					<str id="offset">Offset</str>
+					<str id="position">Position</str>
+					<str id="none">None</str>
 				</group>
 
 				<group name="CharacterAnimButton" prefix="characterAnim.">

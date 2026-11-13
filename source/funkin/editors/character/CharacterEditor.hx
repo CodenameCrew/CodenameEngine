@@ -41,8 +41,6 @@ class CharacterEditor extends UIState {
 	@:noCompletion private var stageIndex:Int = 3;
 
 	public var topMenuSpr:UITopMenu;
-	// public var dragOffsetsCheckbox:UICheckbox;
-	// public var lockCameraCheckbox:UICheckbox;
 	
 	public var axisGizmo:AxisGizmo;
 	public var characterGizmo:CharacterGizmos;
@@ -52,6 +50,7 @@ class CharacterEditor extends UIState {
 
 	public var characterPropertiesWindow:CharacterPropertiesWindow;
 	public var characterAnimsWindow:CharacterAnimsWindow;
+	public var dragModeWindow:CharacterDragModeWindow;
 
 	public var charCamera:FlxCamera;
 	public var gizmosCamera:FlxCamera;
@@ -197,11 +196,6 @@ class CharacterEditor extends UIState {
 					},
 					null,
 					{
-						label: translate("offset.dragOffsetsMouse"),
-						childs: updateDragChecks(),
-						onCreate: (_) -> {dragTypeMenu = _;}
-					},
-					{
 						label: translate("offset.clearOffsets"),
 						keybind: [CONTROL, R],
 						onSelect: _offsets_clear,
@@ -327,6 +321,9 @@ class CharacterEditor extends UIState {
 		characterPropertiesWindow = new CharacterPropertiesWindow((FlxG.width-(440)-16) - (((500-16)-(440))/2), 23+12+10, character);
 		uiGroup.add(characterPropertiesWindow);
 
+		dragModeWindow = new CharacterDragModeWindow(16, FlxG.height - 60 - 5);
+		uiGroup.add(dragModeWindow);
+
 		topMenuSpr = new UITopMenu(topMenu);
 		uiGroup.add(topMenuSpr);
 
@@ -439,31 +436,6 @@ class CharacterEditor extends UIState {
 		super.update(elapsed);
 	}
 
-	function updateDragChecks() {
-		var mouseOffsetOptions:Array<UIContextMenuOption> = [
-		{
-			label: translate("offset.offset"),
-			onSelect: (_) -> {changeOffsetDragType(OFFSET);},
-			icon: Options.characterDragging == OFFSET ? 1 : 0
-		},
-		{
-			label: translate("offset.position"),
-			onSelect: (_) -> {changeOffsetDragType(POSITION);},
-			icon: Options.characterDragging == POSITION ? 1 : 0
-		},
-		{
-			label: translate("offset.none"),
-			onSelect: (_) -> {changeOffsetDragType(NONE);},
-			icon: Options.characterDragging == NONE ? 1 : 0
-		}];
-
-
-		if(dragTypeMenu != null)
-			dragTypeMenu.option.childs = mouseOffsetOptions;
-
-		return mouseOffsetOptions;
-	}
-
 	inline function handleMouseOffsets() {
 		if (draggingCharacter) {
 			cameraHoverDummy.cursor = DRAG;
@@ -504,6 +476,7 @@ class CharacterEditor extends UIState {
 
 		characterPropertiesWindow.x = (FlxG.width-(440)-16) - (((500-16)-(440))/2);
 		characterAnimsWindow.x = (FlxG.width-(500-16)-16);
+		dragModeWindow.y = (FlxG.height - 32 - 12);
 
 		characterAnimsWindow.bHeight = Std.int(FlxG.height-(characterPropertiesWindow.y+characterPropertiesWindow.bHeight)-(32));
 	}
@@ -897,9 +870,10 @@ class CharacterEditor extends UIState {
 			stage.applyCharStuff(character, stagePosition, 0);
 	}
 
-	function changeOffsetDragType(type){
+	public function changeOffsetDragType(type:CharacterDragMode){
 		Options.characterDragging = type;
-		updateDragChecks();
+
+		dragModeWindow.refreshText();
 	}
 
 	public function changeCharacterIsPlayer(player:Bool) @:privateAccess {
