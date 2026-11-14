@@ -37,7 +37,6 @@
 
 		<!-- Build hxcpp -->
 		<cmd inLib="hxcpp" dir="tools/hxcpp" cmd="haxe compile.hxml" />
-		<cmd inLib="lime" cmd="haxelib run lime rebuild hxcpp"/>
 	</if>
 
 	<!-- Lime Building -->
