@@ -905,6 +905,14 @@ class PlayState extends MusicBeatState
 			FlxG.camera.focusOn(camFollow.getPosition(FlxPoint.weak()));
 		}
 
+		for(event in SONG.events){
+			if(event.name == "Character Change"){
+				if(!event.params[3] || Character.cachedFrames.exists(event.params[2])) continue;
+
+				Character.cacheCharacter(event.params[2]);
+			}
+		}
+
 		smoothTransitionData = null;
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
@@ -1150,6 +1158,8 @@ class PlayState extends MusicBeatState
 		}
 
 		cameraFocusOffset.put();
+
+		Character.cachedFrames.clear();
 
 		scripts = FlxDestroyUtil.destroy(scripts);
 
@@ -1813,6 +1823,25 @@ class PlayState extends MusicBeatState
 				else // Not Reversed
 					camera.flash(event.params[1], (Conductor.stepCrochet / 1000) * event.params[2], null, true);
 			case "BPM Change": // automatically handled by conductor
+			case "Character Change":
+				var oldChar:Character = strumLines.members[event.params[0]].characters[event.params[1]];
+				var newChar:Character = new Character(oldChar.x + event.params[4], oldChar.y + event.params[5], event.params[2], oldChar.isPlayer);
+				if(event.params[6]) newChar.shader = oldChar.shader;
+
+				insert(members.indexOf(oldChar), newChar); remove(oldChar);
+				strumLines.members[event.params[0]].characters[event.params[1]] = newChar;
+
+				//refresh icons
+				switch(event.params[0]){
+					case 0:
+						iconP2.setIcon(dad.getIcon());
+					case 1:
+						iconP1.setIcon(bf.getIcon());
+				}
+				var leftColor:Int = dad != null && dad.iconColor != null && Options.colorHealthBar ? dad.iconColor : (opponentMode ? 0xFF66FF33 : 0xFFFF0000);
+				var rightColor:Int = boyfriend != null && boyfriend.iconColor != null && Options.colorHealthBar ? boyfriend.iconColor : (opponentMode ? 0xFFFF0000 : 0xFF66FF33); // switch the colors
+				healthBar.createFilledBar(leftColor, rightColor);
+				healthBar.updateBar();
 			case "Scroll Speed Change":
 				var tween = eventsTween.get("scrollSpeedTween");
 				if (tween != null) tween.cancel();
