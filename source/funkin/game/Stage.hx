@@ -353,7 +353,7 @@ class Stage extends FlxBasic implements IBeatReceiver {
 	 * @param id The ID of the character
 	**/
 	public function applyCharStuff(char:Character, posName:String, id:Float = 0) {
-		var charPos = characterPoses[char.curCharacter] != null ? characterPoses[char.curCharacter] : characterPoses[posName];
+		var charPos = characterPoses[posName] != null ? characterPoses[posName] : characterPoses[char.curCharacter];
 		if (charPos != null) {
 			charPos.prepareCharacter(char, id);
 			state.insert(state.members.indexOf(charPos), char);
