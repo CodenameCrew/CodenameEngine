@@ -581,11 +581,11 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 		var lastIndex = scripts.scripts.indexOf(this.script);
 		if(lastIndex >= 0) {
-			if(script == null) // last != null && new == null
+			if(script == null || script is DummyScript) // last != null && new is unusable
 				scripts.scripts.splice(lastIndex, 1);
 			else // last != null && new != null
 				scripts.scripts[lastIndex] = script;
-		} else if(script != null) // last == null
+		} else if(script != null && !(script is DummyScript)) // last == null, DummyScripts are never dispatched
 			scripts.insert(0, script);
 
 		return this.script = script;
