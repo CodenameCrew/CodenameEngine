@@ -203,7 +203,7 @@ class CharterEventScreenNew extends MusicBeatSubstate {
 				}
 			}
 		} else {
-			eventName.text = "No event";
+			eventName.text = TU.get('charter.noEvent', "No events");
 			curEvent = -1;
 
 			bWidth = eventName.x + eventName.width+16;
