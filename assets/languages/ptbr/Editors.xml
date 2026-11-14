@@ -44,6 +44,8 @@
 	<group name="ChartEditor">
 		<group name="CharterSelection" prefix="charterSelection.">
 			<str id="desc">Escolha uma música pra modificar as charts.</str>
+			<str id="acceptFolder">Aperte ACEITAR para editar essa pasta.</str>
+			<str id="desc-folder">Escolha uma música para editar em {0}</str>
 			<str id="acceptSong">Aperte ACEITAR para escolher uma dificuldade pra editar.</str>
 			<str id="acceptVariation">Aperte ACEITAR para escolher uma variação pra editar.</str>
 			<str id="acceptDifficulty">Aperte ACEITAR para editar a chart da dificuldade selecionada.</str>
@@ -394,7 +396,7 @@
 					<str id="moveExtraUp">Mover pra Cima (Extra)</str>
 					<str id="moveExtraDown">Mover pra Baixo (Extra)</str>
 					<str id="moveExtraRight">Mover pra Direita (Extra)</str>
-					<str id="dragOffsetsMouse">Arrastar Offsets com Mouse?</str>
+					
 					<str id="clearOffsets">Limpar Offsets</str>
 				</group>
 
@@ -412,6 +414,7 @@
 					<str id="charHitbox">Hitbox do Personagem?</str>
 					<str id="charCam">Câmera do Personagem?</str>
 					<str id="axis">Eixos XY?</str>
+					<str id="posGuide">Guia de Pos. do Fundo</str>
 				</group>
 
 				<str id="topBar.animation">Animação</str>
@@ -428,11 +431,18 @@
 					<str id="scale">Escala</str>
 					<str id="editInfo">Editar Info.</str>
 					<str id="editSprite">Editar Sprite</str>
-					<str id="camPosition">Posição da CÂmera (X, Y)</str>
+					<str id="camPosition">Posição da Câmera (X, Y)</str>
 					<str id="charFlipped">Espelhado?</str>
 					<str id="antialiased">Antialisado?</str>
 					<str id="testCharAs">Testar Como...</str>
 					<str id="charDesign">Feito Como...</str>
+				</group>
+
+				<group name="CharacterDragModeWindow" prefix="dragMode.">
+					<str id="currentDrag">Modo de Arrasto Atual</str>
+					<str id="offset">Deslocamento</str>
+					<str id="position">Posição</str>
+					<str id="none">Nenhum</str>
 				</group>
 
 				<group name="CharacterAnimButton" prefix="characterAnim.">
@@ -471,6 +481,8 @@
 			<str id="newTypeface">Nova Tipográfica</str>
 			<str id="newTypefaceDesc">Aperte ACEITAR para criar uma nova tipográfica.</str>
 			<str id="desc">Escolha uma tipográfica para editar</str>
+			<str id="desc-folder">Escolha uma tipográfica para editar em {0}</str>
+			<str id="acceptFolder">Aperte ACEITAR para editar essa pasta.</str>
 
 			<group name="Warnings" prefix="warnings.">
 				<str id="notImplemented-title">Nova Tipográfica: Função Não Implementada!</str>
@@ -531,6 +543,8 @@
 			<str id="acceptStage">Aperte ACEITAR para editar esse fundo.</str>
 			<str id="newStage">Novo Fundo</str>
 			<str id="acceptNewStage">Aperte ACEITAR para criar um novo fundo.</str>
+			<str id="acceptFolder">Aperte ACEITAR para editar essa pasta.</str>
+			<str id="desc-folder">Escolha um fundo para editar em {0}</str>
 		</group>
 
 		<group name="StageEditor" prefix="stageEditor.">
@@ -643,11 +657,6 @@
 
 			<str id="blendMode">Mesclagem</str>
 			<group name="BlendModeDropdown" prefix="blendMode.">
-				<!--
-					90% of these dont show up yet !!
-					but just future proofing so we don't
-					have to add them later
-				-->
 				<str id="none">NENHUM</str>
 				<str id="add">ADIÇÃO</str>
 				<str id="alpha">ALFA</str>
@@ -714,7 +723,7 @@
 	<!-- PlayTesting allows color in the description by doing *hello* -->
 	<!-- SaveWarning doesn't allow color in the description -->
 	<group name="PlayTesting" prefix="playtesting.">
-		<str id="chartPlaytesting" notrim="true"> (Fazendo Playtest da Chart)</str>
+		<str id="chartPlaytesting" notrim="true"> (Playtest da Chart)</str>
 		<str id="exitGame">Sair Do Jogo</str>
 		<str id="exitToMenu">Sair Pro Menu</str>
 		<str id="saveAndExitGame">Salvar &amp; Sair Do Jogo</str>

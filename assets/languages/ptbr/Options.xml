@@ -60,13 +60,27 @@
 			<str id="devMenus">Menus de Desenvolvedor</str>
 			<str id="openConsole">Abrir Console</str>
 			<str id="reloadState">Recarregar State</str>
+			<str id="openInspector">Abrir Inspetor</str>
 		</group>
 	</group>
 
 	<group name="AppearanceOptions" prefix="AppearanceOptions.">
+		<str id="framePacer-name">"Pacer"</str>
+		<str id="framePacer-desc">Tela combina a taxa de quadros com a taxa de atualização do seu monitor e permite sincronização de scanlines e alinhamento de envios; a opção Framerate fica desativada enquanto isso está ativo. Adaptivo ativa eles só quando a taxa de quadros é igual à taxa de atualizção ou uma divisão inteira dela (1/2, 1/4...). Desligado restora o comportamento anterior. Ilimitado remove o "cap" da taxa de quadros por inteiro. Sincronizar custa uns 0.3 ms de latência de input: em tela cheia a tear line fica fixada no canto da tela, fora de vista, e em janela cada frame é exibido invés de engasgar.</str>
+		<str id="framePacer-off">Desligado</str>
+		<str id="framePacer-adaptive">Adaptivo</str>
+		<str id="framePacer-followDisplay">Tela</str>
+		<str id="framePacer-unlimited">Ilimitado</str>
+
 		<str id="framerate-name">Framerate</str>
 		<str id="framerate-desc">Nem preciso explicar né?</str>
 		<str id="framerate-unlimited">Ilimiatada</str>
+
+		<str id="fpsCounter-name">Contador de FPS</str>
+		<str id="fpsCounter-desc">Se ativado, mostra a Framerate e Contador de memória na esquerda superior da tela.</str>
+
+		<str id="fpsAdvanced-name">Mais Opções</str>
+		<str>Use esse menu para alternar categorias de info. debug no contador de FPS.</str>
 
 		<str id="flashingMenu-name">Menu Piscante</str>
 		<str id="flashingMenu-desc">Se ativado, irá desativar a piscagem no menu quando seleciona uma opção no Menu Principal, e outras piscagens serão desaceleradas.</str>
@@ -76,6 +90,9 @@
 
 		<str id="week6PixelPerfect-name">Efeito "Pixel Perfect"</str>
 		<str id="week6PixelPerfect-desc">Se ativado, Week 6 ou outros fundos "pixel" haverão um efeito pixel perfect aplicado, alinhando todo pixel da tela.</str>
+
+		<str id="discordRPC-name">"Discord RPC"</str>
+		<str id="discordRPC-desc">Se desativado, Codename Engine e seus mods não serão exibidos sob o widget "Jogando".</str>
 
 		<group name="AppearanceOptionsAdvanced" prefix="Advanced.">
 			<str id="quality-name">Qualidade</str>
@@ -96,6 +113,20 @@
 			<str id="gpuOnlyBitmaps-name">Sprites na VRAM</str>
 			<str id="gpuOnlyBitmaps-desc">Se ativado, vai guardar bitmaps só na GPU, liberando um MONTE de memória (EXPERIMENTAL). Desligar isso irá consuimir mais memória, especialmente em sprites maiores. Se tiver incerteza, deixe ligado.</str>
 		</group>
+
+		<group name="AppearanceOptionsFramerate" prefix="Advanced.">
+			<str id="fpsCounterConductor-name">Mostrar Info. do Condutor</str>
+			<str id="fpsCounterConductor-desc">Se ativado, mostrará informações relacionadas ao condutor no menu debug do Contador de FPS.</str>
+
+			<str id="fpsCounterFlixel-name">Mostrar Info. do Flixel</str>
+			<str id="fpsCounterFlixel-desc">Se ativado, mostrará informações relacionadas ao Flixel no menu debug do Contador de FPS.</str>
+		
+			<str id="fpsCounterSystem-name">Mostrar Info. do Sistema</str>
+			<str id="fpsCounterSystem-desc">Se ativado, mostrará informações relacionadas ao seu sistema no menu debug do Contador de FPS.</str>
+		
+			<str id="fpsCounterAssets-name">Mostrar Info. da Assets Tree</str>
+			<str id="fpsCounterAssets-desc">Se ativado, mostrará informações relacionadas a assets tree no menu debug do Contador de FPS.</str>
+		</group>
 	</group>
 
 	<group name="GameplayOptions" prefix="GameplayOptions.">
@@ -104,6 +135,9 @@
 
 		<str id="ghostTapping-name">Toque Fantasma</str>
 		<str id="ghostTapping-desc">Se desligado, tentar acertar qualquer pista que não tem nota irá resultar em erros.</str>
+
+		<str id="centeredFields-name">Pistas Centralizadas</str>
+		<str id="centeredFields-desc">Se ativado, apenas as pistas jogáveis estarão visíveis e serão alinhadas horizontalmente à sua tela. (Também chamado de "Middlescroll")</str>
 
 		<str id="naughtyness-name">Indencência</str>
 		<str id="naughtyness-desc">If desligado, vai censurar as cutscenes da Week 7 ou outros.</str>
@@ -130,7 +164,7 @@
 			<str id="streamedMusic-name">Streaming de Música</str>
 			<str id="streamedMusic-desc">Se ativado, apenas músicas tocaram por stream, coisa essa que também libera BASTANTE memória custando uso maior de cpu se maior quantia de áudio for "streamado" de uma vez (EXPERIMENTAL). Desligar isso consumirá um monte de memória, especialmente em músicas maiores. Se houver incerteza, só deixa ativado.</str>
 
-			<str id="streamedVocals-name">Streamed Vocals</str>
+			<str id="streamedVocals-name">Streaming das Vozes</str>
 			<str id="streamedVocals-desc">Se ativado, vozes também serão "streamadas" se Streaming de Música tiver ativado, impactará performance se a música usa muitas vocais (EXPERIMENTAL). Se houver incerteza, só deixa desativado.</str>
 		</group>
 	</group>
@@ -207,7 +241,13 @@
 		<str id="songOffsetAffectEditors-name">Atraso no Charter</str>
 		<str id="songOffsetAffectEditors-desc">Se ativado, isso habilitará a opção Atraso Musical no Editor de Chart também.</str>
 
+		<str id="legacyModMenuNames-name">Nomes Antigos de Mods</str>
+		<str id="legacyModMenuNames-desc">Se ativado, isso usará o nome da pasta do mod pro mod.</str>
+
 		<str id="legacyMemoryCounter-name">Contador de Memória\nAntigo</str>
 		<str id="legacyMemoryCounter-desc">Se ativado, o contador de memória mostrará o uso de memória do GC do Haxe e seus picos (comportamento original) invés da memória de working set vista no Gerenciador de Tarefas.</str>
+
+		<str id="imguiMultiViewport-name">Múltiplos Viewports "ImGui"</str>
+		<str id="imguiMultiViewport-desc">Se ativado, janelas ImGui podem ser arrastadas pra fora do viewport principal, desativado por padrão no Linux devido a bugs comuns e problemas.</str>
 	</group>
 </language>

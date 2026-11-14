@@ -66,6 +66,9 @@
 
 	<group name="Mods">
 		<str id="mods.disableMods">Desativar Mods</str>
+		<str id="mods.modsTitle">Selecione um Mod</str>
+		<str id="mods.addonsTitle">Alternar Addons</str>
+		<str id="mods.addonsChanged">Para aplicar mudanças de addons, selecione um mod.</str>
 	</group>
 
 	<group name="MainMenu">
