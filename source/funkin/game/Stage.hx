@@ -75,7 +75,8 @@ class Stage extends FlxBasic implements IBeatReceiver {
 	public function loadXml(xml:Access, forceLoadAll:Bool = false) {
 		if (PlayState.instance == state) {
 			stageScript = Script.create(Paths.script('data/stages/$stageFile'));
-			PlayState.instance.scripts.add(stageScript);
+			if (!(stageScript is DummyScript))
+				PlayState.instance.scripts.add(stageScript);
 			stageScript.load();
 		}
 
