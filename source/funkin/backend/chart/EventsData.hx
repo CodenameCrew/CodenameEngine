@@ -102,7 +102,9 @@ class EventsData {
 			{name: "Offset X", type: TFloat(null, null, 10, 3), defValue: 0},
 			{name: "Offset Y", type: TFloat(null, null, 10, 3), defValue: 0},
 			{name: "Copy Shader?", type: TBool, defValue: true},
-			{name: "Use Stage Node Position?", type: TBool, defValue: false}
+			{name: "Use Stage Node Position?", type: TBool, defValue: false},
+			{name: "Update Icon?", type: TBool, defValue: true},
+			{name: "Update Healthbar Color?", type: TBool, defValue: true}
 		],
 		"Scroll Speed Change" => [
 			{name: "Tween Speed?", type: TBool, defValue: true},
