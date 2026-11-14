@@ -101,7 +101,8 @@ class EventsData {
 			{name: "Precache?", type: TBool, defValue: true},
 			{name: "Offset X", type: TFloat(null, null, 10, 3), defValue: 0},
 			{name: "Offset Y", type: TFloat(null, null, 10, 3), defValue: 0},
-			{name: "Copy Shader?", type: TBool, defValue: true}
+			{name: "Copy Shader?", type: TBool, defValue: true},
+			{name: "Use Stage Node Position?", type: TBool, defValue: false}
 		],
 		"Scroll Speed Change" => [
 			{name: "Tween Speed?", type: TBool, defValue: true},
