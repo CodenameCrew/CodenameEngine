@@ -29,7 +29,8 @@ final class NdllUtil {
 
 	/**
 	 * Returns an function from a Haxe NDLL.
-	 * Limited to 25 argument due to a limitation
+	 * Limited to 25 argument due to a limitation.
+	 * May work inconsistently, in any case use `Reflect.callMethod` on the returned function to ensure consistency (for some reason??? idk why)
 	 *
 	 * @param ndll Name of the NDLL.
 	 * @param name Name of the function.
@@ -38,12 +39,15 @@ final class NdllUtil {
 	public static function getFunction(ndll:String, name:String, args:Int):Dynamic {
 		#if NDLLS_SUPPORTED
 		var func:Dynamic = getFunctionFromPath(Paths.ndll('$ndll-$os'), name, args);
-
-		return Reflect.makeVarArgs(function(a:Array<Dynamic>) {
-			// This generates horrific code
-			return funkin.backend.system.macros.Utils.generateReflectionLike(25, "func", "a");
-			//return Reflect.callMethod(null, func, a); // wouldn't work for some reason, maybe cause like c++ functions doesn't have reflection enabled
-		});
+		func; // ?????
+		try {
+			return Reflect.makeVarArgs(function(a:Array<Dynamic>) {
+				// This generates horrific code
+				return funkin.backend.system.macros.Utils.generateReflectionLike(25, "func", "a");
+			});
+		} catch(e) {
+			Logs.error(e.toString());
+		}
 		#else
 		Logs.warn('NDLLs are not supported on this platform.');
 		#end
