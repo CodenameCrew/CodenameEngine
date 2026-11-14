@@ -588,7 +588,9 @@ class Charter extends UIState {
 		if (Framerate.isLoaded) {
 			Framerate.fpsCounter.alpha = 0.4;
 			Framerate.memoryCounter.alpha = 0.4;
+			#if SHOW_BUILD_ON_FPS
 			Framerate.codenameBuildField.alpha = 0.4;
+			#end
 		}
 
 		if (Options.editorsResizable)
@@ -613,7 +615,9 @@ class Charter extends UIState {
 		if(Framerate.isLoaded) {
 			Framerate.fpsCounter.alpha = 1;
 			Framerate.memoryCounter.alpha = 1;
+			#if SHOW_BUILD_ON_FPS
 			Framerate.codenameBuildField.alpha = 1;
+			#end
 		}
 		super.destroy();
 	}
@@ -740,7 +744,7 @@ class Charter extends UIState {
 		CharterGridSeperatorBase.lastConductorSprY = Math.NEGATIVE_INFINITY;
 
 		updateWaveforms();
-		updateCameraChanges();
+		updateEventChanges();
 	}
 
 	public function getWavesToGenerate():Array<{name:String, sound:FlxSound}> {
@@ -796,8 +800,11 @@ class Charter extends UIState {
 		}
 	}
 
-	public function updateCameraChanges() {
-		if (!Options.charterShowCameraHighlights) return;
+	public function updateEventChanges() {
+
+		var characterChanges:Array<Array<CharacterChange>> = [];
+		for(i in 0...strumLines.members.length)
+			characterChanges.push([]);
 
 		cameraMovementChanges = [];
 		for (grp in [leftEventsGroup, rightEventsGroup]) {
@@ -805,9 +812,16 @@ class Charter extends UIState {
 			grp.sortEvents();
 			for(e in grp.members) {
 				for(event in e.events) {
-					if (event.name == "Camera Movement") {
+					if (event.name == "Camera Movement" && Options.charterShowCameraHighlights) {
 						cameraMovementChanges.push({
 							strumLineID: event.params[0],
+							step: e.step,
+							endStep: __endStep
+						});
+					} else if(event.name == "Character Change"){
+						characterChanges[event.params[0]].push({
+							index: event.params[1],
+							character: event.params[2],
 							step: e.step,
 							endStep: __endStep
 						});
@@ -826,6 +840,22 @@ class Charter extends UIState {
 				cameraMovementChanges[i-1].endStep = cameraMovementChanges[i].step;
 			}
 		}
+
+		if(characterChanges.length != 0)
+			for(index => sl in strumLines.members){
+				//need to sort again for both local and global events to be used
+				characterChanges[index].sort(function(e1, e2) {
+					return FlxSort.byValues(FlxSort.ASCENDING, e1.step, e2.step);
+				});
+				//update previous change
+				if (characterChanges[index].length > 0) {
+					for (i in 1...characterChanges[index].length) {
+						characterChanges[index][i-1].endStep = characterChanges[index][i].step;
+					}
+				}
+
+				strumLines.members[index].characterChanges = characterChanges[index];
+			}
 	}
 
 	public override function beatHit(curBeat:Int) {
@@ -2043,7 +2073,7 @@ class Charter extends UIState {
 		__event.refreshEventIcons();
 		(__event.global ? rightEventsGroup : leftEventsGroup).add(__event);
 		undos.addToUndo(CEditEvent(__event, [], __event.events));
-		updateCameraChanges();
+		updateEventChanges();
 	}
 
 	public function getBookmarkList():Array<ChartBookmark> {
@@ -2271,7 +2301,7 @@ class Charter extends UIState {
 	}
 	function _view_showeventCameraHighlights(t) {
 		t.icon = (Options.charterShowCameraHighlights = !Options.charterShowCameraHighlights) ? 1 : 0;
-		updateCameraChanges();
+		updateEventChanges();
 	}
 	function _view_switchWaveformRainbow(t) {
 		t.icon = (Options.charterRainbowWaveforms = !Options.charterRainbowWaveforms) ? 1 : 0;
@@ -2759,6 +2789,13 @@ typedef PlaytestInfo = {
 
 typedef CameraChange = {
 	var strumLineID:Int;
+	var step:Float;
+	var endStep:Float;
+}
+
+typedef CharacterChange = {
+	var character:String;
+	var index:Int;
 	var step:Float;
 	var endStep:Float;
 }

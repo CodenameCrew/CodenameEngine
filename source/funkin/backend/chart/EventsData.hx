@@ -10,7 +10,7 @@ import openfl.Assets;
 using StringTools;
 
 class EventsData {
-	public static var defaultEventsList:Array<String> = ["HScript Call", "Camera Movement", "Camera Position", "Add Camera Zoom", "Camera Bop", "Camera Zoom", "Camera Modulo Change", "Camera Flash", "BPM Change", "Continuous BPM Change", "Time Signature Change", "Scroll Speed Change", "Alt Animation Toggle", "Play Animation"];
+	public static var defaultEventsList:Array<String> = ["HScript Call", "Camera Movement", "Camera Position", "Add Camera Zoom", "Camera Bop", "Camera Zoom", "Character Change", "Camera Modulo Change", "Camera Flash", "BPM Change", "Continuous BPM Change", "Time Signature Change", "Scroll Speed Change", "Alt Animation Toggle", "Play Animation"];
 	public static var defaultEventsParams:Map<String, Array<EventParamInfo>> = [
 		"HScript Call" => [
 			{name: "Function Name", type: TString, defValue: "myFunc"},
@@ -94,6 +94,16 @@ class EventsData {
 		"BPM Change" => [{name: "Target BPM", type: TFloat(1.00, 9999, 0.001, 3), defValue: 100}],
 		"Continuous BPM Change" => [{name: "Target BPM", type: TFloat(1.00, 9999, 0.001, 3), defValue: 100}, {name: "Time (steps)", type: TFloat(0.25, 9999, 0.25, 2), defValue: 4}],
 		"Time Signature Change" => [{name: "Target Numerator", type: TFloat(1), defValue: 4}, {name: "Target Denominator", type: TFloat(1), defValue: 4}, {name: "Denominator is Steps Per Beat", type: TBool, defValue: false}],
+		"Character Change" => [
+			{name: "Target", type: TStrumLine, defValue: 0},
+			{name: "Character Index", type: TInt(0, 99), defValue: 0},
+			{name: "New Character", type: TCharacter, defValue: Flags.DEFAULT_CHARACTER},
+			{name: "Precache?", type: TBool, defValue: true},
+			{name: "Offset X", type: TFloat(null, null, 10, 3), defValue: 0},
+			{name: "Offset Y", type: TFloat(null, null, 10, 3), defValue: 0},
+			{name: "Copy Shader?", type: TBool, defValue: true},
+			{name: "Use Stage Node Position?", type: TBool, defValue: false}
+		],
 		"Scroll Speed Change" => [
 			{name: "Tween Speed?", type: TBool, defValue: true},
 			{name: "New Speed", type: TFloat(0.01, 99, 0.01, 2), defValue: 1.},

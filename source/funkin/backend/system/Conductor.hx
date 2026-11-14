@@ -357,8 +357,9 @@ final class Conductor
 
 	private static function __updateSongPos(elapsed:Float) {
 		if (FlxG.sound.music != null) { // CNE FlxSound is Interpolated.
-			lastSongPos = FlxG.sound.music.time - songOffset;
-			if (FlxG.sound.music.playing) songPosition = FlxG.sound.music.time;
+			final time = FlxG.sound.music.time;
+			lastSongPos = time - songOffset;
+			if (FlxG.sound.music.playing) songPosition = time;
 		}
 	}
 
@@ -376,7 +377,7 @@ final class Conductor
 		else {
 			var state = FlxG.state;
 			while (state != null) {
-				if (state is IBeatCancellableReceiver && cast(FlxG.state, IBeatCancellableReceiver).cancelConductorUpdate) return;
+				if (state is IBeatCancellableReceiver && (cast(state, IBeatCancellableReceiver)).cancelConductorUpdate) return;
 				state = state.subState;
 			}
 		}
@@ -426,7 +427,7 @@ final class Conductor
 			var state = FlxG.state;
 			while (state != null) {
 				if (state is IBeatReceiver && (state.subState == null || state.persistentUpdate)) {
-					var st = cast(state, IBeatReceiver);
+					var st:IBeatReceiver = cast state;
 
 					if (__updateStep) {
 						if (curStep > oldStep) for (i in oldStep...curStep) st.stepHit(i + 1);

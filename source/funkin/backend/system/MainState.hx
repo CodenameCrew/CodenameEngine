@@ -145,7 +145,7 @@ class MainState extends FlxState {
 		FlxG.mouse.useSystemCursor = true;
 
 		if (Framerate.isLoaded)
-			Framerate.instance.visible = Framerate.memoryCounter.visible = Framerate.codenameBuildField.visible = Framerate.fpsCounter.visible = true;
+			Framerate.instance.visible = Framerate.memoryCounter.visible = #if SHOW_BUILD_ON_FPS Framerate.codenameBuildField.visible = #end Framerate.fpsCounter.visible = true;
 
 		Main.refreshAssets();
 		TranslationUtil.findAllLanguages();
@@ -165,7 +165,12 @@ class MainState extends FlxState {
 			Framerate.instance.reload();
 
 		#if sys
-		CoolUtil.safeAddAttributes('./.temp/', NativeAPI.FileAttribute.HIDDEN);
+		try {
+			CoolUtil.safeAddAttributes('./.temp/', NativeAPI.FileAttribute.HIDDEN);
+		}
+		catch (e) {
+			Logs.warn("Unable to make the .temp directory... is the game unpacked?");
+		}
 		#end
 
 		for (lib in ModsFolder.getLoadedModsLibs()) {

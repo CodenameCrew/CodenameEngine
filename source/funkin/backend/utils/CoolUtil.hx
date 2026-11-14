@@ -1492,21 +1492,18 @@ final class CoolUtil
 class PropertyInfo {
 	public var object:Dynamic;
 	public var field:OneOfTwo<String, Int>;
-	public var typeOfField:Type.ValueType;
+	public final typeOfField:Type.ValueType;
 	#if hscript_improved
-	public var isCustom:Bool = false;
-	public var custom:hscript.IHScriptCustomBehaviour;
+	public final isCustom:Bool;
+	public final custom:hscript.IHScriptCustomBehaviour;
 	#end
 
 	public function new(object:Dynamic, field:OneOfTwo<String, Int>) {
 		this.object = object;
 		this.field = field;
 		#if hscript_improved
-		if (object is hscript.IHScriptCustomBehaviour)
-		{
-			isCustom = true;
-			custom = cast object;
-		}
+		isCustom = object is hscript.IHScriptCustomBehaviour;
+		custom = isCustom ? cast object : null;
 		#end
 
 		typeOfField = Type.typeof(field);

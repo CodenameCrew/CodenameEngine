@@ -69,15 +69,15 @@ class ScriptableShader extends FlxBasic implements IHScriptCustomBehaviour {
 		script.set("set_"+name, set);
 	}
 
-	public override function update(elapsed:Float) script.call("update", [elapsed]);
-	public override function draw() script.call("draw", []);
-	public function updateGL() script.call("updateGL", []);
+	public override function update(elapsed:Float) script.callOne("update", elapsed);
+	public override function draw() script.call("draw");
+	public function updateGL() script.call("updateGL");
 	public function processGLData(source:String, storageType:String) {
 		var event = EventManager.get(ShaderProcessEvent).recycle(source, storageType);
-		script.call("processGLData", [event]);
+		script.callOne("processGLData", event);
 		if(event.cancelled)
 			shader.__cancelNextProcessGLData = true;
-		script.call("processGLDataPost", [event]);
+		script.callOne("processGLDataPost", event);
 	}
 
 	public override function destroy() {

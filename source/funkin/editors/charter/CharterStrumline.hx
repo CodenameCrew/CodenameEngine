@@ -10,6 +10,7 @@ import funkin.backend.shaders.CustomShader;
 import funkin.editors.ui.UITopMenu.UITopMenuButton;
 import funkin.game.Character;
 import funkin.game.HealthIcon;
+import funkin.editors.charter.Charter.CharacterChange;
 
 class CharterStrumline extends UISprite {
 	public var strumLine:ChartStrumLine;
@@ -23,6 +24,8 @@ class CharterStrumline extends UISprite {
 	public var dragging:Bool = false;
 
 	public var curMenu:UIContextMenu = null;
+
+	public var characterChanges:Array<CharacterChange> = [];
 
 	public var vocals:FlxSound;
 	public var hasVocals:Bool = false;
@@ -63,13 +66,13 @@ class CharterStrumline extends UISprite {
 
 		if(strumLine.visible == null) strumLine.visible = true;
 
-		var icons = strumLine.characters != null ? strumLine.characters : [];
-
 		keyCount = strumLine.keyCount != null ? strumLine.keyCount : 4;
+
+		changedCharacters = strumLine.characters != null ? strumLine.characters : [];
 
 		healthIcons = new FlxSpriteGroup(x, y);
 
-		regenerateIcons(icons);
+		regenerateIcons(changedCharacters);
 
 		members.push(healthIcons);
 
@@ -103,10 +106,13 @@ class CharterStrumline extends UISprite {
 			healthIcon.alpha = strumLine.visible ? 1 : 0.4;
 			healthIcons.add(healthIcon);
 		}
+
+		updateHighlightColor(icons);
 	}
 
 	private var __healthYOffset:Float = 0;
 	private var __draggingYOffset:Float = 0;
+	var changedCharacters:Array<String> = [];
 
 	public override function update(elapsed:Float) {
 		if (FlxG.keys.justPressed.K) draggable = !draggable;
@@ -128,15 +134,23 @@ class CharterStrumline extends UISprite {
 		draggingSprite.follow(this, ((keyCount*40)/2) - (draggingSprite.width/2), 6 + (__draggingYOffset = FlxMath.lerp(__draggingYOffset, draggable ? 3 : 0, 1/12)));
 		button.follow(this, 0, 95);
 
+		var characters:Array<String> = strumLine.characters != null ? strumLine.characters.copy() : [];
+		for(change in characterChanges)
+			if(change.step <= Charter.instance.curStep)
+				characters[change.index] = change.character;
+
+		if(characters.join(",") != changedCharacters.join(",")){ //comparing arrays wasnt working
+			regenerateIcons(characters);
+		}
+
+		changedCharacters = characters;
+
 		super.update(elapsed);
 	}
 
+	static var __stupidScriptParamArray:Array<Dynamic> = [];
 	public function updateInfo() {
-		var icons = strumLine.characters != null ? strumLine.characters : [];
-
 		keyCount = strumLine.keyCount != null ? strumLine.keyCount : 4;
-
-		regenerateIcons(icons);
 
 		var asset = strumLine.vocalsSuffix.length > 0 ? FlxSoundData.fromAssetKey(Paths.voices(PlayState.SONG.meta.name, PlayState.difficulty, strumLine.vocalsSuffix), false) : null;
 		if (asset != null && asset.isStreamable) asset.buffer.load();
@@ -155,6 +169,18 @@ class CharterStrumline extends UISprite {
 			hasVocals = false;
 		}
 		vocals.group = FlxG.sound.defaultMusicGroup;
+
+		updateHighlightColor();
+
+		if (Charter.instance != null) {
+			__stupidScriptParamArray[0] = this;
+			__stupidScriptParamArray[1] = strumLine;
+			Charter.instance.stateScripts.call('onStrumlineUpdateInfo', __stupidScriptParamArray);
+		}
+	}
+
+	function updateHighlightColor(?icons:Array<String>){
+		if(icons == null) icons = changedCharacters;
 
 		highlightColor = 0xFFFFFFFF;
 		if (icons[0] != null) {

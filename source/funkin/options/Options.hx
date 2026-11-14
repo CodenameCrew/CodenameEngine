@@ -65,6 +65,8 @@ class Options
 
 	public static var songOffset:Float = 0;
 	public static var framerate:Int = 120;
+	// 0 = off, 1 = adaptive, 2 = follow display, 3 = unlimited (no frame rate cap)
+	public static var framePacerMode:Int = 2;
 	public static var gpuOnlyBitmaps:Bool = #if (mac || web) false #else true #end; // causes issues on mac and web
 	public static var language = "en"; // default to english, Flags.DEFAULT_LANGUAGE should not modify this
 	public static var streamedMusic:Bool = true;
@@ -123,7 +125,8 @@ class Options
 	public static var characterHitbox:Bool = true;
 	public static var characterCamera:Bool = true;
 	public static var characterAxis:Bool = true;
-	public static var characterDragging:Bool = true;
+	public static var characterDragging:CharacterDragMode = OFFSET;
+	public static var characterPosGuideAlpha:Float = 0.5;
 	public static var playAnimOnOffset:Bool = false;
 
 	/**
@@ -285,16 +288,11 @@ class Options
 	public static function applySettings() {
 		applyKeybinds();
 		applyQuality();
+		applyFramePacerMode();
 
 		flixel.sound.FlxSoundData.allowStreaming = streamedMusic;
 		FlxG.sound.defaultMusicGroup.volume = volumeMusic;
 		FlxG.autoPause = autoPause;
-
-		var _framerate = framerate;
-		if (_framerate > maxFrameRate) _framerate = 0;
-
-		if (FlxG.updateFramerate < framerate) FlxG.drawFramerate = FlxG.updateFramerate = _framerate;
-		else FlxG.updateFramerate = FlxG.drawFramerate = _framerate;
 
 		#if IMGUI_ENABLED
 		if (imguiMultiViewport) {
@@ -303,6 +301,14 @@ class Options
 			ImGuiIO.configFlags = ImGuiIO.configFlags & ~ImGuiConfigFlags.ViewportsEnable;
 		}
 		#end
+	}
+
+	public static function applyFramePacerMode() {
+		Lib.application.window.framePacerMode = framePacerMode == 3 ? 0 : framePacerMode;
+
+		var _framerate = framePacerMode == 3 ? 0 : framerate;
+		if (FlxG.updateFramerate < _framerate) FlxG.drawFramerate = FlxG.updateFramerate = _framerate;
+		else FlxG.updateFramerate = FlxG.drawFramerate = _framerate;
 	}
 
 	public static function applyQuality() {
@@ -335,3 +341,11 @@ class Options
 		__flush();
 	}
 }
+
+enum abstract CharacterDragMode(Int) {
+	var NONE = 0;
+	var OFFSET = 1;
+	var POSITION = 2;
+	// var CAMERA = 3;
+}
+

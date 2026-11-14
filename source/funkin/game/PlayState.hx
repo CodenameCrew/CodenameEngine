@@ -905,6 +905,14 @@ class PlayState extends MusicBeatState
 			FlxG.camera.focusOn(camFollow.getPosition(FlxPoint.weak()));
 		}
 
+		for(event in SONG.events){
+			if(event.name == "Character Change"){
+				if(!event.params[3] || Character.cachedFrames.exists(event.params[2])) continue;
+
+				Character.cacheCharacter(event.params[2]);
+			}
+		}
+
 		smoothTransitionData = null;
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
@@ -1150,6 +1158,8 @@ class PlayState extends MusicBeatState
 		}
 
 		cameraFocusOffset.put();
+
+		Character.cachedFrames.clear();
 
 		scripts = FlxDestroyUtil.destroy(scripts);
 
@@ -1551,16 +1561,8 @@ class PlayState extends MusicBeatState
 		if (generatedMusic)
 			moveCamera();
 
-		if (camZooming) {
-			if (useCamZoomMult) {
-				camZoomingMult = lerp(camZoomingMult, defaultZoom, camZoomLerp) - defaultZoom;
-				FlxG.camera.zoomMultiplier = camZoomingMult * camGameZoomMult + defaultZoom;
-				camHUD.zoomMultiplier = camZoomingMult * camHUDZoomMult + defaultZoom;
-				camZoomingMult += defaultZoom;
-			}
-			FlxG.camera.zoom = lerp(FlxG.camera.zoom, defaultCamZoom, camGameZoomLerp);
-			camHUD.zoom = lerp(camHUD.zoom, defaultHudZoom, camHUDZoomLerp);
-		}
+		if (camZooming) 
+			updateCamZoom();
 
 		// RESET = Quick Game Over Screen
 		if (startedCountdown && controls.RESET)
@@ -1589,6 +1591,18 @@ class PlayState extends MusicBeatState
 		if (!e.cancelled)
 			super.draw();
 		scripts.event("postDraw", e);
+	}
+
+	@:dox(hide)
+	private inline function updateCamZoom() {
+		if (useCamZoomMult) {
+			camZoomingMult = lerp(camZoomingMult, defaultZoom, camZoomLerp) - defaultZoom;
+			FlxG.camera.zoomMultiplier = camZoomingMult * camGameZoomMult + defaultZoom;
+			camHUD.zoomMultiplier = camZoomingMult * camHUDZoomMult + defaultZoom;
+			camZoomingMult += defaultZoom;
+		}
+		FlxG.camera.zoom = lerp(FlxG.camera.zoom, defaultCamZoom, camGameZoomLerp);
+		camHUD.zoom = lerp(camHUD.zoom, defaultHudZoom, camHUDZoomLerp);
 	}
 
 	public function doBopZoom()
@@ -1620,7 +1634,7 @@ class PlayState extends MusicBeatState
 		if (__camPosData == null) __camPosData = new CamPosData(__camPos, 0);
 
 		__camPos.set(0, 0);
-		var data:CamPosData = getStrumlineCamPos(curCameraTarget, __camPos, true, __camPosData);
+		var data:CamPosData = getStrumlineCamPos(curCameraTarget, __camPos, true, true, __camPosData);
 		data.pos.add(cameraFocusOffset.x, cameraFocusOffset.y);
 
 		if (data.amount > 0) {
@@ -1635,10 +1649,11 @@ class PlayState extends MusicBeatState
 	 * @param strumLine The strumline to get the camera position of.
 	 * @param pos The position to put the camera position in. If `null`, a new FlxPoint will be created.
 	 * @param ignoreInvisible Whenever invisible characters should be ignored.
+	 * @param ignoreInactive Whether inactive characters should be ignored.
 	 * @param out If provided, fills and returns this instance instead of allocating a new one. The caller keeps ownership of `pos` (don't put it back to the pool).
 	**/
-	public inline function getStrumlineCamPos(strumLine:Int, ?pos:FlxPoint = null, ?ignoreInvisible:Bool = true, ?out:CamPosData = null):CamPosData {
-		return getCharactersCamPos(strumLines.members[strumLine].characters, pos, ignoreInvisible, out);
+	public inline function getStrumlineCamPos(strumLine:Int, ?pos:FlxPoint = null, ?ignoreInvisible:Bool = true, ?ignoreInactive:Bool = true, ?out:CamPosData = null):CamPosData {
+		return getCharactersCamPos(strumLines.members[strumLine].characters, pos, ignoreInvisible, ignoreInactive, out);
 	}
 
 	/**
@@ -1646,19 +1661,21 @@ class PlayState extends MusicBeatState
 	 * @param chars The characters to get the camera position of.
 	 * @param pos The position to put the camera position in. If `null`, a new FlxPoint will be created.
 	 * @param ignoreInvisible Whenever invisible characters should be ignored.
+	 * @param ignoreInactive Whether inactive characters should be ignored.
 	 * @param out If provided, fills and returns this instance instead of allocating a new one. The caller keeps ownership of `pos` (don't put it back to the pool).
 	**/
-	public dynamic function getCharactersCamPos(chars:Array<Character>, ?pos:FlxPoint = null, ?ignoreInvisible:Bool = true, ?out:CamPosData = null):CamPosData {
+	public dynamic function getCharactersCamPos(chars:Array<Character>, ?pos:FlxPoint = null, ?ignoreInvisible:Bool = true, ?ignoreInactive:Bool = true, ?out:CamPosData = null):CamPosData {
 		if (pos == null) pos = FlxPoint.get();
-		var amount = 0;
+		var amount:Int = 0;
+		final cpos = FlxPoint.get();
 		for(c in chars) {
-			if (c == null || (ignoreInvisible && !c.visible)) continue;
-			var cpos = c.getCameraPosition();
+			if (c == null || (!ignoreInvisible && (c.alpha <= 0 || !c.visible || !c.exists)) || (!ignoreInactive && !c.active)) continue;
+			c.__getCameraPositionInto(cpos);
 			pos.x += cpos.x;
 			pos.y += cpos.y;
 			amount++;
-			//cpos.put(); // not actually in the pool, so no need
 		}
+		cpos.put();
 		if (amount > 0) {
 			pos.x /= amount;
 			pos.y /= amount;
@@ -1806,6 +1823,29 @@ class PlayState extends MusicBeatState
 				else // Not Reversed
 					camera.flash(event.params[1], (Conductor.stepCrochet / 1000) * event.params[2], null, true);
 			case "BPM Change": // automatically handled by conductor
+			case "Character Change":
+				var oldChar:Character = strumLines.members[event.params[0]].characters[event.params[1]];
+				var newChar:Character = new Character(oldChar.x, oldChar.y, event.params[2], oldChar.isPlayer);
+				stage.applyCharStuff(newChar, !event.params[7] ? strumLines.members[event.params[0]].data.position : null, event.params[1]);
+				if(event.params[6]) newChar.shader = oldChar.shader;
+
+				newChar.x += event.params[4];
+				newChar.y += event.params[5];
+
+				insert(members.indexOf(oldChar), newChar); remove(oldChar);
+				strumLines.members[event.params[0]].characters[event.params[1]] = newChar;
+
+				//refresh icons
+				switch(event.params[0]){
+					case 0:
+						iconP2.setIcon(dad.getIcon());
+					case 1:
+						iconP1.setIcon(bf.getIcon());
+				}
+				var leftColor:Int = dad != null && dad.iconColor != null && Options.colorHealthBar ? dad.iconColor : (opponentMode ? 0xFF66FF33 : 0xFFFF0000);
+				var rightColor:Int = boyfriend != null && boyfriend.iconColor != null && Options.colorHealthBar ? boyfriend.iconColor : (opponentMode ? 0xFFFF0000 : 0xFF66FF33); // switch the colors
+				healthBar.createFilledBar(leftColor, rightColor);
+				healthBar.updateBar();
 			case "Scroll Speed Change":
 				var tween = eventsTween.get("scrollSpeedTween");
 				if (tween != null) tween.cancel();
