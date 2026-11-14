@@ -11,7 +11,7 @@
 	<SubTexture name="credits basic0006" x="0" y="789" width="490" height="132"/>
 	<SubTexture name="credits basic0007" x="0" y="789" width="490" height="132"/>
 	<SubTexture name="credits basic0008" x="0" y="789" width="490" height="132"/>
-	<SubTexture name="credits white0000" x="0" y="174" width="563" height="172" frameX="-3" frameY="0" frameWidth="566" frameHeight="173"/>
-	<SubTexture name="credits white0001" x="0" y="348" width="563" height="171" frameX="-1" frameY="-1" frameWidth="566" frameHeight="173"/>
-	<SubTexture name="credits white0002" x="0" y="0" width="565" height="172" frameX="0" frameY="-1" frameWidth="566" frameHeight="173"/>
+	<SubTexture name="credits white0000" x="0" y="174" width="564" height="172" frameX="-1" frameY="0" frameWidth="566" frameHeight="173"/>
+	<SubTexture name="credits white0001" x="0" y="348" width="564" height="171" frameX="-1" frameY="-1" frameWidth="566" frameHeight="173"/>
+	<SubTexture name="credits white0002" x="0" y="0" width="566" height="172" frameX="0" frameY="-1" frameWidth="566" frameHeight="173"/>
 </TextureAtlas>
