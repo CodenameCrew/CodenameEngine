@@ -836,7 +836,7 @@ class CharacterEditor extends UIState {
 			remove(character);
 	
 			if (stage.characterPoses.exists(stagePosition))
-				stage.applyCharStuff(character, stagePosition, 0);
+				stage.applyCharStuff(character, stagePosition, 0, true);
 			_animation_play(null);
 		} else
 			stagePosition = position.toLowerCase();

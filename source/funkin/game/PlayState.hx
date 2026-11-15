@@ -1826,7 +1826,7 @@ class PlayState extends MusicBeatState
 			case "Character Change":
 				var oldChar:Character = strumLines.members[event.params[0]].characters[event.params[1]];
 				var newChar:Character = new Character(oldChar.x, oldChar.y, event.params[2], oldChar.isPlayer);
-				stage.applyCharStuff(newChar, !event.params[7] ? strumLines.members[event.params[0]].data.position : null, event.params[1]);
+				stage.applyCharStuff(newChar, !event.params[7] ? strumLines.members[event.params[0]].data.position : null, event.params[1], !event.params[7]);
 				if(event.params[6]) newChar.shader = oldChar.shader;
 
 				newChar.x += event.params[4];
