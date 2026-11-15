@@ -134,18 +134,22 @@ class CharterStrumline extends UISprite {
 		draggingSprite.follow(this, ((keyCount*40)/2) - (draggingSprite.width/2), 6 + (__draggingYOffset = FlxMath.lerp(__draggingYOffset, draggable ? 3 : 0, 1/12)));
 		button.follow(this, 0, 95);
 
-		var characters:Array<String> = strumLine.characters != null ? strumLine.characters.copy() : [];
-		for(change in characterChanges)
-			if(change.step <= Charter.instance.curStep)
-				characters[change.index] = change.character;
-
-		if(characters.join(",") != changedCharacters.join(",")){ //comparing arrays wasnt working
+		var characters = getIconsFromStep(Charter.instance.curStepFloat);
+		if(characters.join(",") != changedCharacters.join(",")) //comparing arrays wasnt working
 			regenerateIcons(characters);
-		}
 
 		changedCharacters = characters;
 
 		super.update(elapsed);
+	}
+
+	public function getIconsFromStep(s:Float):Array<String> {
+		var characters:Array<String> = strumLine.characters != null ? strumLine.characters.copy() : [];
+		for(change in characterChanges)
+			if(change.step <= s)
+				characters[change.index] = change.character;
+
+		return characters;
 	}
 
 	static var __stupidScriptParamArray:Array<Dynamic> = [];
