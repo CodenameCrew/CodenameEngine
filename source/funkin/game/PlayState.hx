@@ -1159,7 +1159,7 @@ class PlayState extends MusicBeatState
 
 		cameraFocusOffset.put();
 
-		Character.cachedFrames.clear();
+		Character.clearCache();
 
 		scripts = FlxDestroyUtil.destroy(scripts);
 
