@@ -867,7 +867,7 @@ class CharacterEditor extends UIState {
 	public inline function updateCharacterStagePosition() {
 		remove(character);
 		if (stage.characterPoses.exists(stagePosition))
-			stage.applyCharStuff(character, stagePosition, 0);
+			stage.applyCharStuff(character, stagePosition, 0, true);
 	}
 
 	public function changeOffsetDragType(type:CharacterDragMode){
