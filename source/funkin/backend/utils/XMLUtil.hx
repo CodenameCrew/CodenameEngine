@@ -136,7 +136,7 @@ final class XMLUtil {
 	public static function getSpriteSheetsFromXML(node:Access, ?defaultSprite:String, ?parentFolder:String = '', ?animateSettings:FlxAnimateSettings):FlxFramesCollection {
 		var seenSheets:Array<String> = [];
 		
-		if(defaultSprite != null){
+		if(defaultSprite != null || node.x.exists("sprite")){
 			var defaultPath = '$parentFolder${node.getAtt("sprite").getDefault(defaultSprite)}';
 			if (!node.hasNode.spritesheet && !node.hasNode.sheet)
 				return Paths.getFrames(Paths.image(defaultPath, null, true), true, null, null, animateSettings);
