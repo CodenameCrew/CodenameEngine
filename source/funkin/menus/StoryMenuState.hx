@@ -254,6 +254,9 @@ class StoryMenuState extends MusicBeatState {
 	public function loadXMLs() {
 		weekList = StoryWeeklist.get(true, false);  // will only load week files AND NOT characters too (we will load them later only if needed)!!  - Nex
 		weeks = weekList.weeks;
+		if(weeks.length <= 0)
+			weeks = [Week.loadWeek('tutorial', false)];
+
 		for (week in weeks) for (char in week.chars) if (char != null)
 			addCharacter(char.name);
 	}

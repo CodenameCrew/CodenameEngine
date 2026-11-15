@@ -424,7 +424,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		if (hasInterval) beatInterval = Std.parseInt(xml.x.get("interval"));
 
 		if(cachedFrames.exists(curCharacter)) this.frames = cachedFrames.get(curCharacter);
-		else cachedFrames.set(curCharacter, XMLUtil.appendSpriteSheetsFromXML(this, xml, 'characters/'));
+		else XMLUtil.appendSpriteSheetsFromXML(this, xml, 'characters/');
 		
 		if (xml.x.exists("centercam")) centeredCamera = (xml.x.get("centercam") == "true");
 		else if (Flags.USE_LEGACY_CENTER_CAM) centeredCamera = true;
@@ -669,7 +669,11 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	public static function cacheCharacter(character:String){
 		var dummySprite = new FunkinSprite();
 		dummySprite.name = character;
-		cachedFrames.set(character, XMLUtil.appendSpriteSheetsFromXML(dummySprite, getXMLFromCharName(character), 'characters/'));
+
+		var tempFrames = XMLUtil.appendSpriteSheetsFromXML(dummySprite, getXMLFromCharName(character), 'characters/');
+		if(tempFrames != null)
+			cachedFrames.set(character, tempFrames);
+
 		dummySprite.destroy();
 	}
 }
