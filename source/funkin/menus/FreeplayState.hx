@@ -570,7 +570,8 @@ class FreeplaySonglist {
 
 	public static function isSubSongDirectory(subs:Array<String>):Bool {
 		for (i in EXCLUDE_SUBFOLDERS) {
-			if (subs.contains(i)) return false;
+			// that one guy that capitalizes their song and charts folder
+			if (subs.contains(i.toLowerCase())) return false;
 		}
 		return true;
 	}

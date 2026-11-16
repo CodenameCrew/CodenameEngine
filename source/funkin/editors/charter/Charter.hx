@@ -822,8 +822,7 @@ class Charter extends UIState {
 						characterChanges[event.params[0]].push({
 							index: event.params[1],
 							character: event.params[2],
-							step: e.step,
-							endStep: __endStep
+							step: e.step
 						});
 					}
 				}
@@ -847,15 +846,28 @@ class Charter extends UIState {
 				characterChanges[index].sort(function(e1, e2) {
 					return FlxSort.byValues(FlxSort.ASCENDING, e1.step, e2.step);
 				});
-				//update previous change
-				if (characterChanges[index].length > 0) {
-					for (i in 1...characterChanges[index].length) {
-						characterChanges[index][i-1].endStep = characterChanges[index][i].step;
-					}
-				}
 
 				strumLines.members[index].characterChanges = characterChanges[index];
 			}
+
+		for(e in leftEventsGroup.members) {
+			for(event in e.events) {
+				if (event.name == "Camera Movement"){
+					e.refreshEventIcons();
+					break;
+				}
+			}
+		}
+
+		for(e in rightEventsGroup.members) {
+			for(event in e.events) {
+				if (event.name == "Camera Movement"){
+					e.refreshEventIcons();
+					break;
+				}
+			}
+		}
+
 	}
 
 	public override function beatHit(curBeat:Int) {
@@ -2797,5 +2809,4 @@ typedef CharacterChange = {
 	var character:String;
 	var index:Int;
 	var step:Float;
-	var endStep:Float;
 }

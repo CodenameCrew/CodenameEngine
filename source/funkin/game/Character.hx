@@ -667,13 +667,12 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	}
 
 	public static function cacheCharacter(character:String){
-		var dummySprite = new FunkinSprite();
-		dummySprite.name = character;
+		var tempFrames = XMLUtil.getSpriteSheetsFromXML(getXMLFromCharName(character), character, 'characters/');
+		if(tempFrames != null) cachedFrames.set(character, tempFrames);
+	}
 
-		var tempFrames = XMLUtil.appendSpriteSheetsFromXML(dummySprite, getXMLFromCharName(character), 'characters/');
-		if(tempFrames != null)
-			cachedFrames.set(character, tempFrames);
-
-		dummySprite.destroy();
+	public static function clearCache(){
+		for (frame in cachedFrames) frame.destroy();
+		cachedFrames.clear();
 	}
 }
