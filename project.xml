@@ -19,7 +19,7 @@
 	<define name="SHOW_BUILD_ON_FPS"/>
 
 	<!-- Uncomment this to don't include base game files -->
-	<!-- <define name="VANILLA_ASSETS"/> -->
+	<define name="VANILLA_ASSETS"/>
 
 	<!-- Comment this out to disable dark mode windows -->
 	<define name="DARK_MODE_WINDOW"/>
