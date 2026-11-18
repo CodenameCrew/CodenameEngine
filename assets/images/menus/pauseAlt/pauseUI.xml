@@ -1,9 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="pauseUI.png">
-	<!-- Created with Adobe Animate version 20.0.0.17400 -->
-	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="bluecancel instance 10000" x="0" y="0" width="977" height="200"/>
-	<SubTexture name="bluereplay instance 10000" x="261" y="409" width="256" height="200"/>
-	<SubTexture name="cancelyellow instance 10000" x="0" y="205" width="977" height="199"/>
-	<SubTexture name="yellowreplay instance 10000" x="0" y="409" width="256" height="200"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Heroic Packer v0.1.7 https://heroicpacker.heroeyad.dev/
+-->
+<TextureAtlas imagePath="pauseUI.png" width="440" height="397" spritePadding="2" borderPadding="2">
+	<SubTexture name="bluecancel instance 10000" x="231" y="2" width="207" height="196" frameX="-14" frameY="0" frameWidth="977" frameHeight="200"/>
+	<SubTexture name="bluereplay instance 10000" x="2" y="2" width="227" height="196" frameX="-15" frameY="0" frameWidth="256" frameHeight="200"/>
+	<SubTexture name="cancelyellow instance 10000" x="231" y="200" width="207" height="195" frameX="-14" frameY="0" frameWidth="977" frameHeight="199"/>
+	<SubTexture name="yellowreplay instance 10000" x="2" y="200" width="227" height="195" frameX="-15" frameY="-1" frameWidth="256" frameHeight="200"/>
 </TextureAtlas>

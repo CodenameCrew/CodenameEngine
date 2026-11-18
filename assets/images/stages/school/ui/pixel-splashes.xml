@@ -1,36 +1,38 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="pixel-splashes.png">
-	<!-- Made using Maru Aseprite JSON to XML converter -->
-	<SubTexture name="splash purple 100000" x="0" y="0" width="64" height="64"/>
-	<SubTexture name="splash purple 100001" x="64" y="0" width="64" height="64"/>
-	<SubTexture name="splash purple 100002" x="128" y="0" width="64" height="64"/>
-	<SubTexture name="splash purple 100003" x="192" y="0" width="64" height="64"/>
-	<SubTexture name="splash purple 200000" x="256" y="0" width="64" height="64"/>
-	<SubTexture name="splash purple 200001" x="320" y="0" width="64" height="64"/>
-	<SubTexture name="splash purple 200002" x="0" y="64" width="64" height="64"/>
-	<SubTexture name="splash purple 200003" x="64" y="64" width="64" height="64"/>
-	<SubTexture name="splash blue 100000" x="128" y="64" width="64" height="64"/>
-	<SubTexture name="splash blue 100001" x="192" y="64" width="64" height="64"/>
-	<SubTexture name="splash blue 100002" x="256" y="64" width="64" height="64"/>
-	<SubTexture name="splash blue 100003" x="320" y="64" width="64" height="64"/>
-	<SubTexture name="splash blue 200000" x="0" y="128" width="64" height="64"/>
-	<SubTexture name="splash blue 200001" x="64" y="128" width="64" height="64"/>
-	<SubTexture name="splash blue 200002" x="128" y="128" width="64" height="64"/>
-	<SubTexture name="splash blue 200003" x="192" y="128" width="64" height="64"/>
-	<SubTexture name="splash green 100000" x="256" y="128" width="64" height="64"/>
-	<SubTexture name="splash green 100001" x="320" y="128" width="64" height="64"/>
-	<SubTexture name="splash green 100002" x="0" y="192" width="64" height="64"/>
-	<SubTexture name="splash green 100003" x="64" y="192" width="64" height="64"/>
-	<SubTexture name="splash green 200000" x="128" y="192" width="64" height="64"/>
-	<SubTexture name="splash green 200001" x="192" y="192" width="64" height="64"/>
-	<SubTexture name="splash green 200002" x="256" y="192" width="64" height="64"/>
-	<SubTexture name="splash green 200003" x="320" y="192" width="64" height="64"/>
-	<SubTexture name="splash red 100000" x="0" y="256" width="64" height="64"/>
-	<SubTexture name="splash red 100001" x="64" y="256" width="64" height="64"/>
-	<SubTexture name="splash red 100002" x="128" y="256" width="64" height="64"/>
-	<SubTexture name="splash red 100003" x="192" y="256" width="64" height="64"/>
-	<SubTexture name="splash red 200000" x="256" y="256" width="64" height="64"/>
-	<SubTexture name="splash red 200001" x="320" y="256" width="64" height="64"/>
-	<SubTexture name="splash red 200002" x="0" y="320" width="64" height="64"/>
-	<SubTexture name="splash red 200003" x="64" y="320" width="64" height="64"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Heroic Packer v0.1.7 https://heroicpacker.heroeyad.dev/
+-->
+<TextureAtlas imagePath="pixel-splashes.png" width="360" height="306" spritePadding="2" borderPadding="2">
+	<SubTexture name="splash purple 100000" x="210" y="191" width="47" height="59" frameX="-7" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash purple 100001" x="232" y="68" width="55" height="61" frameX="-4" frameY="-2" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash purple 100002" x="2" y="68" width="56" height="62" frameX="-4" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash purple 100003" x="122" y="2" width="58" height="64" frameX="-3" frameY="0" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash purple 200000" x="258" y="252" width="48" height="52" frameX="-6" frameY="-6" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash purple 200001" x="54" y="252" width="50" height="52" frameX="-7" frameY="-5" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash purple 200002" x="2" y="191" width="53" height="55" frameX="-4" frameY="-2" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash purple 200003" x="114" y="132" width="54" height="57" frameX="-4" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash blue 100000" x="112" y="191" width="47" height="59" frameX="-7" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash blue 100001" x="118" y="68" width="55" height="61" frameX="-4" frameY="-2" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash blue 100002" x="242" y="2" width="56" height="62" frameX="-4" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash blue 100003" x="2" y="2" width="58" height="64" frameX="-3" frameY="0" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash blue 200000" x="158" y="252" width="48" height="52" frameX="-6" frameY="-6" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash blue 200001" x="308" y="191" width="50" height="52" frameX="-7" frameY="-5" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash blue 200002" x="226" y="132" width="53" height="55" frameX="-4" frameY="-2" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash blue 200003" x="2" y="132" width="54" height="57" frameX="-4" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash green 100000" x="161" y="191" width="47" height="59" frameX="-7" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash green 100001" x="175" y="68" width="55" height="61" frameX="-4" frameY="-2" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash green 100002" x="300" y="2" width="56" height="62" frameX="-4" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash green 100003" x="62" y="2" width="58" height="64" frameX="-3" frameY="0" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash green 200000" x="208" y="252" width="48" height="52" frameX="-6" frameY="-6" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash green 200001" x="2" y="252" width="50" height="52" frameX="-7" frameY="-5" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash green 200002" x="281" y="132" width="53" height="55" frameX="-4" frameY="-2" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash green 200003" x="58" y="132" width="54" height="57" frameX="-4" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash red 100000" x="259" y="191" width="47" height="59" frameX="-7" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash red 100001" x="289" y="68" width="55" height="61" frameX="-4" frameY="-2" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash red 100002" x="60" y="68" width="56" height="62" frameX="-4" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash red 100003" x="182" y="2" width="58" height="64" frameX="-3" frameY="0" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash red 200000" x="308" y="252" width="48" height="52" frameX="-6" frameY="-6" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash red 200001" x="106" y="252" width="50" height="52" frameX="-7" frameY="-5" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash red 200002" x="57" y="191" width="53" height="55" frameX="-4" frameY="-2" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="splash red 200003" x="170" y="132" width="54" height="57" frameX="-4" frameY="-1" frameWidth="64" frameHeight="64"/>
 </TextureAtlas>

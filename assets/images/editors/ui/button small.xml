@@ -1,33 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="button.png">
-	<!-- Created without animate lol i wrote this-->
-	<SubTexture name="normal-topleft" x="0" y="0" width="2" height="2"/>
-	<SubTexture name="normal-top" x="2" y="0" width="6" height="2"/>
-	<SubTexture name="normal-topright" x="8" y="0" width="2" height="2"/>
-	<SubTexture name="normal-middleleft" x="0" y="2" width="2" height="7.5"/>
-	<SubTexture name="normal-middle" x="2" y="2" width="6" height="7.5"/>
-	<SubTexture name="normal-middleright" x="8" y="2" width="2" height="7.5"/>
-	<SubTexture name="normal-bottomleft" x="0" y="9.5" width="2" height="2"/>
-	<SubTexture name="normal-bottom" x="2" y="9.5" width="6" height="2"/>
-	<SubTexture name="normal-bottomright" x="8" y="9.5" width="2" height="2"/>
-	
-	<SubTexture name="hover-topleft" x="10" y="0" width="2" height="2"/>
-	<SubTexture name="hover-top" x="12" y="0" width="6" height="2"/>
-	<SubTexture name="hover-topright" x="18" y="0" width="2" height="2"/>
-	<SubTexture name="hover-middleleft" x="10" y="2" width="2" height="7.5"/>
-	<SubTexture name="hover-middle" x="12" y="2" width="6" height="7.5"/>
-	<SubTexture name="hover-middleright" x="18" y="2" width="2" height="7.5"/>
-	<SubTexture name="hover-bottomleft" x="10" y="9.5" width="2" height="2"/>
-	<SubTexture name="hover-bottom" x="12" y="9.5" width="6" height="2"/>
-	<SubTexture name="hover-bottomright" x="18" y="9.5" width="2" height="2"/>
-	
-	<SubTexture name="pressed-topleft" x="20" y="0" width="2" height="2"/>
-	<SubTexture name="pressed-top" x="22" y="0" width="6" height="2"/>
-	<SubTexture name="pressed-topright" x="28" y="0" width="2" height="2"/>
-	<SubTexture name="pressed-middleleft" x="20" y="2" width="2" height="7.5"/>
-	<SubTexture name="pressed-middle" x="22" y="2" width="6" height="7.5"/>
-	<SubTexture name="pressed-middleright" x="28" y="2" width="2" height="7.5"/>
-	<SubTexture name="pressed-bottomleft" x="20" y="9.5" width="2" height="2"/>
-	<SubTexture name="pressed-bottom" x="22" y="9.5" width="6" height="2"/>
-	<SubTexture name="pressed-bottomright" x="28" y="9.5" width="2" height="2"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Heroic Packer v0.1.7 https://heroicpacker.heroeyad.dev/
+-->
+<TextureAtlas imagePath="button small.png" width="30" height="23" spritePadding="2" borderPadding="2">
+	<SubTexture name="normal-topleft" x="2" y="20" width="1" height="1" frameX="-1" frameY="-1" frameWidth="2" frameHeight="2"/>
+	<SubTexture name="normal-top" x="18" y="11" width="6" height="2" frameX="0" frameY="0" frameWidth="6" frameHeight="2"/>
+	<SubTexture name="normal-topright" x="10" y="19" width="2" height="2" frameX="0" frameY="0" frameWidth="2" frameHeight="2"/>
+	<SubTexture name="normal-middleleft" x="26" y="2" width="2" height="7" frameX="0" frameY="0" frameWidth="2" frameHeight="7"/>
+	<SubTexture name="normal-middle" x="2" y="2" width="6" height="7" frameX="0" frameY="0" frameWidth="6" frameHeight="7"/>
+	<SubTexture name="normal-middleright" x="18" y="2" width="2" height="7" frameX="0" frameY="0" frameWidth="2" frameHeight="7"/>
+	<SubTexture name="normal-bottomleft" x="14" y="19" width="2" height="2" frameX="0" frameY="0" frameWidth="2" frameHeight="2"/>
+	<SubTexture name="normal-bottom" x="10" y="11" width="6" height="2" frameX="0" frameY="0" frameWidth="6" frameHeight="2"/>
+	<SubTexture name="normal-bottomright" x="26" y="11" width="2" height="2" frameX="0" frameY="0" frameWidth="2" frameHeight="2"/>
+	<SubTexture name="hover-topleft" x="10" y="19" width="2" height="2" frameX="0" frameY="0" frameWidth="2" frameHeight="2"/>
+	<SubTexture name="hover-top" x="18" y="11" width="6" height="2" frameX="0" frameY="0" frameWidth="6" frameHeight="2"/>
+	<SubTexture name="hover-topright" x="2" y="20" width="1" height="1" frameX="0" frameY="-1" frameWidth="2" frameHeight="2"/>
+	<SubTexture name="hover-middleleft" x="18" y="2" width="2" height="7" frameX="0" frameY="0" frameWidth="2" frameHeight="7"/>
+	<SubTexture name="hover-middle" x="2" y="2" width="6" height="7" frameX="0" frameY="0" frameWidth="6" frameHeight="7"/>
+	<SubTexture name="hover-middleright" x="22" y="2" width="2" height="7" frameX="0" frameY="0" frameWidth="2" frameHeight="7"/>
+	<SubTexture name="hover-bottomleft" x="26" y="11" width="2" height="2" frameX="0" frameY="0" frameWidth="2" frameHeight="2"/>
+	<SubTexture name="hover-bottom" x="10" y="11" width="6" height="2" frameX="0" frameY="0" frameWidth="6" frameHeight="2"/>
+	<SubTexture name="hover-bottomright" x="26" y="15" width="2" height="2" frameX="0" frameY="0" frameWidth="2" frameHeight="2"/>
+	<SubTexture name="pressed-topleft" x="5" y="20" width="1" height="1" frameX="-1" frameY="-1" frameWidth="2" frameHeight="2"/>
+	<SubTexture name="pressed-top" x="18" y="15" width="6" height="2" frameX="0" frameY="0" frameWidth="6" frameHeight="2"/>
+	<SubTexture name="pressed-topright" x="26" y="19" width="2" height="2" frameX="0" frameY="0" frameWidth="2" frameHeight="2"/>
+	<SubTexture name="pressed-middleleft" x="2" y="11" width="2" height="7" frameX="0" frameY="0" frameWidth="2" frameHeight="7"/>
+	<SubTexture name="pressed-middle" x="10" y="2" width="6" height="7" frameX="0" frameY="0" frameWidth="6" frameHeight="7"/>
+	<SubTexture name="pressed-middleright" x="6" y="11" width="2" height="7" frameX="0" frameY="0" frameWidth="2" frameHeight="7"/>
+	<SubTexture name="pressed-bottomleft" x="18" y="19" width="2" height="2" frameX="0" frameY="0" frameWidth="2" frameHeight="2"/>
+	<SubTexture name="pressed-bottom" x="10" y="15" width="6" height="2" frameX="0" frameY="0" frameWidth="6" frameHeight="2"/>
+	<SubTexture name="pressed-bottomright" x="22" y="19" width="2" height="2" frameX="0" frameY="0" frameWidth="2" frameHeight="2"/>
 </TextureAtlas>
