@@ -18,6 +18,8 @@
 	<!-- Comment this out to disable commit number on FPS -->
 	<define name="SHOW_BUILD_ON_FPS"/>
 
+	<!-- <define name="VANILLA_ASSETS"/> -->
+
 	<!-- Comment this out to disable dark mode windows -->
 	<define name="DARK_MODE_WINDOW"/>
 
@@ -172,6 +174,11 @@
 
 	<library name="assets"    preload="true"  if="PRELOAD_ALL"/>
 	<library name="assets"    preload="false" if="NO_PRELOAD_ALL"/>
+
+	<section if="VANILLA_ASSETS">
+		<assets path="assets/vanilla_assets" rename="assets" exclude="*.ogg" if="web"/>
+		<assets path="assets/vanilla_assets" rename="assets" exclude="*.mp3"  unless="web"/>
+	</section>
 
 	<section unless="TEST_BUILD">
 		<assets path="assets/"    rename="assets"	exclude="*.ogg" if="web"/>
