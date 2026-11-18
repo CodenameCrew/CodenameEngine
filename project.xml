@@ -177,7 +177,7 @@
 
 	<section if="VANILLA_ASSETS">
 		<assets path="assets/vanilla_assets" rename="assets" exclude="*.ogg" if="web"/>
-		<assets path="assets/vanilla_assets" rename="assets" exclude="*.mp3"  unless="web"/>
+		<assets path="assets/vanilla_assets" rename="assets" exclude="*.mp3" unless="web"/>
 	</section>
 
 	<section unless="TEST_BUILD">
