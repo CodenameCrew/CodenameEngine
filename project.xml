@@ -176,8 +176,8 @@
 	<library name="assets"    preload="false" if="NO_PRELOAD_ALL"/>
 
 	<section if="VANILLA_ASSETS">
-		<assets path="assets/vanilla_assets" rename="assets" exclude="*.ogg" if="web"/>
-		<assets path="assets/vanilla_assets" rename="assets" exclude="*.mp3" unless="web"/>
+		<assets path="vanilla_assets" rename="assets" exclude="*.mp3" unless="web"/>
+		<assets path="vanilla_assets" rename="assets" exclude="*.ogg" if="web"/>
 	</section>
 
 	<section unless="TEST_BUILD">
