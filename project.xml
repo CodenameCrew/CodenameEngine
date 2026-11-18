@@ -18,6 +18,7 @@
 	<!-- Comment this out to disable commit number on FPS -->
 	<define name="SHOW_BUILD_ON_FPS"/>
 
+	<!-- Uncomment this to don't include base game files -->
 	<define name="VANILLA_ASSETS"/>
 
 	<!-- Comment this out to disable dark mode windows -->
