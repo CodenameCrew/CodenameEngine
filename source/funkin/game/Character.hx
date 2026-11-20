@@ -618,6 +618,11 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 			} catch (e) {
 				Logs.trace('Error while loading character ${character}: ${e}', ERROR);
 
+				if(character == FALLBACK_CHARACTER){
+					xml = new Access(Xml.parse('<character/>').firstElement());
+					break;
+				}
+
 				character = FALLBACK_CHARACTER;
 				if (char != null)
 					char.curCharacter = character;
