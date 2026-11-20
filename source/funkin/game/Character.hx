@@ -672,7 +672,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	}
 
 	public static function clearCache(){
-		for (frame in cachedFrames) frame.destroy();
+		// for (frame in cachedFrames) frame.destroy(); TODO: Look into why it crashes
 		cachedFrames.clear();
 	}
 }
