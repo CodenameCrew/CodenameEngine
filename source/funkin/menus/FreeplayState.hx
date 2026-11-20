@@ -426,8 +426,13 @@ class FreeplayState extends MusicBeatState
 		}
 		#end
 
-		var text = validDifficulties ? curDifficulties[curDifficulty].toUpperCase() + (curSong != songs[curSelected] ? ' (${curSong.variant.toUpperCase()})' : '') : '-';
-		diffText.text = curDifficulties.length > 1 ? '< $text >' : text;
+		var text = '-';
+		if (validDifficulties) {
+			text = curDifficulties[curDifficulty];
+			if(TU.exists('diff.$text')) text = TU.translate('diff.$text');
+			if (curSong != songs[curSelected]) text += ' (${curSong.variant})';
+		}
+		diffText.text = (curDifficulties.length > 1 ? '< $text >' : text).toUpperCase();
 	}
 
 	function updateScore() {
@@ -544,7 +549,7 @@ class FreeplayState extends MusicBeatState
 		curDiffMetaKeys.resize(0);
 		curDifficulties = songs[curSelected].difficulties.copy();
 		for (i in 0...curDifficulties.length) curDiffMetaKeys.push(null);
-		
+
 		if (songs[curSelected].variants != null) {
 			var meta:ChartMetaData;
 			for (variant in songs[curSelected].variants) if ((meta = songs[curSelected].metas.get(variant)) != null) {
