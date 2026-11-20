@@ -175,12 +175,13 @@ class StrumLine extends FlxTypedGroup<Strum> {
 				continue;
 
 			notes.members[total-(il++)-1] = prev = new Note(this, note, false, prev);
-
-			if (note.sLen > Conductor.stepCrochet * 0.75) {
+			
+			var stepCrochet:Float = 15000 / Conductor.getTimeInBPM(note.time.getDefault(0));
+			if (note.sLen > stepCrochet * 0.75) {
 				var len:Float = note.sLen;
 				var curLen:Float = 0;
 				while(len > 10) {
-					curLen = Math.min(len, Conductor.stepCrochet);
+					curLen = Math.min(len, stepCrochet);
 					notes.members[total-(il++)-1] = prev = new Note(this, note, true, curLen, note.sLen - len, prev);
 					len -= curLen;
 
@@ -373,7 +374,15 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 			notes.forEachAlive(__inputProcessPressed);
 		}
-
+		else {
+			for (c in characters) {
+				if (c.lastAnimContext == SING && c.__lockAnimThisFrame) {
+					c.__lockAnimThisFrame = false;
+					c.tryDance();
+				}
+			}
+		}
+		
 		for (i => s in members) s.updatePlayerInput(__pressed[i], __justPressed[i], __justReleased[i]);
 
 		if (PlayState.instance != null) PlayState.instance.gameAndCharsEvent("onPostInputUpdate", event);
