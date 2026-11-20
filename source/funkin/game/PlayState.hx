@@ -1881,7 +1881,7 @@ class PlayState extends MusicBeatState
 					insert(members.indexOf(oldChar), newChar);
 
 					// useful for scripts
-					var event = gameAndCharsEvent("onCharacterChange", EventManager.get(CharacterChangeEvent).recycle(
+					var scriptEvent = gameAndCharsEvent("onCharacterChange", EventManager.get(CharacterChangeEvent).recycle(
 						oldChar, newChar, event, strumLines.members[event.params[0]]
 					));
 
@@ -1895,7 +1895,7 @@ class PlayState extends MusicBeatState
 						oldChar.kill();
 					}
 					strumLines.members[event.params[0]].characters[event.params[1]] = newChar;
-					newChar.scripts.event("onCharacterChange", event);
+					newChar.scripts.event("onCharacterChange", scriptEvent);
 
 					//refresh icons
 					switch(event.params[0]){
