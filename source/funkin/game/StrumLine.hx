@@ -376,7 +376,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 		}
 		else {
 			for (c in characters) {
-				if (c.lastAnimContext != LOCK && c.__lockAnimThisFrame) {
+				if (c.lastAnimContext == SING && c.__lockAnimThisFrame) {
 					c.__lockAnimThisFrame = false;
 					c.tryDance();
 				}
