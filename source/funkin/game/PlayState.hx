@@ -2386,8 +2386,11 @@ class PlayState extends MusicBeatState
 	
 	public function addScript(file:String) {
 		var ext = Path.extension(file).toLowerCase();
-		if (Script.scriptExtensions.contains(ext))
-			scripts.add(Script.create(file));
+		if (Script.scriptExtensions.contains(ext)) {
+			var script = Script.create(file);
+			if (script is DummyScript) return;
+			scripts.add(script);
+		}
 	}
 
 	// GETTERS & SETTERS
