@@ -8,7 +8,7 @@ Do note that compiling is ***NOT*** the intended manner of modding with Codename
 - The version you downloaded is yours to keep forever. If a new release of CNE goes live, you bear the responsibility of merging by hand and testing it.
 - You lose compatibility with other mods. Softcoded mods stack on top of each other. Source mods cannot.
 - Changed something? In softcoding, it takes two seconds. In hardcoding, it now requires a rebuild, up to a few minutes to an hour if you have not compiled the engine beforehand.
-- Bugs caused by your changes will now be your reponsibility to fix.
+- Bugs caused by your changes will now be your responsibility to fix.
 - HScript has a safety net that catches errors and (mostly) prevents crashes. Source modding does not have this. This means that if something goes wrong, HScript would catch it, but your source mod would not and it'll take the entire game down.
 </details>
 
@@ -26,7 +26,7 @@ Do note that compiling is ***NOT*** the intended manner of modding with Codename
 - Syncs with the original repo usually causes conflicts. This means that you'll be stuck on whatever version you forked from.
 - Modpacks made for your fork are only compatible with your forks and not any releases of Codename.
 - Testing is *VERY* slow compared to softcoding.
-- Crashes are your responsibilty. A fork needs someone willing to maintain it.
+- Crashes are your responsibility. A fork needs someone willing to maintain it.
 </details>
 
 ## Initialization
@@ -42,7 +42,7 @@ Here is what you'll need:
   - For Linux, that's `gcc` and `g++`. `libvlc` must also be installed for video playback functionality.
 	- Do note that you'll need to install extra libraries to get Lime to compile. See [this](https://github.com/CodenameCrew/cne-lime/tree/develop/project#prerequisites) for what you'd need. 
 	- The prerequisites listed extra libraries required for HashLink; ignore these as support for HashLink has been dropped.
-- The engine's libaries.
+- The engine's libraries.
   - You can run `setup-windows.bat` to set these up in Windows, or `setup-unix.sh` for both Mac and Linux. Ensure that your `haxelib` is up to date.
   - After running either of this, you might be given a warning similar to `warning: repository requires reformatting`. Ignore these warnings and do not run the command listed as it will break the structure of the libraries installed.
 - Any code editor. Yes, Notepad or `vim` is usable, but for the sake of readability, you should use Visual Studio Code with the [Haxe](https://marketplace.visualstudio.com/items?itemName=nadako.vshaxe) and [Lime](https://marketplace.visualstudio.com/items?itemName=openfl.lime-vscode-extension) extensions. You may optionally set up your `hxcpp` debugger at this stage.
