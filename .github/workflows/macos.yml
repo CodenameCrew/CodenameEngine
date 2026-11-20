@@ -184,7 +184,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: Codename Engine (Executable Only)
-          path: CodenameEngine.app/Contents/MacOS/CodenameEngine
+          path: |
+            CodenameEngine.app/Contents/MacOS/CodenameEngine
+            CodenameEngine.app/Contents/MacOS/lime.ndll
       - name: Uploading Universal Mac OS bundle (entire build)
         uses: actions/upload-artifact@v7
         with:

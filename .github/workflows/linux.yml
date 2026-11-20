@@ -58,7 +58,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: Codename Engine (Executable Only)
-          path: export/release/linux/bin/CodenameEngine
+          path: |
+            export/release/linux/bin/CodenameEngine
+            export/release/linux/bin/lime.ndll
       - name: Uploading artifact (entire build)
         uses: actions/upload-artifact@v7
         with:
