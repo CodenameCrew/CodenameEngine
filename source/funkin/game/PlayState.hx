@@ -1836,16 +1836,20 @@ class PlayState extends MusicBeatState
 				strumLines.members[event.params[0]].characters[event.params[1]] = newChar;
 
 				//refresh icons
-				switch(event.params[0]){
+				if (event.params[8]) switch(event.params[0]) {
 					case 0:
 						iconP2.setIcon(dad.getIcon());
 					case 1:
 						iconP1.setIcon(bf.getIcon());
 				}
-				var leftColor:Int = dad != null && dad.iconColor != null && Options.colorHealthBar ? dad.iconColor : (opponentMode ? 0xFF66FF33 : 0xFFFF0000);
-				var rightColor:Int = boyfriend != null && boyfriend.iconColor != null && Options.colorHealthBar ? boyfriend.iconColor : (opponentMode ? 0xFFFF0000 : 0xFF66FF33); // switch the colors
-				healthBar.createFilledBar(leftColor, rightColor);
-				healthBar.updateBar();
+
+				if (event.params[9]) {
+					var leftColor:Int = dad != null && dad.iconColor != null && Options.colorHealthBar ? dad.iconColor : (opponentMode ? 0xFF66FF33 : 0xFFFF0000);
+					var rightColor:Int = boyfriend != null && boyfriend.iconColor != null && Options.colorHealthBar ? boyfriend.iconColor : (opponentMode ? 0xFFFF0000 : 0xFF66FF33); // switch the colors
+					healthBar.createFilledBar(leftColor, rightColor);
+					healthBar.updateBar();
+				}
+				
 			case "Scroll Speed Change":
 				var tween = eventsTween.get("scrollSpeedTween");
 				if (tween != null) tween.cancel();
