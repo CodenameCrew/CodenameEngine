@@ -1863,13 +1863,12 @@ class PlayState extends MusicBeatState
 					stage.applyCharStuff(newChar, !event.params[7] ? strumLines.members[event.params[0]].data.position : null, event.params[1], !event.params[7]);
 					if(event.params[6]) newChar.shader = oldChar.shader;
 
-					// shortcut to tell if CHARACTER_CHANGE_FULL_CACHE is used or not
-					if (__chosenChar != null) {
+					if (Flags.CHARACTER_CHANGE_FULL_CACHE) {
 						newChar.isPlayer = oldChar.isPlayer;
 						newChar.fixChar(newChar.__switchAnims, newChar.__autoInterval);
 						newChar.dance();
 
-						__cacheData.remove(__chosenChar);
+						if (__cacheData != null) __cacheData.remove(__chosenChar);
 					}
 
 					newChar.x += event.params[4];
@@ -1886,7 +1885,7 @@ class PlayState extends MusicBeatState
 					));
 
 					remove(oldChar);
-					if (__chosenChar != null) {
+					if (Flags.CHARACTER_CHANGE_FULL_CACHE) {
 						final char = oldChar.curCharacter;
 						if (!characterChangePool.exists(char)) {
 							characterChangePool.set(char, []);
