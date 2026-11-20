@@ -131,11 +131,9 @@ final class XMLUtil {
 	 * @param node The XML node
 	 * @param defaultSprite The sprite that is used if there's no "sprite" attribute
 	 * @param parentFolder The parent folder
-	 * @param unique If this frame collection is unique (may help with crashes)
-	 * @param key The cache key if its unique
 	 * @param animateSettings The FlxAnimate settings
 	 */
-	public static function getSpriteSheetsFromXML(node:Access, ?defaultSprite:String, ?parentFolder:String = '', ?unique:Bool = false, ?key:String, ?animateSettings:FlxAnimateSettings):FlxFramesCollection {
+	public static function getSpriteSheetsFromXML(node:Access, ?defaultSprite:String, ?parentFolder:String = '', ?animateSettings:FlxAnimateSettings):FlxFramesCollection {
 		var seenSheets:Array<String> = [];
 		
 		if(defaultSprite != null || node.x.exists("sprite")){
@@ -163,7 +161,7 @@ final class XMLUtil {
 			}
 			seenSheets.push(path);
 		}
-		return Paths.getMultiFrames(seenSheets, false, unique, key, false, null, animateSettings);
+		return Paths.getMultiFrames(seenSheets, false, false, null, false, null, animateSettings);
 	}
 	
 	/**
