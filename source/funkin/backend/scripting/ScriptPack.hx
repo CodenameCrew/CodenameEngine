@@ -92,6 +92,21 @@ class ScriptPack extends Script {
 	}
 
 	/**
+	 * Calls a function with a single argument on every single script.
+	 * Only calls on scripts that are active.
+	 * @param func Function to call
+	 * @param arg Argument to pass to the function
+	**/
+	public override function callOne(func:String, arg:Dynamic):Dynamic {
+		for(e in scripts) {
+			if (!e.active) continue;
+			_ONE_ARG[0] = arg;
+			e.call(func, _ONE_ARG);
+		}
+		return null;
+	}
+
+	/**
 	 * Sends an event to every single script, and returns the event.
 	 * @param func Function to call
 	 * @param event Event (will be the first parameter of the function)

@@ -114,6 +114,7 @@ final class Windows {
 	')
 	public static function setWindowIcon(title:String, path:String) {}
 
+	// Expects a fixed BGRA non-premultiplied
 	@:functionCode('
 	HWND window = findTargetWindow(title.c_str());
 	if (window == NULL) return;
@@ -169,11 +170,11 @@ final class Windows {
 	')
 	public static function setWindowIconBytes(big:Bool, title:String, bytes:Bytes, width:Int, height:Int) {}
 
-	public static function setWindowIconImage(big:Bool, title:String, image:Image, dontClone:Bool = false)
+	public static function setWindowIconImage(big:Bool, title:String, image:Image)
 	{
 		if (image.format != BGRA32 || image.premultiplied)
 		{
-			if (!dontClone) image = image.clone();
+			image = image.clone();
 			image.format = BGRA32;
 			image.premultiplied = false;
 		}
@@ -267,6 +268,26 @@ final class Windows {
 		return 0.0;
 	")
 	public static function getCurrentProcessMemory():Float
+	{
+		return 0;
+	}
+
+	@:functionCode('
+		typedef LONG (WINAPI *RtlGetVersionFn)(PRTL_OSVERSIONINFOW);
+
+		HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
+		if (!ntdll) return 0;
+
+		RtlGetVersionFn fn = (RtlGetVersionFn)(void*)GetProcAddress(ntdll, "RtlGetVersion");
+		if (!fn) return 0;
+
+		RTL_OSVERSIONINFOW info = {0};
+		info.dwOSVersionInfoSize = sizeof(info);
+		if (fn(&info) != 0) return 0;
+
+		return (int)info.dwBuildNumber;
+	')
+	public static function getBuildNumber():Int
 	{
 		return 0;
 	}

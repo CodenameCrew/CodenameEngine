@@ -111,22 +111,39 @@ final class XMLUtil {
 		return OK;
 	}
 
+
+
 	/**
 	 * Loads multiple sheets into 1 sprite,
-	 * for every `<spritesheet>characters/bf</spritesheet>` there is.
-	 * (Can also be spelled as `<sheet/>`, or `<spritesheet path="characters/bf" />`)
 	 * @param spr The sprite
 	 * @param node The XML node
 	 * @param parentFolder The parent folder
 	 */
 	public static function appendSpriteSheetsFromXML(spr:FunkinSprite, node:Access, ?parentFolder:String = ''):FlxFramesCollection {
 		if (spr == null) return null;
-		var defaultPath = '$parentFolder${node.getAtt("sprite").getDefault(spr.name)}';
-		if (!node.hasNode.spritesheet && !node.hasNode.sheet) {
-			spr.loadSprite(Paths.image(defaultPath, null, true));
-			return spr.frames;
+		return spr.frames = getSpriteSheetsFromXML(node, spr.name, parentFolder, spr.animateSettings);
+	}
+
+	/**
+	 * Gets frames of multiple sheets from a XML,
+	 * for every `<spritesheet>characters/bf</spritesheet>` there is.
+	 * (Can also be spelled as `<sheet/>`, or `<spritesheet path="characters/bf" />`)
+	 * @param node The XML node
+	 * @param defaultSprite The sprite that is used if there's no "sprite" attribute
+	 * @param parentFolder The parent folder
+	 * @param animateSettings The FlxAnimate settings
+	 */
+	public static function getSpriteSheetsFromXML(node:Access, ?defaultSprite:String, ?parentFolder:String = '', ?animateSettings:FlxAnimateSettings):FlxFramesCollection {
+		var seenSheets:Array<String> = [];
+		
+		if(defaultSprite != null || node.x.exists("sprite")){
+			var defaultPath = '$parentFolder${node.getAtt("sprite").getDefault(defaultSprite)}';
+			if (!node.hasNode.spritesheet && !node.hasNode.sheet)
+				return Paths.getFrames(Paths.image(defaultPath, null, true), true, null, null, animateSettings);
+
+			seenSheets.push(defaultPath);
 		}
-		var seenSheets:Array<String> = [defaultPath];
+
 		for (n in node.elements) {
 			if (n.name != 'spritesheet' && n.name != 'sheet') continue;
 			var path = n.x.get('path') ?? n.x.firstChild()?.nodeValue?.trim();
@@ -144,8 +161,9 @@ final class XMLUtil {
 			}
 			seenSheets.push(path);
 		}
-		return spr.frames = Paths.getMultiFrames(seenSheets, false, false, null, false, null, spr.animateSettings);
+		return Paths.getMultiFrames(seenSheets, false, false, null, false, null, animateSettings);
 	}
+	
 	/**
 	 * Sets the properties of a sprite based on a XML node.
 	 * @param spr The sprite
@@ -236,6 +254,9 @@ final class XMLUtil {
 
 		if (node.has.zoomfactor)
 			spr.zoomFactor = Std.parseFloat(node.getAtt("zoomfactor")).getDefaultFloat(spr.zoomFactor);
+
+		if (node.has.anglefactor)
+			spr.angleFactor = Std.parseFloat(node.getAtt("anglefactor")).getDefaultFloat(spr.angleFactor);
 
 		if (node.has.alpha)
 			spr.alpha = Std.parseFloat(node.getAtt("alpha")).getDefaultFloat(spr.alpha);

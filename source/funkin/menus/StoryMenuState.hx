@@ -14,6 +14,10 @@ import funkin.backend.week.*;
 import funkin.savedata.FunkinSave;
 import haxe.io.Path;
 import haxe.xml.Access;
+import funkin.backend.assets.AssetSource;
+import funkin.backend.assets.IModsAssetLibrary;
+import funkin.backend.assets.ModsFolder;
+import funkin.backend.assets.ModsFolderLibrary;
 
 class StoryMenuState extends MusicBeatState {
 	public var characters:Map<String, WeekData.WeekCharacter> = [];
@@ -254,6 +258,11 @@ class StoryMenuState extends MusicBeatState {
 	public function loadXMLs() {
 		weekList = StoryWeeklist.get(true, false);  // will only load week files AND NOT characters too (we will load them later only if needed)!!  - Nex
 		weeks = weekList.weeks;
+
+		// super rare case
+		if(weeks.length <= 0)
+			weeks.push(Week.loadWeek('tutorial', false));
+
 		for (week in weeks) for (char in week.chars) if (char != null)
 			addCharacter(char.name);
 	}
@@ -359,13 +368,53 @@ class StoryWeeklist {
 
 	public function new() {}
 
-	public function getWeeksFromSource(source:funkin.backend.assets.AssetSource, useTxt:Bool = true, loadCharactersData:Bool = true) {
+	public function getWeeksFromSource(source:AssetSource, useTxt:Bool = true, loadCharactersData:Bool = true) {
 		var path:String = Paths.txt('weeks/weeks');
-		var weeksFound:Array<String> = useTxt && Paths.assetsTree.existsSpecific(path, "TEXT", source) ? CoolUtil.coolTextFile(path) :
-			[for (c in Paths.getFolderContent('data/weeks/weeks/', false, source)) if (Path.extension(c).toLowerCase() == "xml") Path.withoutExtension(c)];
+		var totalWeeksFound:Array<String> = [];
+		var mods:Array<IModsAssetLibrary> = ModsFolder.getLoadedModsLibs(true);
+		// addon songs appear lower than the mod's main music now
+		while (mods[0].modName != (ModsFolder.currentModFolder ?? 'assets')) {
+			final thisMod = mods.pop();
+			mods.insert(0, thisMod);
+		}
+		if (source != BOTH) {
+			var i:Int = 0;
+			while (i < mods.length) {
+				final thisMod = mods[i];
+				if (
+					((source == MODS) && (thisMod.modName == 'assets'))
+					|| ((source == SOURCE) && (thisMod.modName != 'assets'))
+				)
+					mods.remove(thisMod);
+				else i++;
+			}
+		}
 
-		if (weeksFound.length > 0) {
-			for (w in weeksFound) {
+		var i:Int = 0;
+		while (i < mods.length) {
+			final modLib:ModsFolderLibrary = cast mods[i++];
+			if (modLib == null) { i++; continue; }
+
+			final modName = modLib.modName;
+			var weeksFound:Array<String> = [];
+
+			if (useTxt) {
+				var path = Paths.txt('weeks/weeks/LIB_$modName');
+
+				if (modLib.exists(path, "TEXT")) {
+					for (i in CoolUtil.coolTextFile(path)) weeksFound.push(i);
+				}
+			}
+			if (weeksFound.length <= 0 || !useTxt) {
+				for (i in modLib.getFiles('assets/data/weeks/weeks')) {
+					if (Path.extension(i).toLowerCase() == "xml")
+						weeksFound.push(Path.withoutExtension(i));
+				}
+			}
+			for (w in weeksFound) totalWeeksFound.push(w);
+		}
+		if (totalWeeksFound.length > 0) {
+			for (w in totalWeeksFound) {
 				var week = Week.loadWeek(w, loadCharactersData);
 				if (week != null) weeks.push(week);
 			}
@@ -385,7 +434,12 @@ class StoryWeeklist {
 				weekList.getWeeksFromSource(SOURCE, useTxt, loadCharactersData);
 				weekList.getWeeksFromSource(MODS, useTxt, loadCharactersData);
 			default /*case 'override'*/:
-				if (weekList.getWeeksFromSource(MODS, useTxt, loadCharactersData))
+				// appends addon weeks after base game weeks,
+				// because old behavior would clear base game weeks either way
+				if (ModsFolder.currentModFolder == null) {
+					weekList.getWeeksFromSource(SOURCE, useTxt, loadCharactersData);
+					weekList.getWeeksFromSource(MODS, useTxt, loadCharactersData);
+				} else if (weekList.getWeeksFromSource(MODS, useTxt, loadCharactersData))
 					weekList.getWeeksFromSource(SOURCE, useTxt, loadCharactersData);
 		}
 

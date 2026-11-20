@@ -20,6 +20,7 @@ import flixel.graphics.frames.FlxFrame;
 import flixel.math.FlxAngle;
 import animate.internal.RenderTexture;
 import animate.FlxAnimateFrames;
+import funkin.backend.system.FakeCamera;
 
 enum abstract XMLAnimType(Int)
 {
@@ -335,6 +336,8 @@ class FunkinSprite extends FlxAnimate implements IBeatReceiver implements IOffse
 
     override function prepareDrawMatrix(matrix:FlxMatrix, camera:FlxCamera):Void {
 		super.prepareDrawMatrix(matrix, camera);
+
+		if(camera is FakeCamera) camera = this.camera;
 
 		final ox = camera.width * 0.5, oy = camera.height * 0.5;
 		final sx = (camera.scaleX > 0.0 ? Math.max : Math.min)(0.0, (1.0 - zoomFactor) / camera.scaleX + zoomFactor);

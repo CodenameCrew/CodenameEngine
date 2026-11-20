@@ -61,6 +61,13 @@
 	</group>
 
 	<group name="AppearanceOptions" prefix="AppearanceOptions.">
+		<str id="framePacer-name">Synchronizacja</str>
+		<str id="framePacer-desc">Ekran dopasowuje klatki do częstotliwości odświeżania monitora i włącza synchronizację scanline oraz wyrównanie wysyłania; opcja Klatki jest wyłączona, gdy tryb jest aktywny. Adaptacyjna włącza je tylko, gdy liczba klatek pasuje do częstotliwości odświeżania lub stanowi jej całkowity podział (1/2, 1/4...). Wyłączona przywraca poprzednie zachowanie. Bez limitu całkowicie usuwa limit klatek. Synchronizacja kosztuje około 0,3 ms opóźnienia wejścia: w pełnoekranie linia rozrywania pozostaje na krawędzi ekranu, poza widokiem, a w oknie każda klatka jest wyświetlana, zamiast się zacinać.</str>
+		<str id="framePacer-off">Wyłączona</str>
+		<str id="framePacer-adaptive">Adaptacyjna</str>
+		<str id="framePacer-followDisplay">Ekran</str>
+		<str id="framePacer-unlimited">Bez limitu</str>
+
 		<str id="framerate-name">Klatki</str>
 		<str id="framerate-desc">Ilość Klatek na sekundę ktore gra renderuje</str>
 

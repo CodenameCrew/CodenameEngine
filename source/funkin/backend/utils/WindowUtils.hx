@@ -2,24 +2,34 @@ package funkin.backend.utils;
 
 import lime.graphics.Image;
 import openfl.Lib;
-import openfl.system.Capabilities;
 #if windows
 import funkin.backend.utils.native.Windows;
 #end
 
 final class WindowUtils {
+	/**
+	 * Text title of the game application window.
+	**/
 	public static var title(default, set):String;
 	private static function set_title(value:String):String {
 		title = value;
 		updateTitle();
 		return value;
 	}
+
+	/**
+	 * The text to add before the title window.
+	**/
 	public static var prefix(default, set):String = "";
 	private static function set_prefix(value:String):String {
 		prefix = value;
 		updateTitle();
 		return value;
 	}
+
+	/**
+	 * The text to add after the title window.
+	**/
 	public static var suffix(default, set):String = "";
 	private static function set_suffix(value:String):String {
 		suffix = value;
@@ -27,13 +37,25 @@ final class WindowUtils {
 		return value;
 	}
 
+	/**
+	 * Whether or not to prevent the main game application window from closing first time,
+	 * call WindowUtils.resetClosing in WindowUtils.onClosing to keep preventing the game window from closing.
+	**/
 	public static var preventClosing:Bool = true;
+
+	/**
+	 * The callback when the main game application window is closing.
+	**/
 	public static var onClosing:Void->Void;
 
-	static var __triedClosing:Bool = false;
+	/**
+	 * Resets the preventClosing to keep prevent the main game application window from closing.
+	 * see WindowUtils.preventClosing
+	**/
 	public static inline function resetClosing() __triedClosing = false;
+	static var __triedClosing:Bool = false;
 
-	@:dox(hide) public static inline function init() {
+	@:dox(hide) public static function init() {
 		Lib.application.window.onClose.add(function () {
 			if (preventClosing && !__triedClosing) {
 				Lib.application.window.onClose.cancel();
@@ -46,7 +68,7 @@ final class WindowUtils {
 	/**
 	 * Resets the window title to the application name and resets the prefix and suffix.
 	**/
-	public static inline function resetTitle() {
+	public static function resetTitle() {
 		resetAffixes(false);
 		title = Flags.WINDOW_TITLE_USE_MOD_NAME ? Flags.MOD_NAME : Flags.TITLE;
 	}
@@ -54,63 +76,55 @@ final class WindowUtils {
 	/**
 	 * Resets the window icon to the application or mod default icons.
 	**/
-	public static inline function resetIcon() {
-		if (Assets.exists(Flags.MOD_ICON)) Lib.application.window.setIcon(Image.fromBytes(Assets.getBytes(Flags.MOD_ICON)));
+	public static function resetIcon() {
+		if (Flags.modIconImages.length > 0) Lib.application.window.setIcon(Flags.modIconImages[0]);
 
 		#if windows
-		inline function doIcon(big:Bool) {
-			var metric = Windows.getWindowIconMetrics(big);
+		final smallMetric = Windows.getWindowIconMetrics(false);
 
-			var path:String;
-			if (metric <= 16) path = Flags.MOD_ICON16;
-			else if (metric <= 24) path = Flags.MOD_ICON24;
-			else if (metric <= 32) path = Flags.MOD_ICON32;
-			else {
-				//path = Flags.MOD_ICON;
-				path = null;
-			}
+		var image:Image = Flags.modIconImages[0], i = Flags.modIconImages.length;
+		while (i-- > 0)
+			if (smallMetric <= Math.max((image = Flags.modIconImages[i]).width, image.height)) break;
 
-			if (path != null && Assets.exists(path)) {
-				var image = Image.fromBytes(Assets.getBytes(path));
-				if (image != null) Windows.setWindowIconImage(big, Lib.application.window.title, image, true);
-			}
-		}
-
-		doIcon(false);
-		doIcon(true);
+		if (image != null && (image != Flags.modIconImages[0] || smallMetric == Math.max(image.width, image.height)))
+			Windows.setWindowIconImage(false, Lib.application.window.title, image);
 		#end
 	}
 
 	/**
 	 * Changes the window resolution.
-	 * @param width The window's resolution width (Defaults to 1280).
-	 * @param height The window's resolution height (Defaults to 720).
-	 * @param changeSize Should it also update the window size.
+	 * @param width The window's resolution width (Defaults to Flags.GAME_WIDTH or 1280).
+	 * @param height The window's resolution height (Defaults to Flags.GAME_HEIGHT or 720).
+	 * @param updateWindow Should it also update the window size and re-centers the position.
 	**/
-	public static inline function setResolution(?width:Int, ?height:Int, changeSize = true) {
+	public static function setResolution(?width:Int, ?height:Int, updateWindow = true) @:privateAccess {
+		if (width == null) width = Flags.GAME_WIDTH;
+		if (height == null) height = Flags.GAME_HEIGHT;
 
-		var w = width == null ? Flags.GAME_WIDTH : width;
-		var h = height == null ? Flags.GAME_HEIGHT : height;
+		if (FlxG.width == width && FlxG.height == height) return;
 
-		var win = Lib.application.window;
+		FlxG.width = FlxG.initialWidth = width;
+		FlxG.height = FlxG.initialHeight = height;
 
-		@:privateAccess {
-			if(changeSize){
-				win.resize(w, h);
+		if (updateWindow) {
+			final window = Lib.application.window;
+			final scale = MathUtil.minSmart(window.display.bounds.width / width, window.display.bounds.height / height, 1.0);
 
-				win.x = Std.int((Capabilities.screenResolutionX / 2) - (w / 2));
-				win.y = Std.int((Capabilities.screenResolutionY / 2) - (h / 2));
-			}
-			
-			FlxG.width = FlxG.initialWidth = w; FlxG.height = FlxG.initialHeight = h;
+			window.resize(Std.int(width * scale), Std.int(height * scale));
+			window.move(
+				Std.int(window.display.safeArea.x + (window.display.safeArea.width - window.width) * 0.5),
+				Std.int(window.display.safeArea.y + (window.display.safeArea.height - window.height) * 0.5)
+			);
 		}
+
+		if (FlxG.scaleMode != null) FlxG.scaleMode.onMeasure(width, height);
 	}
 
 	/**
 	 * Resets the prefix and suffix.
 	 * @param update Should it update window title.
 	**/
-	public static inline function resetAffixes(update = true) {
+	public static function resetAffixes(update = true) {
 		prefix = suffix = "";
 		if (update) updateTitle();
 	}
@@ -120,7 +134,7 @@ final class WindowUtils {
 	 * @param title The title to set.
 	 * @param image The image to set as the icon.
 	**/
-	public static inline function setWindow(?title:String, ?image:String) {
+	public static function setWindow(?title:String, ?image:String) {
 		WindowUtils.title = title != null ? title : (Flags.WINDOW_TITLE_USE_MOD_NAME ? Flags.MOD_NAME : Flags.TITLE);
 
 		if (image != null && Assets.exists(image = Paths.image(image)))

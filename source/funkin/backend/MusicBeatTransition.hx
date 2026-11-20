@@ -108,6 +108,8 @@ class MusicBeatTransition extends MusicBeatSubstate {
 	}
 
 	public function resizeDefaultSprites() {
+		if (transitionCamera == null) return;
+
 		if (blackSpr != null) {
 			blackSpr.scale.set(transitionCamera.width, transitionCamera.height);
 			blackSpr.updateHitbox();

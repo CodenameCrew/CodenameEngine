@@ -4,6 +4,8 @@ import funkin.backend.system.macros.GitCommitMacro;
 import openfl.text.TextField;
 
 class CodenameBuildField extends TextField {
+	public var contentDirty:Bool = true;
+
 	public function new() {
 		super();
 		autoSize = LEFT;
@@ -25,5 +27,7 @@ class CodenameBuildField extends TextField {
 		#if (debug || COMPILE_EXPERIMENTAL)
 		text += '\n${Flags.COMMIT_MESSAGE}';
 		#end
+
+		contentDirty = true;
 	}
 }

@@ -141,11 +141,8 @@ class Strum extends FlxSprite {
 
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
-		if (cpu) {
-			if (lastHit + (Conductor.crochet * 0.5) < Conductor.songPosition && getAnim() == "confirm") {
-				playAnim("static");
-			}
-		}
+		if (cpu && getAnim() == "confirm" && lastHit + (Conductor.crochet * 0.5) < Conductor.songPosition)
+			playAnim("static");
 	}
 
 	public override function draw() {

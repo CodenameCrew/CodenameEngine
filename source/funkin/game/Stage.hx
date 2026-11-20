@@ -352,9 +352,10 @@ class Stage extends FlxBasic implements IBeatReceiver {
 	 * @param char The character
 	 * @param posName The name of the character position
 	 * @param id The ID of the character
+	 * @param posNameFirst When true the position named `posName` takes priority over the character's own stage position (used when the position is picked explicitly, e.g. the character editor), otherwise the character's own one takes priority
 	**/
-	public function applyCharStuff(char:Character, posName:String, id:Float = 0) {
-		var charPos = characterPoses[char.curCharacter] != null ? characterPoses[char.curCharacter] : characterPoses[posName];
+	public function applyCharStuff(char:Character, posName:String, id:Float = 0, posNameFirst:Bool = false) {
+		var charPos = posNameFirst ? (characterPoses[posName] != null ? characterPoses[posName] : characterPoses[char.curCharacter]) : (characterPoses[char.curCharacter] != null ? characterPoses[char.curCharacter] : characterPoses[posName]);
 		if (charPos != null) {
 			charPos.prepareCharacter(char, id);
 			state.insert(state.members.indexOf(charPos), char);

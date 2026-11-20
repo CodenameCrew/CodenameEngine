@@ -103,6 +103,13 @@ class NoteGroup extends FlxTypedGroup<Note> {
 	}
 
 	public override function forEach(noteFunc:Note->Void, recursive:Bool = false) {
+		__doForEach(noteFunc, false);
+	}
+	public override function forEachAlive(noteFunc:Note->Void, recursive:Bool = false) {
+		__doForEach(noteFunc, true);
+	}
+
+	private function __doForEach(noteFunc:Note->Void, onlyAlive:Bool):Void {
 		i = length - 1;
 		__loopSprite = null;
 		__time = __getSongPos() + limit;
@@ -114,14 +121,9 @@ class NoteGroup extends FlxTypedGroup<Note> {
 			__loopSprite = members[i--];
 			if (__loopSprite == null || !__loopSprite.exists) continue;
 			if (__loopSprite.strumTime > __time) break;
-			noteFunc(__loopSprite);
+			if (!onlyAlive || __loopSprite.alive) noteFunc(__loopSprite);
 		}
 		__currentlyLooping = oldCur;
-	}
-	public override function forEachAlive(noteFunc:Note->Void, recursive:Bool = false) {
-		forEach(function(note) {
-			if (note.alive) noteFunc(note);
-		}, recursive);
 	}
 
 	public override function remove(Object:Note, Splice:Bool = false):Note

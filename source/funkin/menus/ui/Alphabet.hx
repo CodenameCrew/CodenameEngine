@@ -524,19 +524,21 @@ class Alphabet extends FlxSprite {
 	function getLetterAnim(char:String, data:AlphabetLetterData, component:AlphabetComponent, index:Int):FlxAnimation {
 		if (data == null) return null;
 		var name = char + Std.string(index);
-		if (animation.exists(name)) return animation.getByName(name);
+		var anim = animation.getByName(name);
+		if (anim != null) return anim;
 
-		var anim = (data.isDefault) ?
+		var animPrefix = (data.isDefault) ?
 			component.anim.replace("LOWERLETTER", char.toLowerCase()).replace("UPPERLETTER", char.toUpperCase()).replace("LETTER", char) :
 			component.anim;
-		animation.addByPrefix(name, anim, fps);
-		if (!animation.exists(name)) {
+		animation.addByPrefix(name, animPrefix, fps);
+		anim = animation.getByName(name);
+		if (anim == null) {
 			failedLetters.push(char);
 			var traceIndex = (component.refIndex != null) ? 'Outline For Component Index ${component.refIndex}' : 'Component Index ${index - data.startIndex}';
-			Logs.error('Character $char: $traceIndex: Animation "$anim" not found.');
+			Logs.error('Character $char: $traceIndex: Animation "$animPrefix" not found.');
 			return null;
 		}
-		return animation.getByName(name);
+		return anim;
 	}
 
 	function checkNode(node:Xml):Void {

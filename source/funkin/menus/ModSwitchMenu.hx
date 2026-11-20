@@ -69,10 +69,10 @@ class ModSwitchMenu extends MusicBeatSubstate {
 
 		alphabets = new FlxTypedGroup<Alphabet>();
 		for(mod in mods) {
-			var conf = mod != null ? ModsFolder.getModConfig(mod) : disableConf;
+			var conf = (mod != null && Options.legacyModMenuNames) ? disableConf : ModsFolder.getModConfig(mod);
 			modConf.push(conf);
 
-			var name = (conf.exists("Common") && conf["Common"].exists("NAME")) ? conf["Common"].get("NAME") : mod;
+			var name = (Options.legacyModMenuNames ? (mod ?? disableConf["Common"].get("NAME")) : ((conf.exists("Common") && conf["Common"].exists("NAME")) ? conf["Common"].get("NAME") : (mod ?? disableConf["Common"].get("NAME"))));
 			if (name == "YOUR MOD NAME HERE")
 				name = mod;
 
@@ -91,8 +91,9 @@ class ModSwitchMenu extends MusicBeatSubstate {
 
 		addonObjs = new FlxTypedGroup<Alphabet>();
 		addonChecks = new FlxTypedGroup<FlxSprite>();
-		for(i in 0...addons.length) {
-			var idx = addons.length - 1 - i; // reverse it for removal safety
+
+		var idx = addons.length;
+		while (idx-- > 0) {
 			var mod = addons[idx];
 			if (!FileSystem.isDirectory(ModsFolder.addonsPath + mod) && !Flags.ALLOWED_ZIP_EXTENSIONS.contains(Path.extension(mod))) {
 				addons.splice(idx, 1);

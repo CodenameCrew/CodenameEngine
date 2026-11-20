@@ -4,6 +4,7 @@ import funkin.options.PlayerSettings;
 import flixel.input.FlxInput;
 import flixel.input.actions.FlxAction;
 import funkin.backend.system.Controls;
+import funkin.backend.assets.ModsFolder;
 import flixel.input.actions.FlxActionInput;
 import flixel.input.actions.FlxActionManager;
 import flixel.input.actions.FlxActionSet;
@@ -96,12 +97,17 @@ class ControlsUtil {
 	}
 
 	public static function loadCustomControls() {
-		var xmlPath = Paths.xml("config/controls");
-		for(source in [funkin.backend.assets.AssetSource.SOURCE, funkin.backend.assets.AssetSource.MODS]) {
-			if (Paths.assetsTree.existsSpecific(xmlPath, "TEXT", source)) {
+		var filePaths:Array<String> = [];
+		for (modName in ModsFolder.getLoadedMods()) {
+			var folder = Paths.xml('config/controls/LIB_$modName');
+
+			if (Assets.exists(folder)) filePaths.push(folder);
+		}
+		for(source in filePaths) {
+			if (Paths.assetsTree.existsSpecific(source, "TEXT")) {
 				var access:Access = null;
 				try {
-					access = new Access(Xml.parse(Paths.assetsTree.getSpecificAsset(xmlPath, "TEXT", source)).firstElement());
+					access = new Access(Xml.parse(Paths.assetsTree.getSpecificAsset(source, "TEXT")).firstElement());
 				} catch(e) {
 					Logs.trace('Error while parsing controls.xml: ${Std.string(e)}', ERROR);
 				}

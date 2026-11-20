@@ -381,8 +381,15 @@
 					<str id="moveExtraUp">Rusz Mocniej w Górę</str>
 					<str id="moveExtraDown">Rusz Mocniej w Dół</str>
 					<str id="moveExtraRight">Rusz Mocniej w Prawo</str>
-					<str id="dragOffsetsMouse">Ruszaj Domiary Myszą?</str>
+
 					<str id="clearOffsets">Wyczyść Domiary</str>
+				</group>
+
+				<group name="CharacterDragModeWindow" prefix="dragMode.">
+					<str id="currentDrag">Aktualny tryb przesuwania</str>
+					<str id="offset">Domiary</str>
+					<str id="position">Pozycje</str>
+					<str id="none">Nic</str>
 				</group>
 
 				<str id="topBar.stage">Scena</str>

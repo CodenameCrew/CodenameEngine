@@ -144,6 +144,7 @@ class Script extends FlxBasic implements IFlxDestroyable
 			"ThreadUtil" => funkin.backend.utils.ThreadUtil,
 			"MemoryUtil" => funkin.backend.utils.MemoryUtil,
 			"BitmapUtil" => funkin.backend.utils.BitmapUtil,
+			"WindowUtils" => funkin.backend.utils.WindowUtils,
 
 			#if TRANSLATIONS_SUPPORT
 			"TranslationUtil" => funkin.backend.utils.TranslationUtil, "translate" => funkin.backend.utils.TranslationUtil.get,
@@ -232,6 +233,8 @@ class Script extends FlxBasic implements IFlxDestroyable
 	 * Shared empty argument array, used when calling scripts without parameters (avoids allocations).
 	 */
 	private static var _EMPTY_ARGS:Array<Dynamic> = [];
+
+	private var _ONE_ARG:Array<Dynamic> = [];
 
 	/**
 	 * Script name (with extension)
@@ -390,6 +393,18 @@ class Script extends FlxBasic implements IFlxDestroyable
 
 		curScript = oldScript;
 		return result;
+	}
+
+	/**
+	 * Calls the function `func` defined in the script with a single argument, reusing an internal array to avoid allocations.
+	 * @param func Name of the function
+	 * @param arg Argument of the function
+	 * @return Result (if void, then null)
+	 */
+	public function callOne(func:String, arg:Dynamic):Dynamic
+	{
+		_ONE_ARG[0] = arg;
+		return call(func, _ONE_ARG);
 	}
 
 	/**

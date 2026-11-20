@@ -111,7 +111,7 @@ class UIButtonList<T:UIButton> extends UIWindow {
 
 		super.update(elapsed);
 
-		nextscrollY = CoolUtil.bound(nextscrollY - (hovered ? FlxG.mouse.wheel : 0) * 12, -buttonSpacing, Math.max((addButton.y + 32 + (buttonSpacing*1.5)) - buttonCameras.height, -buttonSpacing));
+		nextscrollY = CoolUtil.bound(nextscrollY - (hovered ? FlxG.mouse.wheel : 0) * 12 * buttons.members.length, -buttonSpacing, Math.max((addButton.y + 32 + (buttonSpacing*1.5)) - buttonCameras.height, -buttonSpacing));
 
 		if (curMoving != null && dragging) {
 			var mousePos = FlxG.mouse.getWorldPosition(buttonCameras);

@@ -60,9 +60,11 @@ class CharterNote extends UISprite implements ICharterSelectable {
 		cursor = sustainSpr.cursor = CLICK;
 		moves = false;
 
-		// this would also call it on the hoverer and deleter and . i dont think i want that
-		// for unsuspecting users so it will be comented out but can still be edited after
-		// in a charter state script
+		/*
+			this would also call it on the hoverer and deleter and . i dont think i want that
+			for unsuspecting users so it will be comented out but can still be edited after
+			in a charter state script
+		*/
 		// callScriptOnNote('onCharterNoteCreation', this);
 	}
 
@@ -186,6 +188,7 @@ class CharterNote extends UISprite implements ICharterSelectable {
 		}
 
 		if (__passed != (__passed = step < Conductor.curStepFloat + (Options.songOffsetAffectEditors ? (Conductor.songOffset / Conductor.stepCrochet) : 0))) {
+			callScriptOnNote('onCharterNotePassed', this);
 			if (__passed && FlxG.sound.music.playing) {
 				Charter.instance.playHitsound(strumLineID);
 				callScriptOnNote('onCharterNoteHit', this);

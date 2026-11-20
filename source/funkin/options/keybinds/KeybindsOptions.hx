@@ -319,17 +319,15 @@ class KeybindsOptions extends MusicBeatSubstate {
 		var customCategories:Array<ControlsCategory> = [];
 
 		var filePaths:Array<String> = [];
-		for (lib in ModsFolder.getLoadedModsLibs()) {
-			var modName = lib.modName;
+		for (modName in ModsFolder.getLoadedMods()) {
 			var folder = Paths.xml('config/controls/LIB_$modName');
-			//Logs.trace(folder);
+
 			if (Assets.exists(folder)) filePaths.push(folder);
 		}
 
 		//Logs.trace("Found " + filePaths.length + " custom controls");
 		//for(i in filePaths) Logs.trace(i);
 
-		var xmlPath = Paths.xml("config/controls");
 		for(source in filePaths) {
 			var access:Access = null;
 
