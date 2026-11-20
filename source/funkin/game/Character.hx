@@ -666,14 +666,13 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		return list;
 	}
 
-	public static function cacheCharacter(character:String) {
+	public static function cacheCharacter(character:String){
 		var tempFrames = XMLUtil.getSpriteSheetsFromXML(getXMLFromCharName(character), character, 'characters/');
 		if(tempFrames != null) cachedFrames.set(character, tempFrames);
 	}
 
-	public static function clearCache() {
-		// TODO: readd this eventually
-		// for (frame in cachedFrames) frame.destroy();
+	public static function clearCache(){
+		// for (frame in cachedFrames) frame.destroy(); TODO: Look into why it crashes
 		cachedFrames.clear();
 	}
 }
