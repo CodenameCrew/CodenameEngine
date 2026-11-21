@@ -1,62 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+Created with Heroic Packer v0.1.7 https://heroicpacker.heroeyad.dev/
 -->
-<TextureAtlas imagePath="petals.png" width="921" height="821">
-	<SubTexture name="PETALS ALL0000" x="405" y="522" width="125" height="50" frameX="-107" frameY="-13" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0001" x="405" y="522" width="125" height="50" frameX="-107" frameY="-13" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0002" x="400" y="684" width="123" height="56" frameX="-109" frameY="-13" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0003" x="400" y="684" width="123" height="56" frameX="-109" frameY="-13" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0004" x="248" y="749" width="118" height="56" frameX="-109" frameY="-13" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0005" x="523" y="749" width="118" height="56" frameX="-109" frameY="-13" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0006" x="1" y="757" width="121" height="63" frameX="-106" frameY="-13" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0007" x="1" y="757" width="121" height="63" frameX="-106" frameY="-13" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0008" x="644" y="749" width="113" height="63" frameX="-106" frameY="-13" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0009" x="807" y="1" width="113" height="58" frameX="-106" frameY="-18" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0010" x="125" y="757" width="120" height="63" frameX="-99" frameY="-18" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0011" x="400" y="743" width="120" height="63" frameX="-99" frameY="-18" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0012" x="807" y="62" width="111" height="63" frameX="-99" frameY="-18" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0013" x="526" y="684" width="123" height="62" frameX="-87" frameY="-25" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0014" x="526" y="684" width="123" height="62" frameX="-87" frameY="-25" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0015" x="652" y="637" width="123" height="62" frameX="-87" frameY="-25" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0016" x="1" y="684" width="130" height="70" frameX="-71" frameY="-25" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0017" x="134" y="684" width="130" height="62" frameX="-71" frameY="-33" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0018" x="134" y="684" width="130" height="62" frameX="-71" frameY="-33" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0019" x="267" y="684" width="130" height="62" frameX="-71" frameY="-33" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0020" x="622" y="225" width="149" height="98" frameX="-67" frameY="-5" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0021" x="612" y="326" width="149" height="98" frameX="-67" frameY="-5" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0022" x="612" y="326" width="149" height="98" frameX="-67" frameY="-5" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0023" x="612" y="427" width="149" height="98" frameX="-67" frameY="-5" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0024" x="553" y="528" width="139" height="106" frameX="-64" frameY="-5" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0025" x="1" y="575" width="181" height="106" frameX="-22" frameY="-5" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0026" x="185" y="575" width="181" height="106" frameX="-22" frameY="-5" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0027" x="369" y="575" width="181" height="106" frameX="-22" frameY="-5" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0028" x="623" y="1" width="181" height="109" frameX="-22" frameY="-8" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0029" x="623" y="113" width="180" height="109" frameX="-18" frameY="-8" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0030" x="414" y="320" width="195" height="109" frameX="-18" frameY="-8" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0031" x="405" y="432" width="195" height="87" frameX="-18" frameY="-8" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0032" x="414" y="239" width="199" height="78" frameX="-18" frameY="-17" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0033" x="1" y="207" width="205" height="91" frameX="-12" frameY="-17" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0034" x="210" y="1" width="205" height="89" frameX="-12" frameY="-19" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0035" x="210" y="1" width="205" height="89" frameX="-12" frameY="-19" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0036" x="207" y="343" width="199" height="85" frameX="-12" frameY="-23" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0037" x="1" y="1" width="206" height="100" frameX="-5" frameY="-23" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0038" x="1" y="104" width="206" height="100" frameX="-5" frameY="-23" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0039" x="1" y="104" width="206" height="100" frameX="-5" frameY="-23" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0040" x="418" y="131" width="201" height="105" frameX="-5" frameY="-18" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0041" x="210" y="93" width="205" height="117" frameX="-1" frameY="-18" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0042" x="210" y="93" width="205" height="117" frameX="-1" frameY="-18" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0043" x="209" y="213" width="202" height="127" frameX="-1" frameY="-8" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0044" x="418" y="1" width="202" height="127" frameX="-1" frameY="-8" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0045" x="1" y="301" width="203" height="133" frameX="-0" frameY="-8" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0046" x="1" y="437" width="199" height="135" frameX="-0" frameY="-6" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0047" x="203" y="437" width="199" height="135" frameX="-0" frameY="-6" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0048" x="760" y="702" width="104" height="108" frameX="-95" frameY="-6" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0049" x="806" y="128" width="104" height="89" frameX="-95" frameY="-25" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0050" x="764" y="428" width="97" height="89" frameX="-95" frameY="-25" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0051" x="788" y="326" width="97" height="99" frameX="-95" frameY="-15" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0052" x="695" y="528" width="90" height="103" frameX="-102" frameY="-15" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0053" x="695" y="528" width="90" height="103" frameX="-102" frameY="-15" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0054" x="806" y="220" width="79" height="103" frameX="-102" frameY="-15" frameWidth="311" frameHeight="161"/>
-	<SubTexture name="PETALS ALL0055" x="405" y="522" width="125" height="50" frameX="-107" frameY="-13" frameWidth="311" frameHeight="161"/>
+<TextureAtlas imagePath="petals.png" width="510" height="1363" spritePadding="2" borderPadding="2">
+	<SubTexture name="PETALS ALL0000" x="2" y="1091" width="125" height="50" frameX="-107" frameY="-13" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0001" x="2" y="1091" width="125" height="50" frameX="-107" frameY="-13" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0002" x="127" y="1172" width="123" height="56" frameX="-109" frameY="-13" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0003" x="127" y="1172" width="123" height="56" frameX="-109" frameY="-13" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0004" x="359" y="1172" width="118" height="56" frameX="-109" frameY="-13" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0005" x="255" y="1303" width="118" height="56" frameX="-109" frameY="-13" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0006" x="2" y="1207" width="121" height="63" frameX="-106" frameY="-13" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0007" x="2" y="1207" width="121" height="63" frameX="-106" frameY="-13" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0008" x="356" y="1230" width="113" height="63" frameX="-106" frameY="-13" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0009" x="304" y="1008" width="58" height="113" rotated="true" frameX="-106" frameY="-18" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0010" x="125" y="1230" width="63" height="120" rotated="true" frameX="-99" frameY="-18" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0011" x="190" y="1230" width="63" height="120" rotated="true" frameX="-99" frameY="-18" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0012" x="375" y="1295" width="111" height="63" frameX="-99" frameY="-18" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0013" x="129" y="1108" width="123" height="62" frameX="-87" frameY="-25" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0014" x="129" y="1108" width="123" height="62" frameX="-87" frameY="-25" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0015" x="2" y="1143" width="123" height="62" frameX="-87" frameY="-25" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0016" x="367" y="972" width="130" height="70" frameX="-71" frameY="-25" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0017" x="364" y="1044" width="130" height="62" frameX="-71" frameY="-33" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0018" x="364" y="1044" width="130" height="62" frameX="-71" frameY="-33" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0019" x="364" y="1108" width="130" height="62" frameX="-71" frameY="-33" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0020" x="410" y="420" width="98" height="149" rotated="true" frameX="-67" frameY="-5" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0021" x="2" y="991" width="149" height="98" frameX="-67" frameY="-5" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0022" x="2" y="991" width="149" height="98" frameX="-67" frameY="-5" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0023" x="153" y="1008" width="149" height="98" frameX="-67" frameY="-5" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0024" x="368" y="864" width="139" height="106" frameX="-64" frameY="-5" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0025" x="400" y="681" width="106" height="181" rotated="true" frameX="-22" frameY="-5" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0026" x="185" y="789" width="181" height="106" frameX="-22" frameY="-5" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0027" x="2" y="883" width="181" height="106" frameX="-22" frameY="-5" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0028" x="2" y="772" width="181" height="109" frameX="-22" frameY="-8" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0029" x="185" y="897" width="180" height="109" frameX="-18" frameY="-8" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0030" x="203" y="678" width="195" height="109" frameX="-18" frameY="-8" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0031" x="2" y="683" width="195" height="87" frameX="-18" frameY="-8" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0032" x="203" y="598" width="199" height="78" frameX="-18" frameY="-17" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0033" x="209" y="104" width="205" height="91" frameX="-12" frameY="-17" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0034" x="416" y="107" width="89" height="205" rotated="true" frameX="-12" frameY="-19" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0035" x="416" y="107" width="89" height="205" rotated="true" frameX="-12" frameY="-19" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0036" x="2" y="596" width="199" height="85" frameX="-12" frameY="-23" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0037" x="2" y="2" width="206" height="100" frameX="-5" frameY="-23" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0038" x="210" y="2" width="206" height="100" frameX="-5" frameY="-23" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0039" x="210" y="2" width="206" height="100" frameX="-5" frameY="-23" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0040" x="2" y="352" width="201" height="105" frameX="-5" frameY="-18" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0041" x="2" y="104" width="205" height="117" frameX="-1" frameY="-18" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0042" x="2" y="104" width="205" height="117" frameX="-1" frameY="-18" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0043" x="2" y="223" width="202" height="127" frameX="-1" frameY="-8" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0044" x="206" y="332" width="202" height="127" frameX="-1" frameY="-8" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0045" x="209" y="197" width="203" height="133" frameX="0" frameY="-8" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0046" x="2" y="459" width="199" height="135" frameX="0" frameY="-6" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0047" x="203" y="461" width="199" height="135" frameX="0" frameY="-6" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0048" x="404" y="571" width="104" height="108" frameX="-95" frameY="-6" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0049" x="414" y="314" width="89" height="104" rotated="true" frameX="-95" frameY="-25" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0050" x="2" y="1272" width="97" height="89" frameX="-95" frameY="-25" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0051" x="255" y="1204" width="99" height="97" rotated="true" frameX="-95" frameY="-15" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0052" x="418" y="2" width="90" height="103" frameX="-102" frameY="-15" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0053" x="418" y="2" width="90" height="103" frameX="-102" frameY="-15" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0054" x="254" y="1123" width="103" height="79" rotated="true" frameX="-102" frameY="-15" frameWidth="311" frameHeight="161"/>
+	<SubTexture name="PETALS ALL0055" x="2" y="1091" width="125" height="50" frameX="-107" frameY="-13" frameWidth="311" frameHeight="161"/>
 </TextureAtlas>
