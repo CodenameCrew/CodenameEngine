@@ -23,6 +23,7 @@ import funkin.backend.scripting.ScriptPack;
 import funkin.backend.scripting.events.*;
 import funkin.backend.scripting.events.gameplay.*;
 import funkin.backend.scripting.events.note.*;
+import funkin.backend.scripting.events.character.CharacterChangeEvent;
 import funkin.backend.system.Conductor;
 import funkin.backend.system.RotatingSpriteGroup;
 import funkin.editors.SaveWarning;
@@ -905,11 +906,25 @@ class PlayState extends MusicBeatState
 			FlxG.camera.focusOn(camFollow.getPosition(FlxPoint.weak()));
 		}
 
-		for(event in SONG.events){
-			if(event.name == "Character Change"){
-				if(!event.params[3] || Character.cachedFrames.exists(event.params[2])) continue;
+		for (event in SONG.events) {
+			if (event.name == "Character Change") {
+				final char = event.params[2];
 
-				Character.cacheCharacter(event.params[2]);
+				if (Flags.CHARACTER_CHANGE_FULL_CACHE && event.params[3]) {
+					if (!characterChangePool.exists(char)) {
+						characterChangePool.set(char, []);
+					}
+					if ((strumLines.members[event.params[0]].characters[event.params[1]].curCharacter != event.params[2])
+						&& (characterChangePool.get(char).length < 1)) {
+						var charObj = new Character(0, 0, char, strumLines.members[0].data.type == 1);
+						charObj.kill();
+						characterChangePool.get(char).push(charObj);
+					}
+				}
+
+				if (!event.params[3] || Character.cachedFrames.exists(char)) continue;
+
+				Character.cacheCharacter(char);
 			}
 		}
 
@@ -1159,7 +1174,7 @@ class PlayState extends MusicBeatState
 
 		cameraFocusOffset.put();
 
-		Character.cachedFrames.clear();
+		Character.clearCache();
 
 		scripts = FlxDestroyUtil.destroy(scripts);
 
@@ -1691,6 +1706,7 @@ class PlayState extends MusicBeatState
 
 
 	public var eventsTween:Map<String, FlxTween> = [];
+	public var characterChangePool:Map<String, Dynamic> = [];
 
 	public function executeEvent(event:ChartEvent) @:privateAccess {
 		if (event == null || event.params == null) return;
@@ -1824,28 +1840,74 @@ class PlayState extends MusicBeatState
 					camera.flash(event.params[1], (Conductor.stepCrochet / 1000) * event.params[2], null, true);
 			case "BPM Change": // automatically handled by conductor
 			case "Character Change":
-				var oldChar:Character = strumLines.members[event.params[0]].characters[event.params[1]];
-				var newChar:Character = new Character(oldChar.x, oldChar.y, event.params[2], oldChar.isPlayer);
-				stage.applyCharStuff(newChar, !event.params[7] ? strumLines.members[event.params[0]].data.position : null, event.params[1]);
-				if(event.params[6]) newChar.shader = oldChar.shader;
+				if (strumLines.members[event.params[0]].characters[event.params[1]].curCharacter != event.params[2]) {
+					final __cacheData:Dynamic = characterChangePool.get(event.params[2]);
+					var __chosenChar:Character = null;
+					if (__cacheData != null) {
+						var i:Int = 0;
+						while (i < __cacheData.length) {
+							final c = __cacheData[i];
+							if ((c != null) && (!c.alive || !c.exists)) {
+								__chosenChar = c;
+								break;
+							} else i++;
+						}
+					}
 
-				newChar.x += event.params[4];
-				newChar.y += event.params[5];
+					var oldChar:Character = strumLines.members[event.params[0]].characters[event.params[1]];
+					var newChar:Character = __chosenChar ?? new Character(oldChar.x, oldChar.y, event.params[2], oldChar.isPlayer);
+					if (__chosenChar != null) {
+						__chosenChar.revive();
+						stage.revertCharStuff(newChar, !event.params[7] ? strumLines.members[event.params[0]].data.position : null, !event.params[7]);
+					}
+					stage.applyCharStuff(newChar, !event.params[7] ? strumLines.members[event.params[0]].data.position : null, event.params[1], !event.params[7]);
+					if(event.params[6]) newChar.shader = oldChar.shader;
 
-				insert(members.indexOf(oldChar), newChar); remove(oldChar);
-				strumLines.members[event.params[0]].characters[event.params[1]] = newChar;
+					if (Flags.CHARACTER_CHANGE_FULL_CACHE) {
+						newChar.isPlayer = oldChar.isPlayer;
+						newChar.fixChar(newChar.__switchAnims, newChar.__autoInterval);
+						newChar.dance();
 
-				//refresh icons
-				switch(event.params[0]){
-					case 0:
-						iconP2.setIcon(dad.getIcon());
-					case 1:
-						iconP1.setIcon(bf.getIcon());
+						if (__cacheData != null) __cacheData.remove(__chosenChar);
+					}
+
+					newChar.x += event.params[4];
+					newChar.y += event.params[5];
+
+					// undo ordering/multi-adding by applyCharStuff
+					if (members.indexOf(newChar) != -1) remove(newChar);
+
+					insert(members.indexOf(oldChar), newChar);
+
+					// useful for scripts
+					var scriptEvent = gameAndCharsEvent("onCharacterChange", EventManager.get(CharacterChangeEvent).recycle(
+						oldChar, newChar, event, strumLines.members[event.params[0]]
+					));
+
+					remove(oldChar);
+					if (Flags.CHARACTER_CHANGE_FULL_CACHE) {
+						final char = oldChar.curCharacter;
+						if (!characterChangePool.exists(char)) {
+							characterChangePool.set(char, []);
+						}
+						characterChangePool.get(char).push(oldChar);
+						oldChar.kill();
+					}
+					strumLines.members[event.params[0]].characters[event.params[1]] = newChar;
+					newChar.scripts.event("onCharacterChange", scriptEvent);
+
+					//refresh icons
+					switch(event.params[0]){
+						case 0:
+							iconP2.setIcon(dad.getIcon());
+						case 1:
+							iconP1.setIcon(bf.getIcon());
+					}
+					var leftColor:Int = dad != null && dad.iconColor != null && Options.colorHealthBar ? dad.iconColor : (opponentMode ? 0xFF66FF33 : 0xFFFF0000);
+					var rightColor:Int = boyfriend != null && boyfriend.iconColor != null && Options.colorHealthBar ? boyfriend.iconColor : (opponentMode ? 0xFFFF0000 : 0xFF66FF33); // switch the colors
+					healthBar.createFilledBar(leftColor, rightColor);
+					healthBar.updateBar();
 				}
-				var leftColor:Int = dad != null && dad.iconColor != null && Options.colorHealthBar ? dad.iconColor : (opponentMode ? 0xFF66FF33 : 0xFFFF0000);
-				var rightColor:Int = boyfriend != null && boyfriend.iconColor != null && Options.colorHealthBar ? boyfriend.iconColor : (opponentMode ? 0xFFFF0000 : 0xFF66FF33); // switch the colors
-				healthBar.createFilledBar(leftColor, rightColor);
-				healthBar.updateBar();
 			case "Scroll Speed Change":
 				var tween = eventsTween.get("scrollSpeedTween");
 				if (tween != null) tween.cancel();
@@ -2491,7 +2553,7 @@ class PlayState extends MusicBeatState
 	 * @param coopMode Whenever co-op mode is on.
 	 */
 	public static function loadSong(_name:String, ?_difficulty:String, ?_variation:Dynamic, _opponentMode:Bool = false, _coopMode:Bool = false) {
-		if (_difficulty == null) difficulty = Flags.DEFAULT_DIFFICULTY;
+		_difficulty ??= Flags.DEFAULT_DIFFICULTY;
 		if (_variation is Bool) { // vackward cumpatibshit
 			_coopMode = _opponentMode;
 			_opponentMode = cast _variation;

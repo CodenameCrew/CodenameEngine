@@ -174,6 +174,14 @@ class Flags {
 	@:also(funkin.game.Character.FALLBACK_DEAD_CHARACTER)
 	public static var DEFAULT_GAMEOVER_CHARACTER:String = "bf-dead";
 
+	/**
+	* If disabled, all characters in the "Character Change" event
+	* are made as soon as the event is called. Otherwise, a cache
+	* system lods them as soon asyou enter gameplay, solving issues
+	* with character scripts.
+	*/
+	public static var CHARACTER_CHANGE_FULL_CACHE:Bool = true;
+
 	public static var DEFAULT_CAM_ZOOM_INTERVAL:Int = 1;
 	public static var DEFAULT_CAM_ZOOM_OFFSET:Float = 0;
 	//public static var DEFAULT_CAM_ZOOM_EVERY:BeatType = MEASURE;
