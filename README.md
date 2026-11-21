@@ -2,7 +2,7 @@
 
 ![Animated-Banner](https://github.com/user-attachments/assets/5830221d-d954-4be3-afe8-caae364a5881)
 
-Codename Engine is a cross platform [Friday Night Funkin'](https://github.com/FunkinCrew/Funkin) Engine aimed at simplifying modding focusing on softcoding, along with extensiblity and ease of use.<br>
+Codename Engine is a cross platform [Friday Night Funkin'](https://github.com/FunkinCrew/Funkin) Engine aimed at simplifying modding focusing on softcoding, along with extensibility and ease of use.<br>
 It is the the official successor of the previously well known [Yoshi Engine](https://github.com/CodenameCrew/YoshiCrafterEngine).
 
 The engine uses [HaxeFlixel](https://haxeflixel.com/) and it mainly features:
@@ -26,7 +26,7 @@ The engine uses [HaxeFlixel](https://haxeflixel.com/) and it mainly features:
 
 > [!WARNING]
 > Before making issues or if you need help with something, check our website [HERE](https://codename-engine.com/).<br>
-> It contains a wiki of how to mod with EXAMPLES, an api, lists of mods made with Codename Engine and more!
+> It contains a wiki of how to mod with EXAMPLES, an API, lists of mods made with Codename Engine and more!
 
 > [!TIP]
 > Want to stay updated with this project?<br>
@@ -81,7 +81,7 @@ The engine uses [HaxeFlixel](https://haxeflixel.com/) and it mainly features:
   - Mod and fork the engine (without using it for illicit purposes)
   - Contribute to the engine (for example through *Pull Requests*, *Issues*, etc.)
   - Create a sub engine with Codename Engine as **TEMPLATE** with **CREDITS** (for example leaving the *credits menu submenu with the GitHub contributors* and putting the *[main devs](https://github.com/CodenameCrew)* in a *README* specifying that it's a *sub engine from Codename Engine*)
-  - Release excutable mods that use Codename Engine as source (specifing that uses Codename Engine by for example the same way written above this)
+  - Release executable mods that use Codename Engine as source (specifying that uses Codename Engine by for example the same way written above this)
   - Release Codename Engine modpacks
 
   ### Please do not:
@@ -96,7 +96,7 @@ The engine uses [HaxeFlixel](https://haxeflixel.com/) and it mainly features:
   <summary><h2>Credits</h2></summary>
 
 - All main Credits can be seen inside the Engine and specifically [HERE](https://github.com/CodenameCrew/CodenameEngine/graphs/contributors)
-- Credits to the [flixel-animate](https://github.com/MaybeMaru/flixel-animate) team for the Animate Atlas support
+- Credits to MaybeMaru for [flixel-animate](https://github.com/MaybeMaru/flixel-animate) (Animate Atlas support)
 - Credits to Smokey555 for the backup Animate Atlas to spritesheet code
 - Credits to MAJigsaw77 for [hxvlc](https://github.com/MAJigsaw77/hxvlc) (video cutscene/mp4 support) and [hxdiscord_rpc](https://github.com/MAJigsaw77/hxdiscord_rpc) (discord rpc integration)
 - Credits to [Ninjamuffin99](https://github.com/ninjamuffin99) and the [Funkin Crew](https://github.com/FunkinCrew) for the base game Friday Night Funkin'
