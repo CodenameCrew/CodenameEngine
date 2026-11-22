@@ -60,9 +60,18 @@ Compiling to another platform is going to be another full build and rounds of te
 1. Fork the repo on GitHub, then clone your fork. **Do not make changes yet.**
 2. Run the required setup script.
 3. Rebuild Lime by running `haxelib run lime rebuild cpp`.
+- Warning: If you encounter any errors while rebuilding (ex. `No such file or directory`), Lime's git submodules may be outdated. In that case, try the following steps below:
+    1. Run `cd .haxelib/lime/git` to enter the local Lime repository.
+    2. Run the following commands to initialize Lime's submodules:
+        - `git submodule init`
+        - `git submodule sync`
+        - `git submodule update`
+        - `haxelib run lime rebuild tools`
+    3. Run `cd ../../..` to navigate back to the CodenameEngine repository.
+    4. Run `haxelib run lime rebuild cpp -clean` to rebuild Lime.
 4. Compile the *unmodified* build of Codename by doing any of the following:
-    1. Manually compile by running `haxelib run lime build <platform> -nocffi` / `haxelib run lime test <platform> -nocffi`. You can run `haxelib run lime setup` to make your install of Lime global, which allows you to omit `haxelib run` every time you want to build or test. 
-	2. Using the helper script for your platform in `/building`. This would be `cne-windows.bat` in Windows, and `cne-unix.sh` on Mac and Linux. You may run `cne-windows.bat -help` or `cne-unix.sh -help` for commands you can use.
+    1. Manually compile by running `haxelib run lime build <platform> -nocffi` / `haxelib run lime test <platform> -nocffi`. You can run `haxelib run lime setup` to make your install of Lime global, which allows you to omit `haxelib run` every time you want to build or test.
+    2. Using the helper script for your platform in `/building`. This would be `cne-windows.bat` in Windows, and `cne-unix.sh` on Mac and Linux. You may run `cne-windows.bat -help` or `cne-unix.sh -help` for commands you can use.
 
 If it compiles, you're all set up! You may now begin editing.
 
