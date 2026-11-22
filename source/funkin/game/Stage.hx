@@ -354,7 +354,7 @@ class Stage extends FlxBasic implements IBeatReceiver {
 	 * @param posNameFirst When true the position named `posName` takes priority over the character's own stage position (used when the position is picked explicitly, e.g. the character editor), otherwise the character's own one takes priority
 	**/
 	public function applyCharStuff(char:Character, posName:String, id:Float = 0, posNameFirst:Bool = false) {
-		var charPos = posNameFirst ? (characterPoses[posName] != null ? characterPoses[posName] : characterPoses[char.curCharacter]) : (characterPoses[char.curCharacter] != null ? characterPoses[char.curCharacter] : characterPoses[posName]);
+		var charPos = getCharPos(char, posName, posNameFirst);
 		if (charPos != null) {
 			charPos.prepareCharacter(char, id);
 			state.insert(state.members.indexOf(charPos), char);
@@ -365,16 +365,27 @@ class Stage extends FlxBasic implements IBeatReceiver {
 
 	/**
 	 * Reverts the changes done by the stage position
-	 * Adds the character to the stage, or inserts it into the stage.
 	 * @param char The character
 	 * @param posName The name of the character position
 	 * @param posNameFirst When true the position named `posName` takes priority over the character's own stage position (used when the position is picked explicitly, e.g. the character editor), otherwise the character's own one takes priority
 	**/
 	public function revertCharStuff(char:Character, posName:String, posNameFirst:Bool = false) {
-		var charPos = posNameFirst ? (characterPoses[posName] != null ? characterPoses[posName] : characterPoses[char.curCharacter]) : (characterPoses[char.curCharacter] != null ? characterPoses[char.curCharacter] : characterPoses[posName]);
+		var charPos = getCharPos(char, posName, posNameFirst);
 		if (charPos != null) {
 			charPos.revertCharacter(char);
 		}
+	}
+
+	/**
+	 * Gets the stage position object from a character/ID.
+	 * @param char The character
+	 * @param posName The name of the character position
+	 * @param posNameFirst When true the position named `posName` takes priority over the character's own stage position (used when the position is picked explicitly, e.g. the character editor), otherwise the character's own one takes priority
+	 * @return The character position object (may be null!!!)
+	**/
+	public function getCharPos(char:Character, posName:String, posNameFirst:Bool = false) {
+		var charPos = posNameFirst ? (characterPoses[posName] != null ? characterPoses[posName] : characterPoses[char.curCharacter]) : (characterPoses[char.curCharacter] != null ? characterPoses[char.curCharacter] : characterPoses[posName]);
+		return charPos;
 	}
 
 	/**
@@ -485,7 +496,7 @@ class StageCharPos extends FlxObject {
 		return {
 			x: char.x, y: char.y,
 			scrollX: char.scrollFactor.x, scrollY: char.scrollFactor.y,
-			scaleX: char.scale.x, scaleY: char.scale.y,
+			scaleX: char.scale.x / char.defaultScale, scaleY: char.scale.y / char.defaultScale,
 			camxoffset: char.cameraOffset.x, camyoffset: char.cameraOffset.y,
 			skewX: char.skew.x, skewY: char.skew.y,
 			alpha: char.alpha, zoomFactor: char.zoomFactor,
