@@ -12,7 +12,7 @@ jobs:
   build:
     name: Windows Build
     permissions: write-all
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - name: Pulling the new commit
         uses: actions/checkout@v7
