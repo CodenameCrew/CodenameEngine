@@ -140,8 +140,8 @@
 	<haxelib name="hscript-improved"/>
 	<haxelib name="hxWebSockets"/>
 
-	<haxelib name="markdown" unless="STRIPPED_COMPILE"/>
-
+	<haxelib name="markdown"/>
+	
 	<haxelib name="hxvlc" if="VIDEO_CUTSCENES"/>
 	<haxelib name="hxdiscord_rpc" if="DISCORD_RPC"/>
 	<!--<haxelib name="away3d" if="THREE_D_SUPPORT"/>-->
