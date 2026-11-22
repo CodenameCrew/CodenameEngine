@@ -364,6 +364,20 @@ class Stage extends FlxBasic implements IBeatReceiver {
 	}
 
 	/**
+	 * Reverts the changes done by the stage position
+	 * Adds the character to the stage, or inserts it into the stage.
+	 * @param char The character
+	 * @param posName The name of the character position
+	 * @param posNameFirst When true the position named `posName` takes priority over the character's own stage position (used when the position is picked explicitly, e.g. the character editor), otherwise the character's own one takes priority
+	**/
+	public function revertCharStuff(char:Character, posName:String, posNameFirst:Bool = false) {
+		var charPos = posNameFirst ? (characterPoses[posName] != null ? characterPoses[posName] : characterPoses[char.curCharacter]) : (characterPoses[char.curCharacter] != null ? characterPoses[char.curCharacter] : characterPoses[posName]);
+		if (charPos != null) {
+			charPos.revertCharacter(char);
+		}
+	}
+
+	/**
 	 * Same of destroy, but doesn't call the various script events.
 	 * @param destroySprites Whether the stage sprites should be destroyed
 	 * @param destroyScript Whether the stage script should be destroyed
