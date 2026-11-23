@@ -80,6 +80,7 @@ class HScript extends Script {
 		return this;
 	}
 
+	//region custom class import
 	private function importFailedCallback(cl:Array<String>, ?asName:String, ?isWildcard:Bool):Bool {
 		if(_importFailedCallback(cl, "source/", isWildcard) || _importFailedCallback(cl, "", isWildcard)) {
 			return true;
@@ -115,55 +116,60 @@ class HScript extends Script {
 
 	static final hxExts = ["hx", "hscript", "hsc", "hxs"];
 
-	private function _importFailedCallback(cl:Array<String>, prefix:String, ?isWildcard):Bool {
+	private function _importFailedCallback(cl:Array<String>, prefix:String, ?isWildcard:Bool):Bool {
 		if(isWildcard) return _importWildcard(cl, prefix);
 
 		var assetsPath = 'assets/$prefix${cl.join("/")}';
-		for(hxExt in hxExts) {
-			var p = '$assetsPath.$hxExt';
-			final origin = cl.join('/')+'.'+hxExt;
-			if(_runScriptAsset(p, origin)) return true;
+		for (hxExt in hxExts) {
+			final p = '$assetsPath.$hxExt';
+			final origin = cl.join('/') + '.' + hxExt;
+			if (_runScriptAsset(p, origin)) return true;
 		}
 		return false;
 	}
 
+	//region custom class import wildcard
 	private function _importWildcard(cl:Array<String>, prefix:String):Bool {
 		final p = cl.copy();
-		if(p.length >0 && p[p.length - 1] == "*") p.pop();
+		if (p.length > 0 && p[p.length - 1] == "*") p.pop();
 
 		final relativeDir = p.join("/");
 		return _loadWildcardDirScripts(prefix + relativeDir, relativeDir);
 	}
 
 	// the uh `/`
-	private static inline function _directorySeparator(path:String):String {
-		return (path.length > 0 && !path.endsWith("/")) ? '/' : '';
+	private static inline function formatDirectory(path:String):String {
+		return (path.length > 0 && !path.endsWith("/")) ? '$path/' : path;
 	}
 
-	private function _loadWildcardDirScripts(dir, relDir):Bool {
+	// TODO: optimize this since it's running the folder scan twice - Jamextreme140
+	private function _loadWildcardDirScripts(dir:String, relDir:String):Bool {
 		var finished = false;
 
 		// load files
 		for(f in Paths.getFolderContent(dir, false)) {
-			for(i in hxExts) if(f.endsWith('.$i')) {
-				final path = 'assets/$dir${_directorySeparator(dir)}$f';
-				final origin = (relDir.length > 0 ? '$relDir/' : '') + f;
+			for (i in hxExts)
+				if (f.endsWith('.$i')) {
+					final path = 'assets/${formatDirectory(dir)}$f';
+					final origin = (relDir.length > 0 ? '$relDir/' : '') + f;
 
-				if(_runScriptAsset(path, origin)) finished = true;
-				break;
-			}
+					if (_runScriptAsset(path, origin)) finished = true;
+					break;
+				}
 		}
 
 		// recurse directories
 		for(direct in Paths.getFolderDirectories(dir, false)) {
-			final nextDir = dir + _directorySeparator(dir) + direct;
-			final nextRelDir = relDir + _directorySeparator(relDir) + direct;
+			final nextDir = formatDirectory(dir) + direct;
+			final nextRelDir = formatDirectory(relDir) + direct;
 
 			if(_loadWildcardDirScripts(nextDir, nextRelDir)) finished = true;
 		}
 
 		return finished;
 	}
+	//endregion
+	//endregion
 
 	private function _errorHandler(error:Error) {
 		var fileName = error.origin;
@@ -280,7 +286,7 @@ class HScript extends Script {
 	override public function destroy() {
 		returnParser(parser);
 		parser = null;
-		interp = null;
+		interp = null; // TODO: make a proper interpreter cleanup
 		super.destroy();
 	}
 }
