@@ -23,6 +23,7 @@ import funkin.backend.scripting.ScriptPack;
 import funkin.backend.scripting.events.*;
 import funkin.backend.scripting.events.gameplay.*;
 import funkin.backend.scripting.events.note.*;
+import funkin.backend.scripting.events.character.CharacterChangeEvent;
 import funkin.backend.system.Conductor;
 import funkin.backend.system.RotatingSpriteGroup;
 import funkin.editors.SaveWarning;
@@ -905,6 +906,28 @@ class PlayState extends MusicBeatState
 			FlxG.camera.focusOn(camFollow.getPosition(FlxPoint.weak()));
 		}
 
+		for (event in SONG.events) {
+			if (event.name == "Character Change") {
+				final char = event.params[2];
+
+				if (Flags.CHARACTER_CHANGE_FULL_CACHE && event.params[3]) {
+					if (!characterChangePool.exists(char)) {
+						characterChangePool.set(char, []);
+					}
+					if ((strumLines.members[event.params[0]].characters[event.params[1]].curCharacter != event.params[2])
+						&& (characterChangePool.get(char).length < 1)) {
+						var charObj = new Character(0, 0, char, strumLines.members[0].data.type == 1);
+						charObj.kill();
+						characterChangePool.get(char).push(charObj);
+					}
+				}
+
+				if (!event.params[3] || Character.cachedFrames.exists(char)) continue;
+
+				Character.cacheCharacter(char);
+			}
+		}
+
 		smoothTransitionData = null;
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
@@ -1150,6 +1173,8 @@ class PlayState extends MusicBeatState
 		}
 
 		cameraFocusOffset.put();
+
+		Character.clearCache();
 
 		scripts = FlxDestroyUtil.destroy(scripts);
 
@@ -1681,6 +1706,7 @@ class PlayState extends MusicBeatState
 
 
 	public var eventsTween:Map<String, FlxTween> = [];
+	public var characterChangePool:Map<String, Dynamic> = [];
 
 	public function executeEvent(event:ChartEvent) @:privateAccess {
 		if (event == null || event.params == null) return;
@@ -1813,6 +1839,80 @@ class PlayState extends MusicBeatState
 				else // Not Reversed
 					camera.flash(event.params[1], (Conductor.stepCrochet / 1000) * event.params[2], null, true);
 			case "BPM Change": // automatically handled by conductor
+			case "Character Change":
+				if (strumLines.members[event.params[0]].characters[event.params[1]].curCharacter != event.params[2]) {
+					final __cacheData:Dynamic = characterChangePool.get(event.params[2]);
+					var __chosenChar:Character = null;
+					if (__cacheData != null) {
+						var i:Int = 0;
+						while (i < __cacheData.length) {
+							final c = __cacheData[i];
+							if ((c != null) && (!c.alive || !c.exists)) {
+								__chosenChar = c;
+								break;
+							} else i++;
+						}
+					}
+
+					var oldChar:Character = strumLines.members[event.params[0]].characters[event.params[1]];
+					var newChar:Character = __chosenChar ?? new Character(oldChar.x, oldChar.y, event.params[2], oldChar.isPlayer);
+					var stagePos = stage.getCharPos(newChar, !event.params[7] ? strumLines.members[event.params[0]].data.position : null, !event.params[7]);
+					if (__chosenChar != null) {
+						__chosenChar.revive();
+						/*if (stagePos != null) stagePos.revertCharacter(__chosenChar);
+						__chosenChar.scale.x *= __chosenChar.defaultScale;
+						__chosenChar.scale.y *= __chosenChar.defaultScale;
+						__chosenChar.updateHitbox();*/
+					}
+					if (stagePos != null) stagePos.prepareCharacter(newChar, event.params[1]);
+					if(event.params[6]) newChar.shader = oldChar.shader;
+
+					if (Flags.CHARACTER_CHANGE_FULL_CACHE) {
+						newChar.isPlayer = oldChar.isPlayer;
+						newChar.flipX = newChar.playerOffsets;
+						newChar.fixChar(newChar.__switchAnims, newChar.__autoInterval);
+						newChar.dance();
+
+						if (__cacheData != null) __cacheData.remove(__chosenChar);
+					}
+
+					newChar.x += event.params[4];
+					newChar.y += event.params[5];
+
+					// undo ordering/multi-adding by applyCharStuff
+					if (members.indexOf(newChar) != -1) remove(newChar);
+
+					insert(members.indexOf(oldChar), newChar);
+
+					// useful for scripts
+					var scriptEvent = gameAndCharsEvent("onCharacterChange", EventManager.get(CharacterChangeEvent).recycle(
+						oldChar, newChar, event, strumLines.members[event.params[0]]
+					));
+
+					remove(oldChar);
+					if (Flags.CHARACTER_CHANGE_FULL_CACHE) {
+						final char = oldChar.curCharacter;
+						if (!characterChangePool.exists(char)) {
+							characterChangePool.set(char, []);
+						}
+						characterChangePool.get(char).push(oldChar);
+						oldChar.kill();
+					}
+					strumLines.members[event.params[0]].characters[event.params[1]] = newChar;
+					newChar.scripts.event("onCharacterChange", scriptEvent);
+
+					//refresh icons
+					switch(event.params[0]){
+						case 0:
+							iconP2.setIcon(dad.getIcon());
+						case 1:
+							iconP1.setIcon(bf.getIcon());
+					}
+					var leftColor:Int = dad != null && dad.iconColor != null && Options.colorHealthBar ? dad.iconColor : (opponentMode ? 0xFF66FF33 : 0xFFFF0000);
+					var rightColor:Int = boyfriend != null && boyfriend.iconColor != null && Options.colorHealthBar ? boyfriend.iconColor : (opponentMode ? 0xFFFF0000 : 0xFF66FF33); // switch the colors
+					healthBar.createFilledBar(leftColor, rightColor);
+					healthBar.updateBar();
+				}
 			case "Scroll Speed Change":
 				var tween = eventsTween.get("scrollSpeedTween");
 				if (tween != null) tween.cancel();
@@ -2458,7 +2558,7 @@ class PlayState extends MusicBeatState
 	 * @param coopMode Whenever co-op mode is on.
 	 */
 	public static function loadSong(_name:String, ?_difficulty:String, ?_variation:Dynamic, _opponentMode:Bool = false, _coopMode:Bool = false) {
-		if (_difficulty == null) difficulty = Flags.DEFAULT_DIFFICULTY;
+		_difficulty ??= Flags.DEFAULT_DIFFICULTY;
 		if (_variation is Bool) { // vackward cumpatibshit
 			_coopMode = _opponentMode;
 			_opponentMode = cast _variation;

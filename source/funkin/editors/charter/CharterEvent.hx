@@ -192,10 +192,10 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 	 * Expected to be called from inside of a ui script,
 	 * calling this elsewhere might cause unexpected results or crashes
 	**/
-	public static function getIconFromStrumline(index:Null<Int>) {
+	public static function getIconFromStrumline(index:Null<Int>, step:Float = 0) {
 		var state = cast(FlxG.state, Charter);
 		if (index != null && index >= 0 && index < state.strumLines.length) {
-			return getIconFromCharName(state.strumLines.members[index].strumLine.characters[0]);
+			return getIconFromCharName(state.strumLines.members[index].getIconsFromStep(step)[0]);
 		}
 		return null;
 	}
@@ -279,7 +279,7 @@ class CharterEvent extends UISliceSprite implements ICharterSelectable {
 				var icon:Null<FlxSprite> = null;
 				if (event.params != null) {
 					shouldDoArrow = event.params[1] && event.params[3] != "CLASSIC"; // is Tweened and isnt Lerped
-					icon = getIconFromStrumline(event.params[0]); // camera movement, use health icon
+					icon = getIconFromStrumline(event.params[0], Conductor.getTimeInSteps(event.time)); // camera movement, use health icon
 				}
 
 				if (icon == null) icon = generateDefaultIcon(event.name);

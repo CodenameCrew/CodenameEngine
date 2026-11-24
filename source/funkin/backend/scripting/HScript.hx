@@ -80,41 +80,96 @@ class HScript extends Script {
 		return this;
 	}
 
-	private function importFailedCallback(cl:Array<String>, ?asName:String):Bool {
-		if(_importFailedCallback(cl, "source/") || _importFailedCallback(cl, "")) {
+	//region custom class import
+	private function importFailedCallback(cl:Array<String>, ?asName:String, ?isWildcard:Bool):Bool {
+		if(_importFailedCallback(cl, "source/", isWildcard) || _importFailedCallback(cl, "", isWildcard)) {
 			return true;
 		}
 		return false;
 	}
-	private function _importFailedCallback(cl:Array<String>, prefix:String):Bool {
-		var assetsPath = 'assets/$prefix${cl.join("/")}';
-		for(hxExt in ["hx", "hscript", "hsc", "hxs"]) {
-			var p = '$assetsPath.$hxExt';
-			if (__importedPaths.exists(p))
-				return true; // no need to reimport again
-			if (Assets.exists(p)) {
-				var code = Assets.getText(p);
-				var expr:Expr = null;
-				try {
-					if (code != null && code.length > 0) {
-						parser.line = 1; // fun fact: this is all you need to reuse a parser without issues. all the other vars get reset on parse.
-						expr = parser.parseString(code, cl.join("/") + "." + hxExt);
-					}
-				} catch(e:Error) {
-					_errorHandler(e);
-				} catch(e) {
-					_errorHandler(new Error(ECustom(e.toString()), 0, 0, fileName, 0));
+
+	private function _runScriptAsset(p:String, origin:String):Bool {
+		if (__importedPaths.exists(p))
+			return true; // no need to reimport again
+		if (Assets.exists(p)) {
+			var code = Assets.getText(p);
+			var expr:Expr = null;
+			try {
+				if (code != null && code.length > 0) {
+					parser.line = 1; // fun fact: this is all you need to reuse a parser without issues. all the other vars get reset on parse.
+					expr = parser.parseString(code, origin);
 				}
-				if (expr != null) {
-					@:privateAccess
-					interp.exprReturn(expr);
-					__importedPaths.set(p, true);
-				}
-				return true;
+			} catch(e:Error) {
+				_errorHandler(e);
+			} catch(e) {
+				_errorHandler(new Error(ECustom(e.toString()), 0, 0, fileName, 0));
 			}
+			if (expr != null) {
+				@:privateAccess
+				interp.exprReturn(expr);
+				__importedPaths.set(p, true);
+			}
+			return true;
 		}
 		return false;
 	}
+
+	static final hxExts = ["hx", "hscript", "hsc", "hxs"];
+
+	private function _importFailedCallback(cl:Array<String>, prefix:String, ?isWildcard:Bool):Bool {
+		if(isWildcard) return _importWildcard(cl, prefix);
+
+		var assetsPath = 'assets/$prefix${cl.join("/")}';
+		for (hxExt in hxExts) {
+			final p = '$assetsPath.$hxExt';
+			final origin = cl.join('/') + '.' + hxExt;
+			if (_runScriptAsset(p, origin)) return true;
+		}
+		return false;
+	}
+
+	//region custom class import wildcard
+	private function _importWildcard(cl:Array<String>, prefix:String):Bool {
+		final p = cl.copy();
+		if (p.length > 0 && p[p.length - 1] == "*") p.pop();
+
+		final relativeDir = p.join("/");
+		return _loadWildcardDirScripts(prefix + relativeDir, relativeDir);
+	}
+
+	// the uh `/`
+	private static inline function formatDirectory(path:String):String {
+		return (path.length > 0 && !path.endsWith("/")) ? '$path/' : path;
+	}
+
+	// TODO: optimize this since it's running the folder scan twice - Jamextreme140
+	private function _loadWildcardDirScripts(dir:String, relDir:String):Bool {
+		var finished = false;
+
+		// load files
+		for(f in Paths.getFolderContent(dir, false)) {
+			for (i in hxExts)
+				if (f.endsWith('.$i')) {
+					final path = 'assets/${formatDirectory(dir)}$f';
+					final origin = (relDir.length > 0 ? '$relDir/' : '') + f;
+
+					if (_runScriptAsset(path, origin)) finished = true;
+					break;
+				}
+		}
+
+		// recurse directories
+		for(direct in Paths.getFolderDirectories(dir, false)) {
+			final nextDir = formatDirectory(dir) + direct;
+			final nextRelDir = formatDirectory(relDir) + direct;
+
+			if(_loadWildcardDirScripts(nextDir, nextRelDir)) finished = true;
+		}
+
+		return finished;
+	}
+	//endregion
+	//endregion
 
 	private function _errorHandler(error:Error) {
 		var fileName = error.origin;
@@ -231,7 +286,7 @@ class HScript extends Script {
 	override public function destroy() {
 		returnParser(parser);
 		parser = null;
-		interp = null;
+		interp = null; // TODO: make a proper interpreter cleanup
 		super.destroy();
 	}
 }

@@ -116,7 +116,7 @@ class CharterStrumLineGroup extends FlxTypedGroup<CharterStrumline> {
 		draggingObj = null;
 		fixEvents();
 		refreshStrumlineIDs();
-		Charter.instance.updateCameraChanges();
+		Charter.instance.updateEventChanges();
 	}
 
 	public inline function fixEvents() {

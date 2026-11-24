@@ -28,6 +28,7 @@ import haxe.io.Path;
 import haxe.xml.Access;
 import openfl.geom.ColorTransform;
 import animate.FlxAnimateFrames;
+import flixel.graphics.frames.FlxFramesCollection;
 
 using StringTools;
 
@@ -48,6 +49,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	public var iconColor:Null<FlxColor> = null;
 	public var gameOverCharacter:String = Character.FALLBACK_DEAD_CHARACTER;
 	public var defaultAimFPS:Float = 24;
+	public var defaultScale:Float = 1;
 
 
 	/*
@@ -396,8 +398,8 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		if (xml.x.exists("icon")) icon = xml.x.get("icon");
 		if (xml.x.exists("color")) iconColor = FlxColor.fromString(xml.x.get("color"));
 		if (xml.x.exists("scale")) {
-			var scale:Float = Std.parseFloat(xml.x.get("scale")).getDefaultFloat(1);
-			this.scale.set(scale, scale);
+			defaultScale = Std.parseFloat(xml.x.get("scale")).getDefaultFloat(1);
+			this.scale.set(defaultScale, defaultScale);
 			updateHitbox();
 		}
 		if (xml.x.exists("antialiasing")) antialiasing = (xml.x.get("antialiasing") == "true");
@@ -422,7 +424,8 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		var hasInterval:Bool = xml.x.exists("interval");
 		if (hasInterval) beatInterval = Std.parseInt(xml.x.get("interval"));
 
-		XMLUtil.appendSpriteSheetsFromXML(this, xml, 'characters/');
+		if(cachedFrames.exists(curCharacter)) this.frames = cachedFrames.get(curCharacter);
+		else XMLUtil.appendSpriteSheetsFromXML(this, xml, 'characters/');
 		
 		if (xml.x.exists("centercam")) centeredCamera = (xml.x.get("centercam") == "true");
 		else if (Flags.USE_LEGACY_CENTER_CAM) centeredCamera = true;
@@ -572,6 +575,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 
 	public static var FALLBACK_CHARACTER:String = Flags.DEFAULT_CHARACTER;
 	public static var FALLBACK_DEAD_CHARACTER:String = Flags.DEFAULT_GAMEOVER_CHARACTER;
+	public static var cachedFrames:Map<String, FlxFramesCollection> = new Map<String, FlxFramesCollection>();
 
 	private function set_script(script:Script):Script {
 		if (scripts == null) (scripts = new ScriptPack("Character")).setParent(this);
@@ -661,5 +665,15 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 				}
 			}
 		return list;
+	}
+
+	public static function cacheCharacter(character:String){
+		var tempFrames = XMLUtil.getSpriteSheetsFromXML(getXMLFromCharName(character), character, 'characters/');
+		if(tempFrames != null) cachedFrames.set(character, tempFrames);
+	}
+
+	public static function clearCache(){
+		// for (frame in cachedFrames) frame.destroy(); TODO: Look into why it crashes
+		cachedFrames.clear();
 	}
 }
