@@ -49,6 +49,7 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 	public var iconColor:Null<FlxColor> = null;
 	public var gameOverCharacter:String = Character.FALLBACK_DEAD_CHARACTER;
 	public var defaultAimFPS:Float = 24;
+	public var defaultScale:Float = 1;
 
 
 	/*
@@ -397,8 +398,8 @@ class Character extends FunkinSprite implements IBeatReceiver implements IOffset
 		if (xml.x.exists("icon")) icon = xml.x.get("icon");
 		if (xml.x.exists("color")) iconColor = FlxColor.fromString(xml.x.get("color"));
 		if (xml.x.exists("scale")) {
-			var scale:Float = Std.parseFloat(xml.x.get("scale")).getDefaultFloat(1);
-			this.scale.set(scale, scale);
+			defaultScale = Std.parseFloat(xml.x.get("scale")).getDefaultFloat(1);
+			this.scale.set(defaultScale, defaultScale);
 			updateHitbox();
 		}
 		if (xml.x.exists("antialiasing")) antialiasing = (xml.x.get("antialiasing") == "true");

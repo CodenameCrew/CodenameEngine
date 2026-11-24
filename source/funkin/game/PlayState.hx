@@ -1856,15 +1856,20 @@ class PlayState extends MusicBeatState
 
 					var oldChar:Character = strumLines.members[event.params[0]].characters[event.params[1]];
 					var newChar:Character = __chosenChar ?? new Character(oldChar.x, oldChar.y, event.params[2], oldChar.isPlayer);
+					var stagePos = stage.getCharPos(newChar, !event.params[7] ? strumLines.members[event.params[0]].data.position : null, !event.params[7]);
 					if (__chosenChar != null) {
 						__chosenChar.revive();
-						stage.revertCharStuff(newChar, !event.params[7] ? strumLines.members[event.params[0]].data.position : null, !event.params[7]);
+						/*if (stagePos != null) stagePos.revertCharacter(__chosenChar);
+						__chosenChar.scale.x *= __chosenChar.defaultScale;
+						__chosenChar.scale.y *= __chosenChar.defaultScale;
+						__chosenChar.updateHitbox();*/
 					}
-					stage.applyCharStuff(newChar, !event.params[7] ? strumLines.members[event.params[0]].data.position : null, event.params[1], !event.params[7]);
+					if (stagePos != null) stagePos.prepareCharacter(newChar, event.params[1]);
 					if(event.params[6]) newChar.shader = oldChar.shader;
 
 					if (Flags.CHARACTER_CHANGE_FULL_CACHE) {
 						newChar.isPlayer = oldChar.isPlayer;
+						newChar.flipX = newChar.playerOffsets;
 						newChar.fixChar(newChar.__switchAnims, newChar.__autoInterval);
 						newChar.dance();
 
