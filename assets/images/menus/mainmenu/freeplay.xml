@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+Created with Heroic Packer v0.1.7 https://heroicpacker.heroeyad.dev/
 -->
-<TextureAtlas imagePath="freeplay.png" width="634" height="894">
-	<SubTexture name="freeplay basic0000" x="1" y="521" width="484" height="122" frameX="-0" frameY="-0" frameWidth="484" frameHeight="122"/>
-	<SubTexture name="freeplay basic0001" x="1" y="521" width="484" height="122" frameX="-0" frameY="-0" frameWidth="484" frameHeight="122"/>
-	<SubTexture name="freeplay basic0002" x="1" y="521" width="484" height="122" frameX="-0" frameY="-0" frameWidth="484" frameHeight="122"/>
-	<SubTexture name="freeplay basic0003" x="1" y="646" width="484" height="122" frameX="-0" frameY="-0" frameWidth="484" frameHeight="122"/>
-	<SubTexture name="freeplay basic0004" x="1" y="646" width="484" height="122" frameX="-0" frameY="-0" frameWidth="484" frameHeight="122"/>
-	<SubTexture name="freeplay basic0005" x="1" y="646" width="484" height="122" frameX="-0" frameY="-0" frameWidth="484" frameHeight="122"/>
-	<SubTexture name="freeplay basic0006" x="1" y="771" width="484" height="122" frameX="-0" frameY="-0" frameWidth="484" frameHeight="122"/>
-	<SubTexture name="freeplay basic0007" x="1" y="771" width="484" height="122" frameX="-0" frameY="-0" frameWidth="484" frameHeight="122"/>
-	<SubTexture name="freeplay basic0008" x="1" y="771" width="484" height="122" frameX="-0" frameY="-0" frameWidth="484" frameHeight="122"/>
-	<SubTexture name="freeplay white0000" x="1" y="350" width="627" height="168" frameX="-0" frameY="20" frameWidth="635" frameHeight="174"/>
-	<SubTexture name="freeplay white0001" x="1" y="1" width="632" height="170" frameX="-3" frameY="19" frameWidth="635" frameHeight="174"/>
-	<SubTexture name="freeplay white0002" x="1" y="174" width="628" height="173" frameX="-4" frameY="19" frameWidth="635" frameHeight="174"/>
+<TextureAtlas imagePath="freeplay.png" width="1008" height="519" spritePadding="2" borderPadding="2">
+	<SubTexture name="freeplay basic0000" x="636" y="2" width="122" height="484" rotated="true" frameX="0" frameY="0" frameWidth="484" frameHeight="122"/>
+	<SubTexture name="freeplay basic0001" x="636" y="2" width="122" height="484" rotated="true" frameX="0" frameY="0" frameWidth="484" frameHeight="122"/>
+	<SubTexture name="freeplay basic0002" x="636" y="2" width="122" height="484" rotated="true" frameX="0" frameY="0" frameWidth="484" frameHeight="122"/>
+	<SubTexture name="freeplay basic0003" x="760" y="2" width="122" height="484" rotated="true" frameX="0" frameY="0" frameWidth="484" frameHeight="122"/>
+	<SubTexture name="freeplay basic0004" x="760" y="2" width="122" height="484" rotated="true" frameX="0" frameY="0" frameWidth="484" frameHeight="122"/>
+	<SubTexture name="freeplay basic0005" x="760" y="2" width="122" height="484" rotated="true" frameX="0" frameY="0" frameWidth="484" frameHeight="122"/>
+	<SubTexture name="freeplay basic0006" x="884" y="2" width="122" height="484" rotated="true" frameX="0" frameY="0" frameWidth="484" frameHeight="122"/>
+	<SubTexture name="freeplay basic0007" x="884" y="2" width="122" height="484" rotated="true" frameX="0" frameY="0" frameWidth="484" frameHeight="122"/>
+	<SubTexture name="freeplay basic0008" x="884" y="2" width="122" height="484" rotated="true" frameX="0" frameY="0" frameWidth="484" frameHeight="122"/>
+	<SubTexture name="freeplay white0000" x="2" y="349" width="627" height="168" frameX="0" frameY="20" frameWidth="635" frameHeight="174"/>
+	<SubTexture name="freeplay white0001" x="2" y="2" width="632" height="170" frameX="-3" frameY="19" frameWidth="635" frameHeight="174"/>
+	<SubTexture name="freeplay white0002" x="2" y="174" width="628" height="173" frameX="-4" frameY="19" frameWidth="635" frameHeight="174"/>
 </TextureAtlas>

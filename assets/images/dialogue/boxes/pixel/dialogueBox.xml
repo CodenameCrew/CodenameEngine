@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/ -->
-<!-- HUGE THANKS to Nile that divided the angry animations from the angry box! -->
-<TextureAtlas imagePath="dialogueBox.png" width="424" height="220">
-	<SubTexture name="Text Box Bump Appear instance 10000" x="1" y="1" width="215" height="63" frameX="-6" frameY="-0" frameWidth="224" frameHeight="65"/>
-	<SubTexture name="Text Box Bump Appear instance 10001" x="210" y="128" width="202" height="56" frameX="-10" frameY="-8" frameWidth="224" frameHeight="65"/>
-	<SubTexture name="Text Box Bump Appear instance 10002" x="1" y="129" width="205" height="58" frameX="-4" frameY="-4" frameWidth="224" frameHeight="65"/>
-	<SubTexture name="Text Box Bump Appear instance 10003" x="219" y="50" width="204" height="58" frameX="-8" frameY="-6" frameWidth="224" frameHeight="65"/>
-	<SubTexture name="Text Box Bump Appear instance 10004" x="1" y="129" width="205" height="58" frameX="-4" frameY="-4" frameWidth="224" frameHeight="65"/>
-	<SubTexture name="Text Box Bump Appear instance 10005" x="1" y="129" width="205" height="58" frameX="-4" frameY="-4" frameWidth="224" frameHeight="65"/>
-	<SubTexture name="Text Box Bump Appear instance 10006" x="1" y="67" width="206" height="59" frameX="-6" frameY="-6" frameWidth="224" frameHeight="65"/>
-	<SubTexture name="Text Box Bump Appear instance 10007" x="1" y="67" width="206" height="59" frameX="-6" frameY="-6" frameWidth="224" frameHeight="65"/>
-	<SubTexture name="Text Box Appear instance 10000" x="210" y="111" width="202" height="14" frameX="-22" frameY="-62" frameWidth="249" frameHeight="144"/>
-	<SubTexture name="Text Box Appear instance 10001" x="1" y="190" width="204" height="29" frameX="-22" frameY="-64" frameWidth="249" frameHeight="144"/>
-	<SubTexture name="Text Box Appear instance 10002" x="219" y="1" width="204" height="46" frameX="-22" frameY="-65" frameWidth="249" frameHeight="144"/>
-	<SubTexture name="Text Box Appear instance 10003" x="1" y="129" width="205" height="58" frameX="-22" frameY="-66" frameWidth="249" frameHeight="144"/>
-	<SubTexture name="Text Box Appear instance 10004" x="1" y="129" width="205" height="58" frameX="-22" frameY="-66" frameWidth="249" frameHeight="144"/>
+<!--
+Created with Heroic Packer v0.1.7 https://heroicpacker.heroeyad.dev/
+-->
+<TextureAtlas imagePath="dialogueBox.png" width="427" height="202" spritePadding="2" borderPadding="2">
+	<SubTexture name="Text Box Bump Appear instance 10000" x="2" y="2" width="215" height="63" frameX="-6" frameY="0" frameWidth="224" frameHeight="65"/>
+	<SubTexture name="Text Box Bump Appear instance 10001" x="2" y="127" width="202" height="56" frameX="-10" frameY="-8" frameWidth="224" frameHeight="65"/>
+	<SubTexture name="Text Box Bump Appear instance 10002" x="219" y="63" width="205" height="58" frameX="-4" frameY="-4" frameWidth="224" frameHeight="65"/>
+	<SubTexture name="Text Box Bump Appear instance 10003" x="2" y="67" width="204" height="58" frameX="-8" frameY="-6" frameWidth="224" frameHeight="65"/>
+	<SubTexture name="Text Box Bump Appear instance 10004" x="219" y="63" width="205" height="58" frameX="-4" frameY="-4" frameWidth="224" frameHeight="65"/>
+	<SubTexture name="Text Box Bump Appear instance 10005" x="219" y="63" width="205" height="58" frameX="-4" frameY="-4" frameWidth="224" frameHeight="65"/>
+	<SubTexture name="Text Box Bump Appear instance 10006" x="219" y="2" width="206" height="59" frameX="-6" frameY="-6" frameWidth="224" frameHeight="65"/>
+	<SubTexture name="Text Box Bump Appear instance 10007" x="219" y="2" width="206" height="59" frameX="-6" frameY="-6" frameWidth="224" frameHeight="65"/>
+	<SubTexture name="Text Box Appear instance 10000" x="2" y="185" width="202" height="14" frameX="-22" frameY="-62" frameWidth="249" frameHeight="144"/>
+	<SubTexture name="Text Box Appear instance 10001" x="206" y="171" width="204" height="29" frameX="-22" frameY="-64" frameWidth="249" frameHeight="144"/>
+	<SubTexture name="Text Box Appear instance 10002" x="208" y="123" width="204" height="46" frameX="-22" frameY="-65" frameWidth="249" frameHeight="144"/>
+	<SubTexture name="Text Box Appear instance 10003" x="219" y="63" width="205" height="58" frameX="-22" frameY="-66" frameWidth="249" frameHeight="144"/>
+	<SubTexture name="Text Box Appear instance 10004" x="219" y="63" width="205" height="58" frameX="-22" frameY="-66" frameWidth="249" frameHeight="144"/>
 </TextureAtlas>

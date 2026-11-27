@@ -1,19 +1,20 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="tankman.png">
-	<!-- Created with Adobe Animate version 21.0.1.37179 -->
-	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="Tankman Menu BLACK0000" x="0" y="0" width="228" height="292" frameX="-3" frameY="-9" frameWidth="231" frameHeight="301"/>
-	<SubTexture name="Tankman Menu BLACK0001" x="0" y="0" width="228" height="292" frameX="-3" frameY="-9" frameWidth="231" frameHeight="301"/>
-	<SubTexture name="Tankman Menu BLACK0002" x="240" y="0" width="229" height="293" frameX="-2" frameY="-8" frameWidth="231" frameHeight="301"/>
-	<SubTexture name="Tankman Menu BLACK0003" x="240" y="0" width="229" height="293" frameX="-2" frameY="-8" frameWidth="231" frameHeight="301"/>
-	<SubTexture name="Tankman Menu BLACK0004" x="480" y="0" width="228" height="295" frameX="-1" frameY="-6" frameWidth="231" frameHeight="301"/>
-	<SubTexture name="Tankman Menu BLACK0005" x="480" y="0" width="228" height="295" frameX="-1" frameY="-6" frameWidth="231" frameHeight="301"/>
-	<SubTexture name="Tankman Menu BLACK0006" x="0" y="303" width="229" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
-	<SubTexture name="Tankman Menu BLACK0007" x="240" y="303" width="230" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
-	<SubTexture name="Tankman Menu BLACK0008" x="480" y="303" width="230" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
-	<SubTexture name="Tankman Menu BLACK0009" x="480" y="303" width="230" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
-	<SubTexture name="Tankman Menu BLACK0010" x="480" y="303" width="230" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
-	<SubTexture name="Tankman Menu BLACK0011" x="480" y="303" width="230" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
-	<SubTexture name="Tankman Menu BLACK0012" x="480" y="303" width="230" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
-	<SubTexture name="Tankman Menu BLACK0013" x="480" y="303" width="230" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Heroic Packer v0.1.7 https://heroicpacker.heroeyad.dev/
+-->
+<TextureAtlas imagePath="tankman.png" width="465" height="902" spritePadding="2" borderPadding="2">
+	<SubTexture name="Tankman Menu BLACK0000" x="2" y="608" width="228" height="292" frameX="-3" frameY="-9" frameWidth="231" frameHeight="301"/>
+	<SubTexture name="Tankman Menu BLACK0001" x="2" y="608" width="228" height="292" frameX="-3" frameY="-9" frameWidth="231" frameHeight="301"/>
+	<SubTexture name="Tankman Menu BLACK0002" x="234" y="602" width="229" height="293" frameX="-2" frameY="-8" frameWidth="231" frameHeight="301"/>
+	<SubTexture name="Tankman Menu BLACK0003" x="234" y="602" width="229" height="293" frameX="-2" frameY="-8" frameWidth="231" frameHeight="301"/>
+	<SubTexture name="Tankman Menu BLACK0004" x="234" y="305" width="228" height="295" frameX="-1" frameY="-6" frameWidth="231" frameHeight="301"/>
+	<SubTexture name="Tankman Menu BLACK0005" x="234" y="305" width="228" height="295" frameX="-1" frameY="-6" frameWidth="231" frameHeight="301"/>
+	<SubTexture name="Tankman Menu BLACK0006" x="234" y="2" width="229" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
+	<SubTexture name="Tankman Menu BLACK0007" x="2" y="2" width="230" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
+	<SubTexture name="Tankman Menu BLACK0008" x="2" y="305" width="230" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
+	<SubTexture name="Tankman Menu BLACK0009" x="2" y="305" width="230" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
+	<SubTexture name="Tankman Menu BLACK0010" x="2" y="305" width="230" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
+	<SubTexture name="Tankman Menu BLACK0011" x="2" y="305" width="230" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
+	<SubTexture name="Tankman Menu BLACK0012" x="2" y="305" width="230" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
+	<SubTexture name="Tankman Menu BLACK0013" x="2" y="305" width="230" height="301" frameX="0" frameY="0" frameWidth="231" frameHeight="301"/>
 </TextureAtlas>

@@ -1,12 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="bf.png">
-	<!-- Created with Adobe Animate version 21.0.1.37179 -->
-	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="load0000" x="561" y="565" width="407" height="413" pivotX="215.85" pivotY="278.8" frameX="-74" frameY="-72" frameWidth="553" frameHeight="557"/>
-	<SubTexture name="load0001" x="563" y="0" width="532" height="555" frameX="0" frameY="0" frameWidth="553" frameHeight="557"/>
-	<SubTexture name="load0002" x="563" y="0" width="532" height="555" frameX="0" frameY="0" frameWidth="553" frameHeight="557"/>
-	<SubTexture name="load0003" x="0" y="561" width="551" height="549" frameX="0" frameY="-8" frameWidth="553" frameHeight="557"/>
-	<SubTexture name="load0004" x="0" y="561" width="551" height="549" frameX="0" frameY="-8" frameWidth="553" frameHeight="557"/>
-	<SubTexture name="load0005" x="0" y="0" width="553" height="551" frameX="0" frameY="-6" frameWidth="553" frameHeight="557"/>
-	<SubTexture name="load0006" x="0" y="0" width="553" height="551" frameX="0" frameY="-6" frameWidth="553" frameHeight="557"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Heroic Packer v0.1.7 https://heroicpacker.heroeyad.dev/
+-->
+<TextureAtlas imagePath="bf.png" width="536" height="1928" spritePadding="2" borderPadding="2">
+	<SubTexture name="load0000" x="2" y="1519" width="413" height="407" rotated="true" frameX="-74" frameY="-72" frameWidth="553" frameHeight="557"/>
+	<SubTexture name="load0001" x="2" y="2" width="532" height="492" rotated="true" frameX="-16" frameY="-9" frameWidth="553" frameHeight="557"/>
+	<SubTexture name="load0002" x="2" y="2" width="532" height="492" rotated="true" frameX="-16" frameY="-9" frameWidth="553" frameHeight="557"/>
+	<SubTexture name="load0003" x="2" y="1008" width="527" height="509" rotated="true" frameX="-17" frameY="-16" frameWidth="553" frameHeight="557"/>
+	<SubTexture name="load0004" x="2" y="1008" width="527" height="509" rotated="true" frameX="-17" frameY="-16" frameWidth="553" frameHeight="557"/>
+	<SubTexture name="load0005" x="2" y="496" width="528" height="510" rotated="true" frameX="-17" frameY="-15" frameWidth="553" frameHeight="557"/>
+	<SubTexture name="load0006" x="2" y="496" width="528" height="510" rotated="true" frameX="-17" frameY="-15" frameWidth="553" frameHeight="557"/>
 </TextureAtlas>

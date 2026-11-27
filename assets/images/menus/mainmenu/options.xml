@@ -1,17 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="options.png">
-	<!-- Created with Adobe Animate version 21.0.1.37179 and edited by Nex_isDumb -->
-	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="options basic0000" x="2" y="2" width="487" height="111" pivotX="14.15" pivotY="11.95"/>
-	<SubTexture name="options basic0001" x="2" y="2" width="487" height="111"/>
-	<SubTexture name="options basic0002" x="2" y="2" width="487" height="111"/>
-	<SubTexture name="options basic0003" x="2" y="115" width="487" height="111"/>
-	<SubTexture name="options basic0004" x="2" y="115" width="487" height="111"/>
-	<SubTexture name="options basic0005" x="2" y="115" width="487" height="111"/>
-	<SubTexture name="options basic0006" x="2" y="228" width="487" height="111"/>
-	<SubTexture name="options basic0007" x="2" y="228" width="487" height="111"/>
-	<SubTexture name="options basic0008" x="2" y="228" width="487" height="111"/>
-	<SubTexture name="options white0000" x="2" y="341" width="606" height="155" pivotX="18.2" pivotY="23.95" frameX="-2" frameY="19" frameWidth="610" frameHeight="163"/>
-	<SubTexture name="options white0001" x="2" y="498" width="607" height="158" frameX="-3" frameY="19" frameWidth="610" frameHeight="163"/>
-	<SubTexture name="options white0002" x="2" y="658" width="610" height="163" frameX="0" frameY="20" frameWidth="610" frameHeight="163"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Heroic Packer v0.1.7 https://heroicpacker.heroeyad.dev/
+-->
+<TextureAtlas imagePath="options.png" width="953" height="491" spritePadding="2" borderPadding="2">
+	<SubTexture name="options basic0000" x="614" y="2" width="111" height="487" rotated="true" frameX="0" frameY="0" frameWidth="487" frameHeight="111"/>
+	<SubTexture name="options basic0001" x="614" y="2" width="111" height="487" rotated="true" frameX="0" frameY="0" frameWidth="487" frameHeight="111"/>
+	<SubTexture name="options basic0002" x="614" y="2" width="111" height="487" rotated="true" frameX="0" frameY="0" frameWidth="487" frameHeight="111"/>
+	<SubTexture name="options basic0003" x="727" y="2" width="111" height="487" rotated="true" frameX="0" frameY="0" frameWidth="487" frameHeight="111"/>
+	<SubTexture name="options basic0004" x="727" y="2" width="111" height="487" rotated="true" frameX="0" frameY="0" frameWidth="487" frameHeight="111"/>
+	<SubTexture name="options basic0005" x="727" y="2" width="111" height="487" rotated="true" frameX="0" frameY="0" frameWidth="487" frameHeight="111"/>
+	<SubTexture name="options basic0006" x="840" y="2" width="111" height="487" rotated="true" frameX="0" frameY="0" frameWidth="487" frameHeight="111"/>
+	<SubTexture name="options basic0007" x="840" y="2" width="111" height="487" rotated="true" frameX="0" frameY="0" frameWidth="487" frameHeight="111"/>
+	<SubTexture name="options basic0008" x="840" y="2" width="111" height="487" rotated="true" frameX="0" frameY="0" frameWidth="487" frameHeight="111"/>
+	<SubTexture name="options white0000" x="2" y="327" width="606" height="155" frameX="-2" frameY="19" frameWidth="610" frameHeight="163"/>
+	<SubTexture name="options white0001" x="2" y="167" width="607" height="158" frameX="-3" frameY="19" frameWidth="610" frameHeight="163"/>
+	<SubTexture name="options white0002" x="2" y="2" width="610" height="163" frameX="0" frameY="20" frameWidth="610" frameHeight="163"/>
 </TextureAtlas>

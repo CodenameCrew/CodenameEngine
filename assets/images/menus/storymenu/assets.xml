@@ -1,10 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="assets.png">
-	<!-- Created with Adobe Animate version 21.0.1.37179 -->
-	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="arrow left0000" x="10" y="10" width="48" height="85" pivotX="0" pivotY="0"/>
-	<SubTexture name="arrow push left0000" x="68" y="10" width="42" height="75" pivotX="0" pivotY="0"/>
-	<SubTexture name="arrow push right0000" x="120" y="10" width="41" height="74" pivotX="0" pivotY="0"/>
-	<SubTexture name="arrow right0000" x="171" y="10" width="47" height="85" pivotX="0" pivotY="0"/>
-	<SubTexture name="lock0000" x="228" y="10" width="67" height="93" pivotX="0" pivotY="0"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Heroic Packer v0.1.7 https://heroicpacker.heroeyad.dev/
+-->
+<TextureAtlas imagePath="assets.png" width="145" height="158" spritePadding="2" borderPadding="2">
+	<SubTexture name="arrow left0000" x="2" y="71" width="48" height="85" frameX="0" frameY="0" frameWidth="48" frameHeight="85"/>
+	<SubTexture name="arrow push left0000" x="101" y="2" width="42" height="75" frameX="0" frameY="0" frameWidth="42" frameHeight="75"/>
+	<SubTexture name="arrow push right0000" x="101" y="79" width="41" height="74" frameX="0" frameY="0" frameWidth="41" frameHeight="74"/>
+	<SubTexture name="arrow right0000" x="52" y="71" width="47" height="85" frameX="0" frameY="0" frameWidth="47" frameHeight="85"/>
+	<SubTexture name="lock0000" x="2" y="2" width="93" height="67" rotated="true" frameX="0" frameY="0" frameWidth="67" frameHeight="93"/>
 </TextureAtlas>
