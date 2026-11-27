@@ -37,8 +37,8 @@ jobs:
           haxelib run lime setup -alias -y -nocffi
           haxelib run lime rebuild hxcpp
           haxelib run lime rebuild tools
-          haxelib run lime rebuild windows -nocolor
-          haxelib run lime build windows -debug
+          haxelib run lime rebuild windows -nocolor -debug
+          haxelib run lime build windows -nocffi -debug
       - name: Uploading artifact (entire build)
         uses: actions/upload-artifact@v7
         with:
