@@ -11,6 +11,7 @@ TODO:
 @:access(flixel.FlxCamera)
 @:access(flixel.FlxBasic)
 class ModchartDrawing {
+	public var safeDrawing:Bool = true; // eh, why not
 	public var parent:ModchartManager;
 
 	// there may be extra queues in the array, this is to reduce allocations.
@@ -63,6 +64,8 @@ class ModchartDrawing {
 	}
 	function drawNote(note:Note, index:Int) {
 		final strum = note.__strum;
+		if (strum == null)
+			return; // dont bother
 
 		var ogNoteX = note.x;
 		var ogNoteY = note.y;
@@ -117,7 +120,7 @@ class ModchartDrawing {
 		emptyModel.buildFromQueue(queue);
 	}
 
-	function preDraw() {
+	function tryPreperations() {
 		// store the strumlines' visibility and if this is visible, hide it internally
 		__fieldsVisible = strumLines.visible;
 		strumLines.visible = !parent.visible && __fieldsVisible;
@@ -128,6 +131,8 @@ class ModchartDrawing {
 
 		for (i in 0...strumLines.members.length) {
 			var field = strumLines.members[i];
+			if (!field.visible)
+				continue;
 
 			var oldDefaultCams = FlxCamera._defaultCameras;
 			if (field._cameras != null)
@@ -143,7 +148,20 @@ class ModchartDrawing {
 
 		FlxCamera._defaultCameras = oldDefaultCams;
 	}
+	function preDraw() {
+		if (!safeDrawing)
+			tryPreperations();
+		else {
+			try {
+				tryPreperations();
+			} catch (e) {
+				Logs.error("Modchart Rendering has failed!\n" + e.details() + "\n\nEvacuating Modchart.");
+				removeSignals();
+			}
+		}
+	}
 	function postDraw() {
+		// i can trust you to not crash right
 		strumLines.visible = __fieldsVisible;
 	}
 }
