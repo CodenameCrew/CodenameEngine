@@ -246,7 +246,7 @@
 
 		<str id="songOffsetAffectEditors-name">Offset in Charter</str>
 		<str id="songOffsetAffectEditors-desc">If checked, this will enable the Song Offset option in the Chart Editor too.</str>
-		
+
 		<str id="legacyModMenuNames-name">Legacy Mod Names</str>
 		<str id="legacyModMenuNames-desc">If checked, this will use the mod folders name for the mod.</str>
 
@@ -256,5 +256,4 @@
 		<str id="imguiMultiViewport-name">ImGui Multi Viewport</str>
 		<str id="imguiMultiViewport-desc">If checked, ImGui windows can be dragged out of the main viewport, disabled by default on Linux due to common bugs and issues.</str>
 	</group>
-
 </language>
