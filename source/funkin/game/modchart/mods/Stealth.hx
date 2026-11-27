@@ -42,7 +42,7 @@ class Stealth extends BaseModifier {
 		final regionMult = Math.max((hidden + sudden) - 1.0, 0.0);
 
 		final usedDistance = switch (stealthType) {
-			case 0: (queue.position.y - FlxG.height * 0.5);// * (queue.scrollMult > 0 ? 1 : -1) + FlxG.height * 0.5;
+			case 0: (queue.position.y - FlxG.height * 0.5) + FlxG.height * 0.5;// * (queue.scrollMult > 0 ? 1 : -1) + FlxG.height * 0.5;
 			case 2: queue.originalDistance;
 			default: queue.distance;
 		}

@@ -187,17 +187,14 @@ class ModchartModel extends FoxModel {
 
 		if (lastShader == null || shader != lastShader) {
 			lastShader = shader;
-			shader.gl.useProgram(shader.getGLProgram());
 			glowAttribIdx = shader.gl.getAttribLocation(shader.getGLProgram(), "glow");
 		}
+		shader.gl.useProgram(shader.getGLProgram());
 		if (glowAttribIdx >= 0) {
-			//Sys.println(finalStealth);
 			var packed = TypedArray.Float32Array(cast finalStealth);
-			//glowBuffer.usage = modMesh.bufferUsage;
 			glowBuffer.count = elemCount;
 			glowBuffer.uploadFromTypedArray(packed);
 			FoxRenderer.setAttributePointerAt(glowAttribIdx, glowBuffer);
-			GL.vertexAttribDivisor(glowAttribIdx, 1);
 		}
 
 		setMeshArrays();
@@ -263,6 +260,11 @@ class ModchartModel extends FoxModel {
 		buffer.count = elemCount;
 
 		modMesh.setBuffer(idx, array);
+	}
+
+	override function destroy() {
+		super.destroy();
+		glowBuffer.dispose();
 	}
 
 	static function sortZ(a:ZAndIndex, b:ZAndIndex) {
