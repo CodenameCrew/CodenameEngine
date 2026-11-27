@@ -16,6 +16,7 @@ class Stealth extends BaseModifier {
 	@:optional var stealthType:ModifierInt = 0;
 
 	function getRemap(distance:Float, multOffset:Float, pixOffset:Float, from:Float, to:Float) {
+		final swapRanges = from > to;
 		return CoolUtil.bound(
 			FlxMath.remapToRange(
 				distance,
@@ -24,8 +25,8 @@ class Stealth extends BaseModifier {
 				from,
 				to
 			),
-			from,
-			to
+			swapRanges ? to : from,
+			swapRanges ? from : to
 		);
 	}
 
