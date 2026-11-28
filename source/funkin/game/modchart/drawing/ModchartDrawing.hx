@@ -55,6 +55,8 @@ class ModchartDrawing {
 		queue.reset(0, parent.curLane, index, strumLines.members[index], strum);
 		queue.speed = strum.getScrollSpeed();
 		queue.strum = strum;
+		if (parent.downscroll)
+			queue.yMult *= -1;
 
 		for (mod in parent.allMods) {
 			if (mod.active[index])
@@ -85,6 +87,8 @@ class ModchartDrawing {
 		queue.reset((note.strumTime - Conductor.songPosition) * 0.45 * speed, parent.curLane, index, strumLines.members[index], note);
 		queue.speed = speed;
 		queue.note = note;
+		if (parent.downscroll)
+			queue.yMult *= -1;
 
 		for (mod in parent.allMods) {
 			if (mod.active[index])

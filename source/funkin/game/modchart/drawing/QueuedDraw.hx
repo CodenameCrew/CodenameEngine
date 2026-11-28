@@ -25,6 +25,7 @@ class QueuedDraw {
 
 	public var directionSin:Float = 1;
 	public var directionCos:Float = 0;
+	public var yMult(default, set):Float = 1;
 	public var speed:Float = 1;
 
 	public var fieldCenter:Vector3D = new Vector3D();
@@ -71,6 +72,7 @@ class QueuedDraw {
 
 		directionSin = Strum.__lastAngleSin;
 		directionCos = Strum.__lastAngleCos;
+		@:bypassAccessor yMult = 1;
 		speed = 1;
 	}
 
@@ -86,8 +88,20 @@ class QueuedDraw {
 	function set_distance(to:Float) {
 		final diff = to - distance;
 		position.x += diff * directionCos;
-		position.y += diff * directionSin;
+		position.y += diff * directionSin * yMult;
 
 		return distance = to;
+	}
+	function set_yMult(to:Float) {
+		to = to == 0 ? 0.00001 : to; // lil safety for recoverable setting
+
+		final yDiv = 1 / yMult;
+		final y = (position.y - FlxG.height * 0.5) * yDiv;
+		position.y = y * to + FlxG.height * 0.5;
+
+		if (isSustain())
+			scale.y *= to * yDiv;
+
+		return yMult = to;
 	}
 }

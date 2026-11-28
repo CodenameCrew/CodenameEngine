@@ -22,13 +22,15 @@ class ModchartManager extends FoxScene {
 
 	public var drawer:ModchartDrawing;
 	public var strumLines(get, never):FlxTypedGroup<StrumLine>;
+	public var downscroll:Bool = false;
 
 	static final digitRegex = ~/\d/g;
 
-	public function new(strumLines:FlxTypedGroup<StrumLine>) {
+	public function new(strumLines:FlxTypedGroup<StrumLine>, downscroll:Bool) {
 		foxlite.renderer.FoxRenderer.initLibs();
 		super(FlxG.width, FlxG.height);
 
+		this.downscroll = downscroll;
 		drawer = new ModchartDrawing(this, strumLines);
 		for (field in strumLines.members) {
 			storage.push([]);
