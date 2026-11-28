@@ -1684,7 +1684,7 @@ class PlayState extends MusicBeatState
 		var amount:Int = 0;
 		final cpos = FlxPoint.get();
 		for(c in chars) {
-			if (c == null || (!ignoreInvisible && (c.alpha <= 0 || !c.visible || !c.exists)) || (!ignoreInactive && !c.active)) continue;
+			if (c == null || (ignoreInvisible && (c.alpha <= 0 || !c.visible || !c.exists)) || (ignoreInactive && !c.active)) continue;    
 			c.__getCameraPositionInto(cpos);
 			pos.x += cpos.x;
 			pos.y += cpos.y;
