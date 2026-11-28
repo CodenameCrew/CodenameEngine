@@ -291,21 +291,37 @@ class Setup {
 				}
 			}
 		}
-		
+
 		try File.saveContent(libSumFile, libSum) catch (_) {}
 
-		// vswhere.exe is used to find any visual studio related installations on the system, including full visual studio ide installations, visual studio build tools installations, and other related components  - Nex
-		if (CHECK_VSTUDIO && Compiler.getBuildTarget().toLowerCase() == "windows" && new Process('"C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -requires Microsoft.VisualStudio.Component.Windows10SDK.19041 -property installationPath').exitCode(true) != 0) {
-			prettyPrint("Installing Microsoft Visual Studio Community (Dependency)");
+		if (CHECK_VSTUDIO && Compiler.getBuildTarget().toLowerCase() == "windows" ) {
+			var files = Sys.getEnv("ProgramFiles(x86)");
+			if (files == null) files = "C:/Program Files (x86)";
 
-			// thanks to @crowplexus for these two lines!  - Nex
-			command("curl -L -# -o vs_Community.exe https://aka.ms/vs/17/release/vs_community.exe");
-			command("vs_Community.exe --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.19041 -p");
-			FileSystem.deleteFile("vs_Community.exe");
+			// vswhere.exe is used to find any visual studio related installations on the system, including full visual studio ide installations, visual studio build tools installations, and other related components  - Nex
+			var vswhere = '$files/Microsoft Visual Studio/Installer/vswhere.exe';
+			var installed = false;
+			if (FileSystem.exists(vswhere)) {
+				var process = new Process('"$vswhere" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -requires Microsoft.VisualStudio.Component.Windows10SDK.19041 -property installationPath');
+				var out = StringTools.trim(process.stdout.readAll().toString());
+				var code = process.exitCode(true);
+				process.close();
 
-			prettyPrint("Because of this component, if you want to compile, you need to restart the device.");
-			Sys.print("Do you wish to do it now [y/n]? ");
-			if(Sys.stdin().readLine().toLowerCase() == "y") command("shutdown /r /t 0 /f");
+				installed = code == 0 && out != "";  // vswhere gives 0 even when the component is missing  - Nex
+			}
+
+			if (!installed) {
+				prettyPrint("Installing Microsoft Visual Studio Community (Dependency)");
+
+				// thanks to @crowplexus for these two lines!  - Nex
+				command("curl -L -# -o vs_Community.exe https://aka.ms/vs/17/release/vs_community.exe");
+				command("vs_Community.exe --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.19041 -p");
+				FileSystem.deleteFile("vs_Community.exe");
+
+				prettyPrint("Because of this component, if you want to compile, you need to restart the device.");
+				Sys.print("Do you wish to do it now [y/n]? ");
+				if(Sys.stdin().readLine().toLowerCase() == "y") command("shutdown /r /t 0 /f");
+			}
 		}
 	}
 
