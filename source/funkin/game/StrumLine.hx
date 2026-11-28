@@ -155,11 +155,12 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 			total++;
 
-			if (note.sLen > Conductor.stepCrochet * 0.75) {
+			final stepCrochet = 15000 / Conductor.getTimeInBPM(note.time.getDefault(0));
+			if (note.sLen > stepCrochet * 0.75) {
 				var len:Float = note.sLen;
 				while(len > 10) {
 					total++;
-					len -= Math.min(len, Conductor.stepCrochet);
+					len -= Math.min(len, stepCrochet);
 				}
 			}
 		}
@@ -176,7 +177,7 @@ class StrumLine extends FlxTypedGroup<Strum> {
 
 			notes.members[total-(il++)-1] = prev = new Note(this, note, false, prev);
 			
-			var stepCrochet:Float = 15000 / Conductor.getTimeInBPM(note.time.getDefault(0));
+			final stepCrochet = 15000 / Conductor.getTimeInBPM(note.time.getDefault(0));
 			if (note.sLen > stepCrochet * 0.75) {
 				var len:Float = note.sLen;
 				var curLen:Float = 0;
