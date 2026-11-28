@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <language>
 	<group name="RPC" prefix="rpc.">
+		<str id="gameOver">Nel Game Over</str>
+
 		<str id="song">{0} ({1})</str>
 		<str id="song-paused">In Pausa - {0} ({1})</str>
 
