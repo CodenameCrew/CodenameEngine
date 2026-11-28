@@ -2,10 +2,20 @@
 <language>
 	<group name="PlayState">
 		<str id="game.score">Punteggio:{0}</str>
-		<str id="game.misses">Mancati:{0}</str>
-		<str id="game.comboBreaks">Interruzioni combo:{0}</str>
-		<str id="game.accuracy">Precisione:{0} - {1}</str>
+		<str id="game.misses">Mancate:{0}</str>
+		<str id="game.comboBreaks">Combo Rotte:{0}</str>
+		<str id="game.accuracy">Accuratezza:{0} - {1}</str>
 		<str id="game.combo">Combo:{0}</str>
+
+		<str id="game.rating.[N/A]">[N/A]</str>
+		<str id="game.rating.F">F</str>
+		<str id="game.rating.E">E</str>
+		<str id="game.rating.D">D</str>
+		<str id="game.rating.C">C</str>
+		<str id="game.rating.B">B</str>
+		<str id="game.rating.A">A</str>
+		<str id="game.rating.S">S</str>
+		<str id="game.rating.S++">S++</str>
 	</group>
 
 	<group name="StoryMenu">
@@ -14,11 +24,11 @@
 	</group>
 
 	<group name="Freeplay">
-		<str id="freeplay.score">MASSIMO PERSONALE:{0}</str>
-		<str id="freeplay.solo">Solo</str>
+		<str id="freeplay.score">PUNTEGGIO PERSONALE MIGLIORE:{0}</str>
+		<str id="freeplay.solo">Solitaria</str>
 		<str id="freeplay.opponentMode">Modalità Avversario</str>
 		<str id="freeplay.coopMode">Modalità Cooperativa</str>
-		<str id="freeplay.coopModeSwitched">Modalità Cooperativa (Scambiati)</str>
+		<str id="freeplay.coopModeSwitched">Modalità Cooperativa (Invertita)</str>
 	</group>
 
 	<group name="Pause">
@@ -27,21 +37,21 @@
 			<str id="pause.restartSong">Ricomincia Canzone</str>
 			<str id="pause.changeControls">Cambia Controlli</str>
 			<str id="pause.changeOptions">Cambia Opzioni</str>
-			<str id="pause.exitToMenu">Esci al menù</str>
-			<str id="pause.exitToCharter">Esci al charter</str>
+			<str id="pause.exitToMenu">Torna al menù</str>
+			<str id="pause.exitToCharter">Torna al charter</str>
 			<str id="pause.resumeCutscene">Riprendi Cutscene</str>
 			<str id="pause.skipCutscene">Salta Cutscene</str>
 			<str id="pause.restartCutscene">Ricomincia Cutscene</str>
 		</group>
 
-		<str id="pause.deathCounter">Bluballato: {0}</str>
+		<str id="pause.deathCounter">Blupallato: {0}</str>
 		<str id="pause.coopMode">MODALITÀ COOPERATIVA</str>
 		<str id="pause.opponentMode">MODALITÀ AVVERSARIO</str>
 	</group>
 
 	<group name="Credits">
 		<group name="CreditsCodename">
-			<str id="credits.mainDev" notrim="true"> *- Membro pubblico dei Devs principali!*</str>
+			<str id="credits.mainDev" notrim="true"> *- Membro pubblico degli Sviluppatori principali!*</str>
 			<str id="credits.totalContributions">Contributi totali: ~{0}~ / *{1}* (~{2}%~) - Seleziona per aprire l'account GitHub</str>
 			<str id="credits.downloadingList">Download dell'elenco...</str>
 			<str id="credits.allContributors">Tutti i collaboratori dell'Engine! - Premi RESET per aggiornare l'elenco (un reset ogni 2 minuti).</str>
@@ -56,11 +66,14 @@
 
 	<group name="Mods">
 		<str id="mods.disableMods">Disabilita Mods</str>
+		<str id="mods.modsTitle">Seleziona una Mod</str>
+		<str id="mods.addonsTitle">Abilita Add-on</str>
+		<str id="mods.addonsChanged">Per applicare le modifiche agli add-on, seleziona una mod.</str>
 	</group>
 
 	<group name="MainMenu">
 		<str id="mainMenu.commit">Commit: {0} ({1})</str>
-		<str id="mainMenu.openMods">[{0}] Menù Mods</str>
+		<str id="mainMenu.openMods">[{0}] Apri Menù delle Mod</str>
 	</group>
 
 	<group name="Updater">
@@ -70,13 +83,13 @@
 			<str id="updateAvailable.skip">SALTA</str>
 		</group>
 		<group name="UpdateScreen">
-			<str id="updateScreen.general-1">Preparazione installazione dell'aggiornamento...</str>
+			<str id="updateScreen.general-1">Preparazione dell'installazione dell'aggiornamento...</str>
 			<str id="updateScreen.part-1">Creazione della cartella di installazione e pulizia dei vecchi file di aggiornamento...</str>
 
 			<str id="updateScreen.general-2">Download delle risorse di aggiornamento...</str>
 			<str id="updateScreen.part-2">Download dei files {0}</str>
 
-			<str id="updateScreen.general-3">Download del nuovo eseguibile dell'Engine...</str>
+			<str id="updateScreen.general-3">Download del nuovo file eseguibile dell'Engine...</str>
 			<str id="updateScreen.part-3">Download {0}</str>
 
 			<str id="updateScreen.general-4">Installazione di nuovi file...</str>
